@@ -1,0 +1,9 @@
+functionQuery
+feeling
+gacha
+material
+operator
+enemy
+jadeCalculator
+intellect
+vblog

@@ -1,0 +1,24 @@
+{
+  "self_id": 1515361402,
+  "admin_id": 826197021,
+  "server": {
+    "server_ip": "127.0.0.1",
+    "server_port": 8060
+  },
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "amiya520",
+    "db": "amiya"
+  },
+  "natural_language": {
+    "enable": false,
+    "app_id": "",
+    "api_key": "",
+    "secret_key": ""
+  },
+  "message": {
+    "reply_text_max_length": 100
+  }
+}

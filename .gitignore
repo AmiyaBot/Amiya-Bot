@@ -1,0 +1,15 @@
+/.idea/
+/venv/
+/remind/
+.DS_Store
+*.pyc
+*.png
+*.jpg
+*.xml
+*.otf
+materials.txt
+operators.txt
+session.txt
+blog.txt
+unitTest.py
+start.bat

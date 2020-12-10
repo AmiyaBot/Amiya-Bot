@@ -1,0 +1,104 @@
+import time
+import json
+import threading
+
+from database.baseController import BaseController
+from library.imageCreator import clean_temp
+from modules.updateGameData import UpdateGameData
+from modules.network.httpRequests import HttpRequests
+
+from functions.vblog.vblog import VBlog
+
+database = BaseController()
+update = UpdateGameData()
+blog = VBlog()
+
+with open('config.json') as config:
+    config = json.load(config)
+    admin_id = config['admin_id']
+
+
+def run_automatic_action():
+    threading.Thread(target=AutomaticAction().run_loop).start()
+
+
+class AutomaticAction(HttpRequests):
+    def __init__(self):
+        super().__init__()
+
+    def run_loop(self):
+        try:
+            while True:
+                self.events()
+                time.sleep(60)
+        except KeyboardInterrupt:
+            pass
+
+    def events(self):
+        now = time.localtime(time.time())
+        hour = now.tm_hour
+        mint = now.tm_min
+        day = now.tm_wday
+
+        if hour == 4 and mint == 0:
+            # 清理缓存
+            clean_temp()
+
+            # 重置签到和心情值
+            database.user.reset_mood()
+            database.user.reset_sign()
+
+            # 更新材料数据
+            update.reset_all_data()
+
+            if day == 0:
+                pass
+
+        threading.Timer(0, self.intellect_full_alarm).start()
+        threading.Timer(0.5, self.send_new_blog).start()
+
+    def intellect_full_alarm(self):
+        now = int(time.time())
+        results = database.remind.check_intellect_full_alarm(now)
+        if results:
+            for item in results:
+                text = '博士！博士！您的理智已经满%d了，快点上线查看吧～' % item[2]
+                data = {
+                    'user_id': item[0],
+                    'group_id': item[5],
+                    'type': item[4]
+                }
+                self.send_message(data, text, at=True)
+
+    def send_new_blog(self):
+        with open('resource/blog.txt', mode='r') as file:
+            record_id = file.read().split('\n')
+
+        new_id = blog.get_new_blog(only_id=True)
+
+        if new_id and new_id not in record_id:
+            new_blog = blog.get_new_blog()
+
+            if new_blog is False:
+                return False
+
+            with open('resource/blog.txt', mode='a+') as file:
+                file.write(new_id + '\n')
+
+            group_list = self.get_group_list()
+            time_record = time.time()
+            total = 0
+
+            self.send_private_message({'user_id': admin_id}, '开始推送微博:\n%s\n共有 %d 个群' % (new_id, len(group_list)))
+
+            for group in group_list:
+                data = {'group_id': group['id']}
+                for item in new_blog:
+                    if item.content:
+                        if type(item.content) is list:
+                            self.send_group_message(data, message_chain=item.content)
+                        else:
+                            self.send_group_message(data, message=item.content)
+                total += 1
+            complete = '微博推送完毕。成功 %d / %d，耗时：%ds' % (total, len(group_list), time.time() - time_record)
+            self.send_private_message({'user_id': admin_id}, complete)
