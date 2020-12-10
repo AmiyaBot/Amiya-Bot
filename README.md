@@ -34,7 +34,7 @@
 
 ## 开始使用
 
-1. 下载资源文件
+1. 下载[资源文件](https://github.com/vivien8261/Amiya-Bot/releases/download/v3.0/amiya-bot-resource.zip)
 2. 把字体文件放到目录`resource/style`下
 3. 把表情包的图片放到目录`resource/images/face`下，支持png和jpg格式
 4. 在 Mysql 里导入数据库文件 `amiya.sql`
