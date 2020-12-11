@@ -1,5 +1,6 @@
+import os
 import re
-import time
+import sys
 import json
 
 from message.messageType import MessageType
@@ -47,16 +48,6 @@ def check_sentence_by_re(sentence: str, words: list, names: list):
     return False
 
 
-def talk_time():
-    localtime = time.localtime(time.time())
-    hours = localtime.tm_hour
-    if 0 <= hours <= 5:
-        return ''
-    elif 5 < hours <= 11:
-        return '早上'
-    elif 11 < hours <= 14:
-        return '中午'
-    elif 14 < hours <= 18:
-        return '下午'
-    elif 18 < hours <= 24:
-        return '晚上'
+def restart():
+    python = sys.executable
+    os.execl(python, python, *sys.argv)

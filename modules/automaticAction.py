@@ -1,9 +1,11 @@
+import os
 import time
 import json
 import threading
 
 from database.baseController import BaseController
 from library.imageCreator import clean_temp
+from modules.commonMethods import restart
 from modules.updateGameData import UpdateGameData
 from modules.network.httpRequests import HttpRequests
 
@@ -38,7 +40,6 @@ class AutomaticAction(HttpRequests):
         now = time.localtime(time.time())
         hour = now.tm_hour
         mint = now.tm_min
-        day = now.tm_wday
 
         if hour == 4 and mint == 0:
             # 清理缓存
@@ -51,8 +52,18 @@ class AutomaticAction(HttpRequests):
             # 更新材料数据
             update.reset_all_data()
 
-            if day == 0:
-                pass
+            record = 0
+            today = int('%s%s%s' % (now.tm_year, now.tm_mon, now.tm_mday))
+            if os.path.exists('restart.txt') is False:
+                with open('restart.txt', mode='w+') as rs:
+                    rs.write(str(today))
+            else:
+                with open('restart.txt', mode='r+') as rs:
+                    record = int(rs.read())
+                    rs.seek(0)
+                    rs.write(str(today))
+            if record < today:
+                restart()
 
         threading.Timer(0, self.intellect_full_alarm).start()
         threading.Timer(0.5, self.send_new_blog).start()
