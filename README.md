@@ -3,19 +3,36 @@
 > 基于 [mirai-console](https://github.com/mamoe/mirai-console) 和 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的QQ聊天机器人<br>
 > 其根本为一个 websocket 客户端，通过 TCP 接收到消息后，再以 HTTP 发送格式化的消息<br>
 
-> 名字源于游戏《明日方舟》的女主角"阿米娅"，其主题与核心功能也和游戏相关。
+> 名字源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也和游戏相关。
 
     "博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！"
 
 ## 声明
 
-- Amiya-Bot 是在《明日方舟》爱好者群体中诞生的以便捷功能为主的聊天机器人，本项目拒绝加入与金钱相关的功能，并在遵守法律法规且符合社会主义核心价值观的前提下使用。<br>
-- 创建者需承诺不得使用本项目进行`任何形式的盈利行为`<br>
+- Amiya-Bot 是在《明日方舟》爱好者群体中诞生的以便捷功能为主的聊天机器人
+- 本项目拒绝加入与金钱相关的功能，并在遵守法律法规且符合社会主义核心价值观的前提下使用
+- 创建者需承诺不得使用本项目进行<font style="color: red">任何形式的盈利行为</font>
 - 本项目不承担因违反上述所带来的一切后果
+
+## 已完成的功能
+
+Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能` 来获得功能指引
+
+- 信赖值与心情系统
+- 查询干员精英化材料
+- 查询干员专精材料
+- 查询干员语音资料
+- 查询敌方单位资料
+- 查询材料怎么获得
+- 模拟抽卡
+- 合成玉计算
+- 理智恢复提醒
+- 查看明日方舟微博最新动态（自动推送与查询）
 
 ## 准备
 
 - 想要创建自己的 Amiya，建议拥有一定编程基础，否则以下说明将难以理解
+- 不了解编程的博士可以等待后续发布的`简易部署安装包`，预计会在近期发布`beta`版
 - 建议先去了解且能用任意方式成功运行 [mirai-console](https://github.com/mamoe/mirai-console)
   并加载插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
   ，关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
@@ -27,18 +44,17 @@
 本项目代码含有以下特点
 
 - 极少的注释
-- 代码关系复杂
-- 较为新手的编码手法
-- 莫名其妙的异步方式
-- 不讲道理的类加载方法
+- 单线流程较为复杂
+- 通过遍历文件的类加载方法
+- 通过线程而非协程的异步实现方式
 
 ## 开始使用
 
 1. 下载[资源文件](https://github.com/vivien8261/Amiya-Bot/releases/download/v3.0/amiya-bot-resource.zip)
 2. 把字体文件放到目录`resource/style`下
 3. 把表情包的图片放到目录`resource/images/face`下，支持png和jpg格式
-4. 在 Mysql 里导入数据库文件 `amiya.sql`
-5. 配置 `config.json`
+4. 在 Mysql 里导入数据库文件`amiya.sql`
+5. 配置`config.json`
 
 ```json5
 {
@@ -80,17 +96,23 @@ pip install -r requirements.txt
 ```
 
 7. 启动 `mirai-console` 并登录机器人QQ
-8. 启动 Amiya
+8. 启动 Amiya 入口程序
 
 ```commandline
 python amiya.py
 ```
 
-9. 在QQ里和Amiya说 `Amiya会什么` 开始使用吧
+9. 短暂的启动过程后，若控制台显示了如下记录，表示 Amiya 启动成功，在QQ里唤起并开始交流吧
+
+```
+...
+websocket connecting success
+```
 
 ## 功能使用注意
 
-- 要使用查询类功能，请于启动Amiya前，获取一次材料及干员数据。最简单的方法，在根目录创建 `update.py` 并运行以下代码
+- <font style="color: red">禁言会导致 Amiya 退群！！！</font>
+- 要使用查询类功能，请于初次启动 Amiya 前，获取一次材料及干员数据。最简单的方法，在根目录创建任意 python 脚本并运行以下代码
 
 ```python
 from modules.updateGameData import UpdateGameData
@@ -119,20 +141,42 @@ if __name__ == '__main__':
 }
 ```
 
+## 如何维护
+
+- Amiya 带有`自动维护`功能，会在每天凌晨4点 <del style="color: red">(鹰历)</del> 执行以下操作：
+    - 清除图片缓存
+    - 重置签到和心情值
+    - 更新干员和材料数据
+    - 重启主程序
+- 干员语音资料和敌人数据为即时从 wiki 获取，不需要维护
+- 卡池目前需要手动到数据表`t_pool`维护，维护好的卡池可以通过 Amiya 切换卡池的功能进行更换
+    - `Tips:` Pickup 的干员可以是虚构的不存在的干员，因为抽卡命中 Pickup 时，是直接使用 Pickup 字段的干员而非从干员表获取
+
+```mysql
+-- 新卡池数据插入语句示例
+INSERT INTO t_pool (pool_name, pickup_6, pickup_5, pickup_4, limit_pool)
+VALUES ('银灰色的荣耀',
+        '银灰',
+        '初雪,崖心',
+        '角峰',
+        0)
+```
+
+- 手动重启 Amiya 只需要重新运行`amiya.py`即可，不需要重启`mirai-console`。但建议在运行一段时间（2～3天）后重启一次`mirai-console`以保证稳定
+
 ## 贡献
 
-- 本项目欢迎dalao加入，拯救萌新，刻不容缓！
-- 如果有更多的建议或BUG反馈，请提交到`issue`或官方测试群`362165038`
-- 你的`star`将会成为Amiya成长的经验值
+- 本项目欢迎 dalao 加入，拯救萌新，刻不容缓！
+- 如果有更多的建议或 BUG 反馈，请提交到`issue`或官方测试群`362165038`
+- 你的`star`将会成为 Amiya 成长的经验值
 
 ## TODO
 
 - [ ] 修复语音
-- [ ] 管理员功能
 - [ ] 完善群事件
-- [ ] 不知道哪天会突发奇想的奇怪功能
-- [ ] <del>与明日方舟主题不相关的功能</del>
-- [ ] 一键式安装包，适合不了解编程的博士在没有环境的电脑下运行
+- [ ] 管理员命令功能
+- [ ] WEB后台管理系统
+- [ ] <del style="color: red">与明日方舟主题不相关的功能</del>
 
 ## 鸣谢
 

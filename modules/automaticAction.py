@@ -42,16 +42,8 @@ class AutomaticAction(HttpRequests):
         mint = now.tm_min
 
         if hour == 4 and mint == 0:
-            # 清理缓存
-            clean_temp()
 
-            # 重置签到和心情值
-            database.user.reset_mood()
-            database.user.reset_sign()
-
-            # 更新材料数据
-            update.reset_all_data()
-
+            # 开始判断是否可以重启
             record = 0
             today = int('%s%s%s' % (now.tm_year, now.tm_mon, now.tm_mday))
             if os.path.exists('restart.txt') is False:
@@ -63,6 +55,17 @@ class AutomaticAction(HttpRequests):
                     rs.seek(0)
                     rs.write(str(today))
             if record < today:
+                # 清除图片缓存
+                clean_temp()
+
+                # 重置签到和心情值
+                database.user.reset_mood()
+                database.user.reset_sign()
+
+                # 更新干员和材料数据
+                update.reset_all_data()
+
+                # 执行重启
                 restart()
 
         threading.Timer(0, self.intellect_full_alarm).start()
