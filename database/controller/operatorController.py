@@ -172,3 +172,51 @@ class Operator:
         res = cursor.fetchall()
 
         return res
+
+    def add_operator_tags_relation(self, operators):
+        cursor = self.db.cursor()
+
+        values = []
+        for item in operators:
+            value = [
+                '"%s"' % item['operator_name'],
+                str(item['operator_rarity']),
+                '"%s"' % item['operator_tags']
+            ]
+            value = ', '.join(value)
+            values.append('(%s)' % value)
+
+        sql = 'INSERT INTO t_operator_tags_relation ( operator_name, operator_rarity, operator_tags ) ' \
+              'VALUES %s' % ', '.join(values)
+
+        self.db.ping(reconnect=True)
+        cursor.execute(sql)
+
+    def find_operator_tags_by_name(self, name):
+        cursor = self.db.cursor()
+
+        sql = 'SELECT * FROM t_operator_tags_relation WHERE operator_name = "%s"' % name
+
+        self.db.ping(reconnect=True)
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        return res
+
+    def find_operator_tags_by_tags(self, tags, min_rarity=1, max_rarity=6):
+        cursor = self.db.cursor()
+
+        where = []
+        for item in tags:
+            where.append('operator_tags LIKE "%' + item + '%"')
+
+        sql = 'SELECT * FROM t_operator_tags_relation WHERE (%s) ' \
+              'AND operator_rarity >= %d ' \
+              'AND operator_rarity <= %d ' \
+              'ORDER BY operator_rarity DESC' % (' OR '.join(where), min_rarity, max_rarity)
+
+        self.db.ping(reconnect=True)
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        return res

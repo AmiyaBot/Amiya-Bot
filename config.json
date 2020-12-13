@@ -12,7 +12,7 @@
     "password": "amiya520",
     "db": "amiya"
   },
-  "natural_language": {
+  "baidu_cloud": {
     "enable": false,
     "app_id": "",
     "api_key": "",

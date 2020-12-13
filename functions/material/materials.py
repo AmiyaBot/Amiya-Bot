@@ -12,7 +12,7 @@ class Material:
 
         materials = database.material.get_all_material()
         for item in materials:
-            self.keywords.append('%s 3 n' % item[1])
+            self.keywords.append('%s 100 n' % item[1])
             self.material_list.append(item[1])
 
         with open('resource/materials.txt', mode='w', encoding='utf-8') as file:

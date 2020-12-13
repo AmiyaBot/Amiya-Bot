@@ -2,6 +2,7 @@ import json
 import random
 
 from database.baseController import BaseController
+from modules.commonMethods import insert_empty
 
 database = BaseController()
 
@@ -116,9 +117,9 @@ class GaCha:
             result += '\n然而并没有高星干员...'
 
         result += '\n三星：%s四星：%d\n五星：%s六星：%d\n' % (
-            self.insert_empty(rarity_sum[0], 4),
+            insert_empty(rarity_sum[0], 4),
             rarity_sum[1],
-            self.insert_empty(rarity_sum[2], 4),
+            insert_empty(rarity_sum[2], 4),
             rarity_sum[3])
 
         enter = True
@@ -157,7 +158,7 @@ class GaCha:
 
         for item in operators:
             star = '☆' if item['rarity'] < 5 else '★'
-            result += '%s%s\n' % (self.insert_empty(item['name'], 5, True), star * item['rarity'])
+            result += '%s%s\n' % (insert_empty(item['name'], 5, True), star * item['rarity'])
 
             if item['rarity'] >= 5:
                 no_high_rarity = False
@@ -247,7 +248,3 @@ class GaCha:
             return random.choice(random.choice(group))
 
         return random.choice(operator_list)
-
-    @staticmethod
-    def insert_empty(text, max_num, half=False):
-        return '%s%s' % (text, ('　' if half else ' ') * (max_num - len(str(text))))

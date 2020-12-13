@@ -8,7 +8,7 @@ from functions.functionsIndex import FunctionsIndex
 from database.baseController import BaseController
 from message.messageType import MessageType
 from message.noticeHandler import NoticeHandler
-from library.naturalLanguage import NaturalLanguage
+from library.baiduCloud import NaturalLanguage
 from library.numberTranslate import chinese_to_digits_in_sentence
 from modules.network.httpRequests import HttpRequests
 from modules.commonMethods import Reply, word_in_sentence
@@ -21,7 +21,7 @@ with open('config.json') as config:
 with open('resource/words/amiyaName.json', encoding='utf-8') as file:
     amiya_name = json.load(file)
 
-naturalLanguage = NaturalLanguage(config['natural_language'])
+naturalLanguage = NaturalLanguage(config['baidu_cloud'])
 database = BaseController()
 function = FunctionsIndex()
 notice = NoticeHandler()

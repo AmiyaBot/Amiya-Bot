@@ -3,6 +3,7 @@ feeling
 gacha
 material
 operator
+operatorTags
 enemy
 jadeCalculator
 intellect

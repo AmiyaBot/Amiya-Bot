@@ -9,8 +9,9 @@ with open('config.json') as file:
 
 class Websocket(WebSocketClient):
     def __init__(self, session, handler=None):
-        super().__init__(
-            'ws://%s:%d/all?sessionKey=%s' % (config['server']['server_ip'], config['server']['server_port'], session))
+        host = config['server']['server_ip']
+        port = config['server']['server_port']
+        super().__init__('ws://%s:%d/all?sessionKey=%s' % (host, port, session))
         self.connect()
         self.handler = handler
 

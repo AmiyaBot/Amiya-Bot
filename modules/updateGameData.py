@@ -60,11 +60,12 @@ class UpdateGameData:
         static = 'https://www.bigfun.cn/static/aktools/%s/data' % new_id
         resource = {
             'charMaterials': '%s/charMaterials.json' % static,
-            'material': '%s/material.json' % static
+            'material': '%s/material.json' % static,
+            'tagsRelation': '%s/akhr.json' % static
         }
 
         result = {}
-        for item in ['charMaterials', 'material']:
+        for item in resource.keys():
             stream = requests.get(resource[item], headers=headers, stream=True)
             if stream.status_code == 200:
                 result[item] = json.loads(stream.content)
@@ -77,11 +78,11 @@ class UpdateGameData:
         return result
 
     @staticmethod
-    def get_operators():
+    def get_operators(fld=0):
         operators = database.operator.get_all_operator()
         operators_list = {}
         for item in operators:
-            operators_list[item[1]] = item[0]
+            operators_list[item[1]] = item[fld]
         return operators_list
 
     @staticmethod
@@ -211,6 +212,47 @@ class UpdateGameData:
                                 })
         database.operator.add_operator_skill_mastery_costs(data_list)
 
+    def t_operator_tags_relation(self, data):
+        operator = data['tagsRelation']
+        operator_list = self.get_operators(3)
+
+        wd = ' 100 a'
+
+        cls = []
+        for item in classes.keys():
+            cls.append(item + wd)
+
+        cls_rel = {value: key for (key, value) in classes.items()}
+
+        tags = cls + [
+            '资深' + wd,
+            '高资' + wd,
+            '高级资深' + wd,
+        ]
+        data_list = []
+        for item in operator:
+            item['tags'] += [
+                cls_rel[
+                    operator_list[
+                        item['name']
+                    ]
+                ]
+            ]
+            data_list.append({
+                'operator_name': item['name'],
+                'operator_rarity': item['level'],
+                'operator_tags': ','.join(item['tags'])
+            })
+            for tag in item['tags']:
+                key = tag + wd
+                if key not in tags:
+                    tags.append(key)
+
+        with open('resource/tags.txt', mode='w', encoding='utf-8') as file:
+            file.write('\n'.join(tags))
+
+        database.operator.add_operator_tags_relation(data_list)
+
     def reset_all_data(self):
         data = self.get_json_data()
         if data:
@@ -222,3 +264,4 @@ class UpdateGameData:
             self.t_operator_evolve_costs(data)
             self.t_operator_skill(data)
             self.t_operator_skill_mastery_costs(data)
+            self.t_operator_tags_relation(data)

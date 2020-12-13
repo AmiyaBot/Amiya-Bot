@@ -5,7 +5,6 @@ import requests
 from urllib import parse
 from jieba import posseg
 from bs4 import BeautifulSoup
-
 from modules.commonMethods import Reply, word_in_sentence
 from .materialsCosts import MaterialCosts
 

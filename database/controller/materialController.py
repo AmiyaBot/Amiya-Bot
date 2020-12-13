@@ -105,7 +105,8 @@ class Material:
             'TRUNCATE t_operator',
             'TRUNCATE t_operator_evolve_costs',
             'TRUNCATE t_operator_skill',
-            'TRUNCATE t_operator_skill_mastery_costs'
+            'TRUNCATE t_operator_skill_mastery_costs',
+            'TRUNCATE t_operator_tags_relation'
         ]
         for item in sql:
             cursor = self.db.cursor()

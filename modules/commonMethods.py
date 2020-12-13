@@ -17,6 +17,9 @@ with open('config.json') as conf:
 class Reply:
     def __init__(self, content, feeling=2, sign=0, at=True, auto_image=True):
 
+        if isinstance(content, str):
+            content = content.strip('\n')
+
         if auto_image and isinstance(content, str) and len(content) >= config['message']['reply_text_max_length']:
             image = create_image(content, 'Common')
             image_id = IM.image(image)
@@ -46,6 +49,17 @@ def check_sentence_by_re(sentence: str, words: list, names: list):
             if re.search(re.compile(item % n if '%s' in item else item), sentence):
                 return True
     return False
+
+
+def all_item_in_text(text: str, items: list):
+    for item in items:
+        if item not in text:
+            return False
+    return True
+
+
+def insert_empty(text, max_num, half=False):
+    return '%s%s' % (text, ('　' if half else ' ') * (max_num - len(str(text))))
 
 
 def restart():

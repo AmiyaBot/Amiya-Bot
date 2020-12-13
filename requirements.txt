@@ -1,6 +1,6 @@
-requests~=2.24.0
 Pillow~=7.2.0
-beautifulsoup4~=4.9.3
+requests~=2.24.0
 ws4py~=0.5.1
+beautifulsoup4~=4.9.3
 PyMySQL~=0.10.1
 jieba~=0.42.1

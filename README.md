@@ -75,8 +75,8 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
     "password": "amiya520",
     "db": "amiya"
   },
-  "natural_language": {
-    // 自然语言处理配置
+  "baidu_cloud": {
+    // 百度智能云配置
     "enable": true,
     "app_id": "2152****",
     "api_key": "MM5pPVBBj***************",
@@ -128,8 +128,8 @@ if __name__ == '__main__':
 
 ```json5
 {
-  "natural_language": {
-    // 是否启用自然语言处理
+  "baidu_cloud": {
+    // 是否启用百度智能云接口
     "enable": false,
     // APP ID
     "app_id": "",

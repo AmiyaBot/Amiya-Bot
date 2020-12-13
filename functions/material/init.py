@@ -1,7 +1,6 @@
 import jieba
 
 from jieba import posseg
-
 from modules.commonMethods import Reply
 from .materials import Material
 

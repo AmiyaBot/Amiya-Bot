@@ -119,7 +119,7 @@ class Init:
                 if item[3]:
                     text.append('[★★★★★　] %s' % item[3].replace(',', '、'))
                 if item[4]:
-                    text.append('[★★★★　　] %s' % item[4].replace(',', '、'))
+                    text.append('[☆☆☆☆　　] %s' % item[4].replace(',', '、'))
                 text = '\n'.join(text)
                 return Reply(text)
         return Reply('博士，没有找到这个卡池哦')
