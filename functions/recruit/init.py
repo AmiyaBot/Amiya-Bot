@@ -46,6 +46,8 @@ class Init:
                     lst = []
                     for item in result:
                         if all_item_in_text(item[3], comb):
+                            if item[2] == 6 and '高级资深干员' not in comb:
+                                continue
                             if item[2] >= 4:
                                 lst.append(item)
                             else:
