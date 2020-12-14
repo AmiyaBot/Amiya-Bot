@@ -61,11 +61,11 @@ class MessageHandler(HttpRequests):
         # target_id = data['group_id'] if data['type'] == 'group' else data['user_id']
         # database.message.add_message(target_id, data['type'])
 
-        if data['is_at'] is False and call_me(data['text']) is False:
+        reply = greeting(data)
+        if reply and type(reply) is Reply:
+            return self.do_reply(data, reply)
 
-            reply = greeting(data)
-            if reply and type(reply) is Reply:
-                return self.do_reply(data, reply)
+        if data['is_at'] is False and call_me(data['text']) is False:
 
             reply = waiting(data)
             if reply and type(reply) is Reply:
