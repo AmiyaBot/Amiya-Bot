@@ -14,7 +14,7 @@ class Init:
         self.function_id = 'recruit'
         self.keyword = ['公招']
         self.tags = []
-        with open('resource/tags.txt') as tags:
+        with open('resource/tags.txt', encoding='utf-8') as tags:
             for item in tags.read().split('\n'):
                 self.tags.append(item.split(' ')[0].strip())
 
