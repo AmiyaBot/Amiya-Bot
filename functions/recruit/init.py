@@ -18,7 +18,7 @@ class Init:
             for item in tags.read().split('\n'):
                 self.tags.append(item.split(' ')[0].strip())
 
-    def action(self, data):
+    def action(self, data, end=False):
 
         message = data['text']
         user_id = data['user_id']
@@ -42,7 +42,7 @@ class Init:
             result = database.operator.find_operator_tags_by_tags(tags, max_rarity=max_rarity)
             if result:
                 text = ''
-                for comb in self.find_combinations(tags):
+                for comb in [tags] if len(tags) == 1 else self.find_combinations(tags):
                     lst = []
                     for item in result:
                         if all_item_in_text(item[3], comb):
@@ -62,10 +62,11 @@ class Init:
                 else:
                     text = '博士，没有找到可以锁定高星的组合'
 
+                database.user.set_waiting(user_id, '')
                 return Reply(text)
-        else:
-            database.user.set_waiting(user_id, 'Recruit')
-            return Reply('博士，没有检测到可以排列的组合，请重新尝试或者上传图片试试吧\n\n（等待上传图片）')
+
+        database.user.set_waiting(user_id, '' if end else 'Recruit')
+        return Reply('博士，没有检测到可以排列的组合%s' % ('' if end else '，请重新尝试或者上传图片试试吧\n\n等待上传图片'))
 
     @staticmethod
     def find_combinations(_list):
