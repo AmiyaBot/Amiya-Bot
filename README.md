@@ -118,7 +118,8 @@ websocket connecting success
 ## 功能使用注意
 
 - <font style="color: red">禁言会导致 Amiya 退群！！！</font>
-- 要使用查询类功能，请于初次启动 Amiya 前，获取一次材料及干员数据。最简单的方法，在根目录创建任意 python 脚本并运行以下代码
+- 要保证一些功能的使用，请导入资源文件中的`data.sql`（建议手动更新一次以保证使用最新的数据）
+- 手动更新数据，最简单的方法，在根目录创建任意 python 脚本并运行以下代码
 
 ```python
 from modules.updateGameData import UpdateGameData
@@ -128,7 +129,7 @@ if __name__ == '__main__':
     UGD.reset_all_data()
 ```
 
-- 要使用抽卡功能，请在获取干员数据后，在数据表`t_pool`内维护卡池信息，也可以导入资源文件`t_pool.sql`
+- 要使用抽卡功能，请在更新数据后，在数据表`t_pool`内维护卡池信息（`data.sql`带有初始的卡池数据）
 - 自然语言处理方法和公招图像识别需要调用 [百度智能云](https://cloud.baidu.com/)
   的接口，如需使用需要自行申请并配置`config.json`
 
