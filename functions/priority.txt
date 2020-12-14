@@ -3,7 +3,7 @@ feeling
 gacha
 material
 operator
-operatorTags
+recruit
 enemy
 jadeCalculator
 intellect

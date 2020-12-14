@@ -18,7 +18,7 @@ class Message:
             self.db.ping(reconnect=True)
             cursor.execute(sql)
         except Exception as e:
-            print(e)
+            print('Mysql', e)
 
     def delete_old_message(self):
         cursor = self.db.cursor()

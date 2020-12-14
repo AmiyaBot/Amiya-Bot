@@ -48,7 +48,7 @@ class OpticalCharacterRecognition:
         options = {
             'detect_direction': 'true'
         }
-        result = self.client.basicGeneral(image, options)
+        result = self.client.basicGeneralUrl(image, options)
 
         return result
 

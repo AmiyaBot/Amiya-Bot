@@ -58,7 +58,7 @@ class Group:
             self.db.ping(reconnect=True)
             cursor.execute(sql)
         except Exception as e:
-            print(e)
+            print('Mysql', e)
 
     def get_all_ignore_group(self):
         cursor = self.db.cursor()

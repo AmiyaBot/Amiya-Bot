@@ -87,6 +87,14 @@ class User:
         self.db.ping(reconnect=True)
         cursor.execute(sql)
 
+    def set_waiting(self, user_id, name):
+        cursor = self.db.cursor()
+
+        sql = 'UPDATE t_user SET waiting = "%s" WHERE user_id = "%s"' % (name, user_id)
+
+        self.db.ping(reconnect=True)
+        cursor.execute(sql)
+
     def reset_mood(self):
         cursor = self.db.cursor()
 

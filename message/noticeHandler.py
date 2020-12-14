@@ -24,7 +24,7 @@ class NoticeHandler(HttpRequests):
             with open('remind/%s.json' % notice_type, mode='w+') as remind:
                 remind.write(json.dumps(message, ensure_ascii=False))
         except Exception as e:
-            print(e)
+            print('Remind2', e)
 
         if notice_type == 'BotMuteEvent':
             self.leave_group(message['operator']['group']['id'])

@@ -11,7 +11,7 @@ jieba.load_userdict('resource/tags.txt')
 
 class Init:
     def __init__(self):
-        self.function_id = 'operatorTags'
+        self.function_id = 'recruit'
         self.keyword = ['公招']
         self.tags = []
         with open('resource/tags.txt') as tags:
@@ -19,7 +19,11 @@ class Init:
                 self.tags.append(item.split(' ')[0].strip())
 
     def action(self, data):
-        msg_words = posseg.lcut(data['text'].replace('公招', ''))
+
+        message = data['text']
+        user_id = data['user_id']
+
+        msg_words = posseg.lcut(message.replace('公招', ''))
 
         tags = []
         max_rarity = 5
@@ -59,6 +63,9 @@ class Init:
                     text = '博士，没有找到可以锁定高星的组合'
 
                 return Reply(text)
+        else:
+            database.user.set_waiting(user_id, 'Recruit')
+            return Reply('博士，没有检测到可以排列的组合，请重新尝试或者上传图片试试吧\n\n（等待上传图片）')
 
     @staticmethod
     def find_combinations(_list):

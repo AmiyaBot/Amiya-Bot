@@ -106,5 +106,5 @@ class Init:
                 cards.append(MSG.image(image_id))
 
             except Exception as e:
-                print(e)
+                print('Enemy', e)
         return cards

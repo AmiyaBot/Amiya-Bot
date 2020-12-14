@@ -21,7 +21,7 @@ with open('config.json') as config:
 with open('resource/words/amiyaName.json', encoding='utf-8') as file:
     amiya_name = json.load(file)
 
-naturalLanguage = NaturalLanguage(config['baidu_cloud'])
+NLP = NaturalLanguage(config['baidu_cloud'])
 database = BaseController()
 function = FunctionsIndex()
 notice = NoticeHandler()
@@ -46,10 +46,10 @@ class MessageHandler(HttpRequests):
                 with open('remind/unknown.txt', mode='w+') as unknown:
                     unknown.write(json.dumps(message, ensure_ascii=False))
             except Exception as e:
-                print(e)
+                print('Remind', e)
             return False
 
-        if message['type'] not in ['GroupMessage']:
+        if message['type'] not in ['GroupMessage', 'FriendMessage']:
             notice.on_notice(message)
             return False
 
@@ -61,11 +61,16 @@ class MessageHandler(HttpRequests):
         # target_id = data['group_id'] if data['type'] == 'group' else data['user_id']
         # database.message.add_message(target_id, data['type'])
 
-        reply = greeting(data)
-        if reply and type(reply) is Reply:
-            return self.do_reply(data, reply)
+        if data['is_at'] is False and call_me(data['text']) is False:
 
-        if data['type'] == 'group' and data['is_at'] is False and call_me(data['text']) is False:
+            reply = greeting(data)
+            if reply and type(reply) is Reply:
+                return self.do_reply(data, reply)
+
+            reply = waiting(data)
+            if reply and type(reply) is Reply:
+                return self.do_reply(data, reply)
+
             return False
 
         print('[%s][%s]%s[UID %s][%s] %s' % (
@@ -126,6 +131,10 @@ def message_filter(data):
     if data is False:
         return False
 
+    if config['close_beta']['enable']:
+        if str(data['group_id']) != str(config['close_beta']['group_id']):
+            return False
+
     for item in ['Q群管家', '小冰']:
         if item in data['text']:
             return False
@@ -150,23 +159,28 @@ def rebuild_message(message):
     }
 
     if message['type'] == 'FriendMessage':
-        data['type'] = 'friend'
-        data['nickname'] = message['sender']['nickname']
-    else:
+        # 不接受私聊消息
+        return False
+    elif message['type'] == 'GroupMessage':
         data['type'] = 'group'
         data['nickname'] = message['sender']['memberName']
         data['group_id'] = message['sender']['group']['id']
+    else:
+        return False
 
     for chain in message['messageChain']:
         if chain['type'] == 'At' and chain['target'] == config['self_id']:
             data['is_at'] = True
         if chain['type'] == 'Plain':
             data['text'] = chain['text'].strip()
+        if chain['type'] == 'Image':
+            data['image'] = chain['url'].strip()
+
     return data
 
 
 def natural_language_processing(message):
-    result = naturalLanguage.emotion(message)
+    result = NLP.emotion(message)
     if result:
         item = result['items'][0]
         if 'replies' in item and item['replies']:

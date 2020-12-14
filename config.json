@@ -20,5 +20,9 @@
   },
   "message": {
     "reply_text_max_length": 100
+  },
+  "close_beta": {
+    "enable": false,
+    "group_id": 852191455
   }
 }

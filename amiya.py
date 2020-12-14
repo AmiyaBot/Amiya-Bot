@@ -13,7 +13,7 @@ def run_websocket_client():
         websocket = Websocket(session, handler=message.on_message)
         websocket.run_forever()
     except Exception as e:
-        print(e)
+        print('Websocket', e)
         run_websocket_client()
 
 
