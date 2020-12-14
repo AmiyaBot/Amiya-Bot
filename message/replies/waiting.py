@@ -27,6 +27,7 @@ def waiting(data):
                 res = ORC.basic_general(data['image'])
                 for item in res['words_result']:
                     text += item['words']
+                database.user.set_waiting(user_id, '')
             except Exception as e:
                 print('Recruit', e)
             finally:
