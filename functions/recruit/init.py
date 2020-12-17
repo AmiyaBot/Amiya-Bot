@@ -82,8 +82,8 @@ class Init:
     @staticmethod
     def find_combinations(_list):
         result = []
-        for i in range(len(_list)):
-            for n in combinations(_list, i):
+        for i in range(3):
+            for n in combinations(_list, i + 1):
                 if n:
                     result.append(list(n))
         return result
