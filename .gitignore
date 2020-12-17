@@ -1,12 +1,10 @@
 /.idea/
 /venv/
 /remind/
-/resource/*.txt
-/resource/images/face/*.png
-/resource/images/face/*.jpg
-/resource/blog/images/
-/resource/blog/xml/
+/resource/images/face/
 /resource/message/
+/resource/blog/
+/resource/*.txt
 
 .DS_Store
 

@@ -2,7 +2,7 @@ import jieba
 
 from jieba import posseg
 from itertools import combinations
-from modules.commonMethods import Reply, all_item_in_text, insert_empty
+from modules.commonMethods import Reply, insert_empty
 from database.baseController import BaseController
 
 database = BaseController()
@@ -43,24 +43,26 @@ class Init:
             if result:
                 text = ''
                 for comb in [tags] if len(tags) == 1 else self.find_combinations(tags):
-                    lst = []
+                    lst = {}
                     for item in result:
-                        if all_item_in_text(item[3], comb):
+                        if item[3] in comb:
                             if item[2] == 6 and '高级资深干员' not in comb:
                                 continue
-                            if item[2] >= 4:
-                                lst.append(item)
+                            if item[2] >= 4 or item[2] == 1:
+                                if item[0] not in lst:
+                                    lst[item[0]] = item
                             else:
                                 break
                     else:
                         if lst:
                             text += '\n[%s]\n' % '，'.join(comb)
-                            for item in lst:
+                            for i in lst:
+                                item = lst[i]
                                 star = '☆' if item[2] < 5 else '★'
-                                text += '[%s] %s\n' % (insert_empty(star * item[2], 5, True), item[1])
+                                text += '[%s] %s\n' % (insert_empty(star * item[2], 6, True), item[1])
 
                 if text:
-                    text = '博士，根据标签已找到以下可以锁定高星干员的组合\n' + text
+                    text = '博士，根据标签已找到以下可以锁定稀有干员的组合\n' + text
                 else:
                     text = '博士，没有找到可以锁定高星的组合'
 

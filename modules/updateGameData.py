@@ -238,12 +238,12 @@ class UpdateGameData:
                     ]
                 ]
             ]
-            data_list.append({
-                'operator_name': item['name'],
-                'operator_rarity': item['level'],
-                'operator_tags': ','.join(item['tags'])
-            })
             for tag in item['tags']:
+                data_list.append({
+                    'operator_name': item['name'],
+                    'operator_rarity': item['level'],
+                    'operator_tags': tag
+                })
                 key = tag + wd
                 if key not in tags:
                     tags.append(key)

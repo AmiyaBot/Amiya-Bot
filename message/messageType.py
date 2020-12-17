@@ -37,13 +37,6 @@ class MessageType:
             'voiceId': voice_id
         }
 
-    @staticmethod
-    def card(xml_content):
-        return {
-            'type': 'Xml',
-            'xml': xml_content
-        }
-
     def chain(self, data):
         chain = []
         for item in data:

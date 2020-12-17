@@ -1,8 +1,7 @@
-import requests
 import os
 import re
+import requests
 
-from xml.dom.minidom import Document
 from message.messageType import MessageType
 from modules.resource.imageManager import ImageManager
 from modules.commonMethods import Reply
@@ -47,7 +46,7 @@ class VBlog:
 
         return cards
 
-    def get_blog_list(self, message_type):
+    def get_blog_list(self):
 
         cards = self.get_cards_list()
 
@@ -107,20 +106,9 @@ class VBlog:
 
         text = '%s\n微博功能升级中，暂时无法提供微博的快捷入口' % html_text
 
-        # 生成卡片（有封号风险，不再使用）
-        # xml_path = resource_path + 'xml/%s.xml' % item_id
-        # if os.path.exists(xml_path) is False:
-        #     self.create_xml_card(xml_path, raw_text[:20], detail_url, pics[0]['url'] if pics else '')
-        # with open(xml_path, encoding='utf-8') as card:
-        #     return [
-        #         Reply([
-        #             MSG.card(card.read()),
-        #             MSG.text(detail_url)
-        #         ])
-        #     ]
-
         return [
             Reply(text),
+            Reply(detail_url),
             Reply(pics_list, 0, at=False)
         ]
 
@@ -130,42 +118,3 @@ class VBlog:
         except Exception as error:
             print(error)
             return False
-
-    @staticmethod
-    def create_xml_card(path, desc, url, pic):
-        doc = Document()
-
-        root = doc.createElement('msg')
-        root.setAttribute('templateID', '12345')
-        root.setAttribute('action', 'web')
-        root.setAttribute('brief', desc)
-        root.setAttribute('serviceID', '1')
-        root.setAttribute('sourceName', '阿米娅')
-        root.setAttribute('url', url)
-
-        item = doc.createElement('item')
-        item.setAttribute('layout', '2')
-
-        picture = doc.createElement('picture')
-        picture.setAttribute('cover', pic)
-
-        title = doc.createElement('title')
-        title.appendChild(doc.createTextNode(desc))
-
-        summary = doc.createElement('summary')
-        summary.appendChild(doc.createTextNode('来自阿米娅分享的 明日方舟Arknights 的微博'))
-
-        source = doc.createElement('source')
-        source.setAttribute('action', '')
-        source.setAttribute('appid', '-1')
-        source.setAttribute('name', '阿米娅')
-
-        item.appendChild(picture)
-        item.appendChild(title)
-        item.appendChild(summary)
-        root.appendChild(item)
-        root.appendChild(source)
-        doc.appendChild(root)
-
-        with open(path, mode='w+', encoding='utf-8') as xml_file:
-            doc.writexml(xml_file, indent='', addindent='\t', newl='\n', encoding='utf-8')

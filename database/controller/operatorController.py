@@ -208,7 +208,7 @@ class Operator:
 
         where = []
         for item in tags:
-            where.append('operator_tags LIKE "%' + item + '%"')
+            where.append('operator_tags = "%s"' % item)
 
         sql = 'SELECT * FROM t_operator_tags_relation WHERE (%s) ' \
               'AND operator_rarity >= %d ' \
