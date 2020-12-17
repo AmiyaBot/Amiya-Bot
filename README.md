@@ -11,7 +11,7 @@
 
 - Amiya-Bot 是在《明日方舟》爱好者群体中诞生的以便捷功能为主的聊天机器人
 - 本项目拒绝加入与金钱相关的功能，并在遵守法律法规且符合社会主义核心价值观的前提下使用
-- 创建者需承诺不得使用本项目进行<font style="color: red">任何形式的盈利行为</font>
+- 创建者需承诺不得使用本项目进行**任何形式的盈利行为**
 - 本项目不承担因违反上述所带来的一切后果
 
 ## 已完成的功能
@@ -33,7 +33,7 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 ## 准备
 
 - 想要创建自己的 Amiya，建议拥有一定编程基础，否则以下说明将难以理解
-- 不了解编程的博士可以等待后续发布的`简易部署安装包`，预计会在近期发布`beta`版
+- <del>不了解编程的博士可以等待后续发布的`简易部署安装包`</del>
 - 建议先去了解且能用任意方式成功运行 [mirai-console](https://github.com/mamoe/mirai-console)
   并加载插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
   ，关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
@@ -51,9 +51,9 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 
 ## 开始使用
 
-1. 下载[资源文件](https://github.com/vivien8261/Amiya-Bot/releases/download/v3.0/amiya-bot-resource.zip)
+1. 下载[资源文件](https://github.com/vivien8261/Amiya-Bot/releases/download/v3.0.1/amiya-bot-resource.zip)
 2. 把字体文件放到目录`resource/style`下
-3. 把表情包的图片放到目录`resource/images/face`下，支持png和jpg格式
+3. 把表情包的图片放到目录`resource/images/face`下，支持 png 和 jpg 格式
 4. 在 Mysql 里导入数据库文件`amiya.sql`
 5. 配置`config.json`
 
@@ -97,27 +97,29 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 
 6. 安装 python 依赖
 
-```commandline
+```bash
 pip install -r requirements.txt
 ```
 
 7. 启动 `mirai-console` 并登录机器人QQ
 8. 启动 Amiya 入口程序
 
-```commandline
+```bash
 python amiya.py
 ```
 
-9. 短暂的启动过程后，若控制台显示了如下记录，表示 Amiya 启动成功，在QQ里唤起并开始交流吧
+9. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
 
 ```
 ...
 websocket connecting success
 ```
 
+10. 现在，唤醒你的 Amiya 吧！
+
 ## 功能使用注意
 
-- <font style="color: red">禁言会导致 Amiya 退群！！！</font>
+- **禁言会导致 Amiya 退群！！！**
 - 要保证一些功能的使用，请导入资源文件中的`data.sql`（建议手动更新一次以保证使用最新的数据）
 - 手动更新数据，最简单的方法，在根目录创建任意 python 脚本并运行以下代码
 
@@ -150,7 +152,7 @@ if __name__ == '__main__':
 
 ## 如何维护
 
-- Amiya 带有`自动维护`功能，会在每天凌晨4点 <del style="color: red">(鹰历)</del> 执行以下操作：
+- Amiya 带有`自动维护`功能，会在每天凌晨4点 <del>(鹰历)</del> 执行以下操作：
     - 清除图片缓存
     - 重置签到和心情值
     - 更新干员、公招和材料数据
@@ -169,7 +171,7 @@ VALUES ('银灰色的荣耀',
         0)
 ```
 
-- 手动重启 Amiya 只需要重新运行`amiya.py`即可，不需要重启`mirai-console`。但建议在运行一段时间（2～3天）后重启一次`mirai-console`以保证稳定
+- 手动重启 Amiya 只需要重新运行`amiya.py`即可，不需要重启`mirai-console`。但建议每隔一段时间（2～3天）重启一次`mirai-console`以保证稳定
 
 ## 贡献
 
