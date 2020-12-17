@@ -2,7 +2,7 @@ import jieba
 
 from jieba import posseg
 from itertools import combinations
-from modules.commonMethods import Reply, insert_empty
+from modules.commonMethods import Reply, all_item_in_text, insert_empty
 from database.baseController import BaseController
 
 database = BaseController()
@@ -41,23 +41,30 @@ class Init:
         if tags:
             result = database.operator.find_operator_tags_by_tags(tags, max_rarity=max_rarity)
             if result:
+
+                operators = {}
+                for item in result:
+                    if item[1] not in operators:
+                        operators[item[1]] = list(item)
+                    else:
+                        operators[item[1]][3] += item[3]
+
                 text = ''
                 for comb in [tags] if len(tags) == 1 else self.find_combinations(tags):
-                    lst = {}
-                    for item in result:
-                        if item[3] in comb:
+                    lst = []
+                    for name in operators:
+                        item = operators[name]
+                        if all_item_in_text(item[3], comb):
                             if item[2] == 6 and '高级资深干员' not in comb:
                                 continue
                             if item[2] >= 4 or item[2] == 1:
-                                if item[0] not in lst:
-                                    lst[item[0]] = item
+                                lst.append(item)
                             else:
                                 break
                     else:
                         if lst:
                             text += '\n[%s]\n' % '，'.join(comb)
-                            for i in lst:
-                                item = lst[i]
+                            for item in lst:
                                 star = '☆' if item[2] < 5 else '★'
                                 text += '[%s] %s\n' % (insert_empty(star * item[2], 6, True), item[1])
 
