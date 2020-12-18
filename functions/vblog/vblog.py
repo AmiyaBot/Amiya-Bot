@@ -116,5 +116,5 @@ class VBlog:
         try:
             return self.requests_content(only_id, message_type, index)
         except Exception as error:
-            print(error)
+            print('Blog', error)
             return False

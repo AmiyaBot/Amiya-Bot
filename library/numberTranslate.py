@@ -20,10 +20,10 @@ start_symbol = ['一', '二', '两', '三', '四', '五', '六', '七', '八', '
 more_symbol = list(character_relation.keys())
 
 
-def chinese_to_digits_in_sentence(sentence: str):
+def chinese_to_digits(text: str):
     symbol_str = ''
     found = False
-    for item in sentence:
+    for item in text:
         if item in start_symbol:
             if not found:
                 found = True
@@ -34,19 +34,19 @@ def chinese_to_digits_in_sentence(sentence: str):
                     symbol_str += item
                     continue
                 else:
-                    digits = str(chinese_to_digits(symbol_str))
-                    sentence = sentence.replace(symbol_str, digits, 1)
+                    digits = str(_digits(symbol_str))
+                    text = text.replace(symbol_str, digits, 1)
                     symbol_str = ''
                     found = False
 
     if symbol_str:
-        digits = str(chinese_to_digits(symbol_str))
-        sentence = sentence.replace(symbol_str, digits, 1)
+        digits = str(_digits(symbol_str))
+        text = text.replace(symbol_str, digits, 1)
 
-    return sentence
+    return text
 
 
-def chinese_to_digits(chinese: str):
+def _digits(chinese: str):
     total = 0
     r = 1
     for i in range(len(chinese) - 1, -1, -1):

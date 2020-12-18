@@ -23,4 +23,4 @@ class Init:
             else:
                 return Reply('博士…暂时无法获取微博呢…请稍后再试吧')
 
-        return blog.get_blog_list(data['type'])
+        return blog.get_blog_list()
