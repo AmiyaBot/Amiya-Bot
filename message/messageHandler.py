@@ -64,13 +64,13 @@ class MessageHandler(HttpRequests, Replies):
                 'need_call': False
             },
             {
-                # 表情包
-                'func': self.faceImage,
-                'need_call': True
-            },
-            {
                 # 等待事件
                 'func': self.waiting,
+                'need_call': False
+            },
+            {
+                # 表情包
+                'func': self.faceImage,
                 'need_call': True
             },
             {
