@@ -56,7 +56,7 @@ class MessageHandler(HttpRequests, Replies):
         if self.on_call(data):
             self.print_log(data)
 
-        # 处理列表（有先后顺序）
+        # 处理函数列表（有先后顺序）
         reply_func = [
             {
                 # 打招呼
@@ -90,6 +90,7 @@ class MessageHandler(HttpRequests, Replies):
             }
         ]
 
+        # 遍历处理函数直至获得回复为止
         for action in reply_func:
             if action['need_call'] and self.on_call(data) is False:
                 continue
@@ -107,13 +108,14 @@ class MessageHandler(HttpRequests, Replies):
         if isinstance(res, Reply) is False:
             return False
 
+        content = res.content
         message = ''
         message_chain = None
 
-        if type(res.content) is str:
-            message = res.content
-        elif type(res.content) is list:
-            message_chain = res.content
+        if isinstance(content, str):
+            message = content
+        elif isinstance(content, list):
+            message_chain = content
 
         database.user.add_feeling(data['user_id'], res.feeling, res.sign)
 

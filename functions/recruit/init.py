@@ -23,7 +23,9 @@ class Init:
         message = data['text']
         user_id = data['user_id']
 
-        msg_words = posseg.lcut(message.replace('公招', ''))
+        msg_words = posseg.lcut(
+            message.replace('公招', '')
+        )
 
         tags = []
         max_rarity = 5
@@ -64,6 +66,12 @@ class Init:
                     else:
                         if lst:
                             text += '\n[%s]\n' % '，'.join(comb)
+                            if comb == ['高级资深干员']:
+                                text += '[★★★★★★] 六星 %d 选 1\n' % len(lst)
+                                continue
+                            if comb == ['资深干员']:
+                                text += '[★★★★★　] 五星 %d 选 1\n' % len(lst)
+                                continue
                             for item in lst:
                                 star = '☆' if item[2] < 5 else '★'
                                 text += '[%s] %s\n' % (insert_empty(star * item[2], 6, True), item[1])
@@ -77,13 +85,18 @@ class Init:
                 return Reply(text)
 
         database.user.set_waiting(user_id, '' if end else 'Recruit')
-        return Reply('博士，没有检测到可以排列的组合%s' % ('' if end else '，请重新尝试或者上传图片试试吧\n\n等待上传图片'))
+
+        wait = '' if end else '，请重新尝试或者发送图片试试吧\n阿米娅正在等待你发送图片...'
+
+        return Reply('博士，没有检测到可以排列的组合%s' % wait)
 
     @staticmethod
     def find_combinations(_list):
         result = []
         for i in range(3):
             for n in combinations(_list, i + 1):
-                if n:
-                    result.append(list(n))
+                n = list(n)
+                if n and not ('高级资深干员' in n and '资深干员' in n):
+                    result.append(n)
+        result.reverse()
         return result

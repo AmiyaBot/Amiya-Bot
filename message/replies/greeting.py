@@ -20,7 +20,8 @@ def greeting(data):
 
     for item in ['不能休息', '不能停', '不要休息', '不要停', '很多事情']:
         if item in message:
-            return Reply([MSG.voice(VM.find_voice_id('阿米娅_闲置'))])
+            # return Reply([MSG.voice(VM.find_voice_id('阿米娅_闲置'))])
+            pass
 
     for item in ['早上好', '早安', '中午好', '午安', '下午好', '晚上好']:
         if item in message:
@@ -58,7 +59,7 @@ def sign_in(data, sign_type=0):
         database.user.add_coupon(user_id, 50)
         return '签到成功，50张寻访凭证已经送到博士的办公室啦，请博士注意查收哦'
     if sign_type and user[6] == 1:
-        return '博士今天已经签过到了哦'
+        return '博士今天已经签到了哦'
     return False
 
 
