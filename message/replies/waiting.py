@@ -25,6 +25,7 @@ def waiting(data):
 
         # 群发公告
         if wait == 'Notice':
+            database.user.set_waiting(user_id, '')
             group_list = request.get_group_list()
             for group in group_list:
                 request.send_group_message({'group_id': group['id']}, message=message)
