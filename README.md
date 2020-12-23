@@ -5,7 +5,7 @@
 
 > 名字源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也和游戏相关。
 
-    "博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！"
+    「博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！」
 
 ## 声明
 
@@ -16,7 +16,8 @@
 
 ## 已完成的功能
 
-Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能` 来获得功能指引
+Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能` 来获得功能指引<br>
+管理员功能请阅读代码 `message/replies/admin.py` 理解使用方法<del>(懒)</del>
 
 - 信赖值与心情系统
 - 查询干员精英化材料
@@ -24,16 +25,24 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 - 查询干员语音资料
 - 查询敌方单位资料
 - 查询材料怎么获得
-- 公招查询（普通查询与图像识别）
-- 模拟抽卡
-- 合成玉计算
 - 理智恢复提醒
-- 查看明日方舟微博最新动态（自动推送与查询）
+- 合成玉计算
+- 公招查询
+    - 普通标签查询
+    - 图像识别
+- 模拟抽卡
+    - 详情模式
+    - 略缩模式
+- 查看明日方舟微博动态
+    - 查询微博
+    - 自动推送新微博
+- 管理员命令
+    - 群发公告
 
 ## 准备
 
 - 想要创建自己的 Amiya，建议拥有一定编程基础，否则以下说明将难以理解
-- <del>不了解编程的博士可以等待后续发布的`简易部署安装包`</del>
+- <del>不了解编程的博士可以等待后续发布的**简易部署安装包**</del>
 - 建议先去了解且能用任意方式成功运行 [mirai-console](https://github.com/mamoe/mirai-console)
   并加载插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
   ，关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
@@ -44,14 +53,13 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 
 本项目代码含有以下特点
 
-- 极少的注释
-- 单线流程较为复杂
+- 注释较少（会慢慢补充）
 - 通过遍历文件的类加载方法
 - 通过线程而非协程的异步实现方式
 
 ## 开始使用
 
-1. 下载[资源文件](https://github.com/vivien8261/Amiya-Bot/releases/download/v3.0.1/amiya-bot-resource.zip)
+1. 在 [releases](https://github.com/vivien8261/Amiya-Bot/releases) 里下载最新的资源文件`amiya-bot-resource.zip`
 2. 把字体文件放到目录`resource/style`下
 3. 把表情包的图片放到目录`resource/images/face`下，支持 png 和 jpg 格式
 4. 在 Mysql 里导入数据库文件`amiya.sql`
@@ -84,7 +92,12 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
     "secret_key": "XRfGzEZufj1MdNKyz***************"
   },
   "message": {
-    // 文字消息的最大长度，超出则会转为图片发送
+    // 消息指令的频率限制
+    "limit": {
+      "seconds": 10,
+      "max_count": 3
+    },
+    // 文字回复的最大字符长度，超出则会转为图片发送
     "reply_text_max_length": 100
   },
   "close_beta": {
@@ -127,11 +140,11 @@ websocket connecting success
 from modules.updateGameData import UpdateGameData
 
 if __name__ == '__main__':
-    UGD = UpdateGameData()
-    UGD.reset_all_data()
+    update = UpdateGameData()
+    update.reset_all_data()
 ```
 
-- 要使用抽卡功能，请在更新数据后，在数据表`t_pool`内维护卡池信息（`data.sql`带有初始的卡池数据）
+- 要使用抽卡功能，请在更新数据后，在数据表`t_pool`内维护卡池信息（`data.sql`带有一部分卡池数据）
 - 自然语言处理方法和公招图像识别需要调用 [百度智能云](https://cloud.baidu.com/)
   的接口，如需使用需要自行申请并配置`config.json`
 
@@ -150,9 +163,23 @@ if __name__ == '__main__':
 }
 ```
 
+- 为了防止打招呼时同时唤起了其他机器人回复，而其他机器人又触发了 Amiya 的回复导致循环发生，造成不可控的局面，请务必设置消息限制，在被其他机器人触发循环时及时制止
+
+```json5
+{
+  "message": {
+    // 此处示例为 10 秒内不能超过 3 次指令
+    "limit": {
+      "seconds": 10,
+      "max_count": 3
+    }
+  }
+}
+```
+
 ## 如何维护
 
-- Amiya 带有`自动维护`功能，会在每天凌晨4点 <del>(鹰历)</del> 执行以下操作：
+- Amiya 带有**自动更新**，会在每天凌晨4点 <del>(鹰历)</del> 执行以下操作：
     - 清除图片缓存
     - 重置签到和心情值
     - 更新干员、公招和材料数据
@@ -183,7 +210,6 @@ VALUES ('银灰色的荣耀',
 
 - [ ] 修复语音
 - [ ] 完善群事件
-- [ ] 管理员命令功能
 - [ ] WEB后台管理系统
 - [ ] <del style="color: red">与明日方舟主题不相关的功能</del>
 
