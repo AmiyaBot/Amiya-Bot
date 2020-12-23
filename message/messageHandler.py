@@ -69,6 +69,11 @@ class MessageHandler(HttpRequests, Replies):
                 'need_call': False
             },
             {
+                # 管理员指令
+                'func': self.admin,
+                'need_call': True
+            },
+            {
                 # 表情包
                 'func': self.faceImage,
                 'need_call': True
@@ -122,6 +127,33 @@ class MessageHandler(HttpRequests, Replies):
         if message or message_chain:
             self.send_message(data, message, message_chain=message_chain, at=res.at)
 
+    def message_filter(self, data):
+        if data is False:
+            return False
+
+        limit = config['message']['limit']
+        close_beta = config['close_beta']
+
+        if close_beta['enable']:
+            if str(data['group_id']) != str(close_beta['group_id']):
+                return False
+
+        for item in ['Q群管家', '小冰']:
+            if item in data['text']:
+                return False
+
+        black_user = database.user.get_black_user()
+        for item in black_user:
+            if str(item[0]) == str(data['user_id']):
+                return False
+
+        message_speed = database.message.check_message_speed_by_user(data['user_id'], limit['seconds'])
+        if message_speed and message_speed[0] >= limit['max_count']:
+            self.send_reply(data, Reply('博士说话太快了，请再慢一些吧～', at=False))
+            return False
+
+        return True
+
     @staticmethod
     def on_call(data):
         for name in amiya_name[0]:
@@ -139,30 +171,6 @@ class MessageHandler(HttpRequests, Replies):
             data['nickname'],
             data['text']
         ))
-
-    @staticmethod
-    def message_filter(data):
-        if data is False:
-            return False
-
-        if config['close_beta']['enable']:
-            if str(data['group_id']) != str(config['close_beta']['group_id']):
-                return False
-
-        for item in ['Q群管家', '小冰']:
-            if item in data['text']:
-                return False
-
-        black_user = database.user.get_black_user()
-        for item in black_user:
-            if str(item[0]) == str(data['user_id']):
-                return False
-
-        message_speed = database.message.check_message_speed_by_user(data['user_id'], 5)
-        if message_speed and message_speed[0] >= 3:
-            return False
-
-        return True
 
     @staticmethod
     def rebuild_message(message):

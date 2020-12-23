@@ -19,6 +19,10 @@
     "secret_key": ""
   },
   "message": {
+    "limit": {
+      "seconds": 10,
+      "max_count": 3
+    },
     "reply_text_max_length": 100
   },
   "close_beta": {

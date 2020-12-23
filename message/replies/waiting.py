@@ -2,6 +2,7 @@ import json
 
 from database.baseController import BaseController
 from library.baiduCloud import OpticalCharacterRecognition
+from modules.network.httpRequests import HttpRequests
 
 from functions.recruit.init import Init as Recruit
 
@@ -10,15 +11,23 @@ with open('config.json') as config:
 
 ORC = OpticalCharacterRecognition(config['baidu_cloud'])
 database = BaseController()
+request = HttpRequests()
 recruit = Recruit()
 
 
 def waiting(data):
+    message = data['text']
     user_id = data['user_id']
     user = database.user.get_user(user_id)
 
     if user and user[8]:
         wait = user[8]
+
+        # 群发公告
+        if wait == 'Notice':
+            group_list = request.get_group_list()
+            for group in group_list:
+                request.send_group_message({'group_id': group['id']}, message=message)
 
         # 公招图像识别
         if wait == 'Recruit' and 'image' in data and data['image']:
