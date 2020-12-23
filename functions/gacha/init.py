@@ -71,17 +71,17 @@ class Init:
             r = re.search(r'(\d+)', message)
             if r:
                 idx = int(r.group(1)) - 1
-                if 0 < idx < len(self.all_pools):
+                if 0 <= idx < len(self.all_pools):
                     message = self.all_pools[idx][1]
-            return self.change_pool(user_id, message, data['type'])
+            return self.change_pool(user_id, message)
 
         if word_in_sentence(message, ['查看', '列表']):
-            return self.pool_list(data['type'])
+            return self.pool_list()
 
         if word_in_sentence(message, ['抽', '寻访']):
             return Reply('博士是想抽卡吗？和阿米娅说「阿米娅抽卡 N 次」或「阿米娅 N 连抽」就可以了')
 
-    def pool_list(self, message_type):
+    def pool_list(self):
         text = '博士，这是可更换的卡池列表：\n\n'
         pools = []
         max_len = 0
@@ -109,7 +109,7 @@ class Init:
         text += '\n要切换卡池，请和阿米娅说「阿米娅切换卡池 "卡池名称" 」\n或「阿米娅切换第 N 个卡池」'
         return Reply(text)
 
-    def change_pool(self, user_id, message, message_type):
+    def change_pool(self, user_id, message):
         for item in self.all_pools:
             if chinese_to_digits(item[1]) in message:
                 database.user.set_gacha_pool(user_id, item[0])
