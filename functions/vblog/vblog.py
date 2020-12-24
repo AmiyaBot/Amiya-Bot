@@ -104,10 +104,8 @@ class VBlog:
             image_id = IM.image(name, message_type)
             pics_list.append(MSG.image(image_id))
 
-        text = '%s\n微博功能升级中，暂时无法提供微博的快捷入口' % html_text
-
         return [
-            Reply(text),
+            Reply(html_text),
             Reply(detail_url),
             Reply(pics_list, 0, at=False)
         ]
