@@ -1,6 +1,8 @@
 Pillow~=7.2.0
 requests~=2.24.0
+requests_toolbelt~=0.9.1
 ws4py~=0.5.1
 beautifulsoup4~=4.9.3
 PyMySQL~=0.10.1
 jieba~=0.42.1
+baidu-aip~=2.2.18.0

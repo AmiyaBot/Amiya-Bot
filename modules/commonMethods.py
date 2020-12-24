@@ -17,6 +17,10 @@ with open('config.json') as conf:
 class Reply:
     def __init__(self, content, feeling=2, sign=0, at=True, auto_image=True):
 
+        if len(sys.argv) > 1 and sys.argv[1] == 'Test':
+            print(content)
+            content = ''
+
         if isinstance(content, str):
             content = content.strip('\n')
 
