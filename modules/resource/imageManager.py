@@ -17,7 +17,6 @@ class ImageManager(HttpRequests):
 
     def image(self, file_name, image_type='group'):
 
-        # 用于单元测试，在不使用 mirai http 时，模块仍然有效
         if len(sys.argv) > 1 and sys.argv[1] == 'Test':
             return 'Test'
 
