@@ -52,7 +52,7 @@ class MaterialCosts:
 
         text = ''
         if len(result):
-            text += '博士，找到啦！是干员%s精英%s需要的材料清单\n\n' % (name, evolve[level])
+            text += '博士，这是干员%s精英%s需要的材料清单\n\n' % (name, evolve[level])
             for item in result:
                 text += '%s X %s\n' % (item[0], item[1])
         else:
@@ -67,29 +67,18 @@ class MaterialCosts:
         text = ''
         if skill and skill_index == 0:
             skill_info = database.operator.get_operator_skill_by_name(skill)
-            if len(skill_info) > 1:
+            if len(skill_info):
                 if name == '':
                     text += '博士，目前存在 %d 个干员拥有【%s】这个技能哦，请用比如「干员一技能专三」这种方式和阿米娅描述吧' % (len(skill_info), skill)
                     return text
                 for item in skill_info:
                     if item[4] == name:
                         skill_index = item[2]
-                if skill_index == 0:
-                    text += '博士，干员%s没有%s这个技能哦' % (name, skill)
-                    return text
-            else:
-                skill_index = skill_info[0][2]
-                if name == '':
-                    name = skill_info[0][4]
-                else:
-                    if name != skill_info[0][4]:
-                        text += '博士，干员%s没有%s这个技能哦' % (name, skill)
-                        return text
 
         result = database.operator.find_operator_skill_mastery_costs(name, level, skill_index)
 
         if len(result):
-            text += '博士，找到啦！是干员%s技能专精%s需要的材料清单\n\n' % (name, mastery[level])
+            text += '博士，这是干员%s技能专精%s需要的材料清单\n\n' % (name, mastery[level])
             skills = {}
             for item in result:
                 if item[0] not in skills:
