@@ -9,7 +9,7 @@ from modules.commonMethods import Reply, word_in_sentence
 from .materialsCosts import MaterialCosts
 
 with open('resource/words/voices.json', encoding='utf-8') as voices:
-    voices = json.load(voices)
+    voices = json.load(voices)['voices']
     keywords = []
     for key in voices:
         keywords.append('%s 100 n' % key)
