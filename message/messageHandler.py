@@ -176,6 +176,7 @@ class MessageHandler(HttpRequests, Replies):
     def rebuild_message(message):
         data = {
             'text': '',
+            'text_digits': '',
             'user_id': message['sender']['id'],
             'is_at': False
         }
@@ -194,7 +195,9 @@ class MessageHandler(HttpRequests, Replies):
             if chain['type'] == 'At' and chain['target'] == config['self_id']:
                 data['is_at'] = True
             if chain['type'] == 'Plain':
-                data['text'] = chinese_to_digits(chain['text'].strip())
+                text = chain['text'].strip()
+                data['text'] = text
+                data['text_digits'] = chinese_to_digits(text)
             if chain['type'] == 'Image':
                 data['image'] = chain['url'].strip()
 

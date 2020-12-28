@@ -1,7 +1,6 @@
 import re
 
 from database.baseController import BaseController
-from library.numberTranslate import chinese_to_digits
 from modules.commonMethods import Reply, word_in_sentence
 
 from .gacha import GaCha
@@ -29,7 +28,7 @@ class Init:
 
     def action(self, data):
 
-        message = data['text']
+        message = data['text_digits']
         user_id = data['user_id']
 
         gacha = GaCha(user_id)
@@ -111,7 +110,7 @@ class Init:
 
     def change_pool(self, user_id, message):
         for item in self.all_pools:
-            if chinese_to_digits(item[1]) in message:
+            if item[1] in message:
                 database.user.set_gacha_pool(user_id, item[0])
                 text = ['博士的卡池已切换为【%s】\n' % item[1]]
                 if item[2]:

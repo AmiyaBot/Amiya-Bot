@@ -5,7 +5,7 @@ import requests
 from urllib import parse
 from jieba import posseg
 from bs4 import BeautifulSoup
-from modules.commonMethods import Reply, word_in_sentence
+from modules.commonMethods import Reply, word_in_sentence, find_same_string
 from .materialsCosts import MaterialCosts
 
 with open('resource/words/voices.json', encoding='utf-8') as voices:
@@ -24,7 +24,9 @@ class Init:
         self.keyword = voices + material.keywords
 
     def action(self, data):
-        msg_words = posseg.lcut(data['text'])
+
+        message = data['text']
+        msg_words = posseg.lcut(message)
 
         name = ''
         skill = ''
@@ -37,8 +39,9 @@ class Init:
                 level = material.level_list[item.word]
 
         for item in material.skill_list:
-            if item in data['text']:
-                skill = item
+            same = find_same_string(message, item)
+            if same and len(skill) <= len(same):
+                skill = same
 
         if name == '' and skill == '':
             return Reply('博士，想查询哪位干员或技能的资料呢？请再说一次吧')
@@ -48,7 +51,7 @@ class Init:
             else:
                 skill_index = 0
                 for _key in material.skill_index_list:
-                    if _key in data['text']:
+                    if _key in message:
                         skill_index = material.skill_index_list[_key]
 
                 level -= 2
@@ -59,10 +62,10 @@ class Init:
 
             return Reply(result)
 
-        if word_in_sentence(data['text'], ['精英', '专精']):
+        if word_in_sentence(message, ['精英', '专精']):
             return Reply('博士，要告诉阿米娅精英或专精等级哦')
 
-        if word_in_sentence(data['text'], ['语音']):
+        if word_in_sentence(message, ['语音']):
             for item in msg_words:
                 if item.word in voices:
                     return self.find_voice(name, item.word, data['type'])

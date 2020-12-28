@@ -36,7 +36,7 @@ class Material:
         if source or made:
             text += '博士，材料%s可以' % name
             if source:
-                text += '在以下地点通关获得...'
+                text += '在以下地点通关获得：'
                 for item in source:
                     if item[3] == 0:
                         text += '\n周%s 【物资筹备】' % item[2]
@@ -44,7 +44,7 @@ class Material:
                         text += '\n%s 【%s】' % (item[2], rate[int(item[3])])
                 text += '\n\n' if made else ''
             if made:
-                text += '通过以下配方合成...'
+                text += '通过以下配方合成：'
                 for item in made:
                     text += '\n%s X %d' % (item[0], item[1])
         else:

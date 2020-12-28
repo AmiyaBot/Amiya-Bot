@@ -13,7 +13,10 @@ class Init:
         self.keyword = ['理智']
 
     def action(self, data):
-        r = re.search(re.compile(r'理智(\d+)满(\d+)'), data['text'])
+
+        message = data['text_digits']
+
+        r = re.search(re.compile(r'理智(\d+)满(\d+)'), message)
         if r:
             num1 = int(r.group(1))
             num2 = int(r.group(2))
@@ -40,7 +43,7 @@ class Init:
             '理智.*多少'
         ]
         for item in r_list:
-            r = re.search(re.compile(item), data['text'])
+            r = re.search(re.compile(item), message)
             if r:
                 info = database.remind.check_intellect_by_user(data['user_id'])
                 if info:

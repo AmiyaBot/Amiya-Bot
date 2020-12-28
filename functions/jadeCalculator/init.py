@@ -22,8 +22,11 @@ class Init:
         self.keyword = ['玉']
 
     def action(self, data):
+
+        message = data['text_digits']
+
         for item in re_list:
-            r = re.search(re.compile(item), data['text'])
+            r = re.search(re.compile(item), message)
             if r:
                 length = item.count('\\d+')
                 if length == 2:

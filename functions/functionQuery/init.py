@@ -10,7 +10,7 @@ class Init:
 
     def action(self, data):
 
-        message = data['text']
+        message = data['text_digits']
 
         function_list = [
             {

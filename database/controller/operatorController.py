@@ -97,7 +97,8 @@ class Operator:
         cursor = self.db.cursor()
 
         sql = 'SELECT s.*, o.operator_name FROM t_operator_skill s ' \
-              'LEFT JOIN t_operator o ON o.operator_id = s.operator_id WHERE s.skill_name = "%s"' % skill_name
+              'LEFT JOIN t_operator o ON o.operator_id = s.operator_id ' \
+              'WHERE s.skill_name LIKE "%{name}%"'.format(name=skill_name)
 
         self.db.ping(reconnect=True)
         cursor.execute(sql)

@@ -14,7 +14,9 @@ class Init:
 
     def action(self, data):
 
-        r = re.search(re.compile(r'第(\d+)条微博'), data['text'])
+        message = data['text_digits']
+
+        r = re.search(re.compile(r'第(\d+)条微博'), message)
         if r:
             index = abs(int(r.group(1)))
             result = blog.get_new_blog(message_type=data['type'], index=index - 1)

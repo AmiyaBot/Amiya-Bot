@@ -56,7 +56,7 @@ class MaterialCosts:
             for item in result:
                 text += '%s X %s\n' % (item[0], item[1])
         else:
-            text += '博士，没有找到相关的档案哦~'
+            text += '博士，暂时没有找到相关的档案哦~'
 
         return text
 
@@ -65,12 +65,11 @@ class MaterialCosts:
         mastery = {1: '一', 2: '二', 3: '三'}
 
         text = ''
-
         if skill and skill_index == 0:
             skill_info = database.operator.get_operator_skill_by_name(skill)
             if len(skill_info) > 1:
                 if name == '':
-                    text += '博士，目前有%d个干员拥有%s这个技能哦，请选出其中一位和阿米娅说吧' % (len(skill_info), skill)
+                    text += '博士，目前存在 %d 个干员拥有【%s】这个技能哦，请用比如「干员一技能专三」这种方式和阿米娅描述吧' % (len(skill_info), skill)
                     return text
                 for item in skill_info:
                     if item[4] == name:
@@ -101,6 +100,6 @@ class MaterialCosts:
                 for item in skills[name]:
                     text += '---- %s X %s\n' % (item[2], item[3])
         else:
-            text += '博士，没有找到相关的档案哦~'
+            text += '博士，暂时没有找到相关的档案哦~'
 
         return text
