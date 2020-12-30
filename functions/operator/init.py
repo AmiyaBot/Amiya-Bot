@@ -66,12 +66,20 @@ class Init:
             return Reply('博士，要告诉阿米娅精英或专精等级哦')
 
         if word_in_sentence(message, ['语音']):
-            for item in msg_words:
-                if item.word in voices:
-                    return self.find_voice(name, item.word, data['type'])
+            key_word = ''
+            selected = ''
+            for item in voices:
+                same = find_same_string(message, item)
+                if same and len(key_word) <= len(same):
+                    key_word = same
+                    selected = item
+            if key_word:
+                return self.find_voice(name, selected)
+            else:
+                return Reply('博士，可以描述得更详细一点吗 >.<')
 
     @staticmethod
-    def find_voice(operator, voice, message_type):
+    def find_voice(operator, voice):
         url = 'http://prts.wiki/w/%s/%s' % (parse.quote(operator), parse.quote('语音记录'))
 
         response = requests.get(url)

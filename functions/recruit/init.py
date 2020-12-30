@@ -31,14 +31,15 @@ class Init:
         max_rarity = 5
         for item in msg_words:
             if item.word in self.tags:
-                if item.word in ['资深', '资深干员']:
+                if item.word in ['资深', '资深干员'] and '资深干员' not in tags:
                     tags.append('资深干员')
                     continue
-                if item.word in ['高资', '高级资深', '高级资深干员']:
+                if item.word in ['高资', '高级资深', '高级资深干员'] and '高级资深干员' not in tags:
                     tags.append('高级资深干员')
                     max_rarity = 6
                     continue
-                tags.append(item.word)
+                if item.word not in tags:
+                    tags.append(item.word)
 
         if tags:
             result = database.operator.find_operator_tags_by_tags(tags, max_rarity=max_rarity)
