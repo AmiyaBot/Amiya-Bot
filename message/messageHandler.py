@@ -1,5 +1,6 @@
 import json
 import time
+import copy
 import random
 
 from functions.functionsIndex import FunctionsIndex
@@ -34,7 +35,8 @@ class MessageHandler(HttpRequests, Replies):
         # 过滤未知的消息
         if 'type' not in message:
             try:
-                with open('remind/unknown.txt', mode='w+') as unknown:
+                date = time.strftime('%Y%m%d%H%M%S', time.localtime())
+                with open('remind/unknown_%s.txt' % date, mode='w+') as unknown:
                     unknown.write(json.dumps(message, ensure_ascii=False))
             except Exception as e:
                 print('Remind', e)
@@ -52,8 +54,10 @@ class MessageHandler(HttpRequests, Replies):
         if self.message_filter(data) is False:
             return False
 
+        on_call = self.on_call(data['text'], data['is_at'])
+
         # 输出记录
-        if self.on_call(data):
+        if on_call:
             self.print_log(data)
 
         # 处理函数列表（有先后顺序）
@@ -86,7 +90,8 @@ class MessageHandler(HttpRequests, Replies):
             {
                 # 使用功能
                 'func': function.action,
-                'need_call': True
+                'need_call': True,
+                'without_call': True
             },
             {
                 # 自然语言处理
@@ -97,16 +102,26 @@ class MessageHandler(HttpRequests, Replies):
 
         # 遍历处理函数直至获得回复为止
         for action in reply_func:
-            if action['need_call'] and self.on_call(data) is False:
+            if action['need_call'] and on_call is False:
                 continue
 
-            result = action['func'](data)
+            self_data = copy.deepcopy(data)
+
+            if 'without_call' in action and action['without_call']:
+                # 去掉称呼
+                for name in amiya_name[0]:
+                    if self_data['text'].find(name) == 0:
+                        self_data['text'] = self_data['text'].replace(name, '', 1)
+                        self_data['text_digits'] = self_data['text_digits'].replace(name, '', 1)
+                        break
+
+            result = action['func'](self_data)
             if result:
                 if isinstance(result, list):
                     for item in result:
-                        self.send_reply(data, item)
+                        self.send_reply(self_data, item)
                 else:
-                    self.send_reply(data, result)
+                    self.send_reply(self_data, result)
                 break
 
     def send_reply(self, data, res):
@@ -155,11 +170,11 @@ class MessageHandler(HttpRequests, Replies):
         return True
 
     @staticmethod
-    def on_call(data):
+    def on_call(text, at):
         for name in amiya_name[0]:
-            if data['text'].find(name) == 0:
+            if text.find(name) == 0:
                 return True
-        return data['is_at']
+        return at
 
     @staticmethod
     def print_log(data):

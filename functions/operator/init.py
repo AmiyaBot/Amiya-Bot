@@ -5,7 +5,7 @@ import requests
 from urllib import parse
 from jieba import posseg
 from bs4 import BeautifulSoup
-from modules.commonMethods import Reply, word_in_sentence, find_same_string
+from modules.commonMethods import Reply, word_in_sentence, find_similar_string
 from .materialsCosts import MaterialCosts
 
 with open('resource/words/voices.json', encoding='utf-8') as voices:
@@ -26,22 +26,29 @@ class Init:
     def action(self, data):
 
         message = data['text']
-        msg_words = posseg.lcut(message)
+        words = posseg.lcut(message)
 
         name = ''
-        skill = ''
         level = 0
+        surplus = ''
+        skill_index = 0
 
-        for item in msg_words:
-            if (name == '' or name == '阿米娅') and item.word in material.operator_list:
+        for item in words:
+            # 获取干员名
+            if name == '' and item.word in material.operator_list:
                 name = item.word
+                continue
+            # 获取专精或精英等级
             if level == 0 and item.word in material.level_list:
                 level = material.level_list[item.word]
+                continue
+            # 获取技能序号
+            if skill_index == 0 and item.word in material.skill_index_list:
+                skill_index = material.skill_index_list[item.word]
+                continue
+            surplus += item.word
 
-        for item in material.skill_list:
-            same = find_same_string(message, item)
-            if same and len(skill) <= len(same):
-                skill = same
+        skill = find_similar_string(surplus, material.skill_list)
 
         if name == '' and skill == '':
             return Reply('博士，想查询哪位干员或技能的资料呢？请再说一次吧')
@@ -49,11 +56,6 @@ class Init:
             if level <= 2:
                 result = material.check_evolve_costs(name, level)
             else:
-                skill_index = 0
-                for _key in material.skill_index_list:
-                    if _key in message:
-                        skill_index = material.skill_index_list[_key]
-
                 level -= 2
                 result = material.check_mastery_costs(name, skill, level, skill_index=skill_index)
 
@@ -66,14 +68,8 @@ class Init:
             return Reply('博士，要告诉阿米娅精英或专精等级哦')
 
         if word_in_sentence(message, ['语音']):
-            key_word = ''
-            selected = ''
-            for item in voices:
-                same = find_same_string(message, item)
-                if same and len(key_word) <= len(same):
-                    key_word = same
-                    selected = item
-            if key_word:
+            selected = find_similar_string(data['text_digits'], voices)
+            if selected:
                 return self.find_voice(name, selected)
             else:
                 return Reply('博士，可以描述得更详细一点吗 >.<')
@@ -99,3 +95,7 @@ class Init:
                     text = '博士，为您找到干员%s%s的语音档案：\n\n%s\n\n档案资料鸣谢：%s' % (operator, voice, text, source)
                     return Reply(text)
         return Reply('博士，没有找到干员%s%s相关的语音档案哦')
+
+
+def sequence_equal_rate(str1, str2):
+    return difflib.SequenceMatcher(None, str1, str2).quick_ratio()
