@@ -14,6 +14,9 @@ class Init:
         self.keyword = material.material_list
 
     def action(self, data):
+
+        return Reply('博士，材料查询功能升级中，暂时无法使用哦')
+
         msg_words = posseg.lcut(data['text'])
 
         name = ''
