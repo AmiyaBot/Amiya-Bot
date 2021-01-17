@@ -6,13 +6,13 @@ import threading
 from database.baseController import BaseController
 from library.imageCreator import clean_temp
 from modules.commonMethods import restart
-from modules.updateGameData import UpdateGameData
+from modules.gameData import GameData
 from modules.network.httpRequests import HttpRequests
 
 from functions.vblog.vblog import VBlog
 
 database = BaseController()
-update = UpdateGameData()
+gameData = GameData()
 blog = VBlog()
 
 with open('config.json') as config:
@@ -63,7 +63,7 @@ class AutomaticAction(HttpRequests):
                 database.user.reset_sign()
 
                 # 更新干员和材料数据
-                update.reset_all_data()
+                gameData.update()
 
                 # 执行重启
                 restart()

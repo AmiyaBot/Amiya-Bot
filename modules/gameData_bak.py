@@ -5,6 +5,10 @@ import requests
 from bs4 import BeautifulSoup
 from database.baseController import BaseController
 
+"""
+--- 由于工具箱网站更新速度缓慢，本代码已停止使用 ---
+"""
+
 database = BaseController()
 
 classes = {

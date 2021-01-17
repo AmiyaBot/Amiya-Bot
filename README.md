@@ -67,44 +67,44 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 
 ```json5
 {
-  // 机器人QQ号
-  "self_id": 1515361402,
-  // 管理员QQ号
-  "admin_id": 826197021,
-  "server": {
-    // mirai-api-http 服务配置
-    "server_ip": "127.0.0.1",
-    "server_port": 8060
-  },
-  "database": {
-    // 数据库配置
-    "host": "localhost",
-    "port": 3306,
-    "user": "root",
-    "password": "amiya520",
-    "db": "amiya"
-  },
-  "baidu_cloud": {
-    // 百度智能云配置
-    "enable": true,
-    "app_id": "2152****",
-    "api_key": "MM5pPVBBj***************",
-    "secret_key": "XRfGzEZufj1MdNKyz***************"
-  },
-  "message": {
-    // 消息指令的频率限制
-    "limit": {
-      "seconds": 10,
-      "max_count": 3
+    // 机器人QQ号
+    "self_id": 1515361402,
+    // 管理员QQ号
+    "admin_id": 826197021,
+    "server": {
+        // mirai-api-http 服务配置
+        "server_ip": "127.0.0.1",
+        "server_port": 8060
     },
-    // 文字回复的最大字符长度，超出则会转为图片发送
-    "reply_text_max_length": 100
-  },
-  "close_beta": {
-    // 是否启用封闭测试
-    "enable": false,
-    "group_id": 852191455
-  }
+    "database": {
+        // 数据库配置
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "amiya520",
+        "db": "amiya"
+    },
+    "baidu_cloud": {
+        // 百度智能云配置
+        "enable": true,
+        "app_id": "2152****",
+        "api_key": "MM5pPVBBj***************",
+        "secret_key": "XRfGzEZufj1MdNKyz***************"
+    },
+    "message": {
+        // 消息指令的频率限制
+        "limit": {
+            "seconds": 10,
+            "max_count": 3
+        },
+        // 文字回复的最大字符长度，超出则会转为图片发送
+        "reply_text_max_length": 100
+    },
+    "close_beta": {
+        // 是否启用封闭测试
+        "enable": false,
+        "group_id": 852191455
+    }
 }
 ```
 
@@ -134,14 +134,13 @@ websocket connecting success
 
 - **禁言会导致 Amiya 退群！！！**
 - 要保证一些功能的使用，请导入资源文件中的`data.sql`（建议手动更新一次以保证使用最新的数据）
-- 手动更新数据，最简单的方法，在根目录创建任意 python 脚本并运行以下代码
+- 手动更新数据，最简单的方法，在根目录创建任意 python 脚本并运行以下代码，首次更新视网速情况可能耗时很久
 
 ```python
-from modules.updateGameData import UpdateGameData
+from modules.gameData import GameData
 
 if __name__ == '__main__':
-    update = UpdateGameData()
-    update.reset_all_data()
+    GameData().update()
 ```
 
 - 要使用抽卡功能，请在更新数据后，在数据表`t_pool`内维护卡池信息（`data.sql`带有一部分卡池数据）
@@ -150,16 +149,16 @@ if __name__ == '__main__':
 
 ```json5
 {
-  "baidu_cloud": {
-    // 是否启用百度智能云接口
-    "enable": false,
-    // APP ID
-    "app_id": "",
-    // API KEY
-    "api_key": "",
-    // SECRET KEY
-    "secret_key": ""
-  }
+    "baidu_cloud": {
+        // 是否启用百度智能云接口
+        "enable": false,
+        // APP ID
+        "app_id": "",
+        // API KEY
+        "api_key": "",
+        // SECRET KEY
+        "secret_key": ""
+    }
 }
 ```
 
@@ -167,13 +166,13 @@ if __name__ == '__main__':
 
 ```json5
 {
-  "message": {
-    // 此处示例为 10 秒内不能超过 3 次指令
-    "limit": {
-      "seconds": 10,
-      "max_count": 3
+    "message": {
+        // 此处示例为 10 秒内不能超过 3 次指令
+        "limit": {
+            "seconds": 10,
+            "max_count": 3
+        }
     }
-  }
 }
 ```
 
@@ -182,7 +181,7 @@ if __name__ == '__main__':
 - Amiya 带有**自动更新**功能，会在每天凌晨4点 <del>(鹰历)</del> 执行以下操作：
     - 清除图片缓存
     - 重置签到和心情值
-    - 更新干员、公招和材料数据
+    - 更新干员数据
     - 重启主程序
 - 干员语音资料和敌人数据为即时从 wiki 获取，不需要维护
 - 卡池目前需要手动到数据表`t_pool`维护，维护好的卡池可以通过 Amiya 切换卡池的功能进行更换
@@ -217,6 +216,7 @@ VALUES ('银灰色的荣耀',
 
 部分功能的信息需要从各大渠道获取，特鸣谢以下网站
 
+- [KokodaYo](https://www.kokodayo.fun/)
 - [明日方舟官方微博](https://m.weibo.cn/u/6279793937)
-- [明日方舟工具箱](https://www.bigfun.cn/tools/aktools/)
-- [PRTS - 玩家自由构筑的明日方舟中文Wiki](http://prts.wiki/) 
+- [PRTS - 玩家自由构筑的明日方舟中文Wiki](http://prts.wiki/)
+- [明日方舟工具箱](https://www.bigfun.cn/tools/aktools/) (2021.01.17起不再从该网站获取)

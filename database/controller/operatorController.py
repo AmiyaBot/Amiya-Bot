@@ -13,6 +13,17 @@ class Operator:
 
         return res
 
+    def get_operator_id(self, operator_no):
+        cursor = self.db.cursor()
+
+        sql = 'SELECT * FROM t_operator WHERE operator_no = "%s"' % operator_no
+
+        self.db.ping(reconnect=True)
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        return res[0][0]
+
     def get_gacha_operator(self, limit=None):
         cursor = self.db.cursor()
 
@@ -30,9 +41,13 @@ class Operator:
     def add_operator(self, operators):
         cursor = self.db.cursor()
 
+        fields = [
+            'operator_no', 'operator_name', 'operator_rarity', 'operator_class', 'available', 'in_limit'
+        ]
         values = []
         for item in operators:
             value = [
+                '"%s"' % item['operator_no'],
                 '"%s"' % item['operator_name'],
                 str(item['operator_rarity']),
                 str(item['operator_class']),
@@ -42,8 +57,7 @@ class Operator:
             value = ', '.join(value)
             values.append('(%s)' % value)
 
-        sql = 'INSERT INTO t_operator ( operator_name, operator_rarity, operator_class, available, in_limit ) ' \
-              'VALUES %s' % ', '.join(values)
+        sql = 'INSERT INTO t_operator ( %s ) VALUES %s' % (', '.join(fields), ', '.join(values))
 
         self.db.ping(reconnect=True)
         cursor.execute(sql)
@@ -92,6 +106,17 @@ class Operator:
         res = cursor.fetchall()
 
         return res
+
+    def get_skill_id(self, skill_name):
+        cursor = self.db.cursor()
+
+        sql = 'SELECT * FROM t_operator_skill WHERE skill_name = "%s"' % skill_name
+
+        self.db.ping(reconnect=True)
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        return res[0][0]
 
     def get_operator_skill_by_name(self, skill_name):
         cursor = self.db.cursor()
