@@ -18,11 +18,12 @@ class GaCha:
 
         class_group = {}
         for item in operators:
-            if item[2] not in class_group:
-                class_group[item[2]] = {}
-            class_group[item[2]][item[1]] = {
+            rarity = item[3]
+            if rarity not in class_group:
+                class_group[rarity] = {}
+            class_group[rarity][item[1]] = {
                 'name': item[1],
-                'rarity': item[2]
+                'rarity': rarity
             }
 
         self.user_id = user_id
