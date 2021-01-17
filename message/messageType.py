@@ -10,6 +10,13 @@ class MessageType:
         }
 
     @staticmethod
+    def at_all():
+        return {
+            'type': 'AtAll',
+            'target': 0
+        }
+
+    @staticmethod
     def text(text):
         return {
             'type': 'Plain',

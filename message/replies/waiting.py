@@ -28,7 +28,8 @@ def waiting(data):
             database.user.set_waiting(user_id, '')
             group_list = request.get_group_list()
             for group in group_list:
-                request.send_group_message({'group_id': group['id']}, message=message)
+                at_all = 'all' if group['permission'] == 'ADMINISTRATOR' else False
+                request.send_group_message({'group_id': group['id']}, message=message, at=at_all)
 
         # 公招图像识别
         if wait == 'Recruit' and 'image' in data and data['image']:

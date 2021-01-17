@@ -109,7 +109,7 @@ class HttpRequests:
             chain = [MSG.text(message)]
         if at:
             chain.insert(0, MSG.text('\n'))
-            chain.insert(0, MSG.at(data['user_id']))
+            chain.insert(0, MSG.at_all() if at == 'all' else MSG.at(data['user_id']))
 
         self.post('sendGroupMessage', {
             'sessionKey': session,

@@ -2,8 +2,8 @@ import os
 import re
 import sys
 import json
+import difflib
 
-from collections import Counter
 from message.messageType import MessageType
 from library.imageCreator import create_image
 from modules.resource.imageManager import ImageManager
@@ -67,9 +67,18 @@ def insert_empty(text, max_num, half=False):
     return '%s%s' % (text, ('　' if half else ' ') * (max_num - len(str(text))))
 
 
-def find_same_string(s1: str, s2: str):
-    counter = Counter(s1) & Counter(s2)
-    return ''.join(counter.keys())
+def find_similar_string(text: str, text_list: list, hard=0.4):
+    r = 0
+    t = ''
+    for item in text_list:
+        rate = float(string_equal_rate(text, item))
+        if rate > r and rate >= hard:
+            t = item
+    return t
+
+
+def string_equal_rate(str1: str, str2: str):
+    return difflib.SequenceMatcher(None, str1, str2).quick_ratio()
 
 
 def restart():

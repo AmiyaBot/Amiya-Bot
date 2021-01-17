@@ -68,12 +68,13 @@ class MaterialCosts:
         if skill and skill_index == 0:
             skill_info = database.operator.get_operator_skill_by_name(skill)
             if len(skill_info):
-                if name == '':
+                if name == '' and len(skill_info) > 1:
                     text += '博士，目前存在 %d 个干员拥有【%s】这个技能哦，请用比如「干员一技能专三」这种方式和阿米娅描述吧' % (len(skill_info), skill)
                     return text
-                for item in skill_info:
-                    if item[4] == name:
-                        skill_index = item[2]
+                item = skill_info[0]
+                skill_index = item[2]
+                if name == '':
+                    name = item[4]
 
         result = database.operator.find_operator_skill_mastery_costs(name, level, skill_index)
 
