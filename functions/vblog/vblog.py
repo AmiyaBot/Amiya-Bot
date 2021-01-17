@@ -1,5 +1,6 @@
 import os
 import re
+import time
 import requests
 
 from message.messageType import MessageType
@@ -53,10 +54,14 @@ class VBlog:
         text = '博士，这是【明日方舟Arknights】最近的微博列表。\n'
 
         for index, item in enumerate(cards):
-            content = item['mblog']['raw_text'][:30] \
-                .replace('\n', ' ') \
-                .replace('#明日方舟#', '').strip()
-            text += '\n【%d】【%s】%s…' % (index + 1, item['mblog']['created_at'], content)
+            content = re.compile(r'<[^>]+>', re.S).sub('', item['mblog']['text'])
+            content = content[:30].replace('\n', ' ').replace('#明日方舟#', '').strip()
+
+            date = item['mblog']['created_at']
+            date = time.strptime(date, '%a %b %d %H:%M:%S +0800 %Y')
+            date = time.strftime('%m-%d %H:%M', date)
+
+            text += '\n【%d】【%s】%s…' % (index + 1, date, content)
 
         text += '\n\n请和我说「阿米娅查看第 N 条微博」来获取详情吧'
 
@@ -73,7 +78,6 @@ class VBlog:
         target_blog = cards[index]
         blog = target_blog['mblog']
         detail_url = target_blog['scheme']
-        raw_text = target_blog['mblog']['raw_text'].replace('\n', ' ')
         item_id = target_blog['itemid']
 
         if only_id:
