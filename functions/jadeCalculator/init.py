@@ -30,7 +30,7 @@ class Init:
             if r:
                 length = item.count('\\d+')
                 if length == 2:
-                    date = ['2020', r.group(1), r.group(2)]
+                    date = ['2021', r.group(1), r.group(2)]
                 else:
                     date = [r.group(1), r.group(2), r.group(3)]
                 date = '-'.join(date)

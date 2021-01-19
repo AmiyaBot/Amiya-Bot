@@ -110,7 +110,7 @@ class Operator:
     def get_skill_id(self, skill_name):
         cursor = self.db.cursor()
 
-        sql = 'SELECT * FROM t_operator_skill WHERE skill_name = "%s"' % skill_name
+        sql = 'SELECT * FROM t_operator_skill WHERE skill_no = "%s"' % skill_name
 
         self.db.ping(reconnect=True)
         cursor.execute(sql)
@@ -139,12 +139,13 @@ class Operator:
             value = [
                 str(item['operator_id']),
                 str(item['skill_index']),
-                '"%s"' % item['skill_name']
+                '"%s"' % item['skill_name'],
+                '"%s"' % item['skill_no']
             ]
             value = ', '.join(value)
             values.append('(%s)' % value)
 
-        sql = 'INSERT INTO t_operator_skill ( operator_id, skill_index, skill_name ) ' \
+        sql = 'INSERT INTO t_operator_skill ( operator_id, skill_index, skill_name, skill_no ) ' \
               'VALUES %s' % ', '.join(values)
 
         self.db.ping(reconnect=True)

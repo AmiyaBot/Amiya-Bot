@@ -168,17 +168,18 @@ class GameData:
                 detail = self.get_json_data('skills', item['skillId'])
                 if detail:
                     name = detail['levels'][0]['name']
+                    sk_no = item['skillId']
 
-                    for cond in item['levelUpCostCond']:
+                    for lev, cond in enumerate(item['levelUpCostCond']):
                         if bool(cond['levelUpCost']) is False:
                             continue
 
-                        if name not in skills_cost:
-                            skills_cost[name] = []
+                        if sk_no not in skills_cost:
+                            skills_cost[sk_no] = []
 
                         for idx, cost in enumerate(cond['levelUpCost']):
-                            skills_cost[name].append({
-                                'mastery_level': idx + 1,
+                            skills_cost[sk_no].append({
+                                'mastery_level': lev + 1,
                                 'use_material_id': cost['id'],
                                 'use_number': cost['count']
                             })
@@ -187,6 +188,7 @@ class GameData:
 
                     skills.append({
                         'operator_id': operator_id,
+                        'skill_no': sk_no,
                         'skill_index': index + 1,
                         'skill_name': name
                     })
@@ -196,8 +198,8 @@ class GameData:
 
             # todo 保存干员技能专精信息
             skills_cost_list = []
-            for name, sk_list in skills_cost.items():
-                skill_id = database.operator.get_skill_id(name)
+            for sk_no, sk_list in skills_cost.items():
+                skill_id = database.operator.get_skill_id(sk_no)
                 for item in sk_list:
                     item['skill_id'] = skill_id
                     skills_cost_list.append(item)
@@ -234,11 +236,11 @@ class GameData:
 
         not_exist = 0
         exist_operators = [item[2] for item in database.operator.get_all_operator()]
-        for item in data:
+        for index, item in enumerate(data):
             operator = Operator(item)
             if operator.id not in exist_operators:
                 record = millisecond()
-                print('检测到未保存的干员【%s】，开始抓取数据...' % operator.name)
+                print('[%d/%d] 检测到未保存的干员【%s】，开始抓取数据...' % (index + 1, len(data), operator.name))
 
                 self.save_operator_data(item)
                 not_exist += 1
