@@ -28,8 +28,9 @@ class Init:
 
     def action(self, data):
 
-        message = data['text_digits']
         user_id = data['user_id']
+        message = data['text_digits']
+        message_ori = data['text']
 
         gacha = GaCha(user_id)
 
@@ -66,13 +67,13 @@ class Init:
                 text += '\n博士，快去获得您想要的干员吧 ☆_☆'
             return Reply(text)
 
-        if word_in_sentence(message, ['切换', '更换']):
-            r = re.search(r'(\d+)', message)
+        if word_in_sentence(message_ori, ['切换', '更换']):
+            r = re.search(r'(\d+)', message_ori)
             if r:
                 idx = int(r.group(1)) - 1
                 if 0 <= idx < len(self.all_pools):
-                    message = self.all_pools[idx][1]
-            return self.change_pool(user_id, message)
+                    message_ori = self.all_pools[idx][1]
+            return self.change_pool(user_id, message_ori)
 
         if word_in_sentence(message, ['查看', '列表']):
             return self.pool_list()
