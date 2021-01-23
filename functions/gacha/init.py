@@ -1,7 +1,7 @@
 import re
 
 from database.baseController import BaseController
-from modules.commonMethods import Reply, word_in_sentence
+from modules.commonMethods import Reply, word_in_sentence, get_image_message
 
 from .gacha import GaCha
 
@@ -65,7 +65,7 @@ class Init:
             text = '博士的寻访凭证还剩余 %d 张~' % coupon
             if coupon:
                 text += '\n博士，快去获得您想要的干员吧 ☆_☆'
-            return Reply(text)
+            return Reply([get_image_message(text)])
 
         if word_in_sentence(message_ori, ['切换', '更换']):
             r = re.search(r'(\d+)', message_ori)
