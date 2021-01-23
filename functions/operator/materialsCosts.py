@@ -92,7 +92,7 @@ class MaterialCosts:
                 item = skill_info[0]
                 skill_index = item[2]
                 if name == '':
-                    name = item[4]
+                    name = item[5]
 
         result = database.operator.find_operator_skill_mastery_costs(name, level, skill_index)
 
