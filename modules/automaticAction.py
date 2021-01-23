@@ -111,9 +111,9 @@ class AutomaticAction(HttpRequests):
                     at_all = 'all' if group['permission'] == 'ADMINISTRATOR' and index == 0 else False
                     if item.content:
                         if type(item.content) is list:
-                            self.send_group_message(data, message_chain=item.content, at=at_all)
+                            self.send_group_message(data, message_chain=item.content, at=False)
                         else:
-                            self.send_group_message(data, message=item.content, at=at_all)
+                            self.send_group_message(data, message=item.content, at=False)
                 total += 1
             complete = '微博推送完毕。成功 %d / %d，耗时：%ds' % (total, len(group_list), time.time() - time_record)
             self.send_private_message({'user_id': admin_id}, complete)
