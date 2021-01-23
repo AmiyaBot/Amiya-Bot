@@ -12,7 +12,8 @@ class Init:
         self.function_id = 'vblog'
         self.keyword = ['新公告', '新动态', '新消息', '微博']
 
-    def action(self, data):
+    @staticmethod
+    def action(data):
 
         message = data['text_digits']
 

@@ -13,9 +13,12 @@ class Init:
         self.function_id = 'checkMaterial'
         self.keyword = material.material_list
 
-    def action(self, data):
-
+    @staticmethod
+    def action(data):
         return Reply('博士，材料查询功能升级中，暂时无法使用哦')
+
+    @staticmethod
+    def __action(data):
 
         msg_words = posseg.lcut(data['text'])
 

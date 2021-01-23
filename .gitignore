@@ -1,15 +1,18 @@
 /.idea/
 /venv/
 /remind/
-/resource/images/face/
-/resource/message/
 /resource/blog/
+/resource/images/
+/resource/message/
 /resource/*.txt
 
 .DS_Store
 
 *.pyc
 *.otf
+*.png
+
+!.gitkeep
 
 session.txt
 restart.txt

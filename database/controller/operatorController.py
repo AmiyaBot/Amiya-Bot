@@ -86,7 +86,7 @@ class Operator:
         cursor = self.db.cursor()
 
         sql = 'SELECT operator_id FROM t_operator WHERE operator_name = "%s"' % name
-        sql = 'SELECT m.material_name, o.use_number FROM t_operator_evolve_costs o ' \
+        sql = 'SELECT m.material_name, m.material_nickname, o.use_number FROM t_operator_evolve_costs o ' \
               'LEFT JOIN t_material m ON m.material_id = o.use_material_id ' \
               'WHERE o.evolve_level = %d AND o.operator_id = (%s)' % (level, sql)
 
@@ -178,6 +178,7 @@ class Operator:
             's.skill_name',
             's.skill_index',
             'm.material_name',
+            'm.material_nickname',
             'o.use_number',
             'o.mastery_level'
         ])

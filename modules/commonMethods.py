@@ -26,15 +26,19 @@ class Reply:
             content = content.strip('\n')
 
         if auto_image and isinstance(content, str) and len(content) >= config['message']['reply_text_max_length']:
-            image = create_image(content, 'Common')
-            image_id = IM.image(image)
-            self.content = [MSG.image(image_id)]
+            self.content = [get_image_message(content)]
         else:
             self.content = content
 
         self.feeling = feeling
         self.sign = sign
         self.at = at
+
+
+def get_image_message(content, images=None):
+    image = create_image(content, 'Common', images)
+    image_id = IM.image(image)
+    return MSG.image(image_id)
 
 
 def list_split(items: list, n: int):

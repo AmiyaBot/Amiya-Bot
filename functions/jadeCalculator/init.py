@@ -21,7 +21,8 @@ class Init:
         self.function_id = 'jadeCalculator'
         self.keyword = ['玉']
 
-    def action(self, data):
+    @staticmethod
+    def action(data):
 
         message = data['text_digits']
 

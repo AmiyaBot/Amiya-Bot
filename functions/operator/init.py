@@ -59,9 +59,6 @@ class Init:
                 level -= 2
                 result = material.check_mastery_costs(name, skill, level, skill_index=skill_index)
 
-            if len(result) < 20:
-                return Reply(result)
-
             return Reply(result)
 
         if word_in_sentence(message, ['精英', '专精']):

@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import requests
@@ -81,6 +82,8 @@ class GameData:
             'Referer': 'https://www.kokodayo.fun/'
         }
         self.data_source = 'https://andata.somedata.top/data-2020'
+        self.pics_source = 'https://andata.somedata.top/dataX/item/pic'
+        self.pics_path = 'resource/images'
 
     def get_key(self):
         url = 'https://api.kokodayo.fun/api/base/info'
@@ -96,6 +99,15 @@ class GameData:
         if stream.status_code == 200:
             content = json.loads(stream.content)
             return content
+
+    def get_pic(self, name, _type):
+        url = '%s/%s.png' % (self.pics_source, name)
+        path = '%s/%s/%s.png' % (self.pics_path, _type, name)
+        if os.path.exists(path) is False:
+            stream = requests.get(url, headers=self.headers, stream=True)
+            if stream.status_code == 200:
+                with open(path, mode='wb') as _pic:
+                    _pic.write(stream.content)
 
     def get_operators_list(self, new_id):
         content = self.get_json_data('char/list', new_id)
@@ -213,11 +225,13 @@ class GameData:
             for item in used_materials:
                 if int(item) not in materials:
                     material_data = self.get_json_data('item', item)
+                    icon_name = material_data['iconId']
                     unsaved_materials.append({
                         'id': item,
-                        'name': material_data['name'],
-                        'nickname': ''
+                        'name': material_data['name'].strip(),
+                        'nickname': icon_name
                     })
+                    self.get_pic(icon_name, 'materials')
             if unsaved_materials:
                 database.material.add_material(unsaved_materials)
                 print(' --- 材料数据保存完毕...')

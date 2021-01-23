@@ -18,7 +18,8 @@ class Init:
         self.function_id = 'feeling'
         self.keyword = ['信赖', '关系', '好感']
 
-    def action(self, data):
+    @staticmethod
+    def action(data):
         result = database.user.get_user(data['user_id'])
         if result:
             feeling = result[1] if result[1] <= 4000 else 4000

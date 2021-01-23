@@ -12,7 +12,8 @@ class Init:
         self.function_id = 'intellectFullAlarm'
         self.keyword = ['理智']
 
-    def action(self, data):
+    @staticmethod
+    def action(data):
 
         message = data['text_digits']
 

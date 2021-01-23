@@ -17,7 +17,7 @@ def cut_code(code, length):
     return code_list
 
 
-def create_image(text, message):
+def create_image(text, message, images=None):
     text = text.split('\n')
 
     new_text = []
@@ -39,6 +39,12 @@ def create_image(text, message):
     icon = Image.open(logo_file)
     icon = icon.resize(size=(30, 30))
     image.paste(icon, box=(480, 0), mask=icon)
+
+    if images:
+        for item in images:
+            img = Image.open(item['path']).convert('RGBA')
+            img = img.resize(size=item['size'])
+            image.paste(img, box=item['pos'], mask=img)
 
     path = '%s/%s' % (resource, message)
     if os.path.exists(path) is False:

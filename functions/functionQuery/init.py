@@ -8,7 +8,8 @@ class Init:
         self.function_id = 'functionQuery'
         self.keyword = ['可以做什么', '能做什么', '会做什么', '会干什么', '会什么', '有什么功能', '功能']
 
-    def action(self, data):
+    @staticmethod
+    def action(data):
 
         message = data['text_digits']
 

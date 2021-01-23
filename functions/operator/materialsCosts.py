@@ -1,8 +1,10 @@
 import json
 
 from database.baseController import BaseController
+from modules.commonMethods import get_image_message
 
 database = BaseController()
+material_images_source = 'resource/images/materials/'
 
 
 class MaterialCosts:
@@ -53,8 +55,24 @@ class MaterialCosts:
         text = ''
         if len(result):
             text += '博士，这是干员%s精英%s需要的材料清单\n\n' % (name, evolve[level])
+            images = []
             for item in result:
-                text += '%s X %s\n' % (item[0], item[1])
+                text += '%s%s X %s\n\n' % (' ' * 12, item[0], item[2])
+                images.append(material_images_source + item[1] + '.png')
+
+            i = 0
+            n = 34
+            s = 26
+            icons = []
+            for index, item in enumerate(images):
+                icons.append({
+                    'path': item,
+                    'size': (35, 35),
+                    'pos': (5, s + i)
+                })
+                i += n
+
+            text = [get_image_message(text, icons)]
         else:
             text += '博士，暂时没有找到相关的档案哦~'
 
@@ -81,14 +99,32 @@ class MaterialCosts:
         if len(result):
             text += '博士，这是干员%s技能专精%s需要的材料清单\n\n' % (name, mastery[level])
             skills = {}
+            images = []
             for item in result:
                 if item[0] not in skills:
                     skills[item[0]] = []
                 skills[item[0]].append(item)
             for name in skills:
-                text += '%s\n' % name
+                text += '%s\n\n' % name
                 for item in skills[name]:
-                    text += '---- %s X %s\n' % (item[2], item[3])
+                    text += '----%s%s X %s\n\n' % (' ' * 15, item[2], item[4])
+                    images.append(material_images_source + item[3] + '.png')
+
+            i = 0
+            n = 34
+            s = 60
+            icons = []
+            for index, item in enumerate(images):
+                if index and index % 3 == 0:
+                    i += n
+                icons.append({
+                    'path': item,
+                    'size': (35, 35),
+                    'pos': (35, s + i)
+                })
+                i += n
+
+            text = [get_image_message(text, icons)]
         else:
             text += '博士，暂时没有找到相关的档案哦~'
 
