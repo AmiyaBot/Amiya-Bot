@@ -220,7 +220,12 @@ class MessageHandler(HttpRequests, Replies):
 
     @staticmethod
     def natural_language_processing(message):
-        result = NLP.emotion(message)
+        result = None
+        try:
+            result = NLP.emotion(message)
+        except Exception as e:
+            print('NLP', e)
+
         if result:
             item = result['items'][0]
             text = ''
