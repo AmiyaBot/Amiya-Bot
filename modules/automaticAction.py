@@ -45,22 +45,24 @@ class AutomaticAction(HttpRequests):
 
             # 开始判断是否可以重启
             record = 0
-            today = int('%s%s%s' % (now.tm_year, now.tm_mon, now.tm_mday))
+            now_time = int('%s%s%s%s' % (now.tm_year, now.tm_mon, now.tm_mday, hour))
             if os.path.exists('restart.txt') is False:
                 with open('restart.txt', mode='w+') as rs:
-                    rs.write(str(today))
+                    rs.write(str(now_time))
             else:
                 with open('restart.txt', mode='r+') as rs:
                     record = int(rs.read())
                     rs.seek(0)
-                    rs.write(str(today))
-            if record < today:
-                # 清除图片缓存
-                clean_temp()
+                    rs.write(str(now_time))
+            if record < now_time:
 
                 # 重置签到和心情值
-                database.user.reset_mood()
-                database.user.reset_sign()
+                if hour == 4:
+                    database.user.reset_mood()
+                    database.user.reset_sign()
+
+                # 清除图片缓存
+                clean_temp()
 
                 # 更新干员和材料数据
                 gameData.update()
