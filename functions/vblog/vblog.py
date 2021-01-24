@@ -110,7 +110,7 @@ class VBlog:
 
         return [
             Reply(html_text),
-            Reply(detail_url),
+            Reply(detail_url, 0, at=False, auto_image=False),
             Reply(pics_list, 0, at=False)
         ]
 
