@@ -41,7 +41,7 @@ class AutomaticAction(HttpRequests):
         hour = now.tm_hour
         mint = now.tm_min
 
-        if hour == 4 and mint == 0:
+        if (hour == 4 or hour == 16) and mint == 0:
 
             # 开始判断是否可以重启
             record = 0

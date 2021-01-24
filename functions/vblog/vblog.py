@@ -61,7 +61,7 @@ class VBlog:
             date = time.strptime(date, '%a %b %d %H:%M:%S +0800 %Y')
             date = time.strftime('%m-%d %H:%M', date)
 
-            text += '\n【%d】【%s】%s…' % (index + 1, date, content)
+            text += '\n【%d】%s\n --- %s…' % (index + 1, date, content)
 
         text += '\n\n请和我说「阿米娅查看第 N 条微博」来获取详情吧'
 
