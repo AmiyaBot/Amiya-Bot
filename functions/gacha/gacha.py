@@ -28,11 +28,11 @@ class GaCha:
 
         self.user_id = user_id
         self.operator = class_group
-        self.pick_up_name = pool[1]
+        self.pick_up_name = pool['pool_name']
         self.pick_up = {
-            6: [i for i in pool[2].split(',') if i != ''],
-            5: [i for i in pool[3].split(',') if i != ''],
-            4: [i for i in pool[4].split(',') if i != '']
+            6: [i for i in pool['pickup_6'].split(',') if i != ''],
+            5: [i for i in pool['pickup_5'].split(',') if i != ''],
+            4: [i for i in pool['pickup_4'].split(',') if i != '']
         }
         self.rarity_range = {
             1: 3,
