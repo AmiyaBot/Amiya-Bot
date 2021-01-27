@@ -30,3 +30,6 @@ class Resource:
             'voice_name': voice_name,
             'voice_type': voice_type
         }), fetchone=True)
+
+    def del_image_id(self):
+        self.db.truncate('t_images')

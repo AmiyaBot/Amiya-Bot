@@ -31,7 +31,10 @@ class AutomaticAction(HttpRequests):
     def run_loop(self):
         try:
             while True:
-                self.events()
+                stop = self.events()
+                if stop:
+                    print('loop stop')
+                    break
                 time.sleep(60)
         except KeyboardInterrupt:
             pass
@@ -43,7 +46,7 @@ class AutomaticAction(HttpRequests):
 
         if (hour == 4 or hour == 16) and mint == 0:
 
-            # 开始判断是否可以重启
+            # 判断是否可以重启
             record = 0
             now_time = int('%s%s%s%s' % (now.tm_year, now.tm_mon, now.tm_mday, 0 if hour == 4 else 1))
             if os.path.exists('restart.txt') is False:
@@ -59,7 +62,10 @@ class AutomaticAction(HttpRequests):
                 # 重置签到和心情值
                 if hour == 4:
                     database.user.reset_state()
-                    database.message.del_message()
+
+                # 清空消息及图片记录
+                database.message.del_message()
+                database.resource.del_image_id()
 
                 # 清除图片缓存
                 clean_temp()
@@ -69,9 +75,11 @@ class AutomaticAction(HttpRequests):
 
                 # 执行重启
                 restart()
+                return True
 
         threading.Timer(0, self.intellect_full_alarm).start()
         threading.Timer(0.5, self.send_new_blog).start()
+        return False
 
     def intellect_full_alarm(self):
         now = int(time.time())
