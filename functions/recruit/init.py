@@ -45,12 +45,11 @@ class Init:
             result = database.operator.find_operator_tags_by_tags(tags, max_rarity=max_rarity)
             if result:
                 operators = {}
-                for item in res:
+                for item in result:
                     name = item['operator_name']
                     if name not in operators:
                         operators[name] = item
                     else:
-                        print(name, operators[name]['operator_tags'], item['operator_tags'])
                         operators[name]['operator_tags'] += item['operator_tags']
 
                 text = ''

@@ -21,7 +21,7 @@ class NoticeHandler(HttpRequests):
         try:
             if os.path.exists('remind') is False:
                 os.mkdir('remind')
-            with open('remind/%s.json' % notice_type, mode='w+') as remind:
+            with open('remind/%s.json' % notice_type, mode='w+', encoding='utf-8') as remind:
                 remind.write(json.dumps(message, ensure_ascii=False))
         except Exception as e:
             print('Remind2', e)

@@ -30,7 +30,11 @@ class AutomaticAction(HttpRequests):
 
     def run_loop(self):
         try:
+            first_loop = True
             while True:
+                if first_loop:
+                    first_loop = False
+                    self.send_private_message({'user_id': admin_id}, '启动完毕')
                 stop = self.events()
                 if stop:
                     print('loop stop')
