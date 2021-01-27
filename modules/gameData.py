@@ -260,7 +260,11 @@ class GameData:
                 not_exist += 1
 
                 print(' --- 抓取完毕。耗时 %d ms' % (millisecond() - record))
-        print('更新执行完毕，共更新了 %d 个干员，总耗时 %d ms' % (not_exist, millisecond() - t_record))
+
+        message = '更新执行完毕，共更新了 %d 个干员，总耗时 %d ms' % (not_exist, millisecond() - t_record)
+
+        print(message)
+        return message
 
 
 def millisecond():

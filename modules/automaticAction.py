@@ -34,7 +34,7 @@ class AutomaticAction(HttpRequests):
             while True:
                 if first_loop:
                     first_loop = False
-                    self.send_private_message({'user_id': admin_id}, '启动完毕')
+                    self.send_admin('启动完毕')
                 stop = self.events()
                 if stop:
                     print('loop stop')
@@ -42,6 +42,9 @@ class AutomaticAction(HttpRequests):
                 time.sleep(60)
         except KeyboardInterrupt:
             pass
+
+    def send_admin(self, text):
+        self.send_private_message({'user_id': admin_id}, text)
 
     def events(self):
         now = time.localtime(time.time())
@@ -75,7 +78,9 @@ class AutomaticAction(HttpRequests):
                 clean_temp()
 
                 # 更新干员和材料数据
-                gameData.update()
+                res = gameData.update()
+                if res:
+                    self.send_admin(res)
 
                 # 执行重启
                 restart()
@@ -104,7 +109,7 @@ class AutomaticAction(HttpRequests):
 
         new_id = blog.get_new_blog(only_id=True)
 
-        if new_id and new_id not in record_id:
+        if new_id and isinstance(new_id, str) and new_id not in record_id:
             new_blog = blog.get_new_blog()
 
             if new_blog is False:
@@ -117,7 +122,7 @@ class AutomaticAction(HttpRequests):
             time_record = time.time()
             total = 0
 
-            self.send_private_message({'user_id': admin_id}, '开始推送微博:\n%s\n共有 %d 个群' % (new_id, len(group_list)))
+            self.send_admin('开始推送微博:\n%s\n共有 %d 个群' % (new_id, len(group_list)))
 
             for group in group_list:
                 data = {'group_id': group['id']}
@@ -130,4 +135,4 @@ class AutomaticAction(HttpRequests):
                             self.send_group_message(data, message=item.content, at=False)
                 total += 1
             complete = '微博推送完毕。成功 %d / %d，耗时：%ds' % (total, len(group_list), time.time() - time_record)
-            self.send_private_message({'user_id': admin_id}, complete)
+            self.send_admin(complete)
