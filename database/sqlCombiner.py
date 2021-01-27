@@ -108,7 +108,6 @@ class Mysql:
         self.execute('truncate %s' % table)
 
     def execute(self, sql):
-        print(sql)
         self.lock.acquire()
         cursor = None
         try:
