@@ -34,14 +34,16 @@ class MaterialCosts:
 
         operators = database.operator.get_all_operator()
         for item in operators:
-            keywords.append('%s 100 n' % item[1])
-            self.operator_list.append(item[1])
-            self.keywords.append(item[1])
+            name = item['operator_name']
+            keywords.append('%s 100 n' % name)
+            self.operator_list.append(name)
+            self.keywords.append(name)
 
         skills = database.operator.get_all_operator_skill()
         for item in skills:
-            self.skill_list.append(item[3])
-            self.keywords.append(item[3])
+            name = item['skill_name']
+            self.skill_list.append(name)
+            self.keywords.append(name)
 
         with open('resource/operators.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join(keywords))
@@ -57,8 +59,8 @@ class MaterialCosts:
             text += '博士，这是干员%s精英%s需要的材料清单\n\n' % (name, evolve[level])
             images = []
             for item in result:
-                text += '%s%s X %s\n\n' % (' ' * 12, item[0], item[2])
-                images.append(material_images_source + item[1] + '.png')
+                text += '%s%s X %s\n\n' % (' ' * 12, item['material_name'], item['use_number'])
+                images.append(material_images_source + item['material_nickname'] + '.png')
 
             i = 0
             n = 34
@@ -90,9 +92,9 @@ class MaterialCosts:
                     text += '博士，目前存在 %d 个干员拥有【%s】这个技能哦，请用比如「干员一技能专三」这种方式和阿米娅描述吧' % (len(skill_info), skill)
                     return text
                 item = skill_info[0]
-                skill_index = item[2]
+                skill_index = item['skill_index']
                 if name == '':
-                    name = item[5]
+                    name = item['operator_name']
 
         result = database.operator.find_operator_skill_mastery_costs(name, level, skill_index)
 
@@ -101,14 +103,15 @@ class MaterialCosts:
             skills = {}
             images = []
             for item in result:
-                if item[0] not in skills:
-                    skills[item[0]] = []
-                skills[item[0]].append(item)
+                skill_name = item['skill_name']
+                if skill_name not in skills:
+                    skills[skill_name] = []
+                skills[skill_name].append(item)
             for name in skills:
                 text += '%s\n\n' % name
                 for item in skills[name]:
-                    text += '----%s%s X %s\n\n' % (' ' * 15, item[2], item[4])
-                    images.append(material_images_source + item[3] + '.png')
+                    text += '----%s%s X %s\n\n' % (' ' * 15, item['material_name'], item['use_number'])
+                    images.append(material_images_source + item['material_nickname'] + '.png')
 
             i = 0
             n = 34

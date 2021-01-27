@@ -45,7 +45,7 @@ class AutomaticAction(HttpRequests):
 
             # 开始判断是否可以重启
             record = 0
-            now_time = int('%s%s%s%s' % (now.tm_year, now.tm_mon, now.tm_mday, hour))
+            now_time = int('%s%s%s%s' % (now.tm_year, now.tm_mon, now.tm_mday, 0 if hour == 4 else 1))
             if os.path.exists('restart.txt') is False:
                 with open('restart.txt', mode='w+') as rs:
                     rs.write(str(now_time))
@@ -58,8 +58,8 @@ class AutomaticAction(HttpRequests):
 
                 # 重置签到和心情值
                 if hour == 4:
-                    database.user.reset_mood()
-                    database.user.reset_sign()
+                    database.user.reset_state()
+                    database.message.del_message()
 
                 # 清除图片缓存
                 clean_temp()
@@ -78,11 +78,11 @@ class AutomaticAction(HttpRequests):
         results = database.remind.check_intellect_full_alarm(now)
         if results:
             for item in results:
-                text = '博士！博士！您的理智已经满%d了，快点上线查看吧～' % item[2]
+                text = '博士！博士！您的理智已经满%d了，快点上线查看吧～' % item['full_num']
                 data = {
-                    'user_id': item[0],
-                    'group_id': item[5],
-                    'type': item[4]
+                    'user_id': item['user_id'],
+                    'group_id': item['group_id'],
+                    'type': item['message_type']
                 }
                 self.send_message(data, text, at=True)
 

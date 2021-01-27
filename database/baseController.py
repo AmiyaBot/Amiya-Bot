@@ -1,6 +1,8 @@
 import json
 import pymysql
 
+from .sqlCombiner import Mysql
+
 from .controller.userController import User
 from .controller.groupController import Group
 from .controller.remindController import Remind
@@ -17,23 +19,16 @@ class BaseController:
             config = json.load(file)
             base_config = config['database']
 
-        self.db = pymysql.connect(
-            host=base_config['host'],
-            port=base_config['port'],
-            user=base_config['user'],
-            password=base_config['password'],
-            db=base_config['db'],
-            charset='utf8',
-            autocommit=1
-        )
-        self.user = User(self.db)
-        self.group = Group(self.db)
-        self.remind = Remind(self.db)
-        self.message = Message(self.db)
-        self.material = Material(self.db)
-        self.operator = Operator(self.db)
-        self.function = Function(self.db)
-        self.resource = Resource(self.db)
+        self.comb = Mysql(base_config)
+
+        self.user = User(self.comb)
+        self.group = Group(self.comb)
+        self.remind = Remind(self.comb)
+        self.message = Message(self.comb)
+        self.material = Material(self.comb)
+        self.operator = Operator(self.comb)
+        self.function = Function(self.comb)
+        self.resource = Resource(self.comb)
 
     def close(self):
-        self.db.close()
+        self.comb.close()

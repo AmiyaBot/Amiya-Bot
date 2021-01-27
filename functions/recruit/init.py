@@ -12,7 +12,7 @@ jieba.load_userdict('resource/tags.txt')
 class Init:
     def __init__(self):
         self.function_id = 'recruit'
-        self.keyword = ['公招']
+        self.keyword = ['公招', '公开招募']
         self.tags = []
         with open('resource/tags.txt', encoding='utf-8') as tags:
             for item in tags.read().split('\n'):
@@ -44,23 +44,24 @@ class Init:
         if tags:
             result = database.operator.find_operator_tags_by_tags(tags, max_rarity=max_rarity)
             if result:
-
                 operators = {}
-                for item in result:
-                    if item[1] not in operators:
-                        operators[item[1]] = list(item)
+                for item in res:
+                    name = item['operator_name']
+                    if name not in operators:
+                        operators[name] = item
                     else:
-                        operators[item[1]][3] += item[3]
+                        print(name, operators[name]['operator_tags'], item['operator_tags'])
+                        operators[name]['operator_tags'] += item['operator_tags']
 
                 text = ''
                 for comb in [tags] if len(tags) == 1 else self.find_combinations(tags):
                     lst = []
-                    for name in operators:
-                        item = operators[name]
-                        if all_item_in_text(item[3], comb):
-                            if item[2] == 6 and '高级资深干员' not in comb:
+                    for name, item in operators.items():
+                        rarity = item['operator_rarity']
+                        if all_item_in_text(item['operator_tags'], comb):
+                            if rarity == 6 and '高级资深干员' not in comb:
                                 continue
-                            if item[2] >= 4 or item[2] == 1:
+                            if rarity >= 4 or rarity == 1:
                                 lst.append(item)
                             else:
                                 break
@@ -74,8 +75,9 @@ class Init:
                                 text += '[★★★★★　] 五星 %d 选 1\n' % len(lst)
                                 continue
                             for item in lst:
-                                star = '☆' if item[2] < 5 else '★'
-                                text += '[%s] %s\n' % (insert_empty(star * item[2], 6, True), item[1])
+                                rarity = item['operator_rarity']
+                                star = '☆' if rarity < 5 else '★'
+                                text += '[%s] %s\n' % (insert_empty(star * rarity, 6, True), item['operator_name'])
 
                 if text:
                     text = '博士，根据标签已找到以下可以锁定稀有干员的组合\n' + text

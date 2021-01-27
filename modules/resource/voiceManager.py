@@ -27,8 +27,8 @@ class VoiceManager(HttpRequests):
             file_name = '%s.wav' % file_name
 
         results = base.resource.get_voice_id(file_name, voice_type)
-        if results and len(results):
-            return results[0][-1]
+        if results:
+            return results['mirai_id']
         return False
 
     def get_voice_id(self, file_name, voice_type='group'):

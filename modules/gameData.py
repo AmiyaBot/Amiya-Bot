@@ -152,7 +152,7 @@ class GameData:
     def save_operator_detail(self, operator_no):
         data = self.get_json_data('char/data', operator_no)
         if data:
-            materials = [item[0] for item in database.material.get_all_material()]
+            materials = [item['material_id'] for item in database.material.get_all_material()]
             operator_id = database.operator.get_operator_id(operator_no)
             used_materials = []
 
@@ -227,9 +227,9 @@ class GameData:
                     material_data = self.get_json_data('item', item)
                     icon_name = material_data['iconId']
                     unsaved_materials.append({
-                        'id': item,
-                        'name': material_data['name'].strip(),
-                        'nickname': icon_name
+                        'material_id': item,
+                        'material_name': material_data['name'].strip(),
+                        'material_nickname': icon_name
                     })
                     self.get_pic(icon_name, 'materials')
             if unsaved_materials:
@@ -249,7 +249,7 @@ class GameData:
             return False
 
         not_exist = 0
-        exist_operators = [item[2] for item in database.operator.get_all_operator()]
+        exist_operators = [item['operator_no'] for item in database.operator.get_all_operator()]
         for index, item in enumerate(data):
             operator = Operator(item)
             if operator.id not in exist_operators:

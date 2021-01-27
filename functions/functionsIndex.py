@@ -5,15 +5,23 @@ from database.baseController import BaseController
 from modules.commonMethods import word_in_sentence
 
 database = BaseController()
+priority = [
+    'functionQuery',
+    'feeling',
+    'gacha',
+    'material',
+    'operator',
+    'recruit',
+    'enemy',
+    'jadeCalculator',
+    'intellect',
+    'vblog'
+]
 
 
 class FunctionsIndex:
     def __init__(self):
-
-        with open('functions/priority.txt', encoding='utf-8') as file:
-            priority = file.read().split('\n')
-            index = len(priority)
-
+        index = len(priority)
         functions = {}
         for root, dirs, files in os.walk('functions'):
             for name in dirs:

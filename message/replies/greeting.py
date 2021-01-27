@@ -55,10 +55,10 @@ def sign_in(data, sign_type=0):
     user = database.user.get_user(user_id)
     if bool(user) is False:
         database.user.add_feeling(user_id, 15, False)
-    if bool(user) is False or user[6] == 0:
+    if bool(user) is False or user['sign_in'] == 0:
         database.user.add_coupon(user_id, 50)
         return '签到成功，50张寻访凭证已经送到博士的办公室啦，请博士注意查收哦'
-    if sign_type and user[6] == 1:
+    if sign_type and user['sign_in'] == 1:
         return '博士今天已经签到了哦'
     return False
 

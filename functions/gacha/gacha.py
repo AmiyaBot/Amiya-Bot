@@ -10,19 +10,19 @@ database = BaseController()
 class GaCha:
     def __init__(self, user_id):
 
-        pool_list = database.user.get_gacha_pool(user_id=user_id)
-        if bool(pool_list) is False:
+        pool = database.user.get_gacha_pool(user_id=user_id)
+        if bool(pool) is False:
             pool_list = database.user.get_gacha_pool()
-        pool = pool_list[0]
-        operators = database.operator.get_gacha_operator(pool[2].split(',') if pool[5] == 1 else None)
+            pool = pool_list[0]
+        operators = database.operator.get_gacha_operator()
 
         class_group = {}
         for item in operators:
-            rarity = item[3]
+            rarity = item['operator_rarity']
             if rarity not in class_group:
                 class_group[rarity] = {}
-            class_group[rarity][item[1]] = {
-                'name': item[1],
+            class_group[rarity][item['operator_name']] = {
+                'name': item['operator_name'],
                 'rarity': rarity
             }
 
@@ -191,7 +191,7 @@ class GaCha:
 
     def check_break_even(self):
         user = database.user.get_user(self.user_id)
-        break_even = user[4]
+        break_even = user['gacha_break_even']
         break_even_rate = 98
         if break_even > 50:
             break_even_rate -= (break_even - 50) * 2
@@ -202,7 +202,7 @@ class GaCha:
         operators = []
 
         user = database.user.get_user(self.user_id)
-        break_even = user[4]
+        break_even = user['gacha_break_even']
 
         for i in range(0, times):
 

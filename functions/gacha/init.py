@@ -45,7 +45,7 @@ class Init:
                     return Reply('博士不要着急，罗德岛的资源要好好规划使用哦，先试试 300 次以内的寻访吧 (#^.^#)')
 
                 user = database.user.get_user(user_id)
-                coupon = user[3] if user else 0
+                coupon = user['gacha_coupon'] if user else 0
                 if times > coupon:
                     return Reply('博士，您的寻访凭证（%d张）不够哦~' % coupon)
 
@@ -61,7 +61,7 @@ class Init:
 
         if word_in_sentence(message, ['多少', '几']):
             user = database.user.get_user(user_id)
-            coupon = user[3] if user else 0
+            coupon = user['gacha_coupon'] if user else 0
             text = '博士的寻访凭证还剩余 %d 张~' % coupon
             if coupon:
                 text += '\n博士，快去获得您想要的干员吧 ☆_☆'
@@ -72,7 +72,7 @@ class Init:
             if r:
                 idx = int(r.group(1)) - 1
                 if 0 <= idx < len(self.all_pools):
-                    message_ori = self.all_pools[idx][1]
+                    message_ori = self.all_pools[idx]['pool_name']
             return self.change_pool(user_id, message_ori)
 
         if word_in_sentence(message, ['查看', '列表']):
@@ -86,7 +86,7 @@ class Init:
         pools = []
         max_len = 0
         for index, item in enumerate(self.all_pools):
-            pool = '%s [ %s ]' % (('' if index + 1 >= 10 else '0') + str(index + 1), item[1])
+            pool = '%s [ %s ]' % (('' if index + 1 >= 10 else '0') + str(index + 1), item['pool_name'])
             if index % 2 == 0 and len(pool) > max_len:
                 max_len = len(pool)
             pools.append(pool)
@@ -111,15 +111,15 @@ class Init:
 
     def change_pool(self, user_id, message):
         for item in self.all_pools:
-            if item[1] in message:
-                database.user.set_gacha_pool(user_id, item[0])
-                text = ['博士的卡池已切换为【%s】\n' % item[1]]
-                if item[2]:
-                    text.append('[★★★★★★] %s' % item[2].replace(',', '、'))
-                if item[3]:
-                    text.append('[★★★★★　] %s' % item[3].replace(',', '、'))
-                if item[4]:
-                    text.append('[☆☆☆☆　　] %s' % item[4].replace(',', '、'))
+            if item['pool_name'] in message:
+                database.user.set_gacha_pool(user_id, item['pool_id'])
+                text = ['博士的卡池已切换为【%s】\n' % item['pool_name']]
+                if item['pickup_6']:
+                    text.append('[★★★★★★] %s' % item['pickup_6'].replace(',', '、'))
+                if item['pickup_5']:
+                    text.append('[★★★★★　] %s' % item['pickup_5'].replace(',', '、'))
+                if item['pickup_4']:
+                    text.append('[☆☆☆☆　　] %s' % item['pickup_4'].replace(',', '、'))
                 text = '\n'.join(text)
                 return Reply(text)
         return Reply('博士，没有找到这个卡池哦')

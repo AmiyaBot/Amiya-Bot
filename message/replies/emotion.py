@@ -58,5 +58,5 @@ def get_mood(user_id):
     mood = 0
     result = database.user.get_user(user_id)
     if result:
-        mood = result[2]
+        mood = result['user_mood']
     return mood

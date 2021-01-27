@@ -157,13 +157,14 @@ class MessageHandler(HttpRequests, Replies):
             if item in data['text']:
                 return False
 
-        black_user = database.user.get_black_user()
-        for item in black_user:
-            if str(item[0]) == str(data['user_id']):
-                return False
+        # 不再使用黑名单了
+        # black_user = database.user.get_black_user()
+        # for item in black_user:
+        #     if str(item[0]) == str(data['user_id']):
+        #         return False
 
         message_speed = database.message.check_message_speed_by_user(data['user_id'], limit['seconds'])
-        if message_speed and message_speed[0] >= limit['max_count']:
+        if message_speed and message_speed >= limit['max_count']:
             self.send_reply(data, Reply('博士说话太快了，请再慢一些吧～', at=False))
             return False
 

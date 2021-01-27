@@ -48,12 +48,12 @@ class Init:
             if r:
                 info = database.remind.check_intellect_by_user(data['user_id'])
                 if info:
-                    full_time = time.strftime('%Y-%m-%d %H:%M', time.localtime(info[3]))
-                    through = int(time.time()) - info[6]
-                    restored = int(through / 360) + info[1]
+                    full_time = time.strftime('%Y-%m-%d %H:%M', time.localtime(info['full_time']))
+                    through = int(time.time()) - info['in_time']
+                    restored = int(through / 360) + info['cur_num']
 
                     text = '博士，根据上一次记录，您的 %d 理智会在 %s 左右回复满\n' \
-                           '不计算上限的话，现在已经回复到 %d 理智了' % (info[2], full_time, restored)
+                           '不计算上限的话，现在已经回复到 %d 理智了' % (info['full_num'], full_time, restored)
                     return Reply(text)
                 else:
                     return Reply('阿米娅还没有帮博士记录理智提醒哦')

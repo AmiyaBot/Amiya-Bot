@@ -39,11 +39,9 @@ class NoticeHandler(HttpRequests):
             self.send_group_message({
                 'group_id': message['group']['id']
             }, message='博士，初次见面，这里是阿米娅2号，姐姐去了很远的地方，今后就由我来代替姐姐的工作吧，请多多指教哦')
-            database.group.record_group(message['group']['id'])
 
         if notice_type == 'BotLeaveEventActive':
             self.leave_group(message['group']['id'], False)
 
         if notice_type == 'BotInvitedJoinGroupRequestEvent':
-            groups = database.group.get_all_group()
-            self.handle_join_group(message, len(groups) >= 150)
+            self.handle_join_group(message, True)

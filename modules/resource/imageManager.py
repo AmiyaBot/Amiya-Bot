@@ -28,8 +28,8 @@ class ImageManager(HttpRequests):
 
     def find_image_id(self, file_name, image_type):
         results = base.resource.get_image_id(file_name, image_type)
-        if results and len(results):
-            return results[0][-1]
+        if results:
+            return results['mirai_id']
         return False
 
     def get_image_id(self, file_name, image_type):

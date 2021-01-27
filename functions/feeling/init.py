@@ -20,9 +20,9 @@ class Init:
 
     @staticmethod
     def action(data):
-        result = database.user.get_user(data['user_id'])
-        if result:
-            feeling = result[1] if result[1] <= 4000 else 4000
+        user = database.user.get_user(data['user_id'])
+        if user:
+            feeling = user['user_feeling'] if user['user_feeling'] <= 4000 else 4000
 
             text = '阿米娅和博士的当前信赖值是: %d%s\n' % (int(feeling / 10), '%')
             voice = ''

@@ -20,8 +20,8 @@ def waiting(data):
     user_id = data['user_id']
     user = database.user.get_user(user_id)
 
-    if user and user[8]:
-        wait = user[8]
+    if user and user['waiting']:
+        wait = user['waiting']
 
         # 群发公告
         if wait == 'Notice':

@@ -85,8 +85,6 @@ class HttpRequests:
         if flag:
             session = self.get_session()
             self.post('quit', {'sessionKey': session, 'target': group_id})
-        database.group.delete_group(group_id)
-        database.group.delete_group_msg(group_id)
 
     def send_private_message(self, data, message='', message_chain=None):
         session = self.get_session()

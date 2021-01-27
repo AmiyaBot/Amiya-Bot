@@ -1,114 +1,52 @@
+from database.sqlCombiner import Mysql, Calc, Where
+
+
 class Material:
-    def __init__(self, db):
+    def __init__(self, db: Mysql):
         self.db = db
 
+    def add_material(self, data):
+        self.db.batch_insert('t_material', data=data)
+
+    def add_material_source(self, data):
+        self.db.batch_insert('t_material_source', data=data)
+
+    def add_material_made(self, data):
+        self.db.batch_insert('t_material_made', data=data)
+
     def get_all_material(self):
-        cursor = self.db.cursor()
+        return self.db.select('t_material')
 
-        sql = 'SELECT * FROM t_material'
+    def get_material_id(self, name='', nickname=''):
+        res = self.db.select('t_material', where=Where({
+            'material_name': name,
+            'material_nickname': nickname
+        }, operator='OR'), fetchone=True)
 
-        self.db.ping(reconnect=True)
-        cursor.execute(sql)
-        res = cursor.fetchall()
-
-        return res
-
-    def add_material(self, materials):
-        cursor = self.db.cursor()
-
-        values = []
-        for item in materials:
-            value = [
-                '"%s"' % item['id'],
-                '"%s"' % item['name'],
-                '"%s"' % item['nickname']
-            ]
-            value = ', '.join(value)
-            values.append('(%s)' % value)
-
-        sql = 'INSERT INTO t_material ( material_id, material_name, material_nickname ) ' \
-              'VALUES %s' % ', '.join(values)
-
-        self.db.ping(reconnect=True)
-        cursor.execute(sql)
-
-    def add_material_source(self, materials):
-        cursor = self.db.cursor()
-
-        values = []
-        for item in materials:
-            value = [
-                str(item['material_id']),
-                '"%s"' % item['source_place'],
-                str(item['source_rate'])
-            ]
-            value = ', '.join(value)
-            values.append('(%s)' % value)
-
-        sql = 'INSERT INTO t_material_source ( material_id, source_place, source_rate ) ' \
-              'VALUES %s' % ', '.join(values)
-
-        self.db.ping(reconnect=True)
-        cursor.execute(sql)
-
-    def add_material_made(self, materials):
-        cursor = self.db.cursor()
-
-        values = []
-        for item in materials:
-            value = [
-                str(item['material_id']),
-                str(item['use_material_id']),
-                str(item['use_number'])
-            ]
-            value = ', '.join(value)
-            values.append('(%s)' % value)
-
-        sql = 'INSERT INTO t_material_made ( material_id, use_material_id, use_number ) ' \
-              'VALUES %s' % ', '.join(values)
-
-        self.db.ping(reconnect=True)
-        cursor.execute(sql)
+        return res['material_id']
 
     def find_material_source(self, name):
-        cursor = self.db.cursor()
-
-        sql = 'SELECT material_id FROM t_material WHERE material_name = "%s"' % name
-        sql = 'SELECT * FROM t_material_source WHERE material_id = (%s)' % sql
-
-        self.db.ping(reconnect=True)
-        cursor.execute(sql)
-        res = cursor.fetchall()
-
-        return res
+        return self.db.select('t_material_source', where=Where({
+            'material_id': self.get_material_id(name=name)
+        }))
 
     def find_material_made(self, name):
-        cursor = self.db.cursor()
+        sql = 'SELECT m.material_name, t.use_number FROM t_material_made t ' \
+              'LEFT JOIN t_material m ON t.use_material_id = m.material_id ' \
+              'WHERE t.material_id = %s' % self.get_material_id(name=name)
 
-        left_join = 'LEFT JOIN t_material m ON t.use_material_id = m.material_id'
-
-        sql = 'SELECT material_id FROM t_material WHERE material_name = "%s"' % name
-        sql = 'SELECT m.material_name, t.use_number FROM t_material_made t %s ' \
-              'WHERE t.material_id = (%s)' % (left_join, sql)
-
-        self.db.ping(reconnect=True)
-        cursor.execute(sql)
-        res = cursor.fetchall()
-
-        return res
+        return self.db.select(sql=sql, fields=['material_name', 'use_number'])
 
     def truncate_all(self):
-        sql = [
-            'TRUNCATE t_material',
-            'TRUNCATE t_material_made',
-            'TRUNCATE t_material_source',
-            'TRUNCATE t_operator',
-            'TRUNCATE t_operator_evolve_costs',
-            'TRUNCATE t_operator_skill',
-            'TRUNCATE t_operator_skill_mastery_costs',
-            'TRUNCATE t_operator_tags_relation'
+        tables = [
+            't_material',
+            't_material_made',
+            't_material_source',
+            't_operator',
+            't_operator_evolve_costs',
+            't_operator_skill',
+            't_operator_skill_mastery_costs',
+            't_operator_tags_relation'
         ]
-        for item in sql:
-            cursor = self.db.cursor()
-            self.db.ping(reconnect=True)
-            cursor.execute(item)
+        for item in tables:
+            self.db.truncate(item)
