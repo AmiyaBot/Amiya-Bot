@@ -14,13 +14,14 @@ class GaCha:
         if bool(pool) is False:
             pool_list = database.user.get_gacha_pool()
             pool = pool_list[0]
-        operators = database.operator.get_gacha_operator(pool['limit_pool'])
 
         special = pool['pickup_s'].split(',') if pool['pickup_s'] else []
         weight = {}
         for item in special:
             item = item.split('|')
             weight[item[0]] = int(item[1])
+
+        operators = database.operator.get_gacha_operator(extra=weight.keys())
 
         class_group = {}
         for item in operators:
@@ -36,6 +37,7 @@ class GaCha:
 
         self.user_id = user_id
         self.operator = class_group
+        self.limit_pool = pool['limit_pool']
         self.pick_up_name = pool['pool_name']
         self.pick_up = {
             6: [i for i in pool['pickup_6'].split(',') if i != ''],
@@ -257,6 +259,22 @@ class GaCha:
             group = [self.pick_up[rarity]]
             group += [operator_list] * (4 if rarity == 4 else 1)
 
-            return random.choice(random.choice(group))
+            if rarity == 6:
+                if self.limit_pool == 1:
+                    random_num = random.randint(1, 100) + 1
+                    choice = group[int(random_num / 70)]
+                elif self.limit_pool == 2:
+                    choice = group[0]
+                else:
+                    choice = random.choice(group)
+            elif rarity == 5:
+                if self.limit_pool == 2:
+                    choice = group[0]
+                else:
+                    choice = random.choice(group)
+            else:
+                choice = random.choice(group)
+
+            return random.choice(choice)
 
         return random.choice(operator_list)

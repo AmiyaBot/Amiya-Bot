@@ -37,11 +37,14 @@ class Operator:
     def get_all_operator(self):
         return self.db.select('t_operator')
 
-    def get_gacha_operator(self, limit=0):
+    def get_gacha_operator(self, limit=0, extra=None):
         return self.db.select('t_operator', where=Where({
-            'available': 1,
-            'in_limit': ['in', Formula('(%d, 0)' % limit)]
-        }))
+            'limit': Where({
+                'available': 1,
+                'in_limit': ['in', Formula('(%d, 0)' % limit)]
+            }),
+            'operator_name': ['in', Formula('("%s")' % '", "'.join(extra or []))]
+        }, operator='OR'))
 
     def get_all_operator_skill(self):
         return self.db.select('t_operator_skill')
