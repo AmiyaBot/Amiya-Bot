@@ -14,16 +14,24 @@ class GaCha:
         if bool(pool) is False:
             pool_list = database.user.get_gacha_pool()
             pool = pool_list[0]
-        operators = database.operator.get_gacha_operator()
+        operators = database.operator.get_gacha_operator(pool['limit_pool'])
+
+        special = pool['pickup_s'].split(',') if pool['pickup_s'] else []
+        weight = {}
+        for item in special:
+            item = item.split('|')
+            weight[item[0]] = int(item[1])
 
         class_group = {}
         for item in operators:
             rarity = item['operator_rarity']
+            name = item['operator_name']
             if rarity not in class_group:
                 class_group[rarity] = {}
-            class_group[rarity][item['operator_name']] = {
-                'name': item['operator_name'],
-                'rarity': rarity
+            class_group[rarity][name] = {
+                'name': name,
+                'rarity': rarity,
+                'weight': weight[name] if name in weight else 1
             }
 
         self.user_id = user_id
@@ -236,7 +244,10 @@ class GaCha:
         return operators
 
     def get_operator(self, rarity):
-        operator_list = list(self.operator[rarity].keys())
+        operator_list = []
+        for name, item in self.operator[rarity].items():
+            for w in range(item['weight']):
+                operator_list.append(name)
 
         if rarity in self.pick_up and self.pick_up[rarity]:
             for name in self.pick_up[rarity]:

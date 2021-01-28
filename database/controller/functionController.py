@@ -1,4 +1,4 @@
-from database.sqlCombiner import Mysql, Calc, Where
+from database.sqlCombiner import Mysql, Formula, Where
 
 
 class Function:
@@ -13,6 +13,6 @@ class Function:
                 'function_use_num': 1
             },
             update={
-                'function_use_num': Calc('function_use_num + 1')
+                'function_use_num': Formula('function_use_num + 1')
             }
         )

@@ -1,4 +1,4 @@
-from database.sqlCombiner import Mysql, Calc, Where
+from database.sqlCombiner import Mysql, Formula, Where
 
 
 class Material:

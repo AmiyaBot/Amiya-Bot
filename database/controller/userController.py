@@ -1,4 +1,4 @@
-from database.sqlCombiner import Mysql, Calc, Where
+from database.sqlCombiner import Mysql, Formula, Where
 
 
 class User:
@@ -12,9 +12,9 @@ class User:
             'sign_in': sign
         }
         update = {
-            'user_feeling': Calc('user_feeling + %d' % feeling),
-            'user_mood': Calc('IF (user_mood + %d <= 15 AND user_mood + %d >= - 10, user_mood + %d, user_mood)'
-                              % (feeling, feeling, feeling))
+            'user_feeling': Formula('user_feeling + %d' % feeling),
+            'user_mood': Formula('IF (user_mood + %d <= 15 AND user_mood + %d >= - 10, user_mood + %d, user_mood)'
+                                 % (feeling, feeling, feeling))
         }
         if sign:
             update['sign_in'] = sign
@@ -30,7 +30,7 @@ class User:
             table='t_user',
             where=Where({'user_id': user_id}),
             data={
-                'gacha_coupon': Calc('gacha_coupon + %d' % num)
+                'gacha_coupon': Formula('gacha_coupon + %d' % num)
             }
         )
 
@@ -40,7 +40,7 @@ class User:
             where=Where({'user_id': user_id}),
             data={
                 'gacha_break_even': break_even,
-                'gacha_coupon': Calc('gacha_coupon - %d' % costs)
+                'gacha_coupon': Formula('gacha_coupon - %d' % costs)
             }
         )
 

@@ -1,4 +1,4 @@
-from database.sqlCombiner import Mysql, Calc, Where
+from database.sqlCombiner import Mysql, Formula, Where
 
 
 class Operator:
@@ -37,10 +37,10 @@ class Operator:
     def get_all_operator(self):
         return self.db.select('t_operator')
 
-    def get_gacha_operator(self):
+    def get_gacha_operator(self, limit=0):
         return self.db.select('t_operator', where=Where({
             'available': 1,
-            'in_limit': 0
+            'in_limit': ['in', Formula('(%d, 0)' % limit)]
         }))
 
     def get_all_operator_skill(self):

@@ -31,7 +31,7 @@ class Mysql:
         if update:
             values = []
             for key, value in update.items():
-                if isinstance(value, Calc):
+                if isinstance(value, Formula):
                     value = value.formula
                 else:
                     value = str_or_int(value)
@@ -58,7 +58,7 @@ class Mysql:
     def update(self, table, data: dict, where=None):
         values = []
         for key, value in data.items():
-            if isinstance(value, Calc):
+            if isinstance(value, Formula):
                 value = value.formula
             else:
                 value = str_or_int(value)
@@ -124,7 +124,7 @@ class Mysql:
         self.db.close()
 
 
-class Calc:
+class Formula:
     def __init__(self, formula: str):
         self.formula = formula
 
@@ -140,7 +140,7 @@ class Where:
                 values.append((' %s ' % value[0]).join(
                     [
                         key,
-                        str_or_int(value[1])
+                        value[1].formula if isinstance(value[1], Formula) else str_or_int(value[1])
                     ]
                 ))
                 continue
