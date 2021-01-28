@@ -44,4 +44,4 @@ class NoticeHandler(HttpRequests):
             self.leave_group(message['group']['id'], False)
 
         if notice_type == 'BotInvitedJoinGroupRequestEvent':
-            self.handle_join_group(message, True)
+            self.handle_join_group(message, False)
