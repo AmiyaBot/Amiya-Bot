@@ -56,9 +56,6 @@ class Operator:
         self.tags = data['tags'][2:]
         self.recruit = data['gkzm']
 
-        if self.id == 'char_1001_amiya2':
-            self.name = '近卫阿米娅'
-
 
 class OperatorTags:
     def __init__(self, name, rarity):
@@ -131,6 +128,7 @@ class GameData:
             'available': 1 if rarity >= 2 and operator.name not in unavailable else 0,
             'in_limit': 1 if operator.name in limit else 0
         }])
+        print(' --- 基础信息保存完毕...')
 
         # todo 若此干员为可公招的干员，保存Tags信息
         if operator.recruit:
@@ -145,6 +143,7 @@ class GameData:
                 operator_tags.append(tag)
 
             database.operator.add_operator_tags_relation(operator_tags.tags)
+            print(' --- 公招信息保存完毕...')
 
         # todo 保存干员的详细信息
         self.save_operator_detail(operator.id)
@@ -211,7 +210,7 @@ class GameData:
             # todo 保存干员技能专精信息
             skills_cost_list = []
             for sk_no, sk_list in skills_cost.items():
-                skill_id = database.operator.get_skill_id(sk_no)
+                skill_id = database.operator.get_skill_id(sk_no, operator_id)
                 for item in sk_list:
                     item['skill_id'] = skill_id
                     skills_cost_list.append(item)

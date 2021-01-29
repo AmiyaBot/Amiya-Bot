@@ -27,9 +27,10 @@ class Operator:
 
         return res['operator_id'] if res else None
 
-    def get_skill_id(self, skill_no):
+    def get_skill_id(self, skill_no, operator_id):
         res = self.db.select('t_operator_skill', where=Where({
-            'skill_no': skill_no
+            'skill_no': skill_no,
+            'operator_id': operator_id
         }), fetchone=True)
 
         return res['skill_id'] if res else None
@@ -87,6 +88,8 @@ class Operator:
 
         if index > 0:
             sql += ' AND s.skill_index = %d' % index
+
+        print(sql)
 
         return self.db.select(sql=sql, fields=[
             'skill_name',
