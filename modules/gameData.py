@@ -146,13 +146,14 @@ class GameData:
             print(' --- 公招信息保存完毕...')
 
         # todo 保存干员的详细信息
-        self.save_operator_detail(operator.id)
+        operator_id = database.operator.get_operator_id(operator_no=operator.id)
+        self.save_operator_detail(operator.id, operator_id)
+        self.save_operator_voices(operator.id, operator_id)
 
-    def save_operator_detail(self, operator_no):
+    def save_operator_detail(self, operator_no, operator_id):
         data = self.get_json_data('char/data', operator_no)
         if data:
             materials = [item['material_id'] for item in database.material.get_all_material()]
-            operator_id = database.operator.get_operator_id(operator_no)
             used_materials = []
 
             # todo 保存干员精英化信息
@@ -234,6 +235,21 @@ class GameData:
             if unsaved_materials:
                 database.material.add_material(unsaved_materials)
                 print(' --- 材料数据保存完毕...')
+
+    def save_operator_voices(self, operator_no, operator_id):
+        data = self.get_json_data('char/words', operator_no)
+        if data:
+            voices = []
+            for item in data:
+                voices.append({
+                    'operator_id': operator_id,
+                    'voice_title': item['voiceTitle'],
+                    'voice_text': item['voiceText'],
+                    'voice_no': item['voiceAsset']
+                })
+            if voices:
+                database.operator.add_operator_voice(voices)
+                print(' --- 语音数据保存完毕...')
 
     def update(self):
         t_record = millisecond()

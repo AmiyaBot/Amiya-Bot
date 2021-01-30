@@ -1,12 +1,12 @@
 import re
 
-from modules.commonMethods import Reply
+from modules.commonMethods import Reply, get_image_message
 
 
 class Init:
     def __init__(self):
         self.function_id = 'functionQuery'
-        self.keyword = ['可以做什么', '能做什么', '会做什么', '会干什么', '会什么', '有什么功能', '功能']
+        self.keyword = ['可以做什么', '能做什么', '会做什么', '会干什么', '会什么', '有什么功能', '功能', '菜单']
 
     @staticmethod
     def action(data):
@@ -92,10 +92,10 @@ class Init:
                     for sub_index, sub_item in enumerate(function_list[index]['desc']):
                         text += '\n（%d）%s' % (sub_index + 1, sub_item)
 
-                    return Reply(text)
+                    return Reply([get_image_message(text)])
 
         text = '博士，这是阿米娅的功能清单，请和我说「阿米娅查看第 N 个功能」来获取使用方法吧\n'
         for index, item in enumerate(function_list):
             text += '\n[%d] %s' % (index + 1, item['title'])
 
-        return Reply(text)
+        return Reply([get_image_message(text)])

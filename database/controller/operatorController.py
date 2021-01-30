@@ -20,10 +20,14 @@ class Operator:
     def add_operator_tags_relation(self, data):
         self.db.batch_insert('t_operator_tags_relation', data=data)
 
-    def get_operator_id(self, operator_no):
+    def add_operator_voice(self, data):
+        self.db.batch_insert('t_operator_voice', data=data)
+
+    def get_operator_id(self, operator_no='', operator_name=''):
         res = self.db.select('t_operator', where=Where({
-            'operator_no': operator_no
-        }), fetchone=True)
+            'operator_no': operator_no,
+            'operator_name': operator_name
+        }, operator='OR'), fetchone=True)
 
         return res['operator_id'] if res else None
 
@@ -112,3 +116,9 @@ class Operator:
               'ORDER BY operator_rarity DESC' % (' OR '.join(where), min_rarity, max_rarity)
 
         return self.db.select('t_operator_tags_relation', sql=sql)
+
+    def find_operator_voice(self, operator_name, title):
+        return self.db.select('t_operator_voice', where=Where({
+            'operator_id': self.get_operator_id(operator_name=operator_name),
+            'voice_title': title
+        }), fetchone=True)

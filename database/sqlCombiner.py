@@ -152,4 +152,4 @@ class Where:
 
 
 def str_or_int(value):
-    return '"%s"' % value if isinstance(value, str) else str(value)
+    return '"%s"' % value.replace('"', '\"') if isinstance(value, str) else str(value)

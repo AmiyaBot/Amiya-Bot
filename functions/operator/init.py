@@ -2,10 +2,10 @@ import json
 import jieba
 import requests
 
-from urllib import parse
 from jieba import posseg
-from bs4 import BeautifulSoup
 from modules.commonMethods import Reply, word_in_sentence, find_similar_string
+from database.baseController import BaseController
+
 from .materialsCosts import MaterialCosts
 
 with open('resource/words/voices.json', encoding='utf-8') as voices:
@@ -14,6 +14,7 @@ with open('resource/words/voices.json', encoding='utf-8') as voices:
     for key in voices:
         keywords.append('%s 100 n' % key)
 
+database = BaseController()
 material = MaterialCosts(keywords)
 jieba.load_userdict('resource/operators.txt')
 
@@ -31,6 +32,7 @@ class Init:
         name = ''
         level = 0
         surplus = ''
+        voice_key = ''
         skill_index = 0
 
         for item in words:
@@ -41,6 +43,10 @@ class Init:
             # 获取专精或精英等级
             if level == 0 and item.word in material.level_list:
                 level = material.level_list[item.word]
+                continue
+            # 获取语音关键词
+            if voice_key == '' and item.word in voices:
+                voice_key = item.word
                 continue
             # 获取技能序号
             if skill_index == 0 and item.word in material.skill_index_list:
@@ -65,33 +71,16 @@ class Init:
             return Reply('博士，要告诉阿米娅精英或专精等级哦')
 
         if word_in_sentence(message, ['语音']):
-            selected = find_similar_string(data['text_digits'], voices)
-            if selected:
-                return self.find_voice(name, selected)
-            else:
-                return Reply('博士，可以描述得更详细一点吗 >.<')
+            if name and voice_key:
+                return self.find_voice(name, voice_key)
 
     @staticmethod
     def find_voice(operator, voice):
-        url = 'http://prts.wiki/w/%s/%s' % (parse.quote(operator), parse.quote('语音记录'))
-
-        response = requests.get(url)
-        response.encoding = 'utf-8'
-        soup = BeautifulSoup(response.content, 'html.parser')
-
-        table = soup.select('table.nodesktop tbody')
-
-        if len(table):
-            tr = table[0].select('tr')
-            for index, item in enumerate(tr):
-                name = item.select('th:first-child b')
-                if name and voice in name[0].string:
-                    content = tr[index + 1].select('p')
-                    text = content[1].get_text()
-                    source = 'PRTS - 玩家自由构筑的明日方舟中文Wiki'
-                    text = '博士，为您找到干员%s%s的语音档案：\n\n%s\n\n档案资料鸣谢：%s' % (operator, voice, text, source)
-                    return Reply(text)
-        return Reply('博士，没有找到干员%s%s相关的语音档案哦')
+        result = database.operator.find_operator_voice(operator, voice)
+        if result:
+            text = '博士，为您找到干员%s%s的语音档案：\n\n%s' % (operator, voice, result['voice_text'])
+            return Reply(text)
+        return Reply('博士，没有找到干员%s%s相关的语音档案哦' % (operator, voice))
 
 
 def sequence_equal_rate(str1, str2):
