@@ -60,11 +60,15 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 
 ## 开始使用
 
-1. 在 [releases](https://github.com/vivien8261/Amiya-Bot/releases) 里下载最新的资源文件`amiya-bot-resource.zip`
-2. 把字体文件放到目录`resource/style`下
-3. 把表情包的图片放到目录`resource/images/face`下，支持 png 和 jpg 格式
-4. 在 Mysql 里导入数据库文件`amiya.sql`
-5. 配置`config.json`
+1. 前往仓库 [Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource) 并根据说明完成资源导入
+2. 安装 python 依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+3. 启动 `mirai-console` 并登录机器人QQ
+4. 配置 `config.json`
 
 ```json5
 {
@@ -109,33 +113,26 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 }
 ```
 
-6. 安装 python 依赖
-
-```bash
-pip install -r requirements.txt
-```
-
-7. 启动 `mirai-console` 并登录机器人QQ
-8. 启动 Amiya 入口程序
+5. 启动 Amiya 入口程序
 
 ```bash
 python amiya.py
 ```
 
-9. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
+6. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
 
 ```
 ...
 websocket connecting success
 ```
 
-10. 现在，唤醒你的 Amiya 吧！
+7. 现在，唤醒你的 Amiya 吧！
 
 ## 功能测试
 
 - 快速启动
-    - 完成上述过程第 6 步
-    - 启动脚本`quickStart.py`并带上参数`Test`
+    - 不需要启动`mirai-console`
+    - 直接运行脚本`quickStart.py`并带上参数`Test`
     - 然后在控制台模拟交互
 
 ```bash
@@ -161,7 +158,8 @@ python quickStart.py Test
 ## 功能使用注意
 
 - **禁言会导致 Amiya 退群！！！**
-- 要保证一些功能的使用，请导入资源文件中的`data.sql`（建议手动更新一次以保证使用最新的数据）
+- 要保证一些功能的使用，请导入 [资源文件](https://github.com/vivien8261/Amiya-Bot-resource) 中的`data.sql`
+    - 建议手动更新一次以保证使用最新的数据
 - 手动更新数据，最简单的方法，在根目录创建任意 python 脚本并运行以下代码
     - 或者直接在快速启动中输入`update`执行更新
     - 更新会扫描所有未保存的数据，首次更新数据视网速情况可能需要一定的耗时
@@ -208,9 +206,9 @@ if __name__ == '__main__':
 
 ## 如何维护
 
-- Amiya 带有**自动更新**功能，会在每天凌晨4点 <del>(鹰历)</del> 执行以下操作：
-    - 清除图片缓存
-    - 重置签到和心情值
+- Amiya 带有**自动更新**功能，会在每天凌晨4点和16点执行以下操作：
+    - 重置签到和心情值（仅4点）
+    - 清除缓存数据
     - 更新干员数据
     - 重启主程序
 - 干员语音资料和敌人数据为即时从 wiki 获取，不需要维护
@@ -227,12 +225,13 @@ VALUES ('银灰色的荣耀',
         0)
 ```
 
-- 手动重启 Amiya 只需要重新运行`amiya.py`即可，不需要重启`mirai-console`。但建议每隔一段时间（2～3天）重启一次`mirai-console`以保证稳定
+- 手动重启 Amiya 只需要重新运行`amiya.py`即可，不需要重启`mirai-console`
+    - 建议每隔一段时间（2～3天）重启一次`mirai-console`以保证稳定，重启`mirai-console`时 Amiya 也需要同步重启
 
 ## 贡献
 
 - 本项目欢迎 dalao 加入，拯救萌新，刻不容缓！
-- 如果有更多的建议或 BUG 反馈，请提交到`issue`或官方测试QQ群`362165038`
+- 如果有更多的建议或 BUG 反馈，请提交到`issue`或官方QQ群`362165038`
 - 你的`star`将会成为 Amiya 成长的经验值
 
 ## TODO
