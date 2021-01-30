@@ -259,19 +259,18 @@ class GaCha:
             group = [self.pick_up[rarity]]
             group += [operator_list] * (4 if rarity == 4 else 1)
 
-            if rarity == 6:
-                if self.limit_pool == 1:
-                    random_num = random.randint(1, 100) + 1
-                    choice = group[int(random_num / 70)]
-                elif self.limit_pool == 2:
-                    choice = group[0]
-                else:
-                    choice = random.choice(group)
-            elif rarity == 5:
-                if self.limit_pool == 2:
-                    choice = group[0]
-                else:
-                    choice = random.choice(group)
+            special = {
+                6: {
+                    1: lambda g: g[int((random.randint(1, 100) + 1) / 70)],
+                    2: lambda g: g[0]
+                },
+                5: {
+                    2: lambda g: g[0]
+                }
+            }
+
+            if rarity in special and self.limit_pool in special[rarity]:
+                choice = special[rarity][self.limit_pool](group)
             else:
                 choice = random.choice(group)
 
