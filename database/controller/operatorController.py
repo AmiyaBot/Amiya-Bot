@@ -93,8 +93,6 @@ class Operator:
         if index > 0:
             sql += ' AND s.skill_index = %d' % index
 
-        print(sql)
-
         return self.db.select(sql=sql, fields=[
             'skill_name',
             'skill_index',
