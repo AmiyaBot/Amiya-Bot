@@ -75,12 +75,18 @@ class Init:
 
             return Reply(result)
 
-        # todo 语音资料
-        if name and voice_key:
-            return self.find_voice(name, voice_key)
+        if name:
+            # todo 语音资料
+            if voice_key:
+                return self.find_voice(name, voice_key)
 
-        if word_in_sentence(message, ['精英', '专精']):
-            return Reply('博士，要告诉阿米娅精英或专精等级哦')
+            if word_in_sentence(message, ['精英', '专精']):
+                return Reply('博士，要告诉阿米娅精英或专精等级哦')
+
+            if word_in_sentence(message, ['语音']):
+                return Reply('博士，要告诉阿米娅语音的详细标题哦')
+
+            return Reply('博士，想查询干员%s的什么资料呢' % name)
 
     @staticmethod
     def find_voice(operator, voice):
