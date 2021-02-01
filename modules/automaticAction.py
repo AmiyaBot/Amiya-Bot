@@ -5,7 +5,7 @@ import threading
 
 from database.baseController import BaseController
 from library.imageCreator import clean_temp
-from modules.commonMethods import restart
+from modules.commonMethods import restart, insert_zero
 from modules.gameData import GameData
 from modules.network.httpRequests import HttpRequests
 
@@ -55,7 +55,11 @@ class AutomaticAction(HttpRequests):
 
             # 判断是否可以重启
             record = 0
-            now_time = int('%s%s%s%s' % (now.tm_year, now.tm_mon, now.tm_mday, 0 if hour == 4 else 1))
+            now_time = int('%s%s%s%s' % (now.tm_year,
+                                         insert_zero(now.tm_mon),
+                                         insert_zero(now.tm_mday),
+                                         0 if hour == 4 else 1))
+
             if os.path.exists('restart.txt') is False:
                 with open('restart.txt', mode='w+') as rs:
                     rs.write(str(now_time))
@@ -64,6 +68,7 @@ class AutomaticAction(HttpRequests):
                     record = int(rs.read())
                     rs.seek(0)
                     rs.write(str(now_time))
+
             if record < now_time:
 
                 # 重置签到和心情值

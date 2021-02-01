@@ -72,6 +72,10 @@ def insert_empty(text, max_num, half=False):
     return '%s%s' % (text, ('　' if half else ' ') * (max_num - len(str(text))))
 
 
+def insert_zero(num: int):
+    return ('0%d' % num) if num < 10 else str(num)
+
+
 def find_similar_string(text: str, text_list: list, hard=0.4):
     r = 0
     t = ''
