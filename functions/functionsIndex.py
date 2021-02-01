@@ -7,10 +7,10 @@ from modules.commonMethods import word_in_sentence
 database = BaseController()
 priority = [
     'functionQuery',
-    'feeling',
     'gacha',
     'operator',
     'material',
+    'userInfo',
     'recruit',
     'enemy',
     'jadeCalculator',

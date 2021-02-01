@@ -206,7 +206,7 @@ class GaCha:
         if break_even > 50:
             break_even_rate -= (break_even - 50) * 2
 
-        return '距离上一次抽出六星已经进行了 %d 抽，当前抽出六星的概率为 %d' % (break_even, 100 - break_even_rate) + '%'
+        return '已经抽取了 %d 次而未获得六星干员\n当前抽出六星干员的概率为 %d' % (break_even, 100 - break_even_rate) + '%'
 
     def start_gacha(self, times):
         operators = []

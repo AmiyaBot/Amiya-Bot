@@ -5,43 +5,31 @@ class User:
     def __init__(self, db: Mysql):
         self.db = db
 
-    def add_feeling(self, user_id, feeling, sign):
+    def update_user(self, user_id, feeling, coupon=0, message_num=0, sign=0):
         data = {
             'user_id': user_id,
             'user_feeling': feeling,
-            'sign_in': sign
+            'coupon': coupon,
+            'message_num': message_num,
+            'sign_in': sign,
+            'sign_times': sign,
         }
         update = {
             'user_feeling': Formula('user_feeling + %d' % feeling),
-            'user_mood': Formula('IF (user_mood + %d <= 15 AND user_mood + %d >= - 10, user_mood + %d, user_mood)'
-                                 % (feeling, feeling, feeling))
+            'user_mood': Formula('IF (user_mood + {feeling} <= 15 AND user_mood + {feeling} >= -10, '
+                                 'user_mood + {feeling}, '
+                                 'user_mood)'.format(feeling=feeling)),
+            'coupon': Formula('coupon + %d' % coupon),
+            'message_num': Formula('message_num + %d' % message_num)
         }
         if sign:
             update['sign_in'] = sign
+            update['sign_times'] = Formula('sign_times + %d' % sign)
 
         self.db.insert(
             table='t_user',
             data=data,
             update=update
-        )
-
-    def add_coupon(self, user_id, num):
-        self.db.update(
-            table='t_user',
-            where=Where({'user_id': user_id}),
-            data={
-                'gacha_coupon': Formula('gacha_coupon + %d' % num)
-            }
-        )
-
-    def set_break_even(self, user_id, break_even, costs):
-        self.db.update(
-            table='t_user',
-            where=Where({'user_id': user_id}),
-            data={
-                'gacha_break_even': break_even,
-                'gacha_coupon': Formula('gacha_coupon - %d' % costs)
-            }
         )
 
     def get_user(self, user_id):
@@ -57,6 +45,16 @@ class User:
             where=Where({'user_id': user_id}),
             data={
                 'gacha_pool': pool_id
+            }
+        )
+
+    def set_break_even(self, user_id, break_even, costs):
+        self.db.update(
+            table='t_user',
+            where=Where({'user_id': user_id}),
+            data={
+                'gacha_break_even': break_even,
+                'coupon': Formula('coupon - %d' % costs)
             }
         )
 

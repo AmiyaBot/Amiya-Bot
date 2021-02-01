@@ -16,7 +16,7 @@ with open('config.json') as conf:
 
 
 class Reply:
-    def __init__(self, content, feeling=2, sign=0, at=True, auto_image=True):
+    def __init__(self, content, feeling=2, sign=0, coupon=0, at=True, auto_image=True):
 
         if len(sys.argv) > 1 and sys.argv[1] == 'Test':
             print(content)
@@ -31,6 +31,7 @@ class Reply:
             self.content = content
 
         self.feeling = feeling
+        self.coupon = coupon
         self.sign = sign
         self.at = at
 

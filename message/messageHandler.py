@@ -137,7 +137,10 @@ class MessageHandler(HttpRequests, Replies):
         elif isinstance(content, list):
             message_chain = content
 
-        database.user.add_feeling(data['user_id'], res.feeling, res.sign)
+        database.user.update_user(data['user_id'], res.feeling,
+                                  sign=res.sign,
+                                  coupon=res.coupon,
+                                  message_num=1)
 
         if message or message_chain:
             self.send_message(data, message, message_chain=message_chain, at=res.at)
@@ -192,7 +195,7 @@ class MessageHandler(HttpRequests, Replies):
         }
 
         if message['type'] == 'FriendMessage':
-            # 不接受私聊消息
+            # todo 不接受私聊消息
             return False
         elif message['type'] == 'GroupMessage':
             data['type'] = 'group'

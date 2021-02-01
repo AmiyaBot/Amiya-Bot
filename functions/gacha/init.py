@@ -45,7 +45,7 @@ class Init:
                     return Reply('博士不要着急，罗德岛的资源要好好规划使用哦，先试试 300 次以内的寻访吧 (#^.^#)')
 
                 user = database.user.get_user(user_id)
-                coupon = user['gacha_coupon'] if user else 0
+                coupon = user['coupon'] if user else 0
                 if times > coupon:
                     return Reply('博士，您的寻访凭证（%d张）不够哦~' % coupon)
 
@@ -61,7 +61,7 @@ class Init:
 
         if word_in_sentence(message, ['多少', '几']):
             user = database.user.get_user(user_id)
-            coupon = user['gacha_coupon'] if user else 0
+            coupon = user['coupon'] if user else 0
             text = '博士的寻访凭证还剩余 %d 张~' % coupon
             if coupon:
                 text += '\n博士，快去获得您想要的干员吧 ☆_☆'

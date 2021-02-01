@@ -13,6 +13,8 @@ VM = VoiceManager()
 with open('resource/words/amiyaName.json', encoding='utf-8') as file:
     amiya_name = json.load(file)
 
+reward = 50
+
 
 def greeting(data):
     message = data['text']
@@ -31,16 +33,26 @@ def greeting(data):
                 chain.append(MSG.text('Dr.%s，%s好～' % (nickname, hour)))
             else:
                 chain.append(MSG.text('Dr.%s，这么晚还不睡吗？要注意休息哦～' % nickname))
-            sign_result = sign_in(data)
-            if sign_result:
+            status = sign_in(data)
+
+            if status['status']:
                 chain.append(MSG.text('\n'))
-                chain.append(MSG.text(sign_result))
-            return Reply(chain, 50 if sign_result else 2, 1 if sign_result else 0)
+                chain.append(MSG.text(status['text']))
+
+            feeling = reward if status['status'] else 2
+            coupon = reward if status['status'] else 0
+            sign = 1 if status['status'] else 0
+
+            return Reply(chain, feeling, sign=sign, coupon=coupon)
 
     if '签到' in message and word_in_sentence(message, amiya_name[0]):
-        sign_result = sign_in(data, 1)
-        if sign_result:
-            return Reply(sign_result, 50, 1, True)
+        status = sign_in(data, 1)
+        if status:
+            feeling = reward if status['status'] else 2
+            coupon = reward if status['status'] else 0
+            sign = 1 if status['status'] else 0
+
+            return Reply(status['text'], feeling, sign=sign, coupon=coupon)
 
     if '晚安' in message:
         return Reply('Dr.%s，晚安～' % nickname)
@@ -53,14 +65,20 @@ def greeting(data):
 def sign_in(data, sign_type=0):
     user_id = data['user_id']
     user = database.user.get_user(user_id)
-    if bool(user) is False:
-        database.user.add_feeling(user_id, 15, False)
+
     if bool(user) is False or user['sign_in'] == 0:
-        database.user.add_coupon(user_id, 50)
-        return '签到成功，50张寻访凭证已经送到博士的办公室啦，请博士注意查收哦'
+        return {
+            'text': '签到成功，%d张寻访凭证已经送到博士的办公室啦，请博士注意查收哦' % reward,
+            'status': True
+        }
+
     if sign_type and user['sign_in'] == 1:
-        return '博士今天已经签到了哦'
-    return False
+        return {
+            'text': '博士今天已经签到了哦',
+            'status': False
+        }
+
+    return {'status': False}
 
 
 def talk_time():

@@ -25,7 +25,7 @@ def faceImage(data):
 
     only_at = message == '' and data['is_at']
 
-    if only_at or eliminate_name(message):
+    if (only_at or eliminate_name(message)) and images:
         image_id = IM.image(random.choice(images), data['type'])
         if image_id:
             return Reply([MSG.image(image_id)], at=False)
