@@ -4,7 +4,7 @@ import random
 from database.baseController import BaseController
 from message.messageType import MessageType
 from modules.resource.voiceManager import VoiceManager
-from modules.commonMethods import Reply
+from modules.commonMethods import Reply, get_image_message
 
 from functions.gacha.gacha import GaCha
 
@@ -53,7 +53,7 @@ class Init:
             if voice_list:
                 text += '\n\n' + random.choice(voice_list)
 
-            return Reply(text, auto_image=False)
+            return Reply([get_image_message(text)])
         else:
             database.user.update_user(data['user_id'], 0)
             return self.action(data)
