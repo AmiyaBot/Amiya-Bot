@@ -1,5 +1,3 @@
-import json
-
 from database.baseController import BaseController
 from modules.commonMethods import get_image_message
 

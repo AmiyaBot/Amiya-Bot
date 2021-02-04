@@ -2,7 +2,7 @@ import re
 import time
 
 from modules.commonMethods import Reply
-from .calculator import calc_jade
+from functions.jadeCalculator.calculator import calc_jade
 
 re_list = [
     "(\\d+)年(\\d+)月(\\d+)日.*玉",

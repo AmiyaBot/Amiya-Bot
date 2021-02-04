@@ -2,8 +2,7 @@ import re
 
 from database.baseController import BaseController
 from modules.commonMethods import Reply, word_in_sentence, get_image_message
-
-from .gacha import GaCha
+from functions.gacha.gacha import GaCha
 
 database = BaseController()
 

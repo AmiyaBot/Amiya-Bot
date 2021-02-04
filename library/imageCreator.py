@@ -1,6 +1,5 @@
 import re
 import os
-import time
 import shutil
 import datetime
 

@@ -1,8 +1,7 @@
 import re
 
 from modules.commonMethods import Reply
-
-from .vblog import VBlog
+from functions.vblog.vblog import VBlog
 
 blog = VBlog()
 

@@ -1,12 +1,10 @@
 import json
 import jieba
-import requests
 
 from jieba import posseg
 from modules.commonMethods import Reply, word_in_sentence, find_similar_string
 from database.baseController import BaseController
-
-from .materialsCosts import MaterialCosts
+from functions.operator.materialsCosts import MaterialCosts
 
 with open('resource/words/voices.json', encoding='utf-8') as voices:
     voices = json.load(voices)['voices']

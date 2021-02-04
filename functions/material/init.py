@@ -2,7 +2,7 @@ import jieba
 
 from jieba import posseg
 from modules.commonMethods import Reply
-from .materials import Material
+from functions.material.materials import Material
 
 material = Material()
 jieba.load_userdict('resource/materials.txt')

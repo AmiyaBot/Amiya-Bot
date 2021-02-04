@@ -1,16 +1,14 @@
 import json
-import pymysql
 
-from .sqlCombiner import Mysql
-
-from .controller.userController import User
-from .controller.groupController import Group
-from .controller.remindController import Remind
-from .controller.messageController import Message
-from .controller.materialController import Material
-from .controller.operatorController import Operator
-from .controller.functionController import Function
-from .controller.resourceController import Resource
+from database.sqlCombiner import Mysql
+from database.controller.userController import User
+from database.controller.groupController import Group
+from database.controller.remindController import Remind
+from database.controller.messageController import Message
+from database.controller.materialController import Material
+from database.controller.operatorController import Operator
+from database.controller.functionController import Function
+from database.controller.resourceController import Resource
 
 
 class BaseController:

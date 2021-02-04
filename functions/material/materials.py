@@ -1,5 +1,3 @@
-import json
-
 from database.baseController import BaseController
 
 database = BaseController()

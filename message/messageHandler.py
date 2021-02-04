@@ -6,12 +6,11 @@ import random
 from functions.functionsIndex import FunctionsIndex
 from database.baseController import BaseController
 from message.noticeHandler import NoticeHandler
+from message.replies import Replies
 from library.baiduCloud import NaturalLanguage
 from library.numberTranslate import chinese_to_digits
 from modules.network.httpRequests import HttpRequests
 from modules.commonMethods import Reply
-
-from .replies import Replies
 
 with open('config.json') as config:
     config = json.load(config)
