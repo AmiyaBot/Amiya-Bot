@@ -3,15 +3,11 @@ import re
 import time
 import requests
 
-from message.messageType import MessageType
-from modules.resource.imageManager import ImageManager
+from message.messageType import Image
 from modules.commonMethods import Reply
 
 resource_path = 'resource/blog/'
 user_id = '6279793937'
-
-MSG = MessageType()
-IM = ImageManager(resource_path + 'images/')
 
 
 class VBlog:
@@ -105,8 +101,8 @@ class VBlog:
                 stream = requests.get(pic_url, headers=self.headers, stream=True)
                 if stream.status_code == 200:
                     open(path, 'wb').write(stream.content)
-            image_id = IM.image(name, message_type)
-            pics_list.append(MSG.image(image_id))
+
+            pics_list.append(Image(resource_path + 'images/' + name))
 
         return [
             Reply(html_text),

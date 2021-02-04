@@ -2,7 +2,7 @@ from .admin import admin
 from .emotion import emotion
 from .waiting import waiting
 from .greeting import greeting
-from .faceImage import faceImage
+from .faceImage import face_image
 
 
 class Replies:
@@ -11,4 +11,4 @@ class Replies:
         self.emotion = emotion
         self.waiting = waiting
         self.greeting = greeting
-        self.faceImage = faceImage
+        self.face_image = face_image

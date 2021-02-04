@@ -3,32 +3,28 @@ import os
 import json
 import random
 
-from message.messageType import MessageType
-from modules.resource.imageManager import ImageManager
+from message.messageType import Image
 from modules.commonMethods import Reply, word_in_sentence
-
-MSG = MessageType()
-IM = ImageManager('resource/images/face/')
-
-images = []
-for root, dirs, files in os.walk('resource/images/face'):
-    for item in files:
-        if item != '.gitkeep':
-            images.append(item)
 
 with open('resource/words/amiyaName.json', encoding='utf-8') as file:
     amiya_name = json.load(file)
 
+face_dir = 'resource/images/face/'
+images = []
+for root, dirs, files in os.walk(face_dir.strip('/')):
+    for item in files:
+        if item != '.gitkeep':
+            images.append(item)
 
-def faceImage(data):
+
+def face_image(data):
     message = data['text'].strip()
 
     only_at = message == '' and data['is_at']
 
     if (only_at or eliminate_name(message)) and images:
-        image_id = IM.image(random.choice(images), data['type'])
-        if image_id:
-            return Reply([MSG.image(image_id)], at=False)
+        path = face_dir + random.choice(images)
+        return Reply(Image(path), at=False)
 
 
 def eliminate_name(message):

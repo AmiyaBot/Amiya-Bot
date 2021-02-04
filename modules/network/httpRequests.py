@@ -3,10 +3,8 @@ import json
 import requests
 
 from database.baseController import BaseController
-from message.messageType import MessageType
 
 database = BaseController()
-MSG = MessageType()
 
 with open('config.json') as config:
     config = json.load(config)
@@ -91,7 +89,10 @@ class HttpRequests:
         if message_chain and type(message_chain) is list:
             chain = message_chain
         else:
-            chain = [MSG.text(message)]
+            chain = [{
+                'type': 'Plain',
+                'text': message
+            }]
 
         self.post('sendFriendMessage', {
             'sessionKey': session,
@@ -104,10 +105,14 @@ class HttpRequests:
         if message_chain and type(message_chain) is list:
             chain = message_chain
         else:
-            chain = [MSG.text(message)]
+            chain = [{
+                'type': 'Plain',
+                'text': message
+            }]
         if at:
-            chain.insert(0, MSG.text('\n'))
-            chain.insert(0, MSG.at_all() if at == 'all' else MSG.at(data['user_id']))
+            chain.insert(0, {'type': 'Plain', 'text': '\n'})
+            chain.insert(0,
+                         {'type': 'AtAll', 'target': 0} if at == 'all' else {'type': 'At', 'target': data['user_id']})
 
         self.post('sendGroupMessage', {
             'sessionKey': session,

@@ -1,6 +1,7 @@
 import re
 
-from modules.commonMethods import Reply, get_image_message
+from message.messageType import TextImage
+from modules.commonMethods import Reply
 
 
 class Init:
@@ -92,10 +93,10 @@ class Init:
                     for sub_index, sub_item in enumerate(function_list[index]['desc']):
                         text += '\n（%d）%s' % (sub_index + 1, sub_item)
 
-                    return Reply([get_image_message(text)])
+                    return Reply(TextImage(text))
 
         text = '博士，这是阿米娅的功能清单，请和我说「阿米娅查看第 N 个功能」来获取使用方法吧\n'
         for index, item in enumerate(function_list):
             text += '\n[%d] %s' % (index + 1, item['title'])
 
-        return Reply([get_image_message(text)])
+        return Reply(TextImage(text))

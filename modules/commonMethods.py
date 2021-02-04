@@ -4,12 +4,7 @@ import sys
 import json
 import difflib
 
-from message.messageType import MessageType
-from library.imageCreator import create_image
-from modules.resource.imageManager import ImageManager
-
-MSG = MessageType()
-IM = ImageManager('resource/message/Common/')
+from message.messageType import TextImage, Image, Text
 
 with open('config.json') as conf:
     config = json.load(conf)
@@ -18,28 +13,36 @@ with open('config.json') as conf:
 class Reply:
     def __init__(self, content, feeling=2, sign=0, coupon=0, at=True, auto_image=True):
 
-        if len(sys.argv) > 1 and sys.argv[1] == 'Test':
-            print(content)
-            content = ''
+        self.auto_image = auto_image
 
-        if isinstance(content, str):
-            content = content.strip('\n')
+        c_type = type(content)
+        chain = []
 
-        if auto_image and isinstance(content, str) and len(content) >= config['message']['reply_text_max_length']:
-            self.content = [get_image_message(content)]
+        if c_type is str:
+            chain += self.__trans_str(content.strip('\n'))
+        elif c_type is list:
+            for item in content:
+                if type(item) is str:
+                    chain += self.__trans_str(item.strip('\n'))
+                if type(item) in [TextImage, Image, Text]:
+                    chain += item.item
         else:
-            self.content = content
+            if c_type in [TextImage, Image, Text]:
+                chain += content.item
 
+        self.content = chain
         self.feeling = feeling
         self.coupon = coupon
         self.sign = sign
         self.at = at
 
-
-def get_image_message(content, images=None):
-    image = create_image(content, 'Common', images)
-    image_id = IM.image(image)
-    return MSG.image(image_id)
+    def __trans_str(self, text):
+        max_len = config['message']['reply_text_max_length']
+        if self.auto_image and len(text) >= max_len:
+            text = TextImage(text)
+        else:
+            text = Text(text)
+        return text.item
 
 
 def list_split(items: list, n: int):

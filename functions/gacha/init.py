@@ -1,7 +1,8 @@
 import re
 
 from database.baseController import BaseController
-from modules.commonMethods import Reply, word_in_sentence, get_image_message
+from message.messageType import TextImage
+from modules.commonMethods import Reply, word_in_sentence
 from functions.gacha.gacha import GaCha
 
 database = BaseController()
@@ -53,7 +54,7 @@ class Init:
                 else:
                     res = gacha.continuous_mode(times)
 
-                return Reply(res)
+                return Reply(TextImage(res))
 
         if '保底' in message:
             return Reply(gacha.check_break_even())
@@ -64,7 +65,7 @@ class Init:
             text = '博士的寻访凭证还剩余 %d 张~' % coupon
             if coupon:
                 text += '\n博士，快去获得您想要的干员吧 ☆_☆'
-            return Reply([get_image_message(text)])
+            return Reply(TextImage(text))
 
         if word_in_sentence(message_ori, ['切换', '更换']):
             r = re.search(r'(\d+)', message_ori)

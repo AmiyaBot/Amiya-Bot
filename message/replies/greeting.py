@@ -2,13 +2,9 @@ import json
 import time
 
 from database.baseController import BaseController
-from message.messageType import MessageType
-from modules.resource.voiceManager import VoiceManager
 from modules.commonMethods import Reply, word_in_sentence
 
 database = BaseController()
-MSG = MessageType()
-VM = VoiceManager()
 
 with open('resource/words/amiyaName.json', encoding='utf-8') as file:
     amiya_name = json.load(file)
@@ -22,28 +18,26 @@ def greeting(data):
 
     for item in ['不能休息', '不能停', '不要休息', '不要停', '很多事情']:
         if item in message:
-            # return Reply([MSG.voice(VM.find_voice_id('阿米娅_闲置'))])
             pass
 
     for item in ['早上好', '早安', '中午好', '午安', '下午好', '晚上好']:
         if item in message:
             hour = talk_time()
-            chain = []
+            text = ''
             if hour:
-                chain.append(MSG.text('Dr.%s，%s好～' % (nickname, hour)))
+                text += 'Dr.%s，%s好～' % (nickname, hour)
             else:
-                chain.append(MSG.text('Dr.%s，这么晚还不睡吗？要注意休息哦～' % nickname))
+                text += 'Dr.%s，这么晚还不睡吗？要注意休息哦～' % nickname
             status = sign_in(data)
 
             if status['status']:
-                chain.append(MSG.text('\n'))
-                chain.append(MSG.text(status['text']))
+                text += '\n' + status['text']
 
             feeling = reward if status['status'] else 2
             coupon = reward if status['status'] else 0
             sign = 1 if status['status'] else 0
 
-            return Reply(chain, feeling, sign=sign, coupon=coupon)
+            return Reply(text, feeling, sign=sign, coupon=coupon)
 
     if '签到' in message and word_in_sentence(message, amiya_name[0]):
         status = sign_in(data, 1)

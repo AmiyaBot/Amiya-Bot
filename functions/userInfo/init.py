@@ -2,15 +2,11 @@ import json
 import random
 
 from database.baseController import BaseController
-from message.messageType import MessageType
-from modules.resource.voiceManager import VoiceManager
-from modules.commonMethods import Reply, get_image_message
-
+from message.messageType import TextImage
+from modules.commonMethods import Reply
 from functions.gacha.gacha import GaCha
 
 database = BaseController()
-MSG = MessageType()
-VM = VoiceManager()
 
 with open('resource/words/voices.json', encoding='utf-8') as voices:
     touch = json.load(voices)['touch']
@@ -53,7 +49,7 @@ class Init:
             if voice_list:
                 text += '\n\n' + random.choice(voice_list)
 
-            return Reply([get_image_message(text)])
+            return Reply(TextImage(text))
         else:
             database.user.update_user(data['user_id'], 0)
             return self.action(data)

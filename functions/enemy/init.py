@@ -4,13 +4,8 @@ import requests
 from urllib import parse
 from bs4 import BeautifulSoup
 
-from message.messageType import MessageType
-from library.imageCreator import create_image
+from message.messageType import TextImage
 from modules.commonMethods import Reply
-from modules.resource.imageManager import ImageManager
-
-MSG = MessageType()
-IM = ImageManager('resource/message/Enemy/')
 
 
 class Init:
@@ -101,10 +96,9 @@ class Init:
 
                 text += '\n档案资料鸣谢：PRTS - 玩家自由构筑的明日方舟中文Wiki'
 
-                image = create_image(text, 'Enemy')
-                image_id = IM.image(image)
-                cards.append(MSG.image(image_id))
+                cards.append(TextImage(text))
 
             except Exception as e:
                 print('Enemy', e)
+
         return cards

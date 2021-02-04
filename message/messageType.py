@@ -1,58 +1,60 @@
-class MessageType:
-    def __init__(self):
-        pass
+import re
 
-    @staticmethod
-    def at(user_id):
-        return {
-            'type': 'At',
-            'target': user_id
-        }
+from modules.resource.imageManager import ImageManager
+from library.imageCreator import create_image
 
-    @staticmethod
-    def at_all():
-        return {
-            'type': 'AtAll',
-            'target': 0
-        }
+imageManager = ImageManager()
 
-    @staticmethod
-    def text(text):
-        return {
-            'type': 'Plain',
-            'text': text
-        }
 
-    @staticmethod
-    def face(face_id):
-        return {
-            'type': 'Face',
-            'faceId': face_id
-        }
-
-    @staticmethod
-    def image(image_id):
-        return {
-            'type': 'Image',
-            'imageId': image_id
-        }
-
-    @staticmethod
-    def voice(voice_id):
-        return {
-            'type': 'Voice',
-            'voiceId': voice_id
-        }
-
-    def chain(self, data):
+class Text:
+    def __init__(self, text):
         chain = []
-        for item in data:
-            if 'at' in item:
-                chain.append(self.at(item['at']))
-            if 'text' in item:
-                chain.append(self.text(item['text']))
-            if 'image' in item:
-                chain.append(self.image(item['image']))
-            if 'face' in item:
-                chain.append(self.face(item['face']))
-        return chain
+
+        r = re.findall(r'(\[face(\d+)])', text)
+        if r:
+            face = []
+            for item in r:
+                text = text.replace(item[0], ':face')
+                face.append(item[1])
+
+            for index, item in enumerate(text.split(':face')):
+                if item != '':
+                    chain.append({
+                        'type': 'Plain',
+                        'text': item
+                    })
+                if index <= len(face) - 1:
+                    chain.append({
+                        'type': 'Face',
+                        'faceId': face[index]
+                    })
+        else:
+            chain.append({
+                'type': 'Plain',
+                'text': text
+            })
+
+        self.item = chain
+
+
+class Image:
+    def __init__(self, path):
+        image_id = imageManager.image(path, 'group')
+        self.item = [
+            {
+                'type': 'Image',
+                'imageId': image_id
+            }
+        ]
+
+
+class TextImage:
+    def __init__(self, text, images=None):
+        image = create_image(text, 'Common', images)
+        image_id = imageManager.image('resource/message/Common/' + image, 'group')
+        self.item = [
+            {
+                'type': 'Image',
+                'imageId': image_id
+            }
+        ]

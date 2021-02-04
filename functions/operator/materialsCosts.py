@@ -1,5 +1,5 @@
 from database.baseController import BaseController
-from modules.commonMethods import get_image_message
+from message.messageType import TextImage
 
 database = BaseController()
 material_images_source = 'resource/images/materials/'
@@ -72,7 +72,7 @@ class MaterialCosts:
                 })
                 i += n
 
-            text = [get_image_message(text, icons)]
+            text = TextImage(text, icons)
         else:
             text += '博士，暂时没有找到相关的档案哦~'
 
@@ -125,7 +125,7 @@ class MaterialCosts:
                 })
                 i += n
 
-            text = [get_image_message(text, icons)]
+            text = TextImage(text, icons)
         else:
             text += '博士，暂时没有找到相关的档案哦~'
 

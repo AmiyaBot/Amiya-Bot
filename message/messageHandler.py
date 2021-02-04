@@ -78,7 +78,7 @@ class MessageHandler(HttpRequests, Replies):
             },
             {
                 # 表情包
-                'func': self.faceImage,
+                'func': self.face_image,
                 'need_call': True
             },
             {
@@ -128,21 +128,12 @@ class MessageHandler(HttpRequests, Replies):
             return False
 
         content = res.content
-        message = ''
-        message_chain = None
-
-        if isinstance(content, str):
-            message = content
-        elif isinstance(content, list):
-            message_chain = content
-
         database.user.update_user(data['user_id'], res.feeling,
                                   sign=res.sign,
                                   coupon=res.coupon,
                                   message_num=1)
 
-        if message or message_chain:
-            self.send_message(data, message, message_chain=message_chain, at=res.at)
+        self.send_message(data, message_chain=content, at=res.at)
 
     def message_filter(self, data):
         if data is False:
