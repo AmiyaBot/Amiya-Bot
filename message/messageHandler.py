@@ -1,3 +1,4 @@
+import sys
 import json
 import time
 import copy
@@ -133,6 +134,10 @@ class MessageHandler(HttpRequests, Replies):
                                   coupon=res.coupon,
                                   message_num=1)
 
+        if len(sys.argv) > 1 and sys.argv[1] == 'Test':
+            print(content)
+            return False
+
         self.send_message(data, message_chain=content, at=res.at)
 
     def message_filter(self, data):
@@ -229,4 +234,5 @@ class MessageHandler(HttpRequests, Replies):
             elif label == 'pessimistic':
                 text = '博士心情不好吗？阿米娅不懂怎么安慰博士，但阿米娅会默默陪在博士身边的'
 
-            return Reply(text)
+            if text:
+                return Reply(text)
