@@ -1,13 +1,12 @@
+import json
+
 from message.messageHandler import MessageHandler
 from modules.gameData import GameData
-
-sender_id = 826197021
-group_id = 852191455
 
 message = MessageHandler()
 
 
-def on_message(text):
+def on_message(text, sender_id, group_id):
     message.on_message({
         'type': 'GroupMessage',
         'messageChain': [
@@ -31,6 +30,10 @@ def on_message(text):
 if __name__ == '__main__':
     print('Testing started.')
     print('Enter a message and press enter to interact.')
+
+    with open('config.json') as config:
+        config = json.load(config)
+
     try:
         while True:
             message_text = input()
@@ -40,7 +43,7 @@ if __name__ == '__main__':
                 continue
 
             if message_text:
-                on_message(message_text)
+                on_message(message_text, config['admin_id'], config['close_beta']['group_id'])
 
     except KeyboardInterrupt:
         pass

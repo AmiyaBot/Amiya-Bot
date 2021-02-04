@@ -51,6 +51,9 @@ class Operator:
             'operator_name': ['in', Formula('("%s")' % '", "'.join(extra or []))]
         }, operator='OR'))
 
+    def get_all_operator_tags(self):
+        return self.db.select('t_operator_tags_relation')
+
     def get_all_operator_skill(self):
         return self.db.select('t_operator_skill')
 
@@ -120,3 +123,15 @@ class Operator:
             'operator_id': self.get_operator_id(operator_name=operator_name),
             'voice_title': title
         }), fetchone=True)
+
+    def create_tags_file(self, path='resource/tags.txt'):
+        tags_list = ['资深', '高资', '高级资深']
+
+        for item in self.get_all_operator_tags():
+            if item['operator_tags'] not in tags_list:
+                tags_list.append(item['operator_tags'])
+
+        with open(path, mode='w+', encoding='utf-8') as file:
+            file.write('\n'.join([item + ' 100 n' for item in tags_list]))
+
+        return path

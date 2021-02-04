@@ -6,7 +6,8 @@ from modules.commonMethods import Reply, all_item_in_text, insert_empty
 from database.baseController import BaseController
 
 database = BaseController()
-jieba.load_userdict('resource/tags.txt')
+tags_file = database.operator.create_tags_file()
+jieba.load_userdict(tags_file)
 
 
 class Init:
@@ -14,7 +15,7 @@ class Init:
         self.function_id = 'recruit'
         self.keyword = ['公招', '公开招募']
         self.tags = []
-        with open('resource/tags.txt', encoding='utf-8') as tags:
+        with open(tags_file, encoding='utf-8') as tags:
             for item in tags.read().split('\n'):
                 self.tags.append(item.split(' ')[0].strip())
 
