@@ -109,8 +109,11 @@ class AutomaticAction(HttpRequests):
                 self.send_message(data, text, at=True)
 
     def send_new_blog(self):
-        with open('resource/blog.txt', mode='r') as file:
-            record_id = file.read().split('\n')
+        blog_file = 'resource/blog.txt'
+        record_id = []
+        if os.path.exists(blog_file):
+            with open(blog_file, mode='r') as file:
+                record_id = file.read().split('\n')
 
         new_id = blog.get_new_blog(only_id=True)
 
@@ -120,7 +123,7 @@ class AutomaticAction(HttpRequests):
             if new_blog is False:
                 return False
 
-            with open('resource/blog.txt', mode='a+') as file:
+            with open(blog_file, mode='a+') as file:
                 file.write(new_id + '\n')
 
             group_list = self.get_group_list()
@@ -134,10 +137,7 @@ class AutomaticAction(HttpRequests):
                 for index, item in enumerate(new_blog):
                     at_all = 'all' if group['permission'] == 'ADMINISTRATOR' and index == 0 else False
                     if item.content:
-                        if type(item.content) is list:
-                            self.send_group_message(data, message_chain=item.content, at=False)
-                        else:
-                            self.send_group_message(data, message=item.content, at=False)
+                        self.send_group_message(data, message_chain=item.content, at=False)
                 total += 1
             complete = '微博推送完毕。成功 %d / %d，耗时：%ds' % (total, len(group_list), time.time() - time_record)
             self.send_admin(complete)
