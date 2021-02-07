@@ -225,6 +225,26 @@ VALUES ('银灰色的荣耀',
         0)
 ```
 
+- 在有干员增加的版本，Amiya 在自更新前，需手动配置更新文件`resource/config/update_config.json`，以便在自更新时能正确获取数据
+
+```json5
+// 比如当《集成战略》有新干员增加时，在无法抽卡获取的干员对应的列表里添加新干员名
+// 否则更新新数据后，干员会被归类到可获取的干员，造成抽卡异常产出
+{
+    "roguelike_only": [
+        "预备干员-近战",
+        "预备干员-狙击",
+        "预备干员-后勤",
+        "预备干员-术师",
+        "Sharp",
+        "Stormeye",
+        "Pith",
+        "Touch"
+    ]
+}
+```
+
+- 任何配置改动后需重启 Amiya 后生效
 - 手动重启 Amiya 只需要重新运行`amiya.py`即可，不需要重启`mirai-console`
     - 建议每隔一段时间（2～3天）重启一次`mirai-console`以保证稳定，重启`mirai-console`时 Amiya 也需要同步重启
 
