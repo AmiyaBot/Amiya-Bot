@@ -40,7 +40,7 @@ unavailable = [
 ]
 limit = [
     # 限定
-    '年', 'W', '迷迭香'
+    '年', 'W', '迷迭香', '夕'
 ]
 
 
@@ -115,8 +115,7 @@ class GameData:
                     operators.append(item)
             return operators
 
-    def save_operator_data(self, data):
-        operator = Operator(data)
+    def save_operator_data(self, operator):
         rarity = operator.rarity
 
         # todo 保存基础信息
@@ -271,7 +270,7 @@ class GameData:
                 record = millisecond()
                 print('[%d/%d] 检测到未保存的干员【%s】，开始抓取数据...' % (index + 1, len(data), operator.name))
 
-                self.save_operator_data(item)
+                self.save_operator_data(operator)
                 not_exist += 1
 
                 print(' --- 抓取完毕。耗时 %d ms' % (millisecond() - record))
