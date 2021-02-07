@@ -16,13 +16,11 @@ from modules.commonMethods import Reply
 with open('config.json') as config:
     config = json.load(config)
 
-with open('resource/words/amiyaName.json', encoding='utf-8') as file:
-    amiya_name = json.load(file)
-
 NLP = NaturalLanguage(config['baidu_cloud'])
 database = BaseController()
 function = FunctionsIndex()
 notice = NoticeHandler()
+amiya_name = database.config.get_amiya_name()
 
 
 class MessageHandler(HttpRequests, Replies):

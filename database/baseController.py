@@ -3,6 +3,7 @@ import json
 from database.sqlCombiner import Mysql
 from database.controller.userController import User
 from database.controller.groupController import Group
+from database.controller.configController import Config
 from database.controller.remindController import Remind
 from database.controller.messageController import Message
 from database.controller.materialController import Material
@@ -21,6 +22,7 @@ class BaseController:
 
         self.user = User(self.comb)
         self.group = Group(self.comb)
+        self.config = Config(self.comb)
         self.remind = Remind(self.comb)
         self.message = Message(self.comb)
         self.material = Material(self.comb)

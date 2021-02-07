@@ -1,13 +1,10 @@
-import json
 import time
 
 from database.baseController import BaseController
 from modules.commonMethods import Reply, word_in_sentence
 
 database = BaseController()
-
-with open('resource/words/amiyaName.json', encoding='utf-8') as file:
-    amiya_name = json.load(file)
+amiya_name = database.config.get_amiya_name()
 
 reward = 50
 

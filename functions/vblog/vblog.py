@@ -6,7 +6,6 @@ import requests
 from message.messageType import Image
 from modules.commonMethods import Reply
 
-resource_path = 'resource/blog/'
 user_id = '6279793937'
 
 
@@ -96,13 +95,16 @@ class VBlog:
             suffix = name.split('.')[-1]
             if suffix.lower() == 'gif':
                 continue
-            path = resource_path + 'images/%s' % name
+            temp = 'resource/message/Blog'
+            path = '%s/%s' % (temp, name)
             if os.path.exists(path) is False:
+                if os.path.exists(temp) is False:
+                    os.mkdir(temp)
                 stream = requests.get(pic_url, headers=self.headers, stream=True)
                 if stream.status_code == 200:
                     open(path, 'wb').write(stream.content)
 
-            pics_list.append(Image(resource_path + 'images/' + name))
+            pics_list.append(Image(path))
 
         return [
             Reply(html_text),

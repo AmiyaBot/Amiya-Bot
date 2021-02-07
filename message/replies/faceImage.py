@@ -1,13 +1,13 @@
 import re
 import os
-import json
 import random
 
 from message.messageType import Image
 from modules.commonMethods import Reply, word_in_sentence
+from database.baseController import BaseController
 
-with open('resource/words/amiyaName.json', encoding='utf-8') as file:
-    amiya_name = json.load(file)
+database = BaseController()
+amiya_name = database.config.get_amiya_name()
 
 face_dir = 'resource/images/face/'
 images = []

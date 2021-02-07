@@ -1,4 +1,3 @@
-import json
 import jieba
 
 from jieba import posseg
@@ -6,11 +5,18 @@ from modules.commonMethods import Reply, word_in_sentence, find_similar_string
 from database.baseController import BaseController
 from functions.operator.materialsCosts import MaterialCosts
 
-with open('resource/words/voices.json', encoding='utf-8') as voices:
-    voices = json.load(voices)['voices']
-    keywords = []
-    for key in voices:
-        keywords.append('%s 100 n' % key)
+voices = [
+    "任命助理", "任命队长", "编入队伍", "问候", "闲置",
+    "交谈1", "交谈2", "交谈3", "晋升后交谈1", "晋升后交谈2",
+    "信赖提升后交谈1", "信赖提升后交谈2", "信赖提升后交谈3",
+    "精英化晋升1", "精英化晋升2",
+    "行动出发", "行动失败", "行动开始", "3星结束行动", "4星结束行动", "非3星结束行动",
+    "选中干员1", "选中干员2", "部署1", "部署2", "作战中1", "作战中2", "作战中3", "作战中4",
+    "戳一下", "信赖触摸", "干员报到", "进驻设施", "观看作战记录", "标题"
+]
+keywords = []
+for key in voices:
+    keywords.append('%s 100 n' % key)
 
 database = BaseController()
 material = MaterialCosts(keywords)

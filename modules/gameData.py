@@ -6,42 +6,21 @@ import requests
 from database.baseController import BaseController
 
 database = BaseController()
-classes = {
-    'PIONEER': '先锋',
-    'WARRIOR': '近卫',
-    'TANK': '重装',
-    'SNIPER': '狙击',
-    'CASTER': '术师',
-    'SUPPORT': '辅助',
-    'MEDIC': '医疗',
-    'SPECIAL': '特种'
-}
-types = {
-    'MELEE': '近战',
-    'RANGED': '远程'
-}
-high_star = {
-    5: '资深干员',
-    6: '高级资深干员'
-}
-unavailable = [
-    # 无法正常获得
-    '阿米娅', '暴行', '断罪者',
-    # 红票或其他购买渠道获得
-    '嘉维尔', '讯使', '微风', '伊桑', '坚雷', '清流',
-    # 公招限定
-    '因陀罗', '火神', '艾丝黛尔',
-    # 活动限定
-    '格拉尼', '锡兰', '炎客', '拜松', '雪雉', '铸铁', '苦艾', '亚叶', '特米米', '薄绿', '鞭刃', '罗宾',
-    # 危机合约
-    '柏喙', '稀音', '图耶',
-    # 集成战略
-    '预备干员-近战', '预备干员-狙击', '预备干员-后勤', '预备干员-术师', 'Sharp', 'Stormeye', 'Pith', 'Touch'
-]
-limit = [
-    # 限定
-    '年', 'W', '迷迭香', '夕'
-]
+
+with open('resource/config/update_config.json', encoding='utf-8', mode='r')as file:
+    update_config = json.load(file)
+
+high_star = update_config['high_star']
+classes = update_config['classes']
+types = update_config['types']
+limit = update_config['limit']
+unavailable = [item for item in
+               update_config['unavailable']['not_normally'] +
+               update_config['unavailable']['sale_only'] +
+               update_config['unavailable']['recruit_only'] +
+               update_config['unavailable']['activity_only'] +
+               update_config['unavailable']['contract_only'] +
+               update_config['unavailable']['roguelike_only']]
 
 
 class Operator:

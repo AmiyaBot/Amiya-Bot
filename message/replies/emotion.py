@@ -1,4 +1,3 @@
-import json
 import random
 
 from database.baseController import BaseController
@@ -6,12 +5,9 @@ from modules.commonMethods import Reply, word_in_sentence, check_sentence_by_re
 
 database = BaseController()
 
-with open('resource/words/keyword.json', encoding='utf-8') as file:
-    keyword = json.load(file)
-with open('resource/words/amiyaName.json', encoding='utf-8') as file:
-    amiya_name = json.load(file)
-with open('resource/words/talkWords.json', encoding='utf-8') as file:
-    talk_words = json.load(file)
+amiya_name = database.config.get_amiya_name()
+keyword = database.config.get_amiya_keyword()
+talk_words = database.config.get_amiya_talk()
 
 
 def emotion(data):
