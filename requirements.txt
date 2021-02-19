@@ -6,3 +6,5 @@ beautifulsoup4~=4.9.3
 PyMySQL~=0.10.1
 jieba~=0.42.1
 baidu-aip~=2.2.18.0
+psutil~=5.8.0
+PyYAML~=5.4.1

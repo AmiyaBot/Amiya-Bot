@@ -2,6 +2,7 @@ import json
 import threading
 
 from ws4py.client.threadedclient import WebSocketClient
+from modules.automaticAction import run_automatic_action
 
 with open('config.json') as file:
     config = json.load(file)
@@ -16,6 +17,8 @@ class Websocket(WebSocketClient):
         self.handler = handler
 
     def opened(self):
+        # 启动循环事件线程
+        run_automatic_action()
         print('websocket connecting success')
 
     def closed(self, code, reason=None):

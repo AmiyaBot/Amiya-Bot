@@ -13,7 +13,11 @@ logo_file = 'resource/style/rabbit.png'
 def cut_code(code, length):
     code_list = re.findall('.{' + str(length) + '}', code)
     code_list.append(code[(len(code_list) * length):])
-    return code_list
+    res_list = []
+    for n in code_list:
+        if n != '':
+            res_list.append(n)
+    return res_list
 
 
 def create_image(text, message, images=None):

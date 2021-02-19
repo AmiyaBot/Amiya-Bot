@@ -1,6 +1,7 @@
 /.idea/
 /venv/
 /remind/
+/console/
 /resource/images/
 /resource/message/
 /resource/*.txt
