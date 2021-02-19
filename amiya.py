@@ -32,10 +32,15 @@ if __name__ == '__main__':
     with open('config.json', encoding='utf-8') as config:
         config = json.load(config)
 
-    # 启动 mirai-console 进程
-    mirai = Process(os.path.dirname(os.path.abspath(__file__)) + '\\console')
-    mirai.init_auto_login(config['self_id'], config['self_passwords'])
-    mirai.start_process()
+    if config['mirai_ok']:
 
-    # 启动 Amiya 进程，预留时间供 console 启动
-    threading.Timer(15, start).start()
+        # 启动 mirai-console 进程
+        mirai = Process(os.path.dirname(os.path.abspath(__file__)) + '\\console')
+        mirai.init_auto_login(config['self_id'], config['self_passwords'])
+        mirai.start_process()
+
+        # 启动 Amiya 进程，预留时间供 console 启动
+        threading.Timer(15, start).start()
+
+    else:
+        start()

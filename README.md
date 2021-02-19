@@ -1,11 +1,11 @@
 # Amiya-Bot
 
 > 基于 [mirai-console](https://github.com/mamoe/mirai-console) 和 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的QQ聊天机器人<br>
-> 其根本为一个 websocket 客户端，通过 TCP 接收到消息后，再以 HTTP 发送格式化的消息<br>
+> 本质为一个 websocket 客户端
 
 > 名字源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也和游戏相关。
 
-    「博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！」
+    「博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！」 -- 阿米娅
 
 ## 声明
 
@@ -42,10 +42,10 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 ## 准备
 
 - 想要创建自己的 Amiya，建议拥有一定编程基础，否则以下说明将难以理解
-- <del>不了解编程的博士可以等待后续发布的**简易部署安装包**</del>
-- 建议先去了解且能用任意方式成功运行 [mirai-console](https://github.com/mamoe/mirai-console)
-  并加载插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
-  ，关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
+- 建议先了解 [mirai-console](https://github.com/mamoe/mirai-console)
+  以及其插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
+  以便理解源码
+    - 关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
 - 需要 python 3.7+
 - 需要 Mysql 8.0+
 
@@ -56,26 +56,28 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 - 注释较少（会慢慢补充）
 - 通过遍历文件的类加载方法
 - 通过线程而非协程的异步实现方式
-- 程序强制自重启
+- 强制重启进程
 
 ## 开始使用
 
-1. 前往仓库 [Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource) 并根据说明完成资源导入
+1. 必须先前往仓库 [Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource) 并根据说明完成资源导入
 2. 安装 python 依赖
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 启动 `mirai-console` 并登录机器人QQ
-4. 配置 `config.json`
+3. 配置 `config.json`
 
 ```json5
 {
-    // 机器人QQ号
+    // 机器人 QQ 号和密码
     "self_id": 1515361402,
-    // 管理员QQ号
+    "self_passwords": "",
+    // 管理员 QQ 号
     "admin_id": 826197021,
+    // 是否使用 MiraiOK
+    "mirai_ok": true,
     "server": {
         // mirai-api-http 服务配置
         "server_ip": "127.0.0.1",
@@ -113,22 +115,25 @@ pip install -r requirements.txt
 }
 ```
 
-5. 启动 Amiya 入口程序
+4. 启动 Amiya 入口程序
+    - （非常重要）若不使用 [资源文件](https://github.com/vivien8261/Amiya-Bot-resource)
+      说明里的 MiraiOK，请在该步骤前，启动好自己的 mirai-console 和加载插件 mirai-api-http，并修改配置`"mirai_ok": false`
 
 ```bash
 python amiya.py
 ```
 
-6. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
+5. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
+    - 若使用了 MiraiOK ，还会额外启动一个窗口
 
 ```
 ...
 websocket connecting success
 ```
 
-7. 现在，唤醒你的 Amiya 吧！
+6. 现在，唤醒你的 Amiya 吧！
 
-## 功能测试
+## 功能测试方式
 
 - 快速启动
     - 不需要启动`mirai-console`
@@ -244,9 +249,9 @@ VALUES ('银灰色的荣耀',
 }
 ```
 
-- 任何配置改动后需重启 Amiya 后生效
-- 手动重启 Amiya 只需要重新运行`amiya.py`即可，不需要重启`mirai-console`
-    - 建议每隔一段时间（2～3天）重启一次`mirai-console`以保证稳定，重启`mirai-console`时 Amiya 也需要同步重启
+- 任何配置改动后需重启 Amiya 后生效，手动重启 Amiya 只需要重新运行`amiya.py`即可
+    - 或者使用管理员命令`Amiya重启`
+- 要关闭 Amiya，直接关闭 Amiya 的窗口和 mirai-console 即可
 
 ## 贡献
 
@@ -268,4 +273,3 @@ VALUES ('银灰色的荣耀',
 - [KokodaYo](https://www.kokodayo.fun/)
 - [明日方舟官方微博](https://m.weibo.cn/u/6279793937)
 - [PRTS - 玩家自由构筑的明日方舟中文Wiki](http://prts.wiki/)
-- [明日方舟工具箱](https://www.bigfun.cn/tools/aktools/) (2021.01.17起不再从该网站获取)
