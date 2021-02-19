@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 resource = 'resource/message'
 font_file = 'resource/style/AdobeHeitiStd-Regular.otf'
 logo_file = 'resource/style/rabbit.png'
+console_temp = 'console/data/MiraiApiHttp/images'
 
 
 def cut_code(code, length):
@@ -65,3 +66,6 @@ def clean_temp():
         for item in dirs:
             if root == resource:
                 shutil.rmtree(root + '/' + item)
+
+    if os.path.exists(console_temp):
+        shutil.rmtree(console_temp)

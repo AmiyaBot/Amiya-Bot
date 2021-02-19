@@ -37,5 +37,5 @@ if __name__ == '__main__':
     mirai.init_auto_login(config['self_id'], config['self_passwords'])
     mirai.start_process()
 
-    # 启动 Amiya 进程
-    start()
+    # 启动 Amiya 进程，预留时间供 console 启动
+    threading.Timer(15, start).start()

@@ -3,8 +3,6 @@ import psutil
 import hashlib
 import subprocess
 
-from library.imageCreator import cut_code
-
 
 class Process:
     def __init__(self, dir_path):
@@ -20,11 +18,9 @@ class Process:
             login = {
                 'plainPasswords': {
                     user_id: passwords
-                },
-                'md5Passwords': {
-                    user_id: ' '.join(cut_code(m.hexdigest().upper(), 2))
                 }
             }
+
             yaml.dump(login, file)
 
     def start_process(self):
