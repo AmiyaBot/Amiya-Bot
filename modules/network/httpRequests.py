@@ -34,7 +34,7 @@ class HttpRequests:
         return False
 
     def init_session(self):
-        response = self.post('auth', {'authKey': 'AMIYARESTART'})
+        response = self.post('auth', {'authKey': config['authKey']})
         session = response['session']
 
         session_record = self.get_session()
