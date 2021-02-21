@@ -85,6 +85,7 @@ def find_similar_string(text: str, text_list: list, hard=0.4):
     for item in text_list:
         rate = float(string_equal_rate(text, item))
         if rate > r and rate >= hard:
+            r = rate
             t = item
     return t
 

@@ -13,7 +13,11 @@ class Init:
         self.function_id = 'checkEnemy'
         self.keyword = ['敌人', '敌方']
 
-    def action(self, data):
+    @staticmethod
+    def action(data):
+        return Reply('博士，敌人查询功能升级中，暂时无法使用哦')
+
+    def __action(self, data):
 
         message = data['text']
 

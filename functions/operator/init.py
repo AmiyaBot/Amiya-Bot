@@ -33,8 +33,7 @@ class Init:
         message = data['text_digits']
         message_ori = data['text']
 
-        words = posseg.lcut(message)
-        words_ori = posseg.lcut(message_ori)
+        words = posseg.lcut(message) + posseg.lcut(message_ori)
 
         name = ''
         level = 0
@@ -48,7 +47,7 @@ class Init:
                 voice_key = item.word
                 break
 
-        for item in words_ori:
+        for item in words:
             # 获取干员名
             if name == '' and item.word in material.operator_list:
                 name = item.word

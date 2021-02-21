@@ -56,9 +56,12 @@ class MaterialCosts:
         if len(result):
             text += '博士，这是干员%s精英%s需要的材料清单\n\n' % (name, evolve[level])
             images = []
+            material_name = []
             for item in result:
-                text += '%s%s X %s\n\n' % (' ' * 12, item['material_name'], item['use_number'])
-                images.append(material_images_source + item['material_nickname'] + '.png')
+                if item['material_name'] not in material_name:
+                    text += '%s%s X %s\n\n' % (' ' * 12, item['material_name'], item['use_number'])
+                    images.append(material_images_source + item['material_nickname'] + '.png')
+                    material_name.append(item['material_name'])
 
             i = 0
             n = 34
@@ -90,9 +93,12 @@ class MaterialCosts:
                     text += '博士，目前存在 %d 个干员拥有【%s】这个技能哦，请用比如「干员一技能专三」这种方式和阿米娅描述吧' % (len(skill_info), skill)
                     return text
                 item = skill_info[0]
-                skill_index = item['skill_index']
                 if name == '':
                     name = item['operator_name']
+                    skill_index = item['skill_index']
+                else:
+                    if name == item['operator_name']:
+                        skill_index = item['skill_index']
 
         result = database.operator.find_operator_skill_mastery_costs(name, level, skill_index)
 
