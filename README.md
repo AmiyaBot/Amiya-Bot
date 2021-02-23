@@ -78,10 +78,10 @@ pip install -r requirements.txt
     "admin_id": 826197021,
     // 是否使用 MiraiOK
     "mirai_ok": true,
-    // 如果是自己配置的mirai-api-http，需要将对应的authKey复制过来
-    // 路径为config/MiraiApiHttp/setting.yml
+    // 如果是自己配置的 mirai-api-http，需要将对应的 authKey 复制过来
+    // 路径为 mirai-console 下的 config/MiraiApiHttp/setting.yml
     // 使用 MiraiOK 请忽略
-    "authKey": "AMIYARESTART",
+    "auth_key": "AMIYARESTART",
     "server": {
         // mirai-api-http 服务配置
         "server_ip": "127.0.0.1",
