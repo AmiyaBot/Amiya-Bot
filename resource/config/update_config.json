@@ -23,6 +23,11 @@
         "迷迭香",
         "夕"
     ],
+    "linkage": [
+        "灰烬",
+        "霜华",
+        "闪击"
+    ],
     "unavailable": {
         "not_normally": [
             "阿米娅",
@@ -71,6 +76,9 @@
             "Stormeye",
             "Pith",
             "Touch"
+        ],
+        "linkage_only": [
+            "战车"
         ]
     }
 }
