@@ -74,7 +74,7 @@ class GaCha:
         purple_pack = 0
         multiple_rainbow = {}
 
-        result = '阿米娅给博士扔来了%d张【%s】简历，博士细细地检阅着...\n' % (times, self.pick_up_name)
+        result = '阿米娅给博士扔来了%d张简历，博士细细地检阅着...\n\n【%s】\n' % (times, self.pick_up_name)
 
         for item in operators:
             rarity = item['rarity']
@@ -158,7 +158,7 @@ class GaCha:
     def detailed_mode(self, times):
         operators = self.start_gacha(times)
 
-        result = '阿米娅给博士扔来了%d张【%s】简历，博士细细地检阅着...\n\n' % (times, self.pick_up_name)
+        result = '阿米娅给博士扔来了%d张简历，博士细细地检阅着...\n\n【%s】\n\n' % (times, self.pick_up_name)
 
         no_high_rarity = True
         six_rarity = 0

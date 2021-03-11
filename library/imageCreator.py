@@ -26,8 +26,8 @@ def create_image(text, message, images=None):
 
     new_text = []
     for item in text:
-        if len(item) > 34:
-            for sub_item in cut_code(item, 34):
+        if len(item) > 38:
+            for sub_item in cut_code(item, 38):
                 if sub_item:
                     new_text.append(sub_item)
         else:
@@ -35,14 +35,14 @@ def create_image(text, message, images=None):
 
     text = '\n'.join(new_text)
     height = len(text.split('\n')) + 1
-    image = Image.new('RGB', (510, height * 18), (255, 250, 250))
+    image = Image.new('RGB', (550, height * 18), (255, 250, 250))
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(font_file, 14)
     draw.text((10, 5), text, font=font, fill='#000000')
 
     icon = Image.open(logo_file)
     icon = icon.resize(size=(30, 30))
-    image.paste(icon, box=(480, 0), mask=icon)
+    image.paste(icon, box=(520, 0), mask=icon)
 
     if images:
         for item in images:
