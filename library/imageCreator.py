@@ -61,7 +61,7 @@ def create_image(text, message, images=None):
     return name
 
 
-def clean_temp():
+def clean_temp_images():
     for root, dirs, files in os.walk(resource):
         for item in dirs:
             if root == resource:

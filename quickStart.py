@@ -1,7 +1,6 @@
-import json
-
 from message.messageHandler import MessageHandler
 from modules.gameData import GameData
+from modules.config import get_config
 
 message = MessageHandler()
 
@@ -31,8 +30,7 @@ if __name__ == '__main__':
     print('Testing started.')
     print('Enter a message and press enter to interact.')
 
-    with open('config.json') as config:
-        config = json.load(config)
+    config = get_config()
 
     try:
         while True:

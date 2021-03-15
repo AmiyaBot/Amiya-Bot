@@ -4,20 +4,14 @@ import json
 import threading
 
 from database.baseController import BaseController
-from library.imageCreator import clean_temp
-from modules.commonMethods import restart, insert_zero
-from modules.gameData import GameData
+from library.imageCreator import clean_temp_images
+from modules.commonMethods import restart, restart_record, insert_zero
 from modules.network.httpRequests import HttpRequests
 
 from functions.vblog.vblog import VBlog
 
 database = BaseController()
-gameData = GameData()
 blog = VBlog()
-
-with open('config.json') as config:
-    config = json.load(config)
-    admin_id = config['admin_id']
 
 
 def run_automatic_action():
@@ -34,7 +28,14 @@ class AutomaticAction(HttpRequests):
             while True:
                 if first_loop:
                     first_loop = False
-                    self.send_admin('启动完毕')
+                    restart_reply = 'temp/restart_reply.json'
+                    if os.path.exists(restart_reply):
+                        with open(restart_reply, mode='r', encoding='utf-8') as reply:
+                            data = json.load(reply)
+                            self.send_group_message(data, message='启动完毕', at=True)
+                        os.remove(restart_reply)
+                    else:
+                        self.send_admin('启动完毕')
                 stop = self.events()
                 if stop:
                     print('loop stop')
@@ -43,31 +44,19 @@ class AutomaticAction(HttpRequests):
         except KeyboardInterrupt:
             pass
 
-    def send_admin(self, text):
-        self.send_private_message({'user_id': admin_id}, text)
-
     def events(self):
         now = time.localtime(time.time())
         hour = now.tm_hour
         mint = now.tm_min
 
-        if (hour == 4 or hour == 16) and mint == 0:
+        if (hour in [4, 16]) and mint == 0:
 
             # 判断是否可以重启
-            record = 0
+            record = restart_record()
             now_time = int('%s%s%s%s' % (now.tm_year,
                                          insert_zero(now.tm_mon),
                                          insert_zero(now.tm_mday),
                                          0 if hour == 4 else 1))
-
-            if os.path.exists('restart.txt') is False:
-                with open('restart.txt', mode='w+') as rs:
-                    rs.write(str(now_time))
-            else:
-                with open('restart.txt', mode='r+') as rs:
-                    record = int(rs.read())
-                    rs.seek(0)
-                    rs.write(str(now_time))
 
             if record < now_time:
 
@@ -80,19 +69,14 @@ class AutomaticAction(HttpRequests):
                 database.resource.del_image_id()
 
                 # 清除图片缓存
-                clean_temp()
-
-                # 更新干员和材料数据
-                res = gameData.update()
-                if res:
-                    self.send_admin(res)
+                clean_temp_images()
 
                 # 执行重启
-                restart()
+                restart(now_time)
                 return True
 
         threading.Timer(0, self.intellect_full_alarm).start()
-        threading.Timer(0.5, self.send_new_blog).start()
+        threading.Timer(1, self.send_new_blog).start()
         return False
 
     def intellect_full_alarm(self):
@@ -109,7 +93,7 @@ class AutomaticAction(HttpRequests):
                 self.send_message(data, text, at=True)
 
     def send_new_blog(self):
-        blog_file = 'resource/blog.txt'
+        blog_file = 'temp/blog.txt'
         record_id = []
         if os.path.exists(blog_file):
             with open(blog_file, mode='r') as file:
@@ -123,8 +107,10 @@ class AutomaticAction(HttpRequests):
             if new_blog is False:
                 return False
 
-            with open(blog_file, mode='a+') as file:
-                file.write(new_id + '\n')
+            record_id.append(new_id)
+            with open(blog_file, mode='w+') as file:
+                record_id = record_id[-5:] if len(record_id) >= 5 else record_id
+                file.write('\n'.join(record_id))
 
             group_list = self.get_group_list()
             time_record = time.time()
@@ -135,7 +121,6 @@ class AutomaticAction(HttpRequests):
             for group in group_list:
                 data = {'group_id': group['id']}
                 for index, item in enumerate(new_blog):
-                    at_all = 'all' if group['permission'] == 'ADMINISTRATOR' and index == 0 else False
                     if item.content:
                         self.send_group_message(data, message_chain=item.content, at=False)
                 total += 1

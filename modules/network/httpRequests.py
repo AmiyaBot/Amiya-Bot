@@ -3,12 +3,14 @@ import json
 import requests
 
 from database.baseController import BaseController
+from modules.config import get_config
 
 database = BaseController()
 
-with open('config.json') as config:
-    config = json.load(config)
-    self_id = str(config['self_id'])
+config = get_config()
+self_id = str(config['self_id'])
+admin_id = str(config['admin_id'])
+session_file = 'temp/session.txt'
 
 
 class HttpRequests:
@@ -43,26 +45,22 @@ class HttpRequests:
 
         self.post('verify', {'sessionKey': session, 'qq': self_id})
 
-        with open('session.txt', mode='w+') as session_record:
+        with open(session_file, mode='w+') as session_record:
             session_record.write(session)
 
     @staticmethod
     def get_session():
-        if os.path.exists('session.txt'):
-            with open('session.txt', mode='r+') as session_record:
+        if os.path.exists(session_file):
+            with open(session_file, mode='r+') as session_record:
                 session = session_record.read()
                 if session:
                     return session
         return ''
 
-    def get_last_message(self, count=10):
-        session = self.get_session()
-        if session:
-            response = self.get('fetchLatestMessage?sessionKey=%s&count=%d' % (session, count))
-            return response['data']
-        return []
-
     def get_group_list(self):
+        if config['close_beta']['enable']:
+            return [{'id': config['close_beta']['group_id']}]
+
         session = self.get_session()
         if session:
             response = self.get('groupList?sessionKey=%s' % session)
@@ -128,3 +126,6 @@ class HttpRequests:
             self.send_group_message(data, message=message, message_chain=message_chain, at=at)
         else:
             self.send_private_message(data, message=message, message_chain=message_chain)
+
+    def send_admin(self, text):
+        self.send_private_message({'user_id': admin_id}, text)

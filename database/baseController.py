@@ -1,5 +1,3 @@
-import json
-
 from database.sqlCombiner import Mysql
 from database.controller.userController import User
 from database.controller.groupController import Group
@@ -10,15 +8,14 @@ from database.controller.materialController import Material
 from database.controller.operatorController import Operator
 from database.controller.functionController import Function
 from database.controller.resourceController import Resource
+from modules.config import get_config
 
 
 class BaseController:
     def __init__(self):
-        with open('config.json') as file:
-            config = json.load(file)
-            base_config = config['database']
+        config = get_config('database')
 
-        self.comb = Mysql(base_config)
+        self.comb = Mysql(config)
 
         self.user = User(self.comb)
         self.group = Group(self.comb)

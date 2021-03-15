@@ -3,11 +3,12 @@ import threading
 
 from database.baseController import BaseController
 from modules.commonMethods import Reply, restart
+from modules.gameData import GameData
+from modules.config import get_config
 
-with open('config.json') as config:
-    config = json.load(config)
-
+config = get_config()
 database = BaseController()
+gameData = GameData()
 
 
 def admin(data):
@@ -20,5 +21,12 @@ def admin(data):
             return Reply('正在等待您的公告...')
 
         if '重启' in message:
-            threading.Timer(5, restart).start()
-            return Reply('即将在 5 秒后重新启动~')
+            with open('temp/restart_reply.json', mode='w+', encoding='utf-8') as reply:
+                reply.write(json.dumps(data, ensure_ascii=False))
+            threading.Timer(3, restart).start()
+            return Reply('核心准备关闭...即将重新启动...')
+
+        if '更新' in message:
+            res = gameData.update()
+            if res:
+                return Reply(res)

@@ -12,9 +12,9 @@ from library.baiduCloud import NaturalLanguage
 from library.numberTranslate import chinese_to_digits
 from modules.network.httpRequests import HttpRequests
 from modules.commonMethods import Reply
+from modules.config import get_config
 
-with open('config.json') as config:
-    config = json.load(config)
+config = get_config()
 
 NLP = NaturalLanguage(config['baidu_cloud'])
 database = BaseController()

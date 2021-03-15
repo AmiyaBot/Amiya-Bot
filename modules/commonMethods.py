@@ -1,18 +1,16 @@
 import os
 import re
 import sys
-import json
 import difflib
 
 from message.messageType import TextImage, Image, Text
-
-with open('config.json') as conf:
-    config = json.load(conf)
+from modules.config import get_config
 
 
 class Reply:
     def __init__(self, content, feeling=2, sign=0, coupon=0, at=True, auto_image=True):
 
+        self.config = get_config()
         self.auto_image = auto_image
 
         c_type = type(content)
@@ -37,7 +35,7 @@ class Reply:
         self.at = at
 
     def __trans_str(self, text):
-        max_len = config['message']['reply_text_max_length']
+        max_len = self.config['message']['reply_text_max_length']
         if self.auto_image and len(text) >= max_len:
             text = TextImage(text)
         else:
@@ -94,6 +92,16 @@ def string_equal_rate(str1: str, str2: str):
     return difflib.SequenceMatcher(None, str1, str2).quick_ratio()
 
 
-def restart():
+def restart_record():
+    if os.path.exists('temp/restart.txt'):
+        with open('temp/restart.txt', mode='r+') as rs:
+            return int(rs.read())
+    return 0
+
+
+def restart(r_time=None):
+    if r_time:
+        with open('temp/restart.txt', mode='w+') as rs:
+            rs.write(str(r_time))
     python = sys.executable
     os.execl(python, python, *sys.argv)

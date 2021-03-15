@@ -1,5 +1,6 @@
 /.idea/
 /venv/
+/temp/
 /remind/
 /console/
 /resource/images/
@@ -14,6 +15,4 @@
 
 !.gitkeep
 
-session.txt
-restart.txt
 start.bat

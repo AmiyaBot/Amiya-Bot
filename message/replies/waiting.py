@@ -1,13 +1,11 @@
-import json
-
 from database.baseController import BaseController
 from library.baiduCloud import OpticalCharacterRecognition
 from modules.network.httpRequests import HttpRequests
+from modules.config import get_config
 
 from functions.recruit.init import Init as Recruit
 
-with open('config.json') as config:
-    config = json.load(config)
+config = get_config()
 
 ORC = OpticalCharacterRecognition(config['baidu_cloud'])
 database = BaseController()

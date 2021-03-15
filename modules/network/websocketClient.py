@@ -3,13 +3,13 @@ import threading
 
 from ws4py.client.threadedclient import WebSocketClient
 from modules.automaticAction import run_automatic_action
-
-with open('config.json') as file:
-    config = json.load(file)
+from modules.config import get_config
 
 
 class Websocket(WebSocketClient):
     def __init__(self, session, handler=None):
+        config = get_config()
+
         host = config['server']['server_ip']
         port = config['server']['server_port']
         super().__init__('ws://%s:%d/all?sessionKey=%s' % (host, port, session))

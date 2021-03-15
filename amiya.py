@@ -1,5 +1,4 @@
 import os
-import json
 import requests
 import threading
 
@@ -7,6 +6,7 @@ from modules.network.websocketClient import Websocket
 from modules.network.httpRequests import HttpRequests
 from message.messageHandler import MessageHandler
 from modules.miraiProcess import Process
+from modules.config import get_config
 
 message = MessageHandler()
 http = HttpRequests()
@@ -29,8 +29,7 @@ def start():
 
 
 if __name__ == '__main__':
-    with open('config.json', encoding='utf-8') as config:
-        config = json.load(config)
+    config = get_config()
 
     if config['mirai_ok']:
 
