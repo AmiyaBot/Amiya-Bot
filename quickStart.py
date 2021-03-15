@@ -1,5 +1,4 @@
 from message.messageHandler import MessageHandler
-from modules.gameData import GameData
 from modules.config import get_config
 
 message = MessageHandler()
@@ -35,11 +34,6 @@ if __name__ == '__main__':
     try:
         while True:
             message_text = input()
-
-            if message_text == 'update':
-                GameData().update()
-                continue
-
             if message_text:
                 on_message(message_text, config['admin_id'], config['close_beta']['group_id'])
 

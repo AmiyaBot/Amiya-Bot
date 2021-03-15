@@ -119,7 +119,15 @@ pip install -r requirements.txt
 }
 ```
 
-4. 启动 Amiya 入口程序
+4. 手动执行首次更新，导入所有数据和资源（重要）
+    - 更新会扫描所有未保存的数据，首次更新视网速情况需要一定的耗时
+    - `updateAllData.py`会删除所有历史数据并重新执行更新，后续视需要自行使用
+
+```bash
+python updateAllData.py
+```
+
+5. 启动 Amiya 入口程序
     - （非常重要）若不使用 [资源文件](https://github.com/vivien8261/Amiya-Bot-resource)
       说明里的 MiraiOK，请在该步骤前，启动好自己的 mirai-console 和加载插件 mirai-api-http，并修改配置`"mirai_ok": false`
 
@@ -127,7 +135,7 @@ pip install -r requirements.txt
 python amiya.py
 ```
 
-5. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
+6. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
     - 若使用了 MiraiOK ，还会额外启动一个窗口
 
 ```
@@ -135,7 +143,7 @@ python amiya.py
 websocket connecting success
 ```
 
-6. 现在，唤醒你的 Amiya 吧！
+7. 现在，唤醒你的 Amiya 吧！
 
 ## 功能测试方式
 
@@ -167,19 +175,6 @@ python quickStart.py Test
 ## 功能使用注意
 
 - **禁言会导致 Amiya 退群！！！**
-- 要保证一些功能的使用，请导入 [资源文件](https://github.com/vivien8261/Amiya-Bot-resource) 中的`data.sql`
-    - 建议手动更新一次以保证使用最新的数据
-- 手动更新数据，最简单的方法，在根目录创建任意 python 脚本并运行以下代码
-    - 或者直接在快速启动中输入`update`执行更新
-    - 更新会扫描所有未保存的数据，首次更新数据视网速情况可能需要一定的耗时
-
-```python
-from modules.gameData import GameData
-
-if __name__ == '__main__':
-    GameData().update()
-```
-
 - 要使用抽卡功能，请在更新数据后，在数据表`t_pool`内维护卡池信息（`data.sql`带有一部分卡池数据）
 - 自然语言处理方法和公招图像识别需要调用 [百度智能云](https://cloud.baidu.com/)
   的接口，如需使用需要自行申请并配置`config.json`
@@ -218,7 +213,6 @@ if __name__ == '__main__':
 - Amiya 带有**自动更新**功能，会在每天凌晨4点和16点执行以下操作：
     - 重置签到和心情值（仅4点）
     - 清除缓存数据
-    - 更新干员数据
     - 重启主程序
 - 干员语音资料和敌人数据为即时从 wiki 获取，不需要维护
 - 卡池目前需要手动到数据表`t_pool`维护，维护好的卡池可以通过 Amiya 切换卡池的功能进行更换
@@ -234,7 +228,7 @@ VALUES ('银灰色的荣耀',
         0)
 ```
 
-- 在有干员增加的版本，Amiya 在自更新前，需手动配置更新文件`resource/config/update_config.json`，以便在自更新时能正确获取数据
+- 在有干员增加的版本，Amiya 在自更新前，需手动配置更新文件`resource/config/update_config.json` 以在更新时能正确获取数据
 
 ```json5
 // 比如当《集成战略》有新干员增加时，在无法抽卡获取的干员对应的列表里添加新干员名
