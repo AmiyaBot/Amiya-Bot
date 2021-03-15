@@ -179,7 +179,7 @@ class GameData:
                             if cost['id'] not in used_materials:
                                 used_materials.append(cost['id'])
 
-                    icon = 'skill_icon_' + sk_no
+                    icon = 'skill_icon_' + (detail['iconId'] or detail['skillId'])
                     skills.append({
                         'operator_id': operator_id,
                         'skill_no': sk_no,

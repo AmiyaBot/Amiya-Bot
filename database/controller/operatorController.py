@@ -78,6 +78,7 @@ class Operator:
         field = ', '.join([
             's.skill_name',
             's.skill_index',
+            's.skill_icon',
             'm.material_name',
             'm.material_nickname',
             'o.use_number',
@@ -99,6 +100,7 @@ class Operator:
         return self.db.select(sql=sql, fields=[
             'skill_name',
             'skill_index',
+            'skill_icon',
             'material_name',
             'material_nickname',
             'use_number',

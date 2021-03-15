@@ -3,6 +3,7 @@ from message.messageType import TextImage
 
 database = BaseController()
 material_images_source = 'resource/images/materials/'
+skill_images_source = 'resource/images/skills/'
 
 
 class MaterialCosts:
@@ -105,29 +106,37 @@ class MaterialCosts:
         if len(result):
             text += '博士，这是干员%s技能专精%s需要的材料清单\n\n' % (name, mastery[level])
             skills = {}
-            images = []
+            skill_images = []
+            material_images = []
+            icons = []
+
             for item in result:
                 skill_name = item['skill_name']
                 if skill_name not in skills:
                     skills[skill_name] = []
+                    skill_images.append(skill_images_source + item['skill_icon'] + '.png')
                 skills[skill_name].append(item)
             for name in skills:
-                text += '%s\n\n' % name
+                text += '%s%s\n\n' % (' ' * 15, name)
                 for item in skills[name]:
-                    text += '----%s%s X %s\n\n' % (' ' * 15, item['material_name'], item['use_number'])
-                    images.append(material_images_source + item['material_nickname'] + '.png')
+                    text += '————%s%s X %s\n\n' % (' ' * 15, item['material_name'], item['use_number'])
+                    material_images.append(material_images_source + item['material_nickname'] + '.png')
 
-            i = 0
-            n = 34
-            s = 60
-            icons = []
-            for index, item in enumerate(images):
+            for index, item in enumerate(skill_images):
+                icons.append({
+                    'path': item,
+                    'size': (35, 35),
+                    'pos': (10, 28 + 136 * index)
+                })
+
+            i, n = 0, 34
+            for index, item in enumerate(material_images):
                 if index and index % 3 == 0:
                     i += n
                 icons.append({
                     'path': item,
                     'size': (35, 35),
-                    'pos': (35, s + i)
+                    'pos': (73, 60 + i)
                 })
                 i += n
 
