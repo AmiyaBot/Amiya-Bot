@@ -35,6 +35,18 @@ class User:
     def get_user(self, user_id):
         return self.db.select('t_user', where=Where({'user_id': user_id}), fetchone=True)
 
+    def get_black_user(self, user_id):
+        return self.db.select('t_user', where=Where({'user_id': user_id, 'black': 1}), fetchone=True)
+
+    def set_black_user(self, user_id):
+        self.db.update(
+            table='t_user',
+            where=Where({'user_id': user_id}),
+            data={
+                'black': 1
+            }
+        )
+
     def get_gacha_pool(self, user_id=None):
         where = ('pool_id IN (SELECT gacha_pool FROM t_user WHERE user_id = %s)' % user_id) if user_id else None
         return self.db.select('t_pool', where=where, fetchone=bool(user_id))

@@ -153,6 +153,10 @@ class MessageHandler(HttpRequests, Replies):
             if item in data['text']:
                 return False
 
+        is_black = database.user.get_black_user(data['user_id'])
+        if is_black:
+            return False
+
         message_speed = database.message.check_message_speed_by_user(data['user_id'], limit['seconds'])
         if message_speed and message_speed >= limit['max_count']:
             self.send_reply(data, Reply('博士说话太快了，请再慢一些吧～', at=False))
