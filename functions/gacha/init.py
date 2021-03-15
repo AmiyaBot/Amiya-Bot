@@ -75,7 +75,7 @@ class Init:
                     message_ori = self.all_pools[idx]['pool_name']
             return self.change_pool(user_id, message_ori)
 
-        if word_in_sentence(message, ['查看', '列表']):
+        if word_in_sentence(message, ['查看', '卡池', '列表']):
             return self.pool_list()
 
         if word_in_sentence(message, ['抽', '寻访']):
