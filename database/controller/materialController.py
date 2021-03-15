@@ -47,6 +47,7 @@ class Material:
             't_operator_skill',
             't_operator_skill_mastery_costs',
             't_operator_tags_relation'
+            't_operator_voice'
         ]
         for item in tables:
             self.db.truncate(item)

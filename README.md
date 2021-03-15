@@ -276,4 +276,3 @@ VALUES ('银灰色的荣耀',
 
 - [KokodaYo](https://www.kokodayo.fun/)
 - [明日方舟官方微博](https://m.weibo.cn/u/6279793937)
-- [PRTS - 玩家自由构筑的明日方舟中文Wiki](http://prts.wiki/)

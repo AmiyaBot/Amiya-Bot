@@ -59,7 +59,7 @@ class GameData:
             'Referer': 'https://www.kokodayo.fun/'
         }
         self.data_source = 'https://andata.somedata.top/data-2020'
-        self.pics_source = 'https://andata.somedata.top/dataX/item/pic'
+        self.pics_source = 'https://andata.somedata.top/dataX'
         self.pics_path = 'resource/images'
 
     def get_key(self):
@@ -79,7 +79,7 @@ class GameData:
 
     def get_pic(self, name, _type):
         url = '%s/%s.png' % (self.pics_source, name)
-        path = '%s/%s/%s.png' % (self.pics_path, _type, name)
+        path = '%s/%s/%s.png' % (self.pics_path, _type, name.split('/')[-1])
         if os.path.exists(path) is False:
             stream = requests.get(url, headers=self.headers, stream=True)
             if stream.status_code == 200:
@@ -103,10 +103,12 @@ class GameData:
             'operator_no': operator.id,
             'operator_name': operator.name,
             'operator_rarity': rarity,
+            'operator_avatar': operator.id,
             'operator_class': operator.classes_code,
             'available': 1 if rarity >= 2 and operator.name not in unavailable else 0,
             'in_limit': 1 if operator.name in limit else 0
         }])
+        self.get_pic('char/profile/' + operator.id, 'avatars')
         print(' --- 基础信息保存完毕...')
 
         # todo 若此干员为可公招的干员，保存Tags信息
@@ -177,12 +179,15 @@ class GameData:
                             if cost['id'] not in used_materials:
                                 used_materials.append(cost['id'])
 
+                    icon = 'skill_icon_' + sk_no
                     skills.append({
                         'operator_id': operator_id,
                         'skill_no': sk_no,
                         'skill_index': index + 1,
-                        'skill_name': name
+                        'skill_name': name,
+                        'skill_icon': icon
                     })
+                    self.get_pic('skills/pics/' + icon, 'skills')
             if skills:
                 database.operator.add_operator_skill(skills)
                 print(' --- 技能数据保存完毕...')
@@ -210,7 +215,7 @@ class GameData:
                         'material_name': material_data['name'].strip(),
                         'material_nickname': icon_name
                     })
-                    self.get_pic(icon_name, 'materials')
+                    self.get_pic('item/pic/' + icon_name, 'materials')
             if unsaved_materials:
                 database.material.add_material(unsaved_materials)
                 print(' --- 材料数据保存完毕...')
