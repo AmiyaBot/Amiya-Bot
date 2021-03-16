@@ -28,14 +28,7 @@ class AutomaticAction(HttpRequests):
             while True:
                 if first_loop:
                     first_loop = False
-                    restart_reply = 'temp/restart_reply.json'
-                    if os.path.exists(restart_reply):
-                        with open(restart_reply, mode='r', encoding='utf-8') as reply:
-                            data = json.load(reply)
-                            self.send_group_message(data, message='启动完毕', at=True)
-                        os.remove(restart_reply)
-                    else:
-                        self.send_admin('启动完毕')
+                    self.send_admin('启动完毕')
                 stop = self.events()
                 if stop:
                     print('loop stop')
@@ -116,7 +109,7 @@ class AutomaticAction(HttpRequests):
             time_record = time.time()
             total = 0
 
-            self.send_admin('开始推送微博:\n%s\n共有 %d 个群' % (new_id, len(group_list)))
+            self.send_admin('开始推送微博:\n%s' % new_id)
 
             for group in group_list:
                 data = {'group_id': group['id']}
@@ -124,5 +117,6 @@ class AutomaticAction(HttpRequests):
                     if item.content:
                         self.send_group_message(data, message_chain=item.content, at=False)
                 total += 1
-            complete = '微博推送完毕。成功 %d / %d，耗时：%ds' % (total, len(group_list), time.time() - time_record)
+            complete = '微博推送完毕。共 %d 个群，成功 %d / %d，耗时：%ds' % \
+                       (len(group_list), total, len(group_list), time.time() - time_record)
             self.send_admin(complete)

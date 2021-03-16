@@ -1,6 +1,9 @@
+import time
+
 from database.baseController import BaseController
 from library.baiduCloud import OpticalCharacterRecognition
 from modules.network.httpRequests import HttpRequests
+from modules.commonMethods import Reply
 from modules.config import get_config
 
 from functions.recruit.init import Init as Recruit
@@ -25,11 +28,12 @@ def waiting(data):
         if wait == 'Notice':
             database.user.set_waiting(user_id, '')
             group_list = request.get_group_list()
+            time_record = time.time()
             for group in group_list:
-                at_all = 'all' if group['permission'] == 'ADMINISTRATOR' else False
                 request.send_group_message({'group_id': group['id']}, message=message, at=False)
+            return Reply('公告群发完毕，共 %s 个群，耗时：%ds' % (len(group_list), time.time() - time_record))
 
-        # 公招图像识别
+            # 公招图像识别
         if wait == 'Recruit' and 'image' in data and data['image']:
             text = ''
             try:

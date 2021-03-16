@@ -14,10 +14,19 @@
 - 创建者需承诺不得使用本项目进行**任何形式的盈利行为**
 - 本项目不承担因违反上述所带来的一切后果
 
-## 已完成的功能
+## 准备
 
-Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能` 来获得功能指引<br>
-管理员功能请阅读代码 `message/replies/admin.py` 理解使用方法<del>(懒)</del>
+- 想要创建自己的 Amiya，建议拥有一定编程基础，否则以下说明将难以理解
+- 建议先了解 [mirai-console](https://github.com/mamoe/mirai-console)
+  以及其插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
+  以便理解源码
+    - 关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
+- 需要 python 3.7+
+- 需要 Mysql 8.0+
+
+## 基础群组功能
+
+Amiya 的基础功能可以通过在群组里向 Amiya 发送 `Amiya有什么功能` 来获得功能指引
 
 - 信赖值与心情系统
 - 查询干员精英化材料
@@ -36,18 +45,17 @@ Amiya 的基础功能可以通过在QQ里向 Amiya 发送 `Amiya有什么功能`
 - 查看明日方舟微博动态
     - 查询微博
     - 自动推送新微博
-- 管理员命令
-    - 群发公告
 
-## 准备
+## 管理员功能
 
-- 想要创建自己的 Amiya，建议拥有一定编程基础，否则以下说明将难以理解
-- 建议先了解 [mirai-console](https://github.com/mamoe/mirai-console)
-  以及其插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
-  以便理解源码
-    - 关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
-- 需要 python 3.7+
-- 需要 Mysql 8.0+
+Amiya 的管理功能仅限私聊，且只有管理员能够使用 Amiya 的私聊
+
+- 发送 `重启` 关键字，Amiya 将会重启
+- 发送 `更新` 关键字，Amiya 即开始自动更新干员数据
+- 群发公告
+    - 发送 `公告` 关键字，待 Amiya 回复确认后，再发送 `完整的文字公告`，此后 Amiya 将向所有群组发送该公告
+- 屏蔽用户
+    - 发送 `屏蔽 + QQ号`，Amiya 会屏蔽该用户，此后 Amiya 将不会再回应该用户的消息
 
 ## 注意
 

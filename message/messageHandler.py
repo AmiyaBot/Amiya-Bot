@@ -61,42 +61,48 @@ class MessageHandler(HttpRequests, Replies):
         # 处理函数列表（有先后顺序）
         reply_func = [
             {
-                # 打招呼
-                'func': self.greeting,
-                'need_call': False
-            },
-            {
                 # 等待事件
                 'func': self.waiting,
                 'need_call': False
-            },
-            {
-                # 管理员指令
-                'func': self.admin,
-                'need_call': True
-            },
-            {
-                # 表情包
-                'func': self.face_image,
-                'need_call': True
-            },
-            {
-                # 信赖事件
-                'func': self.emotion,
-                'need_call': True
-            },
-            {
-                # 使用功能
-                'func': function.action,
-                'need_call': True,
-                'without_call': True
-            },
-            {
-                # 自然语言处理
-                'func': self.natural_language_processing,
-                'need_call': True
             }
         ]
+        if data['type'] == 'group':
+            reply_func += [
+                {
+                    # 打招呼
+                    'func': self.greeting,
+                    'need_call': False
+                },
+                {
+                    # 表情包
+                    'func': self.face_image,
+                    'need_call': True
+                },
+                {
+                    # 信赖事件
+                    'func': self.emotion,
+                    'need_call': True
+                },
+                {
+                    # 使用功能
+                    'func': function.action,
+                    'need_call': True,
+                    'without_call': True
+                },
+                {
+                    # 自然语言处理
+                    'func': self.natural_language_processing,
+                    'need_call': True
+                }
+            ]
+        else:
+            reply_func += [
+                {
+                    # 管理员指令
+                    'func': self.admin,
+                    'need_call': False
+                }
+            ]
 
         # 遍历处理函数直至获得回复为止
         for action in reply_func:
@@ -145,7 +151,7 @@ class MessageHandler(HttpRequests, Replies):
         limit = config['message']['limit']
         close_beta = config['close_beta']
 
-        if close_beta['enable']:
+        if 'group_id' in data and close_beta['enable']:
             if str(data['group_id']) != str(close_beta['group_id']):
                 return False
 
@@ -192,8 +198,11 @@ class MessageHandler(HttpRequests, Replies):
         }
 
         if message['type'] == 'FriendMessage':
-            # todo 不接受私聊消息
-            return False
+            # todo 仅限管理员使用私聊
+            if data['user_id'] != config['admin_id']:
+                return False
+            data['type'] = 'friend'
+            data['nickname'] = message['sender']['nickname']
         elif message['type'] == 'GroupMessage':
             data['type'] = 'group'
             data['nickname'] = message['sender']['memberName']
