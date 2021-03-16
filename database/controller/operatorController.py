@@ -39,7 +39,11 @@ class Operator:
 
         return res['skill_id'] if res else None
 
-    def get_all_operator(self):
+    def get_all_operator(self, names: list = None):
+        if names:
+            return self.db.select('t_operator', where=Where({
+                'operator_name': ['in', Formula('("%s")' % '", "'.join(names))]
+            }))
         return self.db.select('t_operator')
 
     def get_gacha_operator(self, limit=0, extra=None):

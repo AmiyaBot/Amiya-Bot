@@ -1,9 +1,12 @@
+import os
 import random
 
 from database.baseController import BaseController
 from modules.commonMethods import insert_empty
+from message.messageType import TextImage
 
 database = BaseController()
+avatar_resource = 'resource/images/avatars'
 
 
 class GaCha:
@@ -153,7 +156,7 @@ class GaCha:
 
         result += '\n%s' % self.check_break_even()
 
-        return result
+        return TextImage(result)
 
     def detailed_mode(self, times):
         operators = self.start_gacha(times)
@@ -166,9 +169,21 @@ class GaCha:
         text = ''
         hit = False
 
-        for item in operators:
+        operators_data = database.operator.get_all_operator([item['name'] for item in operators])
+        operator_avatars = {item['operator_name']: item['operator_avatar'] for item in operators_data}
+
+        icons = []
+        for index, item in enumerate(operators):
             star = '☆' if item['rarity'] < 5 else '★'
-            result += '%s%s\n' % (insert_empty(item['name'], 5, True), star * item['rarity'])
+            result += '%s%s%s\n\n' % (' ' * 15, insert_empty(item['name'], 5, True), star * item['rarity'])
+            avatar_path = '%s/%s.png' % (avatar_resource, operator_avatars[item['name']])
+
+            if os.path.exists(avatar_path):
+                icons.append({
+                    'path': avatar_path,
+                    'size': (34, 34),
+                    'pos': (10, 60 + 34 * index)
+                })
 
             if item['rarity'] >= 5:
                 no_high_rarity = False
@@ -196,7 +211,7 @@ class GaCha:
 
         result += '\n%s' % self.check_break_even()
 
-        return result
+        return TextImage(result, icons)
 
     def check_break_even(self):
         user = database.user.get_user(self.user_id)

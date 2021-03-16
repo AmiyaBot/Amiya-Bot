@@ -54,7 +54,7 @@ class Init:
                 else:
                     res = gacha.continuous_mode(times)
 
-                return Reply(TextImage(res))
+                return Reply(res)
 
         if '保底' in message:
             return Reply(gacha.check_break_even())

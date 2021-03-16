@@ -1,3 +1,5 @@
+import os
+
 from database.baseController import BaseController
 from message.messageType import TextImage
 
@@ -69,11 +71,12 @@ class MaterialCosts:
             s = 26
             icons = []
             for index, item in enumerate(images):
-                icons.append({
-                    'path': item,
-                    'size': (35, 35),
-                    'pos': (5, s + i)
-                })
+                if os.path.exists(item):
+                    icons.append({
+                        'path': item,
+                        'size': (35, 35),
+                        'pos': (5, s + i)
+                    })
                 i += n
 
             text = TextImage(text, icons)
@@ -123,21 +126,23 @@ class MaterialCosts:
                     material_images.append(material_images_source + item['material_nickname'] + '.png')
 
             for index, item in enumerate(skill_images):
-                icons.append({
-                    'path': item,
-                    'size': (35, 35),
-                    'pos': (10, 28 + 136 * index)
-                })
+                if os.path.exists(item):
+                    icons.append({
+                        'path': item,
+                        'size': (35, 35),
+                        'pos': (10, 28 + 136 * index)
+                    })
 
             i, n = 0, 34
             for index, item in enumerate(material_images):
                 if index and index % 3 == 0:
                     i += n
-                icons.append({
-                    'path': item,
-                    'size': (35, 35),
-                    'pos': (73, 60 + i)
-                })
+                if os.path.exists(item):
+                    icons.append({
+                        'path': item,
+                        'size': (35, 35),
+                        'pos': (73, 60 + i)
+                    })
                 i += n
 
             text = TextImage(text, icons)
