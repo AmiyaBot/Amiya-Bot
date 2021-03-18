@@ -117,8 +117,8 @@ class GameData:
             operator_tags.append(operator.classes)
             operator_tags.append(operator.type)
 
-            if rarity in high_star:
-                operator_tags.append(high_star[rarity])
+            if str(rarity) in high_star:
+                operator_tags.append(high_star[str(rarity)])
 
             for tag in operator.tags:
                 operator_tags.append(tag)

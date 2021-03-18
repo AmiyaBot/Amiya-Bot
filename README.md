@@ -132,7 +132,7 @@ pip install -r requirements.txt
     - `updateAllData.py`会删除所有历史数据并重新执行更新，后续视需要自行使用
 
 ```bash
-python updateAllData.py
+python updateData.py
 ```
 
 5. 启动 Amiya 入口程序
