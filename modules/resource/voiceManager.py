@@ -1,6 +1,6 @@
-import random
+import sys
 import json
-import os
+import random
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from modules.network.httpRequests import HttpRequests
@@ -10,41 +10,41 @@ base = BaseController()
 
 
 class VoiceManager(HttpRequests):
-    def __init__(self, resource=''):
+    def __init__(self):
         super().__init__()
 
-        self.resource = resource
+    def voice(self, path: str, voice_type='group'):
 
-    def save_voice_files(self):
-        for root, dirs, files in os.walk(self.resource):
-            for item in files:
-                if self.find_voice_id(item) is False:
-                    self.get_voice_id(item)
+        if len(sys.argv) > 1 and sys.argv[1] == 'Test':
+            return 'Test'
 
-    def find_voice_id(self, file_name, voice_type='group'):
+        resource = '/'.join(path.replace('\\', '/').split('/')[:-1])
+        file_path = path
+        voice_id = self.find_voice_id(file_path, voice_type)
+        if voice_id:
+            return voice_id
+        return self.requests_voice_id(resource, file_path, voice_type)
 
-        if '.wav' not in file_name:
-            file_name = '%s.wav' % file_name
-
-        results = base.resource.get_voice_id(file_name, voice_type)
+    @staticmethod
+    def find_voice_id(file_path, voice_type):
+        results = base.resource.get_voice_id(file_path, voice_type)
         if results:
             return results['mirai_id']
         return False
 
-    def get_voice_id(self, file_name, voice_type='group'):
+    def requests_voice_id(self, resource, file_path, voice_type):
         multipart_data = MultipartEncoder(
             fields={
                 'sessionKey': self.get_session(),
                 'type': voice_type,
-                'voice': (file_name, open(self.resource + '/' + file_name, 'rb'), 'application/octet-stream')
+                'voice': (file_path.replace(resource, ''), open(file_path, 'rb'), 'application/octet-stream')
             },
             boundary=str(random.randint(int(1e28), int(1e29 - 1)))
         )
         headers = {'Content-Type': multipart_data.content_type}
         response = self.request.post(self.url('uploadVoice'), data=multipart_data, headers=headers)
-
-        print(file_name, response.status_code, response.text)
-
         if response.status_code == 200:
             data = json.loads(response.text)
-            base.resource.add_voice_id(file_name, voice_type, data['voiceId'])
+            base.resource.add_voice_id(file_path, voice_type, data['voiceId'])
+            return data['voiceId']
+        return False

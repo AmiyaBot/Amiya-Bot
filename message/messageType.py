@@ -1,9 +1,13 @@
 import re
 
 from modules.resource.imageManager import ImageManager
+from modules.resource.voiceManager import VoiceManager
 from library.imageCreator import create_image
 
 imageManager = ImageManager()
+voiceManager = VoiceManager()
+
+voice_resource = 'resource/voices'
 
 
 class Text:
@@ -35,6 +39,18 @@ class Text:
             })
 
         self.item = chain
+
+
+class Voice:
+    def __init__(self, name, suffix='wav'):
+        path = '%s/%s.%s' % (voice_resource, name, suffix)
+        voice_id = voiceManager.voice(path, 'group')
+        self.item = [
+            {
+                'type': 'Voice',
+                'voiceId': voice_id
+            }
+        ]
 
 
 class Image:

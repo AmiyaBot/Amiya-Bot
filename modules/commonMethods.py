@@ -3,7 +3,7 @@ import re
 import sys
 import difflib
 
-from message.messageType import TextImage, Image, Text
+from message.messageType import TextImage, Image, Voice, Text
 from modules.config import get_config
 
 
@@ -16,16 +16,17 @@ class Reply:
         c_type = type(content)
         chain = []
 
+        sp = [TextImage, Image, Voice, Text]
         if c_type is str:
             chain += self.__trans_str(content.strip('\n'))
         elif c_type is list:
             for item in content:
                 if type(item) is str:
                     chain += self.__trans_str(item.strip('\n'))
-                if type(item) in [TextImage, Image, Text]:
+                if type(item) in sp:
                     chain += item.item
         else:
-            if c_type in [TextImage, Image, Text]:
+            if c_type in sp:
                 chain += content.item
 
         self.content = chain
