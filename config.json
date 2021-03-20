@@ -1,12 +1,10 @@
 {
     "self_id": 1515361402,
-    "self_passwords": "",
     "admin_id": 826197021,
-    "mirai_ok": true,
-    "auth_key": "AMIYARESTART",
     "server": {
         "server_ip": "127.0.0.1",
-        "server_port": 8060
+        "server_port": 8060,
+        "auth_key": "AMIYARESTART"
     },
     "database": {
         "host": "localhost",

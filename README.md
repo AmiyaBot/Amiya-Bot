@@ -68,7 +68,7 @@ Amiya 的管理功能仅限私聊，且只有管理员能够使用 Amiya 的私�
 
 ## 开始使用
 
-1. 必须先前往仓库 [Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource) 并根据说明完成资源导入
+1. 必须先前往仓库 [Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource) 并根据说明完成数据导入和前序工作
 2. 安装 python 依赖
 
 ```bash
@@ -79,21 +79,15 @@ pip install -r requirements.txt
 
 ```json5
 {
-    // 机器人 QQ 号和密码
+    // 机器人 QQ 号
     "self_id": 1515361402,
-    "self_passwords": "",
     // 管理员 QQ 号
     "admin_id": 826197021,
-    // 是否使用 MiraiOK
-    "mirai_ok": true,
-    // 如果是自己配置的 mirai-api-http，需要将对应的 authKey 复制过来
-    // 路径为 mirai-console 下的 config/MiraiApiHttp/setting.yml
-    // 使用 MiraiOK 请忽略
-    "auth_key": "AMIYARESTART",
     "server": {
         // mirai-api-http 服务配置
         "server_ip": "127.0.0.1",
-        "server_port": 8060
+        "server_port": 8060,
+        "auth_key": "AMIYARESTART"
     },
     "database": {
         // 数据库配置
@@ -127,24 +121,21 @@ pip install -r requirements.txt
 }
 ```
 
-4. 手动执行首次更新，导入所有数据和资源（重要）
+4. 执行首次更新，导入所有数据和资源（重要）
     - 更新会扫描所有未保存的数据，首次更新视网速情况需要一定的耗时
-    - `updateAllData.py`会删除所有历史数据并重新执行更新，后续视需要自行使用
+    - `updateAllData.py`会删除所有历史数据并重新执行更新，后续视需要也可以重复执行
 
 ```bash
 python updateData.py
 ```
 
 5. 启动 Amiya 入口程序
-    - （非常重要）若不使用 [资源文件](https://github.com/vivien8261/Amiya-Bot-resource)
-      说明里的 MiraiOK，请在该步骤前，启动好自己的 mirai-console 和加载插件 mirai-api-http，并修改配置`"mirai_ok": false`
 
 ```bash
 python amiya.py
 ```
 
 6. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
-    - 若使用了 MiraiOK ，还会额外启动一个窗口
 
 ```
 ...
@@ -218,11 +209,11 @@ python quickStart.py Test
 
 ## 如何维护
 
-- Amiya 带有**自动更新**功能，会在每天凌晨4点和16点执行以下操作：
+- Amiya 带有**自动重启**功能，会在每天凌晨4点和16点执行以下操作：
     - 重置签到和心情值（仅4点）
     - 清除缓存数据
     - 重启主程序
-- 干员语音资料和敌人数据为即时从 wiki 获取，不需要维护
+- 干员数据请使用**管理员功能**执行更新
 - 卡池目前需要手动到数据表`t_pool`维护，维护好的卡池可以通过 Amiya 切换卡池的功能进行更换
     - `Tips:` Pickup 的干员可以是虚构的不存在的干员，因为抽卡命中 Pickup 时，是直接使用 Pickup 字段的干员而非从干员表获取
 

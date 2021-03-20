@@ -8,7 +8,9 @@ from PIL import Image, ImageDraw, ImageFont
 resource = 'resource/message'
 font_file = 'resource/style/AdobeHeitiStd-Regular.otf'
 logo_file = 'resource/style/rabbit.png'
-console_temp = 'console/data/MiraiApiHttp/images'
+
+# 配置 mirai-api-http 的缓存路径可以顺手清理其缓存的图片
+console_temp = ''
 
 
 def cut_code(code, length):

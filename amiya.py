@@ -5,8 +5,6 @@ import threading
 from modules.network.websocketClient import Websocket
 from modules.network.httpRequests import HttpRequests
 from message.messageHandler import MessageHandler
-from modules.miraiProcess import Process
-from modules.config import get_config
 
 message = MessageHandler()
 http = HttpRequests()
@@ -29,17 +27,4 @@ def start():
 
 
 if __name__ == '__main__':
-    config = get_config()
-
-    if config['mirai_ok']:
-
-        # 启动 mirai-console 进程
-        mirai = Process(os.path.dirname(os.path.abspath(__file__)) + '\\console')
-        mirai.init_auto_login(config['self_id'], config['self_passwords'])
-        mirai.start_process()
-
-        # 启动 Amiya 进程，预留时间供 console 启动
-        threading.Timer(15, start).start()
-
-    else:
-        start()
+    start()
