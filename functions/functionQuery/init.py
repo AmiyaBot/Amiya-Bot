@@ -19,6 +19,14 @@ class Init:
 
         function_list = [
             {
+                'title': '群管理员功能',
+                'desc': [
+                    '群管理员功能仅限群主与群管理员使用',
+                    '发送「阿米娅休息」在本群关闭阿米娅',
+                    '发送「阿米娅工作」在本群开启阿米娅'
+                ]
+            },
+            {
                 'title': '查看个人信息',
                 'desc': ['发送比如「阿米娅查看我的信息」']
             },
@@ -105,8 +113,8 @@ class Init:
                     if function_list[index]['desc'] == 'source_code':
                         return Reply(source_code)
 
-                    for sub_index, sub_item in enumerate(function_list[index]['desc']):
-                        text += '\n（%d）%s' % (sub_index + 1, sub_item)
+                    for sub_item in function_list[index]['desc']:
+                        text += '\n%s' % sub_item
 
                     return Reply(TextImage(text))
 
