@@ -2,31 +2,24 @@ import sys
 import json
 import time
 import copy
-import random
 
-from functions.functionsIndex import FunctionsIndex
+from message.replies import reply_func_list
+from message.eventsHandler import EventsHandler
 from database.baseController import BaseController
-from message.noticeHandler import NoticeHandler
-from message.replies import Replies
-from library.baiduCloud import NaturalLanguage
 from library.numberTranslate import chinese_to_digits
 from modules.network.httpRequests import HttpRequests
 from modules.commonMethods import Reply
 from modules.config import get_config
 
 config = get_config()
-
-NLP = NaturalLanguage(config['baidu_cloud'])
 database = BaseController()
-function = FunctionsIndex()
-notice = NoticeHandler()
+events = EventsHandler()
 amiya_name = database.config.get_amiya_name()
 
 
-class MessageHandler(HttpRequests, Replies):
+class MessageHandler(HttpRequests):
     def __init__(self):
         super().__init__()
-        Replies.__init__(self)
 
     def on_message(self, message):
 
@@ -42,10 +35,10 @@ class MessageHandler(HttpRequests, Replies):
 
         # 过滤非聊天的消息
         if message['type'] not in ['GroupMessage', 'FriendMessage']:
-            notice.on_notice(message)
+            events.on_events(message)
             return False
 
-        # 重组消息对象，为了更易用
+        # 重组消息对象
         data = self.rebuild_message(message)
 
         # 过滤消息
@@ -58,51 +51,8 @@ class MessageHandler(HttpRequests, Replies):
         if on_call:
             self.print_log(data)
 
-        # 处理函数列表（有先后顺序）
-        reply_func = [
-            {
-                # 等待事件
-                'func': self.waiting,
-                'need_call': False
-            }
-        ]
-        if data['type'] == 'group':
-            reply_func += [
-                {
-                    # 打招呼
-                    'func': self.greeting,
-                    'need_call': False
-                },
-                {
-                    # 表情包
-                    'func': self.face_image,
-                    'need_call': True
-                },
-                {
-                    # 信赖事件
-                    'func': self.emotion,
-                    'need_call': True
-                },
-                {
-                    # 使用功能
-                    'func': function.action,
-                    'need_call': True,
-                    'without_call': True
-                },
-                {
-                    # 自然语言处理
-                    'func': self.natural_language_processing,
-                    'need_call': True
-                }
-            ]
-        else:
-            reply_func += [
-                {
-                    # 管理员指令
-                    'func': self.admin,
-                    'need_call': False
-                }
-            ]
+        # 处理函数列表
+        reply_func = reply_func_list(data)
 
         # 遍历处理函数直至获得回复为止
         for action in reply_func:
@@ -151,18 +101,22 @@ class MessageHandler(HttpRequests, Replies):
         limit = config['message']['limit']
         close_beta = config['close_beta']
 
+        # 封闭测试
         if 'group_id' in data and close_beta['enable']:
             if str(data['group_id']) != str(close_beta['group_id']):
                 return False
 
+        # 屏蔽官方机器人
         for item in ['Q群管家', '小冰']:
             if item in data['text']:
                 return False
 
+        # 屏蔽黑名单用户
         is_black = database.user.get_black_user(data['user_id'])
         if is_black:
             return False
 
+        # 消息速度限制
         message_speed = database.message.check_message_speed_by_user(data['user_id'], limit['seconds'])
         if message_speed and message_speed >= limit['max_count']:
             self.send_reply(data, Reply('博士说话太快了，请再慢一些吧～', at=False))
@@ -221,29 +175,3 @@ class MessageHandler(HttpRequests, Replies):
                 data['image'] = chain['url'].strip()
 
         return data
-
-    @staticmethod
-    def natural_language_processing(message):
-        result = None
-        try:
-            result = NLP.emotion(message)
-        except Exception as e:
-            print('NLP', e)
-
-        if result:
-            item = result['items'][0]
-            text = ''
-
-            if 'replies' in item and item['replies']:
-                text = random.choice(item['replies'])
-
-            label = item['label']
-            if label == 'neutral':
-                pass
-            elif label == 'optimistic':
-                text = '虽然听不懂博士在说什么，但阿米娅能感受到博士现在高兴的心情，欸嘿嘿……'
-            elif label == 'pessimistic':
-                text = '博士心情不好吗？阿米娅不懂怎么安慰博士，但阿米娅会默默陪在博士身边的'
-
-            if text:
-                return Reply(text)
