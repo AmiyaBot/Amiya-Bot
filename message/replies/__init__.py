@@ -5,6 +5,7 @@ from .emotion import emotion
 from .waiting import waiting
 from .greeting import greeting
 from .faceImage import face_image
+from .adminForGroup import group_admin
 from .nlp import natural_language_processing
 
 function = FunctionsIndex()
@@ -20,6 +21,11 @@ def reply_func_list(data):
     ]
     if data['type'] == 'group':
         replies += [
+            {
+                # 群管功能
+                'func': group_admin,
+                'need_call': True
+            },
             {
                 # 打招呼
                 'func': greeting,
