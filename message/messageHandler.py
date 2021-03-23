@@ -111,11 +111,6 @@ class MessageHandler(HttpRequests):
             if item in data['text']:
                 return False
 
-        if data['type'] == 'group':
-            group_status = database.group.get_status(data['group_id'])
-            if group_status and group_status['active'] == 0:
-                return False
-
         # 屏蔽黑名单用户
         is_black = database.user.get_black_user(data['user_id'])
         if is_black:

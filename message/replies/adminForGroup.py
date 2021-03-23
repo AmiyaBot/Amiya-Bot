@@ -18,12 +18,14 @@ def group_admin(data):
     if permission in ['OWNER', 'ADMINISTRATOR'] or user_id == admin_id:
 
         if word_in_sentence(message, ['休息', '下班']):
-            database.group.set_status(group_id, 0, int(time.time()))
-            return Reply('阿米娅打卡下班啦，博士需要阿米娅的时候再让阿米娅工作吧。^_^')
+            res = database.group.get_status(group_id)
+            if not res or res['active'] == 1:
+                database.group.set_status(group_id, 0, int(time.time()))
+                return Reply('阿米娅打卡下班啦，博士需要阿米娅的时候再让阿米娅工作吧。^_^')
 
         if word_in_sentence(message, ['工作', '上班']):
             res = database.group.get_status(group_id)
-            if res['active'] == 0:
+            if res and res['active'] == 0:
                 seconds = int(time.time()) - int(res['sleep_time'])
                 timedelta = datetime.timedelta(seconds=seconds)
                 day = timedelta.days
@@ -41,7 +43,7 @@ def group_admin(data):
                 if sec and not (day or hour or mint):
                     total += '%d秒' % sec
 
-                text = '打卡上班啦~阿米娅%s休息了%s' % ('才' if seconds < 600 else '一共', total)
+                text = '打卡上班啦~阿米娅%s休息了%s……' % ('才' if seconds < 600 else '一共', total)
                 if seconds < 600:
                     text += '\n博士真是太过分了！哼~ >.<'
                 else:

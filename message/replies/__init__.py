@@ -1,4 +1,5 @@
 from functions.functionsIndex import FunctionsIndex
+from database.baseController import BaseController
 
 from .admin import admin
 from .emotion import emotion
@@ -9,6 +10,7 @@ from .adminForGroup import group_admin
 from .nlp import natural_language_processing
 
 function = FunctionsIndex()
+database = BaseController()
 
 
 def reply_func_list(data):
@@ -19,13 +21,21 @@ def reply_func_list(data):
             'need_call': False
         }
     ]
+
+    group_admin_func = {
+        # 群管功能
+        'func': group_admin,
+        'need_call': True
+    }
+
     if data['type'] == 'group':
+
+        group_status = database.group.get_status(data['group_id'])
+        if group_status and group_status['active'] == 0:
+            return [group_admin_func]
+
+        replies.append(group_admin_func)
         replies += [
-            {
-                # 群管功能
-                'func': group_admin,
-                'need_call': True
-            },
             {
                 # 打招呼
                 'func': greeting,
