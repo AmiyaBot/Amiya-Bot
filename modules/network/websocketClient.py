@@ -8,10 +8,10 @@ from modules.config import get_config
 
 class Websocket(WebSocketClient):
     def __init__(self, session, handler=None):
-        config = get_config()
+        server = get_config('server')
 
-        host = config['server']['server_ip']
-        port = config['server']['server_port']
+        host = server['server_ip']
+        port = server['server_port']
         super().__init__('ws://%s:%d/all?sessionKey=%s' % (host, port, session))
         self.connect()
         self.handler = handler

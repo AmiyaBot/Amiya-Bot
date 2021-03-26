@@ -26,21 +26,28 @@ class EventsHandler(HttpRequests):
         except Exception as e:
             print('Remind2', e)
 
+        if events_type == 'MemberJoinEvent':
+            self.send_group_message(
+                data={
+                    'user_id': message['member']['id'],
+                    'group_id': message['member']['group']['id']
+                },
+                message='欢迎新博士%s~，我是阿米娅，请多多指教哦' % message['member']['memberName'],
+                at=True
+            )
+
+        if events_type == 'BotJoinGroupEvent':
+            self.send_group_message(
+                data={
+                    'group_id': message['group']['id']
+                },
+                message='博士，初次见面，这里是阿米娅2号，姐姐去了很远的地方，今后就由我来代替姐姐的工作吧，请多多指教哦'
+            )
+
         if events_type == 'BotMuteEvent':
             self.leave_group(message['operator']['group']['id'])
 
-        if events_type == 'MemberJoinEvent':
-            self.send_group_message({
-                'user_id': message['member']['id'],
-                'group_id': message['member']['group']['id']
-            }, message='欢迎%s' % message['member']['memberName'], at=True)
-
-        if events_type == 'BotJoinGroupEvent':
-            self.send_group_message({
-                'group_id': message['group']['id']
-            }, message='博士，初次见面，这里是阿米娅2号，姐姐去了很远的地方，今后就由我来代替姐姐的工作吧，请多多指教哦')
-
-        if events_type == 'BotLeaveEventActive':
+        if events_type == 'BotLeaveEventKick':
             self.leave_group(message['group']['id'], False)
 
         if events_type == 'BotInvitedJoinGroupRequestEvent':

@@ -4,13 +4,14 @@ import shutil
 import datetime
 
 from PIL import Image, ImageDraw, ImageFont
+from modules.config import get_config
 
 resource = 'resource/message'
 font_file = 'resource/style/AdobeHeitiStd-Regular.otf'
 logo_file = 'resource/style/rabbit.png'
 
 # 配置 mirai-api-http 的缓存路径可以顺手清理其缓存的图片
-console_temp = ''
+console_temp = get_config('message.console_temp_images')
 
 
 def cut_code(code, length):

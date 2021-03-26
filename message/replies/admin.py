@@ -6,7 +6,7 @@ from modules.commonMethods import Reply, restart
 from modules.gameData import GameData
 from modules.config import get_config
 
-config = get_config()
+admin_id = get_config('admin_id')
 database = BaseController()
 gameData = GameData()
 
@@ -15,7 +15,7 @@ def admin(data):
     message = data['text']
     user_id = data['user_id']
 
-    if user_id == config['admin_id']:
+    if user_id == admin_id:
         if '更新' in message:
             res = gameData.update()
             if res:

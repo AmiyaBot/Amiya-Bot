@@ -57,15 +57,20 @@ class HttpRequests:
                     return session
         return ''
 
-    def get_group_list(self):
-        if config['close_beta']['enable']:
-            return [{'id': config['close_beta']['group_id']}]
-
+    def get_group_list(self, close_beta=config['close_beta']['enable']):
         session = self.get_session()
-        if session:
+        if close_beta:
+            return [{
+                'id': config['close_beta']['group_id']
+            }]
+        else:
             response = self.get('groupList?sessionKey=%s' % session)
-            return response
-        return []
+            group_list = {}
+            for item in response:
+                if item['id'] not in group_list:
+                    group_list[item['id']] = item
+            group_list = [n for i, n in group_list.items()]
+            return group_list
 
     def handle_join_group(self, data, operate):
         self.post('/resp/botInvitedJoinGroupRequestEvent', {

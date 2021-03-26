@@ -23,28 +23,22 @@ class AutomaticAction(HttpRequests):
         super().__init__()
 
     def run_loop(self):
-        try:
-            first_loop = True
-            while True:
-                if first_loop:
-                    first_loop = False
-                    self.send_admin('启动完毕')
-                stop = self.events()
-                if stop:
-                    print('loop stop')
+        self.send_admin('启动完毕')
+        while True:
+            try:
+                if self.events():
                     break
-                time.sleep(60)
-        except KeyboardInterrupt:
-            pass
+            except Exception as loop_err:
+                self.send_admin('LOOP ERROR: %s' % str(loop_err))
+            time.sleep(30)
 
     def events(self):
         now = time.localtime(time.time())
         hour = now.tm_hour
         mint = now.tm_min
 
+        # 重启
         if (hour in [4, 16]) and mint == 0:
-
-            # 判断是否可以重启
             record = restart_record()
             now_time = int('%s%s%s%s' % (now.tm_year,
                                          insert_zero(now.tm_mon),

@@ -24,7 +24,8 @@
             "seconds": 10,
             "max_count": 3
         },
-        "reply_text_max_length": 100
+        "reply_text_max_length": 100,
+        "console_temp_images": ""
     },
     "close_beta": {
         "enable": false,

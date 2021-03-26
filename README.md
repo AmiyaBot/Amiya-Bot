@@ -229,7 +229,7 @@ VALUES ('银灰色的荣耀',
         0)
 ```
 
-- 在有干员增加的版本，Amiya 在自更新前，需手动配置更新文件`resource/config/update_config.json`以在更新时能正确获取数据
+- 在有干员增加的版本，Amiya 在执行更新前，需手动配置更新文件`resource/config/update_config.json`以在更新时能正确获取数据
 
 ```json5
 // 比如当《集成战略》有新干员增加时，在无法抽卡获取的干员对应的列表里添加新干员名
@@ -250,7 +250,6 @@ VALUES ('银灰色的荣耀',
 
 - 任何配置改动后需重启 Amiya 后生效，手动重启 Amiya 只需要重新运行`amiya.py`即可
     - 或者使用管理员命令`Amiya重启`
-- 要关闭 Amiya，直接关闭 Amiya 的窗口和 mirai-console 即可
 
 ## 贡献
 
