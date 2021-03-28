@@ -62,7 +62,7 @@ class VBlog:
 
         return Reply(text)
 
-    def requests_content(self, only_id, message_type, index=0):
+    def requests_content(self, only_id=False, index=0):
         session = requests.session()
 
         cards = self.get_cards_list()
@@ -111,10 +111,3 @@ class VBlog:
             Reply(detail_url, 0, at=False, auto_image=False),
             Reply(pics_list, 0, at=False)
         ]
-
-    def get_new_blog(self, only_id=False, message_type='group', index=0):
-        try:
-            return self.requests_content(only_id, message_type, index)
-        except Exception as error:
-            print('Blog', error)
-            return False

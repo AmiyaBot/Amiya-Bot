@@ -19,10 +19,10 @@ class Init:
         r = re.search(re.compile(r'第(\d+)条微博'), message)
         if r:
             index = abs(int(r.group(1)))
-            result = blog.get_new_blog(message_type=data['type'], index=index - 1)
-            if result:
-                return result
-            else:
+            try:
+                return blog.requests_content(index=index - 1)
+            except Exception as error:
+                print('Blog', error)
                 return Reply('博士…暂时无法获取微博呢…请稍后再试吧')
 
         return blog.get_blog_list()
