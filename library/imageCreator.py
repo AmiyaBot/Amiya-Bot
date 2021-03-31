@@ -72,3 +72,4 @@ def clean_temp_images():
 
     if os.path.exists(console_temp):
         shutil.rmtree(console_temp)
+        os.mkdir(console_temp)

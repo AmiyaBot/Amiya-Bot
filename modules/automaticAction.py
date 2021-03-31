@@ -5,7 +5,7 @@ import threading
 
 from database.baseController import BaseController
 from library.imageCreator import clean_temp_images
-from modules.commonMethods import restart_record, insert_zero
+from modules.commonMethods import maintain_record, insert_zero
 from modules.network.httpRequests import HttpRequests
 
 from functions.vblog.vblog import VBlog
@@ -39,7 +39,7 @@ class AutomaticAction(HttpRequests):
         mint = now.tm_min
         try:
             if hour == 4 and mint == 0:
-                record = restart_record()
+                record = maintain_record()
                 now_time = int('%s%s%s' % (now.tm_year,
                                            insert_zero(now.tm_mon),
                                            insert_zero(now.tm_mday)))
@@ -54,7 +54,10 @@ class AutomaticAction(HttpRequests):
                     # 清除图片缓存
                     clean_temp_images()
 
-                    self.send_admin('维护完成')
+                    # 记录维护时间
+                    maintain_record(str(now_time))
+
+                    self.send_admin('维护结束，最后维护时间 %s' % now_time)
         except Exception as e:
             self.send_admin('维护发生错误：' + str(e))
 

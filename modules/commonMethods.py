@@ -93,16 +93,18 @@ def string_equal_rate(str1: str, str2: str):
     return difflib.SequenceMatcher(None, str1, str2).quick_ratio()
 
 
-def restart_record():
-    if os.path.exists('temp/restart.txt'):
-        with open('temp/restart.txt', mode='r+') as rs:
-            return int(rs.read())
+def maintain_record(date: str = None):
+    rc_path = 'temp/maintainRecord.txt'
+    if date:
+        with open(rc_path, mode='w+') as rc:
+            rc.write(date)
+            return True
+    if os.path.exists(rc_path):
+        with open(rc_path, mode='r+') as rc:
+            return int(rc.read())
     return 0
 
 
-def restart(r_time=None):
-    if r_time:
-        with open('temp/restart.txt', mode='w+') as rs:
-            rs.write(str(r_time))
+def restart():
     python = sys.executable
     os.execl(python, python, *sys.argv)
