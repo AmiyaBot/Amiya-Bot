@@ -18,6 +18,7 @@ keywords = []
 for key in voices:
     keywords.append('%s 100 n' % key)
 
+print('loading operators data...')
 database = BaseController()
 material = MaterialCosts(keywords)
 jieba.load_userdict('resource/operators.txt')

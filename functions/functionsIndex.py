@@ -8,11 +8,11 @@ database = BaseController()
 priority = [
     'functionQuery',
     'gacha',
+    'enemy',
     'operator',
     'material',
     'userInfo',
     'recruit',
-    'enemy',
     'jadeCalculator',
     'intellect',
     'vblog'

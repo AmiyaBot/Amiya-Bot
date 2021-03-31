@@ -5,6 +5,7 @@ from itertools import combinations
 from modules.commonMethods import Reply, all_item_in_text, insert_empty
 from database.baseController import BaseController
 
+print('loading tags data...')
 database = BaseController()
 tags_file = database.operator.create_tags_file()
 jieba.load_userdict(tags_file)

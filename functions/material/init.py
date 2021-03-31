@@ -4,6 +4,7 @@ from jieba import posseg
 from modules.commonMethods import Reply
 from functions.material.materials import Material
 
+print('loading materials data...')
 material = Material()
 jieba.load_userdict('resource/materials.txt')
 

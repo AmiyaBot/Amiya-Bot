@@ -15,8 +15,9 @@ def on_message(text, sender_id, group_id):
         ],
         'sender': {
             'id': sender_id,
-            'nickname': 'administrator',
-            'memberName': 'administrator',
+            'permission': 'OWNER',
+            'nickname': 'OWNER',
+            'memberName': 'OWNER',
             'remark': 'none',
             'group': {
                 'id': group_id

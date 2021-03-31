@@ -62,13 +62,25 @@ class GameData:
         self.pics_source = 'https://andata.somedata.top/dataX'
         self.pics_path = 'resource/images'
 
-    def get_key(self):
+    def get_key(self, source):
         url = 'https://api.kokodayo.fun/api/base/info'
         info = requests.get(url, headers=self.headers)
-        if info.status_code == 200:
-            info = info.json()
-            if info['ok']:
-                return info['result']['agent']['char']['key']
+
+        if info.status_code != 200:
+            return False
+
+        info = info.json()
+        if 'result' not in info or not info['result']:
+            return False
+
+        result = info['result']
+        for item in source.split('.'):
+            if item in result:
+                result = result[item]
+            else:
+                return False
+
+        return result['key']
 
     def get_json_data(self, title, name):
         url = '%s/%s/%s.json' % (self.data_source, title, name)
@@ -77,8 +89,8 @@ class GameData:
             content = json.loads(stream.content)
             return content
 
-    def get_pic(self, name, _type):
-        url = '%s/%s.png' % (self.pics_source, name)
+    def get_pic(self, name, _type, _param=''):
+        url = '%s/%s.png%s' % (self.pics_source, name, _param)
         path = '%s/%s/%s.png' % (self.pics_path, _type, name.split('/')[-1])
         if os.path.exists(path) is False:
             stream = requests.get(url, headers=self.headers, stream=True)
@@ -237,12 +249,12 @@ class GameData:
 
     def update(self):
         t_record = millisecond()
-        new_id = self.get_key()
+        char_key = self.get_key('agent.char')
 
-        if bool(new_id) is False:
+        if bool(char_key) is False:
             return False
 
-        data = self.get_operators_list(new_id)
+        data = self.get_operators_list(char_key)
 
         if bool(data) is False:
             return False
