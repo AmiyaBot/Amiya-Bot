@@ -92,7 +92,8 @@ class Init:
             if stories_key:
                 story = database.operator.find_operator_stories(name, stories_key)
                 if story:
-                    return Reply(story['story_text'])
+                    text = '博士，这是干员%s的《%s》档案\n\n' % (name, stories_key)
+                    return Reply(text + story['story_text'])
                 else:
                     return Reply('博士，没有找到干员%s的《%s》档案' % (name, stories_key))
 
