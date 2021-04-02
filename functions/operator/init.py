@@ -4,6 +4,7 @@ from jieba import posseg
 from modules.commonMethods import Reply, word_in_sentence, find_similar_string
 from database.baseController import BaseController
 from functions.operator.materialsCosts import MaterialCosts
+from functions.operator.operatorInfo import OperatorInfo
 
 voices = [
     "任命助理", "任命队长", "编入队伍", "问候", "闲置",
@@ -14,14 +15,16 @@ voices = [
     "选中干员1", "选中干员2", "部署1", "部署2", "作战中1", "作战中2", "作战中3", "作战中4",
     "戳一下", "信赖触摸", "干员报到", "进驻设施", "观看作战记录", "标题"
 ]
-keywords = []
+voices_keywords = []
 for key in voices:
-    keywords.append('%s 100 n' % key)
+    voices_keywords.append('%s 100 n' % key)
 
 print('loading operators data...')
 database = BaseController()
-material = MaterialCosts(keywords)
+material = MaterialCosts(voices_keywords)
+operator = OperatorInfo()
 jieba.load_userdict('resource/operators.txt')
+jieba.load_userdict('resource/stories.txt')
 
 
 class Init:
@@ -40,15 +43,18 @@ class Init:
         level = 0
         surplus = ''
         voice_key = ''
+        stories_key = ''
         skill_index = 0
 
         for item in words:
+            # 获取档案关键词
+            if stories_key == '' and item.word in operator.stories_title:
+                stories_key = item.word
+                continue
             # 获取语音关键词
             if voice_key == '' and item.word in voices:
                 voice_key = item.word
-                break
-
-        for item in words:
+                continue
             # 获取干员名
             if name == '' and item.word in material.operator_list:
                 name = item.word
@@ -80,6 +86,14 @@ class Init:
             return Reply(result)
 
         if name:
+            # todo 档案资料
+            if stories_key:
+                story = database.operator.find_operator_stories(name, stories_key)
+                if story:
+                    return Reply(story)
+                else:
+                    return Reply('博士，没有找到干员%s的《%s》档案' % (name, stories_key))
+
             # todo 语音资料
             if voice_key:
                 return self.find_voice(name, voice_key)
@@ -93,9 +107,9 @@ class Init:
             return Reply('博士，想查询干员%s的什么资料呢' % name)
 
     @staticmethod
-    def find_voice(operator, voice):
-        result = database.operator.find_operator_voice(operator, voice)
+    def find_voice(name, voice):
+        result = database.operator.find_operator_voice(name, voice)
         if result:
-            text = '博士，为您找到干员%s的语音档案：\n\n【%s】\n%s' % (operator, voice, result['voice_text'])
+            text = '博士，为您找到干员%s的语音档案：\n\n【%s】\n%s' % (name, voice, result['voice_text'])
             return Reply(text)
-        return Reply('抱歉博士，没有找到干员%s%s相关的语音档案' % (operator, voice))
+        return Reply('抱歉博士，没有找到干员%s%s相关的语音档案' % (name, voice))

@@ -17,11 +17,17 @@ class Operator:
     def add_operator_skill_mastery_costs(self, data):
         self.db.batch_insert('t_operator_skill_mastery_costs', data=data)
 
+    def add_operator_skill_description(self, data):
+        self.db.batch_insert('t_operator_skill_description', data=data)
+
     def add_operator_tags_relation(self, data):
         self.db.batch_insert('t_operator_tags_relation', data=data)
 
     def add_operator_voice(self, data):
         self.db.batch_insert('t_operator_voice', data=data)
+
+    def add_operator_stories(self, data):
+        self.db.batch_insert('t_operator_stories', data=data)
 
     def get_operator_id(self, operator_no='', operator_name=''):
         res = self.db.select('t_operator', where=Where({
@@ -68,6 +74,10 @@ class Operator:
               'WHERE s.skill_name LIKE "%{name}%"'.format(name=skill_name)
 
         return self.db.select(sql=sql, fields=['skill_index', 'operator_name'])
+
+    def get_all_stories_title(self):
+        res = self.db.select('t_operator_stories', sql='SELECT * FROM t_operator_stories GROUP BY story_title')
+        return [item['story_title'] for item in res]
 
     def find_operator_evolve_costs(self, name, level):
 
@@ -123,6 +133,13 @@ class Operator:
               'ORDER BY operator_rarity DESC' % (' OR '.join(where), min_rarity, max_rarity)
 
         return self.db.select('t_operator_tags_relation', sql=sql)
+
+    def find_operator_stories(self, name, title):
+        sql = 'SELECT os.story_text FROM t_operator o ' \
+              'LEFT JOIN t_operator_stories os on o.operator_id = os.operator_id ' \
+              'WHERE o.operator_name = "%s" and os.story_title = "%s"' % (name, title)
+
+        return self.db.select(sql=sql, fields=['story_text'], fetchone=True)
 
     def find_operator_voice(self, operator_name, title):
         return self.db.select('t_operator_voice', where=Where({

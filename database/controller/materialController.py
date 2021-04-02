@@ -37,6 +37,10 @@ class Material:
 
         return self.db.select(sql=sql, fields=['material_name', 'use_number'])
 
+    def update_stage(self, data):
+        self.db.truncate('t_stage')
+        self.db.batch_insert('t_stage', data=data)
+
     def truncate_all(self):
         tables = [
             't_material',
@@ -45,7 +49,9 @@ class Material:
             't_operator',
             't_operator_evolve_costs',
             't_operator_skill',
+            't_operator_skill_description',
             't_operator_skill_mastery_costs',
+            't_operator_stories',
             't_operator_tags_relation',
             't_operator_voice'
         ]

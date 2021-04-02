@@ -1,3 +1,4 @@
+import re
 import os
 import time
 import json
@@ -22,6 +23,10 @@ unavailable = [item for item in
                update_config['unavailable']['contract_only'] +
                update_config['unavailable']['roguelike_only'] +
                update_config['unavailable']['linkage_only']]
+
+formatter = {
+    '0%': lambda v: str(round(v * 100)) + '%'
+}
 
 
 class Operator:
@@ -142,6 +147,7 @@ class GameData:
         operator_id = database.operator.get_operator_id(operator_no=operator.id)
         self.save_operator_detail(operator.id, operator_id)
         self.save_operator_voices(operator.id, operator_id)
+        self.save_operator_stories(operator.id, operator_id)
 
     def save_operator_detail(self, operator_no, operator_id):
         data = self.get_json_data('char/data', operator_no)
@@ -149,7 +155,7 @@ class GameData:
             materials = [item['material_id'] for item in database.material.get_all_material()]
             used_materials = []
 
-            # todo 保存干员精英化信息
+            # todo 保存精英化信息
             evolve_cost = []
             for index, phases in enumerate(data['phases']):
                 if phases['evolveCost']:
@@ -166,8 +172,10 @@ class GameData:
                 database.operator.add_operator_evolve_costs(evolve_cost)
                 print(' --- 精英化数据保存完毕...')
 
-            # todo 保存干员技能信息
+            # todo 保存技能信息
             skills = []
+            skills_id = []
+            skills_desc = {}
             skills_cost = {}
             for index, item in enumerate(data['skills']):
                 detail = self.get_json_data('skills', item['skillId'])
@@ -175,12 +183,42 @@ class GameData:
                     name = detail['levels'][0]['name']
                     sk_no = item['skillId']
 
+                    skills_id.append(sk_no)
+
+                    if sk_no not in skills_desc:
+                        skills_desc[sk_no] = []
+                    if sk_no not in skills_cost:
+                        skills_cost[sk_no] = []
+
+                    # 预处理技能描述数据
+                    for lev, desc in enumerate(detail['levels']):
+                        blackboard = {item['key']: item['value'] for index, item in enumerate(desc['blackboard'])}
+                        description = re.compile(r'<[^>]+>', re.S).sub('', desc['description'])
+                        format_str = re.findall(r'({(\S+?)})', description)
+                        if format_str:
+                            for desc_item in format_str:
+                                key = desc_item[1].split(':')
+                                if key[0] in blackboard:
+                                    value = blackboard[key[0]]
+                                    if len(key) >= 2 and key[1] in formatter:
+                                        value = formatter[key[1]](value)
+                                    description = re.sub(desc_item[0], str(value), description)
+
+                        skills_desc[sk_no].append({
+                            'skill_level': lev + 1,
+                            'skill_type': desc['skillType'],
+                            'sp_type': desc['spData']['spType'],
+                            'sp_init': desc['spData']['initSp'],
+                            'sp_cost': desc['spData']['spCost'],
+                            'duration': desc['duration'],
+                            'description': description,
+                            'max_charge': desc['spData']['maxChargeTime']
+                        })
+
+                    # 预处理专精数据
                     for lev, cond in enumerate(item['levelUpCostCond']):
                         if bool(cond['levelUpCost']) is False:
                             continue
-
-                        if sk_no not in skills_cost:
-                            skills_cost[sk_no] = []
 
                         for idx, cost in enumerate(cond['levelUpCost']):
                             skills_cost[sk_no].append({
@@ -204,20 +242,25 @@ class GameData:
                 database.operator.add_operator_skill(skills)
                 print(' --- 技能数据保存完毕...')
 
-            # todo 保存干员技能专精信息
-            skills_cost_list = []
-            for sk_no, sk_list in skills_cost.items():
-                skill_id = database.operator.get_skill_id(sk_no, operator_id)
-                for item in sk_list:
-                    item['skill_id'] = skill_id
-                    skills_cost_list.append(item)
-            if skills_cost_list:
-                database.operator.add_operator_skill_mastery_costs(skills_cost_list)
-                print(' --- 技能专精数据保存完毕...')
+            skills_id = {sk_no: database.operator.get_skill_id(sk_no, operator_id) for sk_no in skills_id}
 
-            # todo 保存未保存过的材料信息
+            # todo 保存技能描述和专精信息
+            todo_list = [
+                ('技能描述', skills_desc, database.operator.add_operator_skill_description),
+                ('技能专精信息', skills_cost, database.operator.add_operator_skill_mastery_costs)
+            ]
+            for todo in todo_list:
+                save_list = []
+                for sk_no, sk_list in todo[1].items():
+                    for item in sk_list:
+                        item['skill_id'] = skills_id[sk_no]
+                        save_list.append(item)
+                if save_list:
+                    todo[2](save_list)
+                    print(' --- %s保存完毕...' % todo[0])
+
+            # todo 保存材料信息
             unsaved_materials = []
-            unsaved_materials_drop = []
             for item in used_materials:
                 if int(item) not in materials:
                     material_data = self.get_json_data('item', item)
@@ -247,7 +290,21 @@ class GameData:
                 database.operator.add_operator_voice(voices)
                 print(' --- 语音数据保存完毕...')
 
-    def update(self):
+    def save_operator_stories(self, operator_no, operator_id):
+        data = self.get_json_data('char/info', operator_no)
+        if data:
+            stories = []
+            for item in data['storyTextAudio']:
+                stories.append({
+                    'operator_id': operator_id,
+                    'story_title': item['storyTitle'],
+                    'story_text': item['stories'][0]['storyText']
+                })
+            if stories:
+                database.operator.add_operator_stories(stories)
+                print(' --- 档案数据保存完毕...')
+
+    def update_operators(self):
         t_record = millisecond()
         char_key = self.get_key('agent.char')
 
@@ -276,6 +333,35 @@ class GameData:
 
         print(message)
         return message
+
+    def update_stage(self):
+        stage_key = self.get_key('level.stage')
+        stage_data = self.get_json_data('lists/stage', stage_key)
+        stage_list = []
+
+        def loop_list(data):
+            nonlocal stage_list
+            for i, item in (enumerate(data) if type(data) is list else data.items()):
+                item_type = type(item)
+                if item_type is list:
+                    loop_list(item)
+                elif item_type is dict and 'type' in item and item['type'] == 'sub':
+                    loop_list(item['data'])
+                elif item_type is str:
+                    item = re.split(r'\s+', item)
+                    if item[0]:
+                        stage_list.append({
+                            'stage_id': item[2],
+                            'stage_code': item[0],
+                            'stage_name': item[1],
+                        })
+
+        for index, stage in stage_data.items():
+            loop_list(stage)
+
+        database.material.update_stage(stage_list)
+
+        return '更新执行完毕，共%d张地图' % len(stage_list)
 
 
 def millisecond():

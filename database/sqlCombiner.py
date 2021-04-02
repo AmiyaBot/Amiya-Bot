@@ -116,6 +116,7 @@ class Mysql:
             cursor.execute(sql)
         except Exception as e:
             print('Exec', e)
+            print(sql)
         finally:
             self.lock.release()
             return cursor
@@ -152,4 +153,4 @@ class Where:
 
 
 def str_or_int(value):
-    return '"%s"' % value.replace('"', '\"') if isinstance(value, str) else str(value)
+    return '"%s"' % value.replace('"', '\'') if isinstance(value, str) else str(value)

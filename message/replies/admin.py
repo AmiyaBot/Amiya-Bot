@@ -16,8 +16,13 @@ def admin(data):
     user_id = data['user_id']
 
     if user_id == admin_id:
-        if '更新' in message:
-            res = gameData.update()
+        if '更新干员' in message:
+            res = gameData.update_operators()
+            if res:
+                return Reply(res)
+
+        if '更新地图' in message:
+            res = gameData.update_stage()
             if res:
                 return Reply(res)
 
