@@ -121,6 +121,44 @@ class Operator:
             'mastery_level'
         ])
 
+    def find_operator_skill_description(self, name, level, index=0):
+        field = ', '.join([
+            's.skill_name',
+            's.skill_index',
+            's.skill_icon',
+            'd.skill_type',
+            'd.sp_type',
+            'd.sp_init',
+            'd.sp_cost',
+            'd.duration',
+            'd.description',
+            'd.max_charge'
+        ])
+        left_join = ' '.join([
+            'LEFT JOIN t_operator_skill s ON s.skill_id = d.skill_id'
+        ])
+
+        sql = 'SELECT operator_id FROM t_operator WHERE operator_name = "%s"' % name
+        sql = 'SELECT skill_id FROM t_operator_skill WHERE operator_id IN (%s)' % sql
+        sql = 'SELECT %s FROM t_operator_skill_description d %s ' \
+              'WHERE d.skill_level = %d AND d.skill_id IN (%s)' % (field, left_join, level, sql)
+
+        if index > 0:
+            sql += ' AND s.skill_index = %d' % index
+
+        return self.db.select(sql=sql, fields=[
+            'skill_name',
+            'skill_index',
+            'skill_icon',
+            'skill_type',
+            'sp_type',
+            'sp_init',
+            'sp_cost',
+            'duration',
+            'description',
+            'max_charge'
+        ])
+
     def find_operator_tags_by_tags(self, tags, min_rarity=1, max_rarity=6):
 
         where = []

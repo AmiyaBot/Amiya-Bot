@@ -25,7 +25,7 @@ unavailable = [item for item in
                update_config['unavailable']['linkage_only']]
 
 formatter = {
-    '0%': lambda v: str(round(v * 100)) + '%'
+    '0%': lambda v: str(abs(round(v * 100))) + '%'
 }
 
 
@@ -198,11 +198,12 @@ class GameData:
                         if format_str:
                             for desc_item in format_str:
                                 key = desc_item[1].split(':')
-                                if key[0] in blackboard:
-                                    value = blackboard[key[0]]
+                                fd = key[0].lower().strip('-')
+                                if fd in blackboard:
+                                    value = blackboard[fd]
                                     if len(key) >= 2 and key[1] in formatter:
                                         value = formatter[key[1]](value)
-                                    description = re.sub(desc_item[0], str(value), description)
+                                    description = description.replace(desc_item[0], str(value))
 
                         skills_desc[sk_no].append({
                             'skill_level': lev + 1,

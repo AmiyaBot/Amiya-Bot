@@ -43,14 +43,12 @@ class Init:
         level = 0
         surplus = ''
         voice_key = ''
-        stories_key = ''
         skill_index = 0
 
+        # 获取档案关键词
+        stories_key = find_similar_string(message, operator.stories_title)
+
         for item in words:
-            # 获取档案关键词
-            if stories_key == '' and item.word in operator.stories_title:
-                stories_key = item.word
-                continue
             # 获取语音关键词
             if voice_key == '' and item.word in voices:
                 voice_key = item.word
@@ -75,14 +73,18 @@ class Init:
             return Reply('博士，想查询哪位干员或技能的资料呢？请再说一次吧')
 
         if level != 0:
-            if level <= 2:
+            if level < 0:
                 # todo 精英化资料
+                level = abs(level)
                 result = material.check_evolve_costs(name, level)
             else:
-                # todo 专精资料
-                level -= 2
-                result = material.check_mastery_costs(name, skill, level, skill_index=skill_index)
-
+                if level >= 8 and '材料' in message:
+                    # todo 专精资料
+                    level -= 7
+                    result = material.check_mastery_costs(name, skill, level, skill_index=skill_index)
+                else:
+                    # todo 技能数据
+                    result = operator.get_skill_data(name, skill, level, skill_index=skill_index)
             return Reply(result)
 
         if name:
@@ -90,7 +92,7 @@ class Init:
             if stories_key:
                 story = database.operator.find_operator_stories(name, stories_key)
                 if story:
-                    return Reply(story)
+                    return Reply(story['story_text'])
                 else:
                     return Reply('博士，没有找到干员%s的《%s》档案' % (name, stories_key))
 

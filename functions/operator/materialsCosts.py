@@ -14,14 +14,20 @@ class MaterialCosts:
         self.operator_list = []
         self.skill_list = []
         self.level_list = {
-            '精一': 1, '精1': 1, '精英一': 1, '精英1': 1,
-            '精二': 2, '精2': 2, '精英二': 2, '精英2': 2,
-            '专一': 3, '专1': 3, '专精一': 3, '专精1': 3,
-            '专二': 4, '专2': 4, '专精二': 4, '专精2': 4,
-            '专三': 5, '专3': 5, '专精三': 5, '专精3': 5
+            '精1': -1, '精英1': -1,
+            '精2': -2, '精英2': -2,
+            '1级': 1, '等级1': 1,
+            '2级': 2, '等级2': 2,
+            '3级': 3, '等级3': 3,
+            '4级': 4, '等级4': 4,
+            '5级': 5, '等级5': 5,
+            '6级': 6, '等级6': 6,
+            '7级': 7, '等级7': 7,
+            '专1': 8, '专精1': 8,
+            '专2': 9, '专精2': 9,
+            '专3': 10, '专精3': 10
         }
         self.skill_index_list = {
-            '一技能': 1, '二技能': 2, '三技能': 3,
             '1技能': 1, '2技能': 2, '3技能': 3
         }
         keywords = [] + extra
@@ -48,6 +54,24 @@ class MaterialCosts:
 
         with open('resource/operators.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join(keywords))
+
+    @staticmethod
+    def find_repeat_skill_name(name, skill, skill_index):
+        text = ''
+        if skill and skill_index == 0:
+            skill_info = database.operator.get_operator_skill_by_name(skill)
+            if len(skill_info):
+                if name == '' and len(skill_info) > 1:
+                    text += '博士，目前存在 %d 个干员拥有【%s】这个技能哦，请用比如「干员一技能专三」这种方式和阿米娅描述吧' % (len(skill_info), skill)
+                item = skill_info[0]
+                if name == '':
+                    name = item['operator_name']
+                    skill_index = item['skill_index']
+                else:
+                    if name == item['operator_name']:
+                        skill_index = item['skill_index']
+
+        return text, name, skill_index
 
     @staticmethod
     def check_evolve_costs(name, level):
@@ -85,24 +109,13 @@ class MaterialCosts:
 
         return text
 
-    @staticmethod
-    def check_mastery_costs(name, skill, level, skill_index=0):
+    def check_mastery_costs(self, name, skill, level, skill_index=0):
         mastery = {1: '一', 2: '二', 3: '三'}
 
-        text = ''
-        if skill and skill_index == 0:
-            skill_info = database.operator.get_operator_skill_by_name(skill)
-            if len(skill_info):
-                if name == '' and len(skill_info) > 1:
-                    text += '博士，目前存在 %d 个干员拥有【%s】这个技能哦，请用比如「干员一技能专三」这种方式和阿米娅描述吧' % (len(skill_info), skill)
-                    return text
-                item = skill_info[0]
-                if name == '':
-                    name = item['operator_name']
-                    skill_index = item['skill_index']
-                else:
-                    if name == item['operator_name']:
-                        skill_index = item['skill_index']
+        text, name, skill_index = self.find_repeat_skill_name(name, skill, skill_index)
+
+        if text:
+            return text
 
         result = database.operator.find_operator_skill_mastery_costs(name, level, skill_index)
 
