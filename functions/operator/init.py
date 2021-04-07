@@ -46,7 +46,9 @@ class Init:
         skill_index = 0
 
         # 获取档案关键词
-        stories_key = find_similar_string(message, operator.stories_title)
+        stories_key = find_similar_string(message, operator.stories_title.keys())
+        if stories_key:
+            stories_key = operator.stories_title[stories_key]
 
         for item in words:
             # 获取语音关键词

@@ -24,7 +24,7 @@ def cut_code(code, length):
     return res_list
 
 
-def create_image(text: str, message, images=None):
+def split_text(text):
     text = text.strip('\n').split('\n')
 
     new_text = []
@@ -36,7 +36,11 @@ def create_image(text: str, message, images=None):
         else:
             new_text.append(item)
 
-    text = '\n'.join(new_text)
+    return new_text
+
+
+def create_image(text: str, message, images=None):
+    text = '\n'.join(split_text(text))
     height = len(text.split('\n')) + 1
     image = Image.new('RGB', (550, height * 18), (255, 255, 255))
     draw = ImageDraw.Draw(image)

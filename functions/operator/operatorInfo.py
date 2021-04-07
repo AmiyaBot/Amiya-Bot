@@ -1,5 +1,8 @@
+import os
 import re
 
+from library.imageCreator import split_text
+from library.numberTranslate import chinese_to_digits
 from database.baseController import BaseController
 from message.messageType import TextImage
 from functions.operator.materialsCosts import MaterialCosts, skill_images_source
@@ -33,10 +36,13 @@ sp_type = {
 
 class OperatorInfo:
     def __init__(self):
-        self.stories_title = database.operator.get_all_stories_title()
+
+        stories_titles = database.operator.get_all_stories_title()
+
+        self.stories_title = {chinese_to_digits(item['story_title']): item['story_title'] for item in stories_titles}
         self.stories_keyword = []
 
-        for item in self.stories_title:
+        for index, item in self.stories_title.items():
             item = re.compile(r'？+', re.S).sub('', item)
             if item:
                 self.stories_keyword.append(item + ' 100 n')
@@ -58,6 +64,10 @@ class OperatorInfo:
             text += '博士，这是干员%s技能%s的数据\n\n' % (name, skill_level[level])
             skills = {}
             skill_images = []
+            icons = []
+
+            y = 28
+            yl = []
 
             for item in result:
                 skill_name = item['skill_name']
@@ -65,15 +75,33 @@ class OperatorInfo:
                     skills[skill_name] = []
                     skill_images.append(skill_images_source + item['skill_icon'] + '.png')
                 skills[skill_name].append(item)
-            for name in skills:
-                text += '【%s】\n\n' % name
-                for item in skills[name]:
-                    text += '%s / %s' % (sp_type[item['sp_type']], skill_type[item['skill_type']])
-                    text += '%sSP：%s / %s\n' % (' ' * 5, item['sp_init'], item['sp_cost'])
-                    if item['duration'] > 0:
-                        text += '持续时间：%ss\n' % item['duration']
-                    text += '%s\n\n' % item['description']
 
-            return TextImage(text)
+            for name in skills:
+                text += '%s%s\n\n' % (' ' * 15, name)
+                content = ''
+                index = list(skills.keys()).index(name)
+
+                y += 51 if index else 0
+                yl.append(y)
+
+                for item in skills[name]:
+                    content += '%s / %s' % (sp_type[item['sp_type']], skill_type[item['skill_type']])
+                    content += '%sSP：%s / %s\n' % (' ' * 5, item['sp_init'], item['sp_cost'])
+                    if item['duration'] > 0:
+                        content += '持续时间：%ss\n' % item['duration']
+                    content += '%s\n\n' % item['description']
+                    text += content
+
+                    y += len(split_text(content)) * 17
+
+            for index, item in enumerate(skill_images):
+                if os.path.exists(item):
+                    icons.append({
+                        'path': item,
+                        'size': (35, 35),
+                        'pos': (10, yl[index])
+                    })
+
+            return TextImage(text, icons)
         else:
             return '博士，没有找到干员%s技能%s的数据' % (name, skill_level[level])
