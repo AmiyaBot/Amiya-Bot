@@ -1,6 +1,7 @@
 import re
 
 from database.baseController import BaseController
+from message.messageType import TextImage
 from functions.operator.materialsCosts import MaterialCosts, skill_images_source
 
 database = BaseController()
@@ -73,4 +74,6 @@ class OperatorInfo:
                         text += '持续时间：%ss\n' % item['duration']
                     text += '%s\n\n' % item['description']
 
-            return text
+            return TextImage(text)
+        else:
+            return '博士，没有找到干员%s技能%s的数据' % (name, skill_level[level])

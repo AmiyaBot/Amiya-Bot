@@ -5,7 +5,7 @@ class User:
     def __init__(self, db: Mysql):
         self.db = db
 
-    def update_user(self, user_id, feeling, coupon=0, message_num=0, sign=0):
+    def update_user(self, user_id, feeling=0, coupon=0, message_num=0, sign=0):
         data = {
             'user_id': user_id,
             'user_feeling': feeling,

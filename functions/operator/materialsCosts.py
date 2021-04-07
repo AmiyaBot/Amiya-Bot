@@ -160,6 +160,6 @@ class MaterialCosts:
 
             text = TextImage(text, icons)
         else:
-            text += '博士，暂时没有找到相关的档案哦~'
+            text += '博士，没有找到干员%s技能专精%s需要的材料清单' % (name, mastery[level])
 
         return text

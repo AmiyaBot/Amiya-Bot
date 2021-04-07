@@ -107,6 +107,9 @@ class Init:
             if word_in_sentence(message, ['语音']):
                 return Reply('博士，要告诉阿米娅语音的详细标题哦')
 
+            if skill or skill_index:
+                return Reply('博士，要查询干员技能资料的话，请加上【技能等级】或者加上【技能等级和“材料”关键字】哦')
+
             return Reply('博士，想查询干员%s的什么资料呢' % name)
 
     @staticmethod

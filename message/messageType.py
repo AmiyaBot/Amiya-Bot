@@ -42,7 +42,7 @@ class Text:
 
 
 class Voice:
-    def __init__(self, name, suffix='wav'):
+    def __init__(self, name, suffix='silk'):
         path = '%s/%s.%s' % (voice_resource, name, suffix)
         voice_id = voiceManager.voice(path, 'group')
         self.item = [
