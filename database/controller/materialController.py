@@ -17,10 +17,9 @@ class Material:
     def get_all_material(self):
         return self.db.select('t_material')
 
-    def get_material_id(self, name='', nickname=''):
+    def get_material_id(self, name=''):
         res = self.db.select('t_material', where=Where({
-            'material_name': name,
-            'material_nickname': nickname
+            'material_name': name
         }, operator='OR'), fetchone=True)
 
         return res['material_id']

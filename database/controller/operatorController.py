@@ -81,11 +81,11 @@ class Operator:
     def find_operator_evolve_costs(self, name, level):
 
         sql = 'SELECT operator_id FROM t_operator WHERE operator_name = "%s"' % name
-        sql = 'SELECT m.material_name, m.material_nickname, o.use_number FROM t_operator_evolve_costs o ' \
+        sql = 'SELECT m.material_name, m.material_icon, o.use_number FROM t_operator_evolve_costs o ' \
               'LEFT JOIN t_material m ON m.material_id = o.use_material_id ' \
               'WHERE o.evolve_level = %d AND o.operator_id in (%s)' % (level, sql)
 
-        return self.db.select(sql=sql, fields=['material_name', 'material_nickname', 'use_number'])
+        return self.db.select(sql=sql, fields=['material_name', 'material_icon', 'use_number'])
 
     def find_operator_skill_mastery_costs(self, name, level, index=0):
         field = ', '.join([
@@ -93,7 +93,7 @@ class Operator:
             's.skill_index',
             's.skill_icon',
             'm.material_name',
-            'm.material_nickname',
+            'm.material_icon',
             'o.use_number',
             'o.mastery_level'
         ])
@@ -115,7 +115,7 @@ class Operator:
             'skill_index',
             'skill_icon',
             'material_name',
-            'material_nickname',
+            'material_icon',
             'use_number',
             'mastery_level'
         ])

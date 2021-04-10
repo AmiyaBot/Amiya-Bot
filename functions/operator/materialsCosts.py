@@ -87,7 +87,7 @@ class MaterialCosts:
             for item in result:
                 if item['material_name'] not in material_name:
                     text += '%s%s X %s\n\n' % (' ' * 12, item['material_name'], item['use_number'])
-                    images.append(material_images_source + item['material_nickname'] + '.png')
+                    images.append(material_images_source + item['material_icon'] + '.png')
                     material_name.append(item['material_name'])
 
             i = 0
@@ -136,7 +136,7 @@ class MaterialCosts:
                 text += '%s%s\n\n' % (' ' * 15, name)
                 for item in skills[name]:
                     text += '————%s%s X %s\n\n' % (' ' * 15, item['material_name'], item['use_number'])
-                    material_images.append(material_images_source + item['material_nickname'] + '.png')
+                    material_images.append(material_images_source + item['material_icon'] + '.png')
 
             for index, item in enumerate(skill_images):
                 if os.path.exists(item):

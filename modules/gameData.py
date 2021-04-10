@@ -152,9 +152,6 @@ class GameData:
     def save_operator_detail(self, operator_no, operator_id):
         data = self.get_json_data('char/data', operator_no)
         if data:
-            materials = [item['material_id'] for item in database.material.get_all_material()]
-            used_materials = []
-
             # todo 保存精英化信息
             evolve_cost = []
             for index, phases in enumerate(data['phases']):
@@ -166,8 +163,6 @@ class GameData:
                             'use_material_id': item['id'],
                             'use_number': item['count']
                         })
-                        if item['id'] not in used_materials:
-                            used_materials.append(item['id'])
             if evolve_cost:
                 database.operator.add_operator_evolve_costs(evolve_cost)
                 print(' --- 精英化数据保存完毕...')
@@ -227,8 +222,6 @@ class GameData:
                                 'use_material_id': cost['id'],
                                 'use_number': cost['count']
                             })
-                            if cost['id'] not in used_materials:
-                                used_materials.append(cost['id'])
 
                     icon = 'skill_icon_' + (detail['iconId'] or detail['skillId'])
                     skills.append({
@@ -259,22 +252,6 @@ class GameData:
                 if save_list:
                     todo[2](save_list)
                     print(' --- %s保存完毕...' % todo[0])
-
-            # todo 保存材料信息
-            unsaved_materials = []
-            for item in used_materials:
-                if int(item) not in materials:
-                    material_data = self.get_json_data('item', item)
-                    icon_name = material_data['iconId']
-                    unsaved_materials.append({
-                        'material_id': item,
-                        'material_name': material_data['name'].strip(),
-                        'material_nickname': icon_name
-                    })
-                    self.get_pic('item/pic/' + icon_name, 'materials')
-            if unsaved_materials:
-                database.material.add_material(unsaved_materials)
-                print(' --- 材料数据保存完毕...')
 
     def save_operator_voices(self, operator_no, operator_id):
         data = self.get_json_data('char/words', operator_no)
@@ -334,6 +311,47 @@ class GameData:
 
         print(message)
         return message
+
+    def update_materials(self):
+
+        penguin_items_url = 'https://penguin-stats.cn/PenguinStats/api/v2/items'
+        content = []
+
+        stream = requests.get(penguin_items_url, headers=self.headers)
+        if stream.status_code == 200:
+            content = json.loads(stream.content)
+            content = filter(lambda n: n.isdigit(), [item['itemId'] for item in content])
+            content = list(content) + [
+                '3213', '3223', '3233', '3243', '3253', '3263', '3273', '3283'
+            ]
+
+        materials = []
+        materials_source = []
+        for index, item in enumerate(content):
+            material_data = self.get_json_data('item', item)
+            material_name = material_data['name'].strip()
+            icon_name = material_data['iconId']
+            materials.append({
+                'material_id': item,
+                'material_name': material_name,
+                'material_icon': icon_name
+            })
+            self.get_pic('item/pic/' + icon_name, 'materials')
+
+            for drop in material_data['stageDropList']:
+                materials_source.append({
+                    'material_id': item,
+                    'source_place': drop['stageId'],
+                    'source_rate': drop['occPer']
+                })
+
+            print('[%d/%d]【%s】' % (index + 1, len(content), material_name))
+            break
+
+        if materials:
+            database.material.add_material(materials)
+        if materials_source:
+            database.material.add_material_source(materials_source)
 
     def update_stage(self):
         stage_key = self.get_key('level.stage')
