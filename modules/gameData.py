@@ -63,6 +63,7 @@ class GameData:
                           'AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1',
             'Referer': 'https://www.kokodayo.fun/'
         }
+        self.github_source = 'https://cdn.jsdelivr.net/gh/Kengxxiao/ArknightsGameData@master/zh_CN/gamedata/excel'
         self.data_source = 'https://andata.somedata.top/data-2020'
         self.pics_source = 'https://andata.somedata.top/dataX'
         self.pics_path = 'resource/images'
@@ -87,8 +88,8 @@ class GameData:
 
         return result['key']
 
-    def get_json_data(self, title, name):
-        url = '%s/%s/%s.json' % (self.data_source, title, name)
+    def get_json_data(self, title='', name='', url=''):
+        url = url or '%s/%s/%s.json' % (self.data_source, title, name)
         stream = requests.get(url, headers=self.headers, stream=True)
         if stream.status_code == 200:
             content = json.loads(stream.content)
@@ -282,7 +283,13 @@ class GameData:
                 database.operator.add_operator_stories(stories)
                 print(' --- 档案数据保存完毕...')
 
-    def update_operators(self):
+    def update_operators(self, refresh=False):
+        print('开始执行干员更新...')
+
+        if refresh:
+            database.operator.delete_all_data()
+            print('已删除所有干员历史数据...')
+
         t_record = millisecond()
         char_key = self.get_key('agent.char')
 
@@ -308,52 +315,94 @@ class GameData:
                 print(' --- 抓取完毕。耗时 %d ms' % (millisecond() - record))
 
         message = '更新执行完毕，共更新了 %d 个干员，总耗时 %d ms' % (not_exist, millisecond() - t_record)
-
         print(message)
         return message
 
-    def update_materials(self):
+    def update_materials(self, refresh=False, use_cache=True):
+        print('开始执行材料更新...')
 
-        penguin_items_url = 'https://penguin-stats.cn/PenguinStats/api/v2/items'
-        content = []
+        if refresh:
+            database.material.delete_all_data()
+            print('已删除所有材料历史数据...')
 
-        stream = requests.get(penguin_items_url, headers=self.headers)
-        if stream.status_code == 200:
-            content = json.loads(stream.content)
-            content = filter(lambda n: n.isdigit(), [item['itemId'] for item in content])
-            content = list(content) + [
-                '3213', '3223', '3233', '3243', '3253', '3263', '3273', '3283'
-            ]
+        item_data = {
+            'building_data': {
+                'url': '%s/building_data.json' % self.github_source,
+                'file': 'resource/data/building_data.json'
+            },
+            'item_table': {
+                'url': '%s/item_table.json' % self.github_source,
+                'file': 'resource/data/item_table.json'
+            }
+        }
+
+        for name, data_item in item_data.items():
+            if os.path.exists(data_item['file']) is False or not use_cache:
+                print('正在下载数据【%s】...' % name)
+                data = self.get_json_data(url=data_item['url'])
+                with open(data_item['file'], mode='w+', encoding='utf-8')as df:
+                    df.write(json.dumps(data, ensure_ascii=False))
+            else:
+                print('数据【%s】已存在' % name)
+
+        with open(item_data['building_data']['file'], mode='r', encoding='utf-8') as building_data:
+            building_data = json.load(building_data)
+            formulas = {
+                'WORKSHOP': building_data['workshopFormulas'],
+                'MANUFACTURE': building_data['manufactFormulas']
+            }
 
         materials = []
+        materials_made = []
         materials_source = []
-        for index, item in enumerate(content):
-            material_data = self.get_json_data('item', item)
-            material_name = material_data['name'].strip()
-            icon_name = material_data['iconId']
-            materials.append({
-                'material_id': item,
-                'material_name': material_name,
-                'material_icon': icon_name
-            })
-            self.get_pic('item/pic/' + icon_name, 'materials')
+        with open(item_data['item_table']['file'], mode='r', encoding='utf-8') as item_table:
+            item_table = json.load(item_table)
+            for item_id, item in item_table['items'].items():
+                if item_id.isdigit():
+                    material_name = item['name'].strip()
+                    icon_name = item['iconId']
+                    materials.append({
+                        'material_id': item_id,
+                        'material_name': material_name,
+                        'material_icon': icon_name,
+                        'material_desc': item['usage']
+                    })
+                    self.get_pic('item/pic/' + icon_name, 'materials')
 
-            for drop in material_data['stageDropList']:
-                materials_source.append({
-                    'material_id': item,
-                    'source_place': drop['stageId'],
-                    'source_rate': drop['occPer']
-                })
+                    for drop in item['stageDropList']:
+                        materials_source.append({
+                            'material_id': item_id,
+                            'source_place': drop['stageId'],
+                            'source_rate': drop['occPer']
+                        })
 
-            print('[%d/%d]【%s】' % (index + 1, len(content), material_name))
-            break
+                    for build in item['buildingProductList']:
+                        if build['roomType'] in formulas and build['formulaId'] in formulas[build['roomType']]:
+                            build_cost = formulas[build['roomType']][build['formulaId']]['costs']
+                            for build_item in build_cost:
+                                materials_made.append({
+                                    'material_id': item_id,
+                                    'use_material_id': build_item['id'],
+                                    'use_number': build_item['count'],
+                                    'made_type': build['roomType']
+                                })
+
+                    print('材料【%s】数据构建完成...' % material_name)
 
         if materials:
             database.material.add_material(materials)
+        if materials_made:
+            database.material.add_material_made(materials_made)
         if materials_source:
             database.material.add_material_source(materials_source)
 
+        message = '更新执行完毕，共 %d 个材料' % len(materials)
+        print(message)
+        return message
+
     def update_stage(self):
+        print('开始执行地图更新...')
+
         stage_key = self.get_key('level.stage')
         stage_data = self.get_json_data('lists/stage', stage_key)
         stage_list = []
@@ -372,7 +421,7 @@ class GameData:
                         stage_list.append({
                             'stage_id': item[2],
                             'stage_code': item[0],
-                            'stage_name': item[1],
+                            'stage_name': item[1]
                         })
 
         for index, stage in stage_data.items():
@@ -380,7 +429,9 @@ class GameData:
 
         database.material.update_stage(stage_list)
 
-        return '更新执行完毕，共%d张地图' % len(stage_list)
+        message = '更新执行完毕，共 %d 张地图' % len(stage_list)
+        print(message)
+        return message
 
 
 def millisecond():

@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import difflib
+import datetime
 
 from message.messageType import TextImage, Image, Voice, Text
 from modules.config import get_config
@@ -78,7 +79,7 @@ def insert_zero(num: int):
     return ('0%d' % num) if num < 10 else str(num)
 
 
-def find_similar_string(text: str, text_list: list, hard=0.4):
+def find_similar_string(text: str, text_list: list, hard=0.4, return_rate=False):
     r = 0
     t = ''
     for item in text_list:
@@ -86,11 +87,30 @@ def find_similar_string(text: str, text_list: list, hard=0.4):
         if rate > r and rate >= hard:
             r = rate
             t = item
-    return t
+    return (t, r) if return_rate else t
 
 
 def string_equal_rate(str1: str, str2: str):
     return difflib.SequenceMatcher(None, str1, str2).quick_ratio()
+
+
+def calc_time_total(seconds):
+    timedelta = datetime.timedelta(seconds=seconds)
+    day = timedelta.days
+    hour, mint, sec = tuple([
+        int(n) for n in str(timedelta).split(',')[-1].split(':')
+    ])
+    total = ''
+    if day:
+        total += '%d天' % day
+    if hour:
+        total += '%d小时' % hour
+    if mint:
+        total += '%d分钟' % mint
+    if sec and not (day or hour or mint):
+        total += '%d秒' % sec
+
+    return total
 
 
 def maintain_record(date: str = None):

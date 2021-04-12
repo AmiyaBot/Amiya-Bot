@@ -1,6 +1,10 @@
+import os
+
 from database.baseController import BaseController
+from message.messageType import TextImage
 
 database = BaseController()
+material_images_source = 'resource/images/materials/'
 
 
 class Material:
@@ -18,34 +22,55 @@ class Material:
 
     @staticmethod
     def check_material(name):
-
-        rate = {
-            1: '罕见',
-            2: '小概率',
-            3: '中概率',
-            4: '大概率',
-            5: '固定'
+        pl = {
+            'SOMETIMES': '罕见',
+            'OFTEN': '小概率',
+            'USUAL': '中概率',
+            'ALMOST': '大概率',
+            'ALWAYS': '固定'
+        }
+        ty = {
+            'WORKSHOP': ('加工站', '合成'),
+            'MANUFACTURE': ('制造站', '生产')
         }
 
-        source = database.material.find_material_source(name)
         made = database.material.find_material_made(name)
+        source = database.material.find_material_source(name, only_main=True)
+        material = database.material.get_material(name)
 
-        text = ''
-        if source or made:
-            text += '博士，材料%s可以' % name
-            if source:
-                text += '在以下地点通关获得：'
-                for item in source:
-                    if item['source_rate'] == 0:
-                        text += '\n周%s 【物资筹备】' % item['source_place']
-                    else:
-                        text += '\n%s 【%s】' % (item['source_place'], rate[int(item['source_rate'])])
-                text += '\n\n' if made else ''
+        text = '博士，为你找到材料【%s】的档案\n\n\n\n\n\n\n' % name
+        icons = [
+            {
+                'path': material_images_source + material['material_icon'] + '.png',
+                'size': (80, 80),
+                'pos': (10, 30)
+            }
+        ]
+
+        if made or source:
+            material_images = []
+
             if made:
-                text += '通过以下配方合成：'
+                text += '可在【%s】通过以下配方%s：\n\n' % ty[made[0]['made_type']]
                 for item in made:
-                    text += '\n%s X %d' % (item['material_name'], item['use_number'])
-        else:
-            text += '博士，没有找到相关的档案哦~'
+                    text += '%s%s X %s\n\n' % (' ' * 12, item['material_name'], item['use_number'])
+                    material_images.append(material_images_source + item['material_icon'] + '.png')
 
-        return text
+            if source:
+                text += '可在以下非活动地图掉落：\n\n'
+                source = {item['stage_code']: item for item in source}
+                for code in sorted(source):
+                    stage = source[code]
+                    text += '【%s %s】 %s\n' % (stage['stage_code'], stage['stage_name'], pl[stage['source_rate']])
+
+            for index, item in enumerate(material_images):
+                if os.path.exists(item):
+                    icons.append({
+                        'path': item,
+                        'size': (35, 35),
+                        'pos': (5, 145 + index * 34)
+                    })
+
+        text += '\n' + material['material_desc']
+
+        return TextImage(text, icons)

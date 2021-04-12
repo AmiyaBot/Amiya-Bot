@@ -2,7 +2,7 @@ import time
 import datetime
 
 from database.baseController import BaseController
-from modules.commonMethods import Reply, word_in_sentence
+from modules.commonMethods import Reply, word_in_sentence, calc_time_total
 from modules.config import get_config
 
 admin_id = get_config('admin_id')
@@ -27,22 +27,7 @@ def group_admin(data):
             res = database.group.get_status(group_id)
             if res and res['active'] == 0:
                 seconds = int(time.time()) - int(res['sleep_time'])
-                timedelta = datetime.timedelta(seconds=seconds)
-                day = timedelta.days
-                hour, mint, sec = tuple([
-                    int(n) for n in str(timedelta).split(',')[-1].split(':')
-                ])
-
-                total = ''
-                if day:
-                    total += '%d天' % day
-                if hour:
-                    total += '%d小时' % hour
-                if mint:
-                    total += '%d分钟' % mint
-                if sec and not (day or hour or mint):
-                    total += '%d秒' % sec
-
+                total = calc_time_total(seconds)
                 text = '打卡上班啦~阿米娅%s休息了%s……' % ('才' if seconds < 600 else '一共', total)
                 if seconds < 600:
                     text += '\n博士真是太过分了！哼~ >.<'

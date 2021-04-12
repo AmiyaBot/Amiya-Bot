@@ -17,42 +17,65 @@ class Material:
     def get_all_material(self):
         return self.db.select('t_material')
 
-    def get_material_id(self, name=''):
-        res = self.db.select('t_material', where=Where({
+    def get_material(self, name=''):
+        return self.db.select('t_material', where=Where({
             'material_name': name
         }, operator='OR'), fetchone=True)
 
-        return res['material_id']
+    def find_material_source(self, name, only_main=False):
+        field = ', '.join([
+            'st.stage_code',
+            'st.stage_name',
+            'ms.source_rate'
+        ])
+        left_join = ' '.join([
+            'LEFT JOIN t_stage st ON st.stage_id = ms.source_place',
+            'LEFT JOIN t_material m ON m.material_id = ms.material_id'
+        ])
 
-    def find_material_source(self, name):
-        return self.db.select('t_material_source', where=Where({
-            'material_id': self.get_material_id(name=name)
-        }))
+        sql = 'SELECT stage_id FROM t_stage'
+        sql = 'SELECT %s FROM t_material_source ms %s ' \
+              'WHERE m.material_name = "%s" AND ms.source_place IN (%s)' % (field, left_join, name, sql)
+
+        if only_main:
+            sql += ' AND (st.stage_id LIKE "main%" OR st.stage_id LIKE "sub%" OR st.stage_id LIKE "wk%")'
+
+        return self.db.select(sql=sql, fields=[
+            'stage_code',
+            'stage_name',
+            'source_rate'
+        ])
 
     def find_material_made(self, name):
-        sql = 'SELECT m.material_name, t.use_number FROM t_material_made t ' \
-              'LEFT JOIN t_material m ON t.use_material_id = m.material_id ' \
-              'WHERE t.material_id = %s' % self.get_material_id(name=name)
+        field = ', '.join([
+            'ml.material_name',
+            'ml.material_icon',
+            'mm.use_number',
+            'mm.made_type'
+        ])
+        left_join = ' '.join([
+            'LEFT JOIN t_material m ON m.material_id = mm.material_id',
+            'LEFT JOIN t_material ml ON ml.material_id = mm.use_material_id'
+        ])
 
-        return self.db.select(sql=sql, fields=['material_name', 'use_number'])
+        sql = 'SELECT %s FROM t_material_made mm %s WHERE m.material_name = "%s"' % (field, left_join, name)
+
+        return self.db.select(sql=sql, fields=[
+            'material_name',
+            'material_icon',
+            'use_number',
+            'made_type'
+        ])
 
     def update_stage(self, data):
         self.db.truncate('t_stage')
         self.db.batch_insert('t_stage', data=data)
 
-    def truncate_all(self):
+    def delete_all_data(self):
         tables = [
             't_material',
             't_material_made',
-            't_material_source',
-            't_operator',
-            't_operator_evolve_costs',
-            't_operator_skill',
-            't_operator_skill_description',
-            't_operator_skill_mastery_costs',
-            't_operator_stories',
-            't_operator_tags_relation',
-            't_operator_voice'
+            't_material_source'
         ]
         for item in tables:
             self.db.truncate(item)

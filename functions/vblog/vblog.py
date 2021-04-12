@@ -26,6 +26,9 @@ class VBlog:
         # 获取微博 container id
         result = session.get(self.url, headers=self.headers).json()
 
+        if 'tabsInfo' not in result['data']:
+            return []
+
         tabs = result['data']['tabsInfo']['tabs']
         container_id = ''
         for tab in tabs:

@@ -195,3 +195,17 @@ class Operator:
             file.write('\n'.join([item + ' 100 n' for item in tags_list]))
 
         return path
+
+    def delete_all_data(self):
+        tables = [
+            't_operator',
+            't_operator_evolve_costs',
+            't_operator_skill',
+            't_operator_skill_description',
+            't_operator_skill_mastery_costs',
+            't_operator_stories',
+            't_operator_tags_relation',
+            't_operator_voice'
+        ]
+        for item in tables:
+            self.db.truncate(item)

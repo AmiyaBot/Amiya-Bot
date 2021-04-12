@@ -90,18 +90,14 @@ class MaterialCosts:
                     images.append(material_images_source + item['material_icon'] + '.png')
                     material_name.append(item['material_name'])
 
-            i = 0
-            n = 34
-            s = 26
             icons = []
             for index, item in enumerate(images):
                 if os.path.exists(item):
                     icons.append({
                         'path': item,
                         'size': (35, 35),
-                        'pos': (5, s + i)
+                        'pos': (5, 26 + index * 34)
                     })
-                i += n
 
             text = TextImage(text, icons)
         else:
