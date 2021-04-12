@@ -176,14 +176,15 @@ class GaCha:
         for index, item in enumerate(operators):
             star = '☆' if item['rarity'] < 5 else '★'
             result += '%s%s%s\n\n' % (' ' * 15, insert_empty(item['name'], 5, True), star * item['rarity'])
-            avatar_path = '%s/%s.png' % (avatar_resource, operator_avatars[item['name']])
 
-            if os.path.exists(avatar_path):
-                icons.append({
-                    'path': avatar_path,
-                    'size': (34, 34),
-                    'pos': (10, 60 + 34 * index)
-                })
+            if item['name'] in operator_avatars:
+                avatar_path = '%s/%s.png' % (avatar_resource, operator_avatars[item['name']])
+                if os.path.exists(avatar_path):
+                    icons.append({
+                        'path': avatar_path,
+                        'size': (34, 34),
+                        'pos': (10, 60 + 34 * index)
+                    })
 
             if item['rarity'] >= 5:
                 no_high_rarity = False
