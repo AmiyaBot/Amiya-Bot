@@ -53,6 +53,8 @@ def create_image(text: str, message, images=None):
 
     if images:
         for item in images:
+            if os.path.exists(item['path']) is False:
+                continue
             img = Image.open(item['path']).convert('RGBA')
             img = img.resize(size=item['size'])
             image.paste(img, box=item['pos'], mask=img)

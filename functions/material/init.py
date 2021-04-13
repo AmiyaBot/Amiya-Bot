@@ -12,7 +12,7 @@ jieba.load_userdict('resource/materials.txt')
 class Init:
     def __init__(self):
         self.function_id = 'checkMaterial'
-        self.keyword = material.material_list
+        self.keyword = material.material_list + ['材料']
 
     @staticmethod
     def action(data):
