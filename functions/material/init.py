@@ -16,11 +16,11 @@ class Init:
 
     @staticmethod
     def action(data):
-        msg_words = posseg.lcut(data['text'])
+        msg_words = jieba.lcut_for_search(data['text'])
 
         name = ''
         rate = 0
-        for item in [n.word for n in msg_words]:
+        for item in msg_words:
             n, r = find_similar_string(item, material.material_list, return_rate=True)
             if rate < r:
                 name = n
