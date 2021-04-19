@@ -5,6 +5,7 @@ import json
 import requests
 
 from database.baseController import BaseController
+from modules.commonMethods import remove_xml_tag
 
 database = BaseController()
 
@@ -120,6 +121,7 @@ class GameData:
         database.operator.add_operator([{
             'operator_no': operator.id,
             'operator_name': operator.name,
+            'operator_en_name': operator.en_name,
             'operator_rarity': rarity,
             'operator_avatar': operator.id,
             'operator_class': operator.classes_code,
@@ -153,6 +155,42 @@ class GameData:
     def save_operator_detail(self, operator_no, operator_id):
         data = self.get_json_data('char/data', operator_no)
         if data:
+
+            # todo 保存详细信息
+            attrs_data = data['phases'][-1]['attributesKeyFrames'][-1]
+            attrs = attrs_data['data']
+            max_level = attrs_data['level']
+            detail = {
+                'operator_id': operator_id,
+                'operator_desc': remove_xml_tag(data['description']),
+                'operator_usage': data['itemUsage'],
+                'operator_quote': data['itemDesc'],
+                'operator_token': data['tokenDesc'] if 'tokenDesc' in data else '',
+                'max_level': '%s-%s' % (len(data['phases']) - 1, max_level),
+                'max_hp': attrs['maxHp'],
+                'attack': attrs['atk'],
+                'defense': attrs['def'],
+                'magic_resistance': attrs['magicResistance'],
+                'cost': attrs['cost'],
+                'block_count': attrs['blockCnt'],
+                'attack_time': attrs['baseAttackTime'],
+                'respawn_time': attrs['respawnTime']
+            }
+            database.operator.add_operator_detail([detail])
+
+            # todo 保存天赋信息
+            talents = []
+            if data['talents']:
+                for item in data['talents']:
+                    max_item = item['candidates'][-1]
+                    talents.append({
+                        'operator_id': operator_id,
+                        'talents_name': max_item['name'],
+                        'talents_desc': remove_xml_tag(max_item['description'])
+                    })
+                if talents:
+                    database.operator.add_operator_talents(talents)
+
             # todo 保存精英化信息
             evolve_cost = []
             for index, phases in enumerate(data['phases']):
@@ -189,7 +227,7 @@ class GameData:
                     # 预处理技能描述数据
                     for lev, desc in enumerate(detail['levels']):
                         blackboard = {item['key']: item['value'] for index, item in enumerate(desc['blackboard'])}
-                        description = re.compile(r'<[^>]+>', re.S).sub('', desc['description'])
+                        description = remove_xml_tag(desc['description'])
                         format_str = re.findall(r'({(\S+?)})', description)
                         if format_str:
                             for desc_item in format_str:

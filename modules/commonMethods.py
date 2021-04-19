@@ -45,10 +45,6 @@ class Reply:
         return text.item
 
 
-def list_split(items: list, n: int):
-    return [items[i:i + n] for i in range(0, len(items), n)]
-
-
 def word_in_sentence(sentence: str, words: list):
     for word in words:
         if word in sentence:
@@ -111,6 +107,10 @@ def calc_time_total(seconds):
         total += '%d秒' % sec
 
     return total
+
+
+def remove_xml_tag(text: str):
+    return re.compile(r'<[^>]+>', re.S).sub('', text)
 
 
 def maintain_record(date: str = None):

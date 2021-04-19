@@ -4,7 +4,7 @@ import time
 import requests
 
 from message.messageType import Image
-from modules.commonMethods import Reply
+from modules.commonMethods import Reply, remove_xml_tag
 
 user_id = '6279793937'
 
@@ -52,7 +52,7 @@ class VBlog:
         text = '博士，这是【明日方舟Arknights】最近的微博列表。\n'
 
         for index, item in enumerate(cards):
-            content = re.compile(r'<[^>]+>', re.S).sub('', item['mblog']['text'])
+            content = remove_xml_tag(item['mblog']['text'])
             content = content[:30].replace('\n', ' ').replace('#明日方舟#', '').strip()
 
             date = item['mblog']['created_at']
@@ -86,7 +86,7 @@ class VBlog:
         result = session.get(url, headers=self.headers).json()
         html_text = result['data']['longTextContent']
         html_text = re.sub('<br />', '\n', html_text)
-        html_text = re.compile(r'<[^>]+>', re.S).sub('', html_text)
+        html_text = remove_xml_tag(html_text)
         html_text = html_text.strip('\n')
 
         # 获取静态图片列表

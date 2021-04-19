@@ -8,6 +8,9 @@ class Operator:
     def add_operator(self, data):
         self.db.batch_insert('t_operator', data=data)
 
+    def add_operator_detail(self, data):
+        self.db.batch_insert('t_operator_detail', data=data)
+
     def add_operator_evolve_costs(self, data):
         self.db.batch_insert('t_operator_evolve_costs', data=data)
 
@@ -28,6 +31,9 @@ class Operator:
 
     def add_operator_stories(self, data):
         self.db.batch_insert('t_operator_stories', data=data)
+
+    def add_operator_talents(self, data):
+        self.db.batch_insert('t_operator_talents', data=data)
 
     def get_operator_id(self, operator_no='', operator_name=''):
         res = self.db.select('t_operator', where=Where({
@@ -199,12 +205,14 @@ class Operator:
     def delete_all_data(self):
         tables = [
             't_operator',
+            't_operator_detail',
             't_operator_evolve_costs',
             't_operator_skill',
             't_operator_skill_description',
             't_operator_skill_mastery_costs',
             't_operator_stories',
             't_operator_tags_relation',
+            't_operator_talents',
             't_operator_voice'
         ]
         for item in tables:
