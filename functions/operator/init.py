@@ -112,7 +112,7 @@ class Init:
             if skill or skill_index:
                 return Reply('博士，要查询干员技能资料的话，请加上【技能等级】或者加上【技能等级和“材料”关键字】哦')
 
-            return Reply('博士，想查询干员%s的什么资料呢' % name)
+            return Reply(operator.get_detail_info(name))
 
     @staticmethod
     def find_voice(name, voice):

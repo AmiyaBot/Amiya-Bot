@@ -129,7 +129,6 @@ class GameData:
             'in_limit': 1 if operator.name in limit else 0
         }])
         self.get_pic('char/profile/' + operator.id, 'avatars')
-        print(' --- 基础信息保存完毕...')
 
         # todo 若此干员为可公招的干员，保存Tags信息
         if operator.recruit:
@@ -144,7 +143,6 @@ class GameData:
                 operator_tags.append(tag)
 
             database.operator.add_operator_tags_relation(operator_tags.tags)
-            print(' --- 公招信息保存完毕...')
 
         # todo 保存干员的详细信息
         operator_id = database.operator.get_operator_id(operator_no=operator.id)
@@ -163,8 +161,8 @@ class GameData:
             detail = {
                 'operator_id': operator_id,
                 'operator_desc': remove_xml_tag(data['description']),
-                'operator_usage': data['itemUsage'],
-                'operator_quote': data['itemDesc'],
+                'operator_usage': data['itemUsage'] or '',
+                'operator_quote': data['itemDesc'] or '',
                 'operator_token': data['tokenDesc'] if 'tokenDesc' in data else '',
                 'max_level': '%s-%s' % (len(data['phases']) - 1, max_level),
                 'max_hp': attrs['maxHp'],
@@ -191,6 +189,33 @@ class GameData:
                 if talents:
                     database.operator.add_operator_talents(talents)
 
+            # todo 保存基建信息
+            building_skill = []
+            if data['buildingData']:
+                for item in data['buildingData']:
+                    if item:
+                        for bs in item:
+                            building_skill.append({
+                                'operator_id': operator_id,
+                                'bs_unlocked': bs['cond']['phase'],
+                                'bs_name': bs['data']['buffName'],
+                                'bs_desc': remove_xml_tag(bs['data']['description'])
+                            })
+                if building_skill:
+                    database.operator.add_operator_building_skill(building_skill)
+
+            # todo 保存潜能信息
+            potential = []
+            if data['potentialRanks']:
+                for index, item in enumerate(data['potentialRanks']):
+                    potential.append({
+                        'operator_id': operator_id,
+                        'potential_desc': item['description'],
+                        'potential_rank': index + 1
+                    })
+                if potential:
+                    database.operator.add_operator_potential(potential)
+
             # todo 保存精英化信息
             evolve_cost = []
             for index, phases in enumerate(data['phases']):
@@ -204,7 +229,6 @@ class GameData:
                         })
             if evolve_cost:
                 database.operator.add_operator_evolve_costs(evolve_cost)
-                print(' --- 精英化数据保存完毕...')
 
             # todo 保存技能信息
             skills = []
@@ -273,7 +297,6 @@ class GameData:
                     self.get_pic('skills/pics/' + icon, 'skills')
             if skills:
                 database.operator.add_operator_skill(skills)
-                print(' --- 技能数据保存完毕...')
 
             skills_id = {sk_no: database.operator.get_skill_id(sk_no, operator_id) for sk_no in skills_id}
 
@@ -290,7 +313,6 @@ class GameData:
                         save_list.append(item)
                 if save_list:
                     todo[2](save_list)
-                    print(' --- %s保存完毕...' % todo[0])
 
     def save_operator_voices(self, operator_no, operator_id):
         data = self.get_json_data('char/words', operator_no)
@@ -305,7 +327,6 @@ class GameData:
                 })
             if voices:
                 database.operator.add_operator_voice(voices)
-                print(' --- 语音数据保存完毕...')
 
     def save_operator_stories(self, operator_no, operator_id):
         data = self.get_json_data('char/info', operator_no)
@@ -319,7 +340,6 @@ class GameData:
                 })
             if stories:
                 database.operator.add_operator_stories(stories)
-                print(' --- 档案数据保存完毕...')
 
     def update_operators(self, refresh=False):
         print('开始执行干员更新...')
@@ -350,7 +370,7 @@ class GameData:
                 self.save_operator_data(operator)
                 not_exist += 1
 
-                print(' --- 抓取完毕。耗时 %d ms' % (millisecond() - record))
+                print(' --- 保存完毕。耗时 %d ms' % (millisecond() - record))
 
         message = '更新执行完毕，共更新了 %d 个干员，总耗时 %d ms' % (not_exist, millisecond() - t_record)
         print(message)

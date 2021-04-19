@@ -35,6 +35,12 @@ class Operator:
     def add_operator_talents(self, data):
         self.db.batch_insert('t_operator_talents', data=data)
 
+    def add_operator_potential(self, data):
+        self.db.batch_insert('t_operator_potential', data=data)
+
+    def add_operator_building_skill(self, data):
+        self.db.batch_insert('t_operator_building_skill', data=data)
+
     def get_operator_id(self, operator_no='', operator_name=''):
         res = self.db.select('t_operator', where=Where({
             'operator_no': operator_no,
@@ -83,6 +89,18 @@ class Operator:
 
     def get_all_stories_title(self):
         return self.db.select('t_operator_stories', sql='SELECT * FROM t_operator_stories GROUP BY story_title')
+
+    def find_operator_all_detail(self, operator_id):
+        where = Where({
+            'operator_id': operator_id
+        })
+        base = self.db.select('t_operator', where=where, fetchone=True)
+        detail = self.db.select('t_operator_detail', where=where, fetchone=True)
+        talents = self.db.select('t_operator_talents', where=where)
+        potential = self.db.select('t_operator_potential', where=where)
+        building_skill = self.db.select('t_operator_building_skill', where=where)
+
+        return base, detail, talents, potential, building_skill
 
     def find_operator_evolve_costs(self, name, level):
 
@@ -205,8 +223,10 @@ class Operator:
     def delete_all_data(self):
         tables = [
             't_operator',
+            't_operator_building_skill',
             't_operator_detail',
             't_operator_evolve_costs',
+            't_operator_potential',
             't_operator_skill',
             't_operator_skill_description',
             't_operator_skill_mastery_costs',
