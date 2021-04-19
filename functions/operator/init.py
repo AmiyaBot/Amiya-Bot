@@ -52,20 +52,24 @@ class Init:
 
         for item in words:
             # 获取语音关键词
-            if voice_key == '' and item.word in voices:
-                voice_key = item.word
+            if item.word in voices:
+                if voice_key == '':
+                    voice_key = item.word
                 continue
             # 获取干员名
-            if name == '' and item.word in material.operator_list:
-                name = item.word
+            if item.word in material.operator_list:
+                if name == '':
+                    name = item.word
                 continue
             # 获取专精或精英等级
-            if level == 0 and item.word in material.level_list:
-                level = material.level_list[item.word]
+            if item.word in material.level_list:
+                if level == 0:
+                    level = material.level_list[item.word]
                 continue
             # 获取技能序号
-            if skill_index == 0 and item.word in material.skill_index_list:
-                skill_index = material.skill_index_list[item.word]
+            if item.word in material.skill_index_list:
+                if skill_index == 0:
+                    skill_index = material.skill_index_list[item.word]
                 continue
             surplus += item.word
 
