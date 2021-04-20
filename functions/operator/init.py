@@ -30,6 +30,7 @@ class Init:
     def __init__(self):
         self.function_id = 'checkOperator'
         self.keyword = voices + material.keywords
+        self.stories_title = list(operator.stories_title.keys()) + [i for k, i in operator.stories_title.items()]
 
     def action(self, data):
 
@@ -44,15 +45,12 @@ class Init:
         voice_key = ''
         skill_index = 0
         stories_key = ''
-        stories_key_rate = 0
-        stories_title = operator.stories_title.keys()
 
         for item in words:
             # 获取档案关键词
-            n, r = find_similar_string(item, stories_title, hard=0.8, return_rate=True)
-            if stories_key_rate < r:
-                stories_key = operator.stories_title[n]
-                stories_key_rate = r
+            if item in self.stories_title:
+                stories_key = item
+                continue
             # 获取语音关键词
             if item in voices:
                 voice_key = item
