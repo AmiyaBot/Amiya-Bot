@@ -1,6 +1,8 @@
 /.idea/
 /venv/
 /temp/
+/dist/
+/build/
 /remind/
 /console/
 /resource/data/
@@ -13,6 +15,8 @@
 *.pyc
 *.otf
 *.png
+*.exe
+*.spec
 
 !.gitkeep
 

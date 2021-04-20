@@ -1,43 +1,35 @@
-import os
-import importlib
-
 from database.baseController import BaseController
 from modules.commonMethods import word_in_sentence
 
+from functions.gacha.init import Init as Gacha
+from functions.enemy.init import Init as Enemy
+from functions.vblog.init import Init as VBlog
+from functions.recruit.init import Init as Recruit
+from functions.operator.init import Init as Operator
+from functions.material.init import Init as Material
+from functions.userInfo.init import Init as UserInfo
+from functions.intellect.init import Init as Intellect
+from functions.functionQuery.init import Init as FunctionQuery
+from functions.jadeCalculator.init import Init as JadeCalculator
+
 database = BaseController()
-priority = [
-    'functionQuery',
-    'jadeCalculator',
-    'gacha',
-    'enemy',
-    'operator',
-    'material',
-    'userInfo',
-    'recruit',
-    'intellect',
-    'vblog'
-]
 
 
 class FunctionsIndex:
     def __init__(self):
-        index = len(priority)
-        functions = {}
-        for root, dirs, files in os.walk('functions'):
-            for name in dirs:
-                path = os.path.join(root, name)
-                if '__pycache__' not in path:
-                    module_path = '%s.init' % path.replace('\\', '/').replace('/', '.')
-                    module = importlib.import_module(module_path, package='functions')
-                    if name in priority:
-                        functions[priority.index(name)] = module.Init()
-                    else:
-                        functions[index] = module.Init()
-                        index += 1
-
-        self.functions = []
-        for key in sorted(functions):
-            self.functions.append(functions[key])
+        priority = [
+            FunctionQuery,
+            JadeCalculator,
+            Gacha,
+            Enemy,
+            Operator,
+            Material,
+            UserInfo,
+            Recruit,
+            Intellect,
+            VBlog
+        ]
+        self.functions = [func() for func in priority]
 
     def action(self, data):
         for index, item in enumerate(self.functions):

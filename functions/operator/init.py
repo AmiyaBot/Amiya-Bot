@@ -43,13 +43,16 @@ class Init:
         surplus = ''
         voice_key = ''
         skill_index = 0
-
-        # 获取档案关键词
-        stories_key = find_similar_string(message, operator.stories_title.keys(), hard=0.8)
-        if stories_key:
-            stories_key = operator.stories_title[stories_key]
+        stories_key = ''
+        stories_key_rate = 0
+        stories_title = operator.stories_title.keys()
 
         for item in words:
+            # 获取档案关键词
+            n, r = find_similar_string(item, stories_title, hard=0.8, return_rate=True)
+            if stories_key_rate < r:
+                stories_key = n
+                stories_key_rate = r
             # 获取语音关键词
             if item in voices:
                 voice_key = item
@@ -68,10 +71,11 @@ class Init:
                 continue
             surplus += item
 
+        # 从剩余的文字里找技能名
         skill = find_similar_string(surplus, material.skill_list)
 
         if name == '' and skill == '':
-            return Reply('博士，想查询哪位干员或技能的资料呢？请再说一次吧')
+            return Reply('博士，想查询哪位干员的资料呢？')
 
         if level != 0:
             if level < 0:
