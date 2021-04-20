@@ -51,7 +51,7 @@ class Init:
             # 获取档案关键词
             n, r = find_similar_string(item, stories_title, hard=0.8, return_rate=True)
             if stories_key_rate < r:
-                stories_key = n
+                stories_key = operator.stories_title[n]
                 stories_key_rate = r
             # 获取语音关键词
             if item in voices:
