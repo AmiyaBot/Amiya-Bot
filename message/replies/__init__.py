@@ -42,11 +42,6 @@ def reply_func_list(data):
                 'need_call': False
             },
             {
-                # 表情包
-                'func': face_image,
-                'need_call': True
-            },
-            {
                 # 信赖事件
                 'func': emotion,
                 'need_call': True
@@ -56,6 +51,11 @@ def reply_func_list(data):
                 'func': function.action,
                 'need_call': True,
                 'without_call': True
+            },
+            {
+                # 表情包
+                'func': face_image,
+                'need_call': True
             },
             {
                 # 自然语言处理

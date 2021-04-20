@@ -88,7 +88,8 @@ class OperatorInfo:
 
         text += '【%s干员】\n%s\n\n' % (class_type[base['operator_class']], detail['operator_desc'])
         text += '%s\n -- 「%s」\n\n' % (detail['operator_usage'], detail['operator_quote'])
-        text += '【信物】\n%s\n\n' % detail['operator_token']
+
+        text += '【信物】\n%s\n\n' % detail['operator_token'] if detail['operator_token'] else ''
 
         text += '【精英%s级属性】\n' % detail['max_level']
         text += ' -- 生命值：%s\n' % detail['max_hp']
@@ -103,17 +104,17 @@ class OperatorInfo:
         talents_text = ''
         for item in talents:
             talents_text += '<%s>\n%s\n' % (item['talents_name'], item['talents_desc'])
-        text += '【天赋】\n%s\n' % (talents_text or '无')
+        text += ('【天赋】\n%s\n' % talents_text) if talents_text else ''
 
         potential_text = ''
         for item in potential:
             potential_text += '[%s] %s\n' % (potential_rank[item['potential_rank']], item['potential_desc'])
-        text += '【潜能】\n%s\n' % (potential_text or '无')
+        text += ('【潜能】\n%s\n' % potential_text) if potential_text else ''
 
         building_text = ''
         for item in building_skill:
             building_text += '<%s>[精英%s解锁]\n%s\n' % (item['bs_name'], item['bs_unlocked'], item['bs_desc'])
-        text += '【基建技能】\n%s\n' % (building_text or '无')
+        text += ('【基建技能】\n%s\n' % building_text) if building_text else ''
 
         result = database.operator.find_operator_skill_description(name, level=7)
         if result:

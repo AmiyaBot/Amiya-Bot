@@ -33,7 +33,7 @@ formatter = {
 class Operator:
     def __init__(self, data):
         self.id = data['No']
-        self.name = data['name']
+        self.name = data['name'] if data['No'] != 'char_1001_amiya2' else '阿米娅近卫'
         self.en_name = data['en']
         self.rarity = data['tags'][0] + 1
         self.classes = classes[data['class']]

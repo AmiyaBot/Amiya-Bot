@@ -1,6 +1,5 @@
 import jieba
 
-from jieba import posseg
 from itertools import combinations
 from modules.commonMethods import Reply, all_item_in_text, insert_empty
 from database.baseController import BaseController
@@ -25,23 +24,23 @@ class Init:
         message = data['text']
         user_id = data['user_id']
 
-        msg_words = posseg.lcut(
+        msg_words = jieba.lcut_for_search(
             message.replace('公招', '')
         )
 
         tags = []
         max_rarity = 5
         for item in msg_words:
-            if item.word in self.tags:
-                if item.word in ['资深', '资深干员'] and '资深干员' not in tags:
+            if item in self.tags:
+                if item in ['资深', '资深干员'] and '资深干员' not in tags:
                     tags.append('资深干员')
                     continue
-                if item.word in ['高资', '高级资深', '高级资深干员'] and '高级资深干员' not in tags:
+                if item in ['高资', '高级资深', '高级资深干员'] and '高级资深干员' not in tags:
                     tags.append('高级资深干员')
                     max_rarity = 6
                     continue
-                if item.word not in tags:
-                    tags.append(item.word)
+                if item not in tags:
+                    tags.append(item)
 
         if tags:
             result = database.operator.find_operator_tags_by_tags(tags, max_rarity=max_rarity)

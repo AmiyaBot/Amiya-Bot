@@ -1,6 +1,5 @@
 import jieba
 
-from jieba import posseg
 from modules.commonMethods import Reply, find_similar_string
 from functions.material.materials import Material
 

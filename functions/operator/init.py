@@ -1,6 +1,5 @@
 import jieba
 
-from jieba import posseg
 from modules.commonMethods import Reply, word_in_sentence, find_similar_string
 from database.baseController import BaseController
 from functions.operator.materialsCosts import MaterialCosts
@@ -37,7 +36,7 @@ class Init:
         message = data['text_digits']
         message_ori = data['text']
 
-        words = posseg.lcut(message) + posseg.lcut(message_ori)
+        words = jieba.lcut_for_search(message + message_ori)
 
         name = ''
         level = 0
@@ -46,32 +45,28 @@ class Init:
         skill_index = 0
 
         # 获取档案关键词
-        stories_key = find_similar_string(message, operator.stories_title.keys())
+        stories_key = find_similar_string(message, operator.stories_title.keys(), hard=0.8)
         if stories_key:
             stories_key = operator.stories_title[stories_key]
 
         for item in words:
             # 获取语音关键词
-            if item.word in voices:
-                if voice_key == '':
-                    voice_key = item.word
+            if item in voices:
+                voice_key = item
                 continue
             # 获取干员名
-            if item.word in material.operator_list:
-                if name == '':
-                    name = item.word
+            if item in material.operator_list:
+                name = item
                 continue
             # 获取专精或精英等级
-            if item.word in material.level_list:
-                if level == 0:
-                    level = material.level_list[item.word]
+            if item in material.level_list:
+                level = material.level_list[item]
                 continue
             # 获取技能序号
-            if item.word in material.skill_index_list:
-                if skill_index == 0:
-                    skill_index = material.skill_index_list[item.word]
+            if item in material.skill_index_list:
+                skill_index = material.skill_index_list[item]
                 continue
-            surplus += item.word
+            surplus += item
 
         skill = find_similar_string(surplus, material.skill_list)
 
