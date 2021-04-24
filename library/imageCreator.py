@@ -114,8 +114,8 @@ def create_gacha_result(result: list):
     path = '%s/%s' % (path, name)
 
     x, y = image.size
-    image = image.resize((int(x * 0.5), int(y * 0.5)), Image.ANTIALIAS)
-    image.save(path, quality=85)
+    image = image.resize((int(x * 0.8), int(y * 0.8)), Image.ANTIALIAS)
+    image.save(path, quality=80)
 
     return name
 
