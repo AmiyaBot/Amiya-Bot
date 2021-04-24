@@ -112,7 +112,10 @@ def create_gacha_result(result: list):
         os.mkdir(path)
     name = '%s.png' % datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
     path = '%s/%s' % (path, name)
-    image.save(path)
+
+    x, y = image.size
+    image = image.resize((int(x * 0.5), int(y * 0.5)), Image.ANTIALIAS)
+    image.save(path, quality=85)
 
     return name
 
