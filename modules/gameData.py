@@ -129,6 +129,7 @@ class GameData:
             'in_limit': 1 if operator.name in limit else 0
         }])
         self.get_pic('char/profile/' + operator.id, 'avatars')
+        self.get_pic('char/halfPic/%s_1' % operator.id, 'photo', '?x-oss-process=style/small-test')
 
         # todo 若此干员为可公招的干员，保存Tags信息
         if operator.recruit:

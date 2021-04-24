@@ -70,6 +70,53 @@ def create_image(text: str, message, images=None):
     return name
 
 
+def create_gacha_result(result: list):
+    image = Image.open('resource/images/gacha/bg.png')
+    draw = ImageDraw.ImageDraw(image)
+
+    x = 78
+    for item in result:
+
+        rarity = 'resource/images/gacha/%s.png' % item['rarity']
+        if os.path.exists(rarity):
+            img = Image.open(rarity).convert('RGBA')
+            image.paste(img, box=(x, 0), mask=img)
+
+        photo = 'resource/images/photo/%s_1.png' % item['photo']
+        if os.path.exists(photo):
+            img = Image.open(photo).convert('RGBA')
+
+            radio = 252 / img.size[1]
+
+            width = int(img.size[0] * radio)
+            height = int(img.size[1] * radio)
+
+            step = int((width - 82) / 2)
+            crop = (step, 0, width - step, height)
+
+            img = img.resize(size=(width, height))
+            img = img.crop(crop)
+            image.paste(img, box=(x, 112), mask=img)
+
+        draw.rectangle((x + 10, 321, x + 70, 381), fill='white')
+        class_img = 'resource/images/class/%s.png' % item['class']
+        if os.path.exists(class_img):
+            img = Image.open(class_img).convert('RGBA')
+            img = img.resize(size=(59, 59))
+            image.paste(img, box=(x + 11, 322), mask=img)
+
+        x += 82
+
+    path = '%s/Gacha' % resource
+    if os.path.exists(path) is False:
+        os.mkdir(path)
+    name = '%s.png' % datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+    path = '%s/%s' % (path, name)
+    image.save(path)
+
+    return name
+
+
 def clean_temp_images():
     for root, dirs, files in os.walk(resource):
         for item in dirs:

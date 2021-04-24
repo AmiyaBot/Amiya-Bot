@@ -1,12 +1,25 @@
 import os
 import random
 
+from library.imageCreator import create_gacha_result
 from database.baseController import BaseController
 from modules.commonMethods import insert_empty
-from message.messageType import TextImage
+from message.messageType import TextImage, Image
 
 database = BaseController()
 avatar_resource = 'resource/images/avatars'
+gacha_result = 'resource/message/Gacha'
+
+class_index = {
+    1: 'PIONEER',
+    2: 'WARRIOR',
+    3: 'TANK',
+    4: 'SNIPER',
+    5: 'CASTER',
+    6: 'SUPPORT',
+    7: 'MEDIC',
+    8: 'SPECIAL'
+}
 
 
 class GaCha:
@@ -163,12 +176,6 @@ class GaCha:
 
         result = '阿米娅给博士扔来了%d张简历，博士细细地检阅着...\n\n【%s】\n\n' % (times, self.pick_up_name)
 
-        no_high_rarity = True
-        six_rarity = 0
-
-        text = ''
-        hit = False
-
         operators_data = database.operator.get_all_operator([item['name'] for item in operators])
         operator_avatars = {item['operator_name']: item['operator_avatar'] for item in operators_data}
 
@@ -186,6 +193,36 @@ class GaCha:
                         'pos': (10, 60 + 34 * index)
                     })
 
+        result += self.calc_result(operators)
+
+        return TextImage(result, icons)
+
+    def image_mode(self, times):
+        operators = self.start_gacha(times)
+        operators_data = database.operator.get_all_operator([item['name'] for item in operators])
+        operators_info = {
+            item['operator_name']: {
+                'photo': item['operator_avatar'],
+                'rarity': item['operator_rarity'],
+                'class': class_index[item['operator_class']].lower()
+            } for item in operators_data
+        }
+        result_list = [operators_info[item['name']] for item in operators]
+
+        result = '阿米娅给博士扔来了%d张简历，博士细细地检阅着...\n\n【%s】\n' % (times, self.pick_up_name)
+        result += self.calc_result(operators)
+
+        res_img = '%s/%s' % (gacha_result, create_gacha_result(result_list))
+
+        return [Image(res_img), TextImage(result)]
+
+    def calc_result(self, operators):
+        no_high_rarity = True
+        six_rarity = 0
+        hit = False
+
+        result = ''
+        for item in operators:
             if item['rarity'] >= 5:
                 no_high_rarity = False
 
@@ -193,14 +230,11 @@ class GaCha:
                 six_rarity += 1
                 if 6 in self.pick_up:
                     if item['name'] in self.pick_up[6]:
-                        text = '\n抽到UP的六星干员了，今天也是欧气满满的呀！'
+                        result += '\n抽到UP的六星干员了，今天也是欧气满满的呀！'
                         hit = True
                     else:
                         if hit is False:
-                            text = '\n抽到六星干员了，是不是博士想要的呢？'
-
-        result += text
-
+                            result += '\n抽到六星干员了，是不是博士想要的呢？'
         if six_rarity:
             if six_rarity > 1:
                 result += '\n博士，竟然有 %d 个六星干员！简直是太棒了！' % six_rarity
@@ -212,7 +246,7 @@ class GaCha:
 
         result += '\n%s' % self.check_break_even()
 
-        return TextImage(result, icons)
+        return result
 
     def check_break_even(self):
         user = database.user.get_user(self.user_id)

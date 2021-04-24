@@ -269,7 +269,8 @@ VALUES ('银灰色的荣耀',
 
 ## 鸣谢
 
-部分功能的信息需要从各大渠道获取，特鸣谢以下网站
+部分功能的信息需要从各大渠道获取，特鸣谢以下网站和项目
 
 - [KokodaYo](https://www.kokodayo.fun/)
 - [明日方舟官方微博](https://m.weibo.cn/u/6279793937)
+- [刀客塔的办公室](https://github.com/Rominwolf/doctors_office)

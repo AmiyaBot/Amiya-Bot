@@ -50,7 +50,10 @@ class Init:
                     return Reply('博士，您的寻访凭证（%d张）不够哦~' % coupon)
 
                 if times <= 10:
-                    res = gacha.detailed_mode(times)
+                    if times == 10:
+                        res = gacha.image_mode(times)
+                    else:
+                        res = gacha.detailed_mode(times)
                 else:
                     res = gacha.continuous_mode(times)
 
