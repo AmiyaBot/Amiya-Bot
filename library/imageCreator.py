@@ -9,6 +9,7 @@ from modules.config import get_config
 resource = 'resource/message'
 font_file = 'resource/style/AdobeHeitiStd-Regular.otf'
 logo_file = 'resource/style/rabbit.png'
+logo_file_white = 'resource/style/rabbit-white.png'
 
 # 配置 mirai-api-http 的缓存路径可以顺手清理其缓存的图片
 console_temp = get_config('message.console_temp_images')
@@ -76,6 +77,9 @@ def create_gacha_result(result: list):
 
     x = 78
     for item in result:
+        if item is None:
+            x += 82
+            continue
 
         rarity = 'resource/images/gacha/%s.png' % item['rarity']
         if os.path.exists(rarity):
@@ -106,6 +110,10 @@ def create_gacha_result(result: list):
             image.paste(img, box=(x + 11, 322), mask=img)
 
         x += 82
+
+    icon = Image.open(logo_file_white)
+    icon = icon.resize(size=(30, 30))
+    image.paste(icon, box=(image.size[0] - 30, 0), mask=icon)
 
     path = '%s/Gacha' % resource
     if os.path.exists(path) is False:

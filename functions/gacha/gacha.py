@@ -171,7 +171,7 @@ class GaCha:
 
         return TextImage(result)
 
-    def detailed_mode(self, times):
+    def detailed_mode(self, times, ten_times=False):
         operators = self.start_gacha(times)
 
         result = '阿米娅给博士扔来了%d张简历，博士细细地检阅着...\n\n【%s】\n\n' % (times, self.pick_up_name)
@@ -195,26 +195,21 @@ class GaCha:
 
         result += self.calc_result(operators)
 
-        return TextImage(result, icons)
+        reply = [TextImage(result, icons)]
+        if ten_times:
+            operators_info = {
+                item['operator_name']: {
+                    'photo': item['operator_avatar'],
+                    'rarity': item['operator_rarity'],
+                    'class': class_index[item['operator_class']].lower()
+                } for item in operators_data
+            }
+            result_list = [operators_info[item['name']] if item['name'] in operators_info else None
+                           for item in operators]
+            res_img = '%s/%s' % (gacha_result, create_gacha_result(result_list))
+            reply.append(Image(res_img))
 
-    def image_mode(self, times):
-        operators = self.start_gacha(times)
-        operators_data = database.operator.get_all_operator([item['name'] for item in operators])
-        operators_info = {
-            item['operator_name']: {
-                'photo': item['operator_avatar'],
-                'rarity': item['operator_rarity'],
-                'class': class_index[item['operator_class']].lower()
-            } for item in operators_data
-        }
-        result_list = [operators_info[item['name']] for item in operators]
-
-        result = '阿米娅给博士扔来了%d张简历，博士细细地检阅着...\n\n【%s】\n' % (times, self.pick_up_name)
-        result += self.calc_result(operators)
-
-        res_img = '%s/%s' % (gacha_result, create_gacha_result(result_list))
-
-        return [Image(res_img), TextImage(result)]
+        return reply
 
     def calc_result(self, operators):
         no_high_rarity = True
