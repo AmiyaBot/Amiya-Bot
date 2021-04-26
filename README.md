@@ -14,6 +14,14 @@
 - 创建者需承诺不得使用本项目进行**任何形式的盈利行为**
 - 本项目不承担因违反上述所带来的一切后果
 
+## 鸣谢
+
+部分功能的信息需要从各大渠道获取，特鸣谢以下网站和项目
+
+- [KokodaYo](https://www.kokodayo.fun/)
+- [明日方舟官方微博](https://m.weibo.cn/u/6279793937)
+- [刀客塔的办公室](https://github.com/Rominwolf/doctors_office)
+
 ## 准备
 
 - 想要创建自己的 Amiya，建议拥有一定编程基础，否则以下说明将难以理解
@@ -267,10 +275,3 @@ VALUES ('银灰色的荣耀',
 - [ ] WEB后台管理系统
 - [ ] <del>与明日方舟主题不相关的功能</del>
 
-## 鸣谢
-
-部分功能的信息需要从各大渠道获取，特鸣谢以下网站和项目
-
-- [KokodaYo](https://www.kokodayo.fun/)
-- [明日方舟官方微博](https://m.weibo.cn/u/6279793937)
-- [刀客塔的办公室](https://github.com/Rominwolf/doctors_office)
