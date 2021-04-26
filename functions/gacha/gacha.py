@@ -77,10 +77,6 @@ class GaCha:
         operators = self.start_gacha(times)
 
         rarity_sum = [0, 0, 0, 0]
-        pickup_hit = {
-            5: 0,
-            6: 0
-        }
         high_star = {
             5: {},
             6: {}
@@ -98,11 +94,6 @@ class GaCha:
 
             # 记录抽到的各星级干员的数量
             rarity_sum[rarity - 3] += 1
-
-            # 记录抽中的 pickup 干员数量
-            if (rarity in self.pick_up) and (rarity in pickup_hit):
-                if name in self.pick_up[rarity]:
-                    pickup_hit[rarity] += 1
 
             # 记录抽中的高星干员
             if rarity >= 5:
@@ -159,14 +150,6 @@ class GaCha:
                 enter = False
             result += '出现了 %d 次十连内 %d 个六星\n' % (multiple_rainbow[num], num)
 
-        if pickup_hit[6] > 0:
-            result += '\n抽到UP的六星干员了，今天也是欧气满满的呀！'
-        else:
-            if rarity_sum[3] > 0:
-                result += '\n没有抽到UP的六星干员吗？不知道其他六星是不是博士想要的呢'
-            else:
-                result += '\n没有抽到六星干员吗？博士不要气馁，我们要一起氪服困难！'
-
         result += '\n%s' % self.check_break_even()
 
         return TextImage(result)
@@ -193,7 +176,7 @@ class GaCha:
                         'pos': (10, 60 + 34 * index)
                     })
 
-        result += self.calc_result(operators)
+        result += '\n%s' % self.check_break_even()
 
         reply = [TextImage(result, icons)]
         if ten_times:
@@ -207,41 +190,9 @@ class GaCha:
             result_list = [operators_info[item['name']] if item['name'] in operators_info else None
                            for item in operators]
             res_img = '%s/%s' % (gacha_result, create_gacha_result(result_list))
-            reply.append(Image(res_img))
+            reply.insert(0, Image(res_img))
 
         return reply
-
-    def calc_result(self, operators):
-        no_high_rarity = True
-        six_rarity = 0
-        hit = False
-
-        result = ''
-        for item in operators:
-            if item['rarity'] >= 5:
-                no_high_rarity = False
-
-            if item['rarity'] == 6:
-                six_rarity += 1
-                if 6 in self.pick_up:
-                    if item['name'] in self.pick_up[6]:
-                        result += '\n抽到UP的六星干员了，今天也是欧气满满的呀！'
-                        hit = True
-                    else:
-                        if hit is False:
-                            result += '\n抽到六星干员了，是不是博士想要的呢？'
-        if six_rarity:
-            if six_rarity > 1:
-                result += '\n博士，竟然有 %d 个六星干员！简直是太棒了！' % six_rarity
-        else:
-            if no_high_rarity:
-                result += '\n啊这……博士，不管抽到什么干员，相信他们总有发光发热的一天的'
-            else:
-                result += '\n博士，资深干员们都有各自出色的地方，要善用他们哦'
-
-        result += '\n%s' % self.check_break_even()
-
-        return result
 
     def check_break_even(self):
         user = database.user.get_user(self.user_id)
