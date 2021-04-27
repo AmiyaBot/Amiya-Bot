@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import threading
 
 from database.baseController import BaseController
@@ -111,5 +112,7 @@ class AutomaticAction(HttpRequests):
                 complete = '微博推送完毕。共 %d 个群，成功 %d / %d，耗时：%ds' % \
                            (len(group_list), total, len(group_list), time.time() - time_record)
                 self.send_admin(complete)
+        except json.decoder.JSONDecodeError:
+            pass
         except Exception as e:
             self.send_admin('微博推送发生错误：' + str(e))
