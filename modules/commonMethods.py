@@ -4,6 +4,8 @@ import sys
 import difflib
 import datetime
 
+from string import punctuation
+from zhon.hanzi import punctuation as punctuation_cn
 from message.messageType import TextImage, Image, Voice, Text
 from modules.config import get_config
 
@@ -111,6 +113,14 @@ def calc_time_total(seconds):
 
 def remove_xml_tag(text: str):
     return re.compile(r'<[^>]+>', re.S).sub('', text)
+
+
+def remove_punctuation(text: str):
+    for i in punctuation:
+        text = text.replace(i, '')
+    for i in punctuation_cn:
+        text = text.replace(i, '')
+    return text
 
 
 def maintain_record(date: str = None):

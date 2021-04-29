@@ -6,3 +6,4 @@ PyMySQL~=0.10.1
 jieba~=0.42.1
 baidu-aip~=2.2.18.0
 xpinyin~=0.7.6
+zhon~=1.1.5

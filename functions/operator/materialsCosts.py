@@ -1,6 +1,7 @@
 import os
 
 from xpinyin import Pinyin
+from modules.commonMethods import remove_punctuation
 from database.baseController import BaseController
 from message.messageType import TextImage
 
@@ -16,6 +17,7 @@ class MaterialCosts:
         self.operator_list = []
         self.operator_map = {}
         self.skill_list = []
+        self.skill_map = {}
         self.level_list = {
             '精1': -1, '精英1': -1,
             '精2': -2, '精英2': -2,
@@ -68,9 +70,15 @@ class MaterialCosts:
         # 初始化技能关键词
         skills = database.operator.get_all_operator_skill()
         for item in skills:
-            name = item['skill_name']
-            self.skill_list.append(name)
+            name = remove_punctuation(item['skill_name'])
+            append_search_word(text=name)
+            self.skill_map[name] = item['skill_name']
             self.keywords.append(name)
+
+            pin_name = ''.join(pin.get_pinyin(name).split('-'))
+            append_search_word(text=pin_name)
+            self.skill_map[pin_name] = item['skill_name']
+            self.keywords.append(pin_name)
 
         with open('resource/operators.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join(keywords))

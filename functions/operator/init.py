@@ -1,6 +1,6 @@
 import jieba
 
-from modules.commonMethods import Reply, word_in_sentence, find_similar_string
+from modules.commonMethods import Reply, word_in_sentence, remove_punctuation
 from database.baseController import BaseController
 from functions.operator.materialsCosts import MaterialCosts
 from functions.operator.operatorInfo import OperatorInfo
@@ -35,13 +35,16 @@ class Init:
     def action(self, data):
 
         message = data['text_digits']
-        message_ori = data['text']
+        message_ori = remove_punctuation(data['text'])
+        message_pinyin = remove_punctuation(data['text_pinyin'])
 
-        words = jieba.lcut_for_search(message.lower() + message_ori.lower())
+        words = jieba.lcut_for_search(
+            message.lower() + message_ori.lower() + message_pinyin.lower()
+        )
 
         name = ''
         level = 0
-        surplus = ''
+        skill = ''
         voice_key = ''
         skill_index = 0
         stories_key = ''
@@ -70,10 +73,10 @@ class Init:
             if item in material_costs.skill_index_list:
                 skill_index = material_costs.skill_index_list[item]
                 continue
-            surplus += item
-
-        # 从剩余的文字里找技能名
-        skill = find_similar_string(surplus, material_costs.skill_list)
+            # 获取技能名
+            if item in material_costs.skill_map:
+                skill = material_costs.skill_map[item]
+                continue
 
         if name == '' and skill == '':
             return Reply('博士，想查询哪位干员的资料呢？')
