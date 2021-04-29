@@ -36,10 +36,9 @@ class Init:
 
         message = data['text_digits']
         message_ori = remove_punctuation(data['text'])
-        message_pinyin = remove_punctuation(data['text_pinyin'])
 
         words = jieba.lcut_for_search(
-            (message.lower() + message_ori.lower() + message_pinyin.lower()).replace(' ', '')
+            (message.lower() + message_ori.lower()).replace(' ', '')
         )
 
         name = ''
