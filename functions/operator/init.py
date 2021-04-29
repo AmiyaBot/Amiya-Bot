@@ -20,7 +20,7 @@ for key in voices:
 
 print('loading operators data...')
 database = BaseController()
-material = MaterialCosts(voices_keywords)
+material_costs = MaterialCosts(voices_keywords)
 operator = OperatorInfo()
 jieba.load_userdict('resource/operators.txt')
 jieba.load_userdict('resource/stories.txt')
@@ -29,7 +29,7 @@ jieba.load_userdict('resource/stories.txt')
 class Init:
     def __init__(self):
         self.function_id = 'checkOperator'
-        self.keyword = voices + material.keywords
+        self.keyword = voices + material_costs.keywords
         self.stories_title = list(operator.stories_title.keys()) + [i for k, i in operator.stories_title.items()]
 
     def action(self, data):
@@ -37,7 +37,7 @@ class Init:
         message = data['text_digits']
         message_ori = data['text']
 
-        words = jieba.lcut_for_search(message + message_ori)
+        words = jieba.lcut_for_search(message.lower() + message_ori.lower())
 
         name = ''
         level = 0
@@ -56,21 +56,24 @@ class Init:
                 voice_key = item
                 continue
             # 获取干员名
-            if item in material.operator_list:
+            if item in material_costs.operator_map:
+                name = material_costs.operator_map[item]
+                continue
+            if item in material_costs.operator_list:
                 name = item
                 continue
             # 获取专精或精英等级
-            if item in material.level_list:
-                level = material.level_list[item]
+            if item in material_costs.level_list:
+                level = material_costs.level_list[item]
                 continue
             # 获取技能序号
-            if item in material.skill_index_list:
-                skill_index = material.skill_index_list[item]
+            if item in material_costs.skill_index_list:
+                skill_index = material_costs.skill_index_list[item]
                 continue
             surplus += item
 
         # 从剩余的文字里找技能名
-        skill = find_similar_string(surplus, material.skill_list)
+        skill = find_similar_string(surplus, material_costs.skill_list)
 
         if name == '' and skill == '':
             return Reply('博士，想查询哪位干员的资料呢？')
@@ -79,12 +82,12 @@ class Init:
             if level < 0:
                 # todo 精英化资料
                 level = abs(level)
-                result = material.check_evolve_costs(name, level)
+                result = material_costs.check_evolve_costs(name, level)
             else:
                 if level >= 8 and '材料' in message:
                     # todo 专精资料
                     level -= 7
-                    result = material.check_mastery_costs(name, skill, level, skill_index=skill_index)
+                    result = material_costs.check_mastery_costs(name, skill, level, skill_index=skill_index)
                 else:
                     # todo 技能数据
                     result = operator.get_skill_data(name, skill, level, skill_index=skill_index)

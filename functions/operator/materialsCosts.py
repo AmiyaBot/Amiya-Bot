@@ -1,8 +1,10 @@
 import os
 
+from xpinyin import Pinyin
 from database.baseController import BaseController
 from message.messageType import TextImage
 
+pin = Pinyin()
 database = BaseController()
 material_images_source = 'resource/images/materials/'
 skill_images_source = 'resource/images/skills/'
@@ -12,6 +14,7 @@ class MaterialCosts:
     def __init__(self, extra):
         self.keywords = []
         self.operator_list = []
+        self.operator_map = {}
         self.skill_list = []
         self.level_list = {
             '精1': -1, '精英1': -1,
@@ -30,22 +33,39 @@ class MaterialCosts:
         self.skill_index_list = {
             '1技能': 1, '2技能': 2, '3技能': 3
         }
+
         keywords = [] + extra
 
+        def append_search_word(text):
+            keywords.append('%s 100 n' % text)
+
+        # 初始化专精和等级关键词
         for key in self.level_list:
-            keywords.append('%s 100 n' % key)
+            append_search_word(text=key)
             self.keywords.append(key)
         for key in self.skill_index_list:
-            keywords.append('%s 100 n' % key)
+            append_search_word(text=key)
             self.keywords.append(key)
 
+        # 初始化干员名关键词
         operators = database.operator.get_all_operator()
         for item in operators:
             name = item['operator_name']
-            keywords.append('%s 100 n' % name)
+            append_search_word(text=name)
             self.operator_list.append(name)
             self.keywords.append(name)
 
+            name = item['operator_en_name'].lower()
+            append_search_word(text=name)
+            self.operator_map[name] = item['operator_name']
+            self.keywords.append(name)
+
+            name = ''.join(pin.get_pinyin(item['operator_name']).split('-'))
+            append_search_word(text=name)
+            self.operator_map[name] = item['operator_name']
+            self.keywords.append(name)
+
+        # 初始化技能关键词
         skills = database.operator.get_all_operator_skill()
         for item in skills:
             name = item['skill_name']

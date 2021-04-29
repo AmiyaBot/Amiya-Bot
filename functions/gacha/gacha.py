@@ -165,7 +165,7 @@ class GaCha:
         icons = []
         for index, item in enumerate(operators):
             star = '☆' if item['rarity'] < 5 else '★'
-            result += '%s%s%s\n\n' % (' ' * 15, insert_empty(item['name'], 5, True), star * item['rarity'])
+            result += '%s%s%s\n\n' % (' ' * 15, insert_empty(item['name'], 6, True), star * item['rarity'])
 
             if item['name'] in operator_avatars:
                 avatar_path = '%s/%s.png' % (avatar_resource, operator_avatars[item['name']])
