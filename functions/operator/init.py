@@ -1,4 +1,5 @@
 import jieba
+import copy
 
 from modules.commonMethods import Reply, word_in_sentence, remove_punctuation
 from database.baseController import BaseController
@@ -26,6 +27,15 @@ jieba.load_userdict('resource/operators.txt')
 jieba.load_userdict('resource/stories.txt')
 
 
+class LoopBreak(Exception):
+    def __init__(self, name=None, value=None):
+        self.name = name
+        self.value = value
+
+    def __str__(self):
+        return '%s = %s' % (self.name, self.value)
+
+
 class Init:
     def __init__(self):
         self.function_id = 'checkOperator'
@@ -37,77 +47,83 @@ class Init:
         message = data['text_digits']
         message_ori = remove_punctuation(data['text'])
 
-        words = jieba.lcut_for_search(
+        words = jieba.lcut(
             (message.lower() + message_ori.lower()).replace(' ', '')
         )
+        words = sorted(words, reverse=True, key=lambda i: len(i))
 
-        name = ''
-        level = 0
-        skill = ''
-        voice_key = ''
-        skill_index = 0
-        stories_key = ''
+        info = {
+            'name': '',
+            'level': 0,
+            'skill': '',
+            'voice_key': '',
+            'skill_index': 0,
+            'stories_key': ''
+        }
+        info_source = {
+            'name': [material_costs.operator_map, material_costs.operator_list],
+            'level': [material_costs.level_list],
+            'skill': [material_costs.skill_map],
+            'skill_index': [material_costs.skill_index_list],
+            'voice_key': [voices],
+            'stories_key': [self.stories_title]
+        }
+        info_key = list(info.keys())
 
         for item in words:
-            # 获取档案关键词
-            if item in self.stories_title:
-                stories_key = item
-                continue
-            # 获取语音关键词
-            if item in voices:
-                voice_key = item
-                continue
-            # 获取干员名
-            if item in material_costs.operator_map:
-                name = material_costs.operator_map[item]
-                continue
-            if item in material_costs.operator_list:
-                name = item
-                continue
-            # 获取专精或精英等级
-            if item in material_costs.level_list:
-                level = material_costs.level_list[item]
-                continue
-            # 获取技能序号
-            if item in material_costs.skill_index_list:
-                skill_index = material_costs.skill_index_list[item]
-                continue
-            # 获取技能名
-            if item in material_costs.skill_map:
-                skill = material_costs.skill_map[item]
+            try:
+                # 遍历 info_key 在资源 info_source 里逐个寻找关键词
+                for name in copy.deepcopy(info_key):
+                    for source in info_source[name]:
+
+                        # info_source 有两种类型（列表或字典）
+                        if item in source:
+                            if type(source) is dict:
+                                info[name] = source[item]
+                            if type(source) is list:
+                                info[name] = item
+
+                            # 找到关键词后删除这个 key，后续不再匹配这个 key 的内容
+                            info_key.remove(name)
+
+                            raise LoopBreak(name=name, value=info[name])
+            except LoopBreak as value:
+                # print(value)
                 continue
 
-        if name == '' and skill == '':
+        if info['name'] == '' and info['skill'] == '':
             return Reply('博士，想查询哪位干员的资料呢？')
 
-        if level != 0:
-            if level < 0:
+        if info['level'] != 0:
+            if info['level'] < 0:
                 # todo 精英化资料
-                level = abs(level)
-                result = material_costs.check_evolve_costs(name, level)
+                info['level'] = abs(info['level'])
+                result = material_costs.check_evolve_costs(info['name'], info['level'])
             else:
-                if level >= 8 and '材料' in message:
+                if info['level'] >= 8 and '材料' in message:
                     # todo 专精资料
-                    level -= 7
-                    result = material_costs.check_mastery_costs(name, skill, level, skill_index=skill_index)
+                    info['level'] -= 7
+                    result = material_costs.check_mastery_costs(info['name'], info['skill'], info['level'],
+                                                                skill_index=info['skill_index'])
                 else:
                     # todo 技能数据
-                    result = operator.get_skill_data(name, skill, level, skill_index=skill_index)
+                    result = operator.get_skill_data(info['name'], info['skill'], info['level'],
+                                                     skill_index=info['skill_index'])
             return Reply(result)
 
-        if name:
+        if info['name']:
             # todo 档案资料
-            if stories_key:
-                story = database.operator.find_operator_stories(name, stories_key)
+            if info['stories_key']:
+                story = database.operator.find_operator_stories(info['name'], info['stories_key'])
                 if story:
-                    text = '博士，这是干员%s的《%s》档案\n\n' % (name, stories_key)
+                    text = '博士，这是干员%s的《%s》档案\n\n' % (info['name'], info['stories_key'])
                     return Reply(text + story['story_text'])
                 else:
-                    return Reply('博士，没有找到干员%s的《%s》档案' % (name, stories_key))
+                    return Reply('博士，没有找到干员%s的《%s》档案' % (info['name'], info['stories_key']))
 
             # todo 语音资料
-            if voice_key:
-                return self.find_voice(name, voice_key)
+            if info['voice_key']:
+                return self.find_voice(info['name'], info['voice_key'])
 
             if word_in_sentence(message, ['精英', '专精']):
                 return Reply('博士，要告诉阿米娅精英或专精等级哦')
@@ -115,10 +131,10 @@ class Init:
             if word_in_sentence(message, ['语音']):
                 return Reply('博士，要告诉阿米娅语音的详细标题哦')
 
-            if skill or skill_index:
+            if info['skill'] or info['skill_index']:
                 return Reply('博士，要查询干员技能资料的话，请加上【技能等级】或者加上【技能等级和“材料”关键字】哦')
 
-            return Reply(operator.get_detail_info(name))
+            return Reply(operator.get_detail_info(info['name']))
 
     @staticmethod
     def find_voice(name, voice):

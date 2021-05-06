@@ -1,11 +1,9 @@
 import os
 
-from xpinyin import Pinyin
-from modules.commonMethods import remove_punctuation
+from modules.commonMethods import remove_punctuation, text_to_pinyin
 from database.baseController import BaseController
 from message.messageType import TextImage
 
-pin = Pinyin()
 database = BaseController()
 material_images_source = 'resource/images/materials/'
 skill_images_source = 'resource/images/skills/'
@@ -62,7 +60,7 @@ class MaterialCosts:
             self.operator_map[name] = item['operator_name']
             self.keywords.append(name)
 
-            name = ''.join(pin.get_pinyin(item['operator_name']).split('-'))
+            name = text_to_pinyin(item['operator_name'])
             append_search_word(text=name)
             self.operator_map[name] = item['operator_name']
             self.keywords.append(name)
@@ -75,7 +73,7 @@ class MaterialCosts:
             self.skill_map[name] = item['skill_name']
             self.keywords.append(name)
 
-            pin_name = ''.join(pin.get_pinyin(name).split('-'))
+            pin_name = text_to_pinyin(name)
             append_search_word(text=pin_name)
             self.skill_map[pin_name] = item['skill_name']
             self.keywords.append(pin_name)

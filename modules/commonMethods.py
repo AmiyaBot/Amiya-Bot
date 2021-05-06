@@ -3,6 +3,7 @@ import re
 import sys
 import difflib
 import datetime
+import pypinyin
 
 from string import punctuation
 from zhon.hanzi import punctuation as punctuation_cn
@@ -121,6 +122,10 @@ def remove_punctuation(text: str):
     for i in punctuation_cn:
         text = text.replace(i, '')
     return text
+
+
+def text_to_pinyin(text: str):
+    return ''.join([item[0] for item in pypinyin.pinyin(text, style=pypinyin.NORMAL)]).lower()
 
 
 def maintain_record(date: str = None):

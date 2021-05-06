@@ -3,16 +3,14 @@ import json
 import time
 import copy
 
-from xpinyin import Pinyin
 from message.replies import reply_func_list
 from message.eventsHandler import EventsHandler
 from database.baseController import BaseController
 from library.numberTranslate import chinese_to_digits
 from modules.network.httpRequests import HttpRequests
-from modules.commonMethods import Reply
+from modules.commonMethods import Reply, text_to_pinyin
 from modules.config import get_config
 
-pin = Pinyin()
 config = get_config()
 database = BaseController()
 events = EventsHandler()
@@ -175,7 +173,7 @@ class MessageHandler(HttpRequests):
                 text = chain['text'].strip()
                 data['text'] = text
                 data['text_digits'] = chinese_to_digits(text)
-                data['text_pinyin'] = ''.join(pin.get_pinyin(text).split('-'))
+                data['text_pinyin'] = text_to_pinyin(text)
             if chain['type'] == 'Image':
                 data['image'] = chain['url'].strip()
 
