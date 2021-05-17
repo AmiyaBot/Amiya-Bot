@@ -48,7 +48,10 @@ class Init:
         message_ori = remove_punctuation(data['text'])
 
         words = jieba.lcut(
-            (message.lower() + message_ori.lower()).replace(' ', '')
+            message.lower().replace(' ', '')
+        )
+        words += jieba.lcut(
+            message_ori.lower().replace(' ', '')
         )
         words = sorted(words, reverse=True, key=lambda i: len(i))
 

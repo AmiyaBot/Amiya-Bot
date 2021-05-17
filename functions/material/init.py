@@ -15,7 +15,11 @@ class Init:
 
     @staticmethod
     def action(data):
-        msg_words = jieba.lcut_for_search(data['text'])
+        msg_words = sorted(
+            jieba.lcut_for_search(data['text']),
+            reverse=True,
+            key=lambda i: len(i)
+        )
 
         name = ''
         rate = 0

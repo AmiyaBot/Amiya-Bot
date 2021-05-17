@@ -82,9 +82,9 @@ class OperatorInfo:
             }
         ]
 
-        text += '%s [%s] %s\n\n' % (base['operator_name'],
-                                    base['operator_en_name'],
-                                    '★' * base['operator_rarity'])
+        text += '%s [%s]\n%s\n\n' % (base['operator_name'],
+                                     base['operator_en_name'],
+                                     '★' * base['operator_rarity'])
 
         text += '【%s干员】\n%s\n\n' % (class_type[base['operator_class']], detail['operator_desc'])
         text += '%s\n -- 「%s」\n\n' % (detail['operator_usage'], detail['operator_quote'])
