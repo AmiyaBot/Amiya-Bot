@@ -22,6 +22,21 @@ class_index = {
 }
 
 
+def get_temp_operator():
+    operators = {}
+    temp_path = 'resource/tempOperator.txt'
+    if os.path.exists(temp_path):
+        with open(temp_path, mode='r', encoding='utf-8') as tp:
+            ct = [item.split(',') for item in tp.read().strip('\n').split('\n')]
+            for item in ct:
+                operators[item[0]] = {
+                    'photo': 'None',
+                    'rarity': item[1],
+                    'class': class_index[int(item[2])].lower()
+                }
+    return operators
+
+
 class GaCha:
     def __init__(self, user_id):
 
@@ -52,6 +67,7 @@ class GaCha:
 
         self.user_id = user_id
         self.operator = class_group
+        self.temp_operator = get_temp_operator()
         self.limit_pool = pool['limit_pool']
         self.pick_up_name = pool['pool_name']
         self.pick_up = {
@@ -187,8 +203,19 @@ class GaCha:
                     'class': class_index[item['operator_class']].lower()
                 } for item in operators_data
             }
-            result_list = [operators_info[item['name']] if item['name'] in operators_info else None
-                           for item in operators]
+            result_list = []
+
+            for item in operators:
+                name = item['name']
+                op_dt = None
+
+                if name in operators_info:
+                    op_dt = operators_info[name]
+                elif name in self.temp_operator:
+                    op_dt = self.temp_operator[name]
+
+                result_list.append(op_dt)
+
             res_img = '%s/%s' % (gacha_result, create_gacha_result(result_list))
             reply.insert(0, Image(res_img))
 
