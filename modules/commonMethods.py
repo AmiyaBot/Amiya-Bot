@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import time
 import difflib
 import datetime
 import pypinyin
@@ -46,6 +47,18 @@ class Reply:
         else:
             text = Text(text)
         return text.item
+
+
+class TimeRecord:
+    def __init__(self):
+        self.time = time.time()
+
+    def rec(self, millisecond=False):
+        mil = 1000 if millisecond else 1
+        return int(time.time() * mil - self.time * mil)
+
+    def total(self):
+        return calc_time_total(self.rec())
 
 
 def word_in_sentence(sentence: str, words: list):

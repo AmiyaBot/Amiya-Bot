@@ -3,7 +3,7 @@ import threading
 
 from database.baseController import BaseController
 from modules.commonMethods import Reply, restart
-from modules.gameData import GameData
+from modules.dataSource.gameData import GameData
 from modules.config import get_config
 
 admin_id = get_config('admin_id')
@@ -16,15 +16,15 @@ def admin(data):
     user_id = data['user_id']
 
     if user_id == admin_id:
-        if '更新干员' in message:
-            res = gameData.update_operators()
+        if '更新全部' in message:
+            res = gameData.update()
             if res:
                 return Reply(res)
 
-        if '更新地图' in message:
-            res = gameData.update_stage()
+        if '更新立绘' in message:
+            res = gameData.save_operator_photo()
             if res:
-                return Reply(res)
+                return Reply('更新了 %d 张干员立绘' % res)
 
         if '公告' in message:
             database.user.set_waiting(user_id, 'Notice')

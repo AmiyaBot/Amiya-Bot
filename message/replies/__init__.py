@@ -37,6 +37,12 @@ def reply_func_list(data):
         replies.append(group_admin_func)
         replies += [
             {
+                # 使用功能
+                'func': function.action,
+                'need_call': True,
+                'without_call': True
+            },
+            {
                 # 打招呼
                 'func': greeting,
                 'need_call': False
@@ -47,21 +53,15 @@ def reply_func_list(data):
                 'need_call': True
             },
             {
-                # 使用功能
-                'func': function.action,
-                'need_call': True,
-                'without_call': True
-            },
-            {
                 # 表情包
                 'func': face_image,
                 'need_call': True
             },
-            {
-                # 自然语言处理
-                'func': natural_language_processing,
-                'need_call': True
-            }
+            # {
+            #     # 自然语言处理
+            #     'func': natural_language_processing,
+            #     'need_call': True
+            # }
         ]
     else:
         replies += [

@@ -1,23 +1,15 @@
 import re
 
-from modules.commonMethods import Reply, find_similar_string
+from modules.commonMethods import Reply, find_similar_string, remove_xml_tag
 from message.messageType import TextImage
-from modules.gameData import GameData
-
-print('updating enemy data...')
-game_data = GameData()
-enemy_key = game_data.get_key('level.enemy')
-enemies = {}
-if bool(enemy_key):
-    enemies_data = game_data.get_json_data('lists/enemy', enemy_key)
-    for i, n in enemies_data.items():
-        enemies[n['name']] = n
+from modules.dataSource.gameData import GameData
 
 
 class Init:
     def __init__(self):
         self.function_id = 'checkEnemy'
         self.keyword = ['敌人', '敌方']
+        self.enemies = GameData().init_enemies()
 
     def action(self, data):
 
@@ -34,18 +26,16 @@ class Init:
                     return Reply('博士，没有找到%s的资料呢 >.<' % enemy_name)
 
     def find_enemy(self, enemy):
-        name = find_similar_string(enemy, list(enemies.keys()))
+        name = find_similar_string(enemy, list(self.enemies.keys()))
         if name:
             try:
-                data = enemies[name]
-                detail = game_data.get_json_data('enemy', data['enemyId'])
-
-                game_data.get_pic('enemy/pic/' + data['enemyId'], 'enemy', '?x-oss-process=style/jpg-test')
+                data = self.enemies[name]['info']
+                detail = self.enemies[name]['data']
 
                 text = '博士，这是找到的敌方档案\n\n\n\n\n\n\n'
                 text += '【%s】\n\n' % name
                 text += '%s\n\n' % data['description']
-                text += '[能力]\n%s\n\n' % data['ability']
+                text += '[能力]\n%s\n\n' % remove_xml_tag(data['ability'] or '无')
                 text += '[属性]\n耐久 %s | 攻击力 %s | 防御力 %s | 法术抗性 %s\n' % \
                         (data['endure'],
                          data['attack'],
@@ -66,7 +56,7 @@ class Init:
                 }
 
                 for item in detail:
-                    text += '\n[等级 %s 数值]\n' % item['level']
+                    text += '\n[等级 %s 数值]\n' % (item['level'] + 1)
                     detail_data = item['enemyData']
                     key_index = 0
                     for key in key_map:
@@ -78,8 +68,11 @@ class Init:
 
                         text += '%s：%s%s' % (key_map[key]['title'], value, '    ' if key_index % 2 == 0 else '\n')
                         key_index += 1
-
-                text += '\n[技能]\n施工中...敬请期待...'
+                    if detail_data['skills']:
+                        text += '技能冷却时间：\n'
+                        for sk in detail_data['skills']:
+                            sk_info = (sk['prefabKey'], sk['initCooldown'], sk['cooldown'])
+                            text += '    - [%s]\n    -- 初始冷却 %ss，后续冷却 %ss\n' % sk_info
 
                 icons = [
                     {
@@ -91,6 +84,7 @@ class Init:
 
                 return TextImage(text, icons)
             except Exception as e:
+                raise e
                 print('Enemy', e)
                 return '博士，【%s】档案好像损坏了... >.<' % name
         else:
