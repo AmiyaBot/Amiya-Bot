@@ -31,16 +31,24 @@ class GameData(SourceBank):
         recruit_operators = self.get_recruit_operators()
         operators_data = self.get_json_data('character_table')
         voice_data = self.get_json_data('charword_table')
+        skins_data = self.get_json_data('skin_table')['charSkins']
 
         operators = []
         voice_map = {}
+        skins_map = {}
 
-        for cn, item in voice_data.items():
-            char_id = item['charId']
-            if char_id not in voice_map:
-                voice_map[char_id] = []
+        map_data = (
+            (voice_data, voice_map),
+            (skins_data, skins_map)
+        )
 
-            voice_map[char_id].append(item)
+        for map_item in map_data:
+            for n, item in map_item[0].items():
+                char_id = item['charId']
+                if char_id not in map_item[1]:
+                    map_item[1][char_id] = []
+
+                map_item[1][char_id].append(item)
 
         for code, item in operators_data.items():
             if item['profession'] not in Config.classes:
@@ -51,6 +59,7 @@ class GameData(SourceBank):
                     code=code,
                     data=item,
                     voice_list=voice_map[code] if code in voice_map else [],
+                    skins_list=skins_map[code] if code in skins_map else [],
                     recruit=item['name'] in recruit_operators
                 )
             )
@@ -107,6 +116,7 @@ class GameData(SourceBank):
         # todo 保存详细资料
         operator_id = database.operator.get_operator_id(operator_no=operator.id)
 
+        skins = operator.skins(operator_id)
         detail = operator.detail(operator_id)
         voices = operator.voices(operator_id)
         stories = operator.stories(operator_id)
@@ -118,6 +128,8 @@ class GameData(SourceBank):
 
         database.operator.add_operator_detail([detail])
 
+        if skins:
+            database.operator.add_operator_skins(skins)
         if voices:
             database.operator.add_operator_voice(voices)
         if stories:
@@ -157,19 +169,33 @@ class GameData(SourceBank):
         print('开始下载干员图片资源...')
         avatars = 0
         photo = 0
+        skins = 0
+        skins_total = 0
         for operator in operators:
-            print('正在下载干员 [%s] 图片资源...' % operator.name, end='')
+            print('正在下载干员 [%s] 图片资源...' % operator.name)
 
-            a_res = self.get_pic('char/profile/' + operator.id, 'avatars')
-            p_res = self.get_pic('char/halfPic/%s_1' % operator.id, 'photo', '?x-oss-process=style/small-test')
+            print(' -- 头像...', end='')
+            res = self.get_pic('char/profile/' + operator.id, 'avatars')
+            avatars += 1 if res else 0
+            print('OK' if res else 'NG')
 
-            avatars += 1 if a_res else 0
-            photo += 1 if p_res else 0
+            print(' -- 半身照...', end='')
+            res = self.get_pic('char/halfPic/%s_1' % operator.id, 'photo', '?x-oss-process=style/small-test')
+            photo += 1 if res else 0
+            print('OK' if res else 'NG')
 
-            print('头像[%s]，立绘[%s]' % ('OK' if a_res else 'NG', 'OK' if p_res else 'NG'))
+            skins_list = operator.skins(None)
+            skins_total += len(skins_list)
+            for skin in skins_list:
+                print(' -- 立绘 [%s][%s]...' % (skin['skin_group'], skin['skin_name']), end='')
+                res = self.get_pic('char/set/' + skin['skin_image'], 'picture')
+                skins += 1 if res else 0
+                print('OK' if res else 'NG')
 
         print('干员图片资源下载完成')
-        return avatars, photo
+        return ('%d/%d' % (avatars, len(operators)),
+                '%d/%d' % (photo, len(operators)),
+                '%d/%d' % (skins, skins_total))
 
     def save_materials_data(self):
         building_data = self.get_json_data('building_data')
@@ -247,16 +273,18 @@ class GameData(SourceBank):
     def save_enemies_photo(self):
         enemies = self.init_enemies()
 
+        success = 0
         total = 0
         for name, item in enemies.items():
             print('正在下载敌人 [%s] 图片资源...' % name, end='')
             res = self.get_pic('enemy/pic/' + item['info']['enemyId'], 'enemy', '?x-oss-process=style/jpg-test')
 
-            total += 1 if res else 0
+            success += 1 if res else 0
+            total += 1
 
             print('OK' if res else 'NG')
 
-        return total
+        return '%d/%d' % (success, total)
 
     def update(self, refresh=True, cache=False):
         print('准备开始全量更新...')
@@ -278,7 +306,7 @@ class GameData(SourceBank):
         for index, item in enumerate(operators):
             print('保存干员 [%d/%d][%s]...' % (index + 1, len(operators), item.name), end='')
             self.save_operator_data(item)
-        avatars, photo = self.save_operator_photo(operators)
+        avatars, photo, skins = self.save_operator_photo(operators)
 
         print('开始更新敌人数据...')
         enemies = self.save_enemies_photo()
@@ -293,16 +321,18 @@ class GameData(SourceBank):
                   len(operators),
                   avatars,
                   photo,
+                  skins,
                   enemies,
                   materials,
                   stages)
         message = '数据更新完毕，总耗时%s' \
-                  '\n -- %d 位干员' \
-                  '\n -- %d 个干员头像' \
-                  '\n -- %d 张干员立绘' \
-                  '\n -- %d 张敌人图片' \
-                  '\n -- %d 个材料' \
-                  '\n -- %d 个关卡' % totals
+                  '\n -- %s 位干员' \
+                  '\n -- %s 个干员头像' \
+                  '\n -- %s 张干员半身照' \
+                  '\n -- %s 张干员皮肤' \
+                  '\n -- %s 张敌人图片' \
+                  '\n -- %s 个材料' \
+                  '\n -- %s 个关卡' % totals
 
         print('\n' + message)
         return message

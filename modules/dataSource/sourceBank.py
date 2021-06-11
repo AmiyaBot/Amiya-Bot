@@ -24,7 +24,6 @@ class SourceBank:
             'excel/gacha_table',
             'excel/stage_table',
             'excel/skill_table',
-            'excel/audio_data',
             'excel/skin_table',
             'excel/item_table'
         ]

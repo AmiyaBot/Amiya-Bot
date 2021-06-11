@@ -26,6 +26,9 @@ class Operator:
     def add_operator_tags_relation(self, data):
         self.db.batch_insert('t_operator_tags_relation', data=data)
 
+    def add_operator_skins(self, data):
+        self.db.batch_insert('t_operator_skins', data=data)
+
     def add_operator_voice(self, data):
         self.db.batch_insert('t_operator_voice', data=data)
 
@@ -230,6 +233,7 @@ class Operator:
             't_operator_skill',
             't_operator_skill_description',
             't_operator_skill_mastery_costs',
+            't_operator_skins',
             't_operator_stories',
             't_operator_tags_relation',
             't_operator_talents',

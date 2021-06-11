@@ -10,7 +10,7 @@ formatter = {
 
 
 class Operator(SourceBank):
-    def __init__(self, code, data, voice_list, recruit=False):
+    def __init__(self, code, data, voice_list, skins_list, recruit=False):
         super().__init__()
 
         self.id = code
@@ -24,6 +24,7 @@ class Operator(SourceBank):
         self.recruit = recruit
 
         self.voice_list = voice_list
+        self.skins_list = skins_list
 
         # todo 兔兔的专属
         if code == 'char_1001_amiya2':
@@ -213,6 +214,33 @@ class Operator(SourceBank):
                     'story_text': item['stories'][0]['storyText']
                 })
         return stories
+
+    def skins(self, operator_id):
+        skins = []
+        for item in self.skins_list:
+            if '@' not in item['skinId']:
+                continue
+
+            skin_key = item['avatarId'].split('#')
+            skin_data = item['displaySkin']
+
+            skin_image = f'{skin_key[0]}%23{skin_key[1]}'
+            skin_type = 1
+
+            skins.append({
+                'operator_id': operator_id,
+                'skin_image': skin_image,
+                'skin_type': skin_type,
+                'skin_name': skin_data['skinName'] or self.name,
+                'skin_drawer': skin_data['drawerName'] or '',
+                'skin_group': skin_data['skinGroupName'] or '',
+                'skin_content': skin_data['dialog'] or '',
+                'skin_usage': skin_data['usage'] or '',
+                'skin_desc': skin_data['description'] or '',
+                'skin_source': skin_data['obtainApproach'] or ''
+            })
+
+        return skins
 
 
 class OperatorTags:
