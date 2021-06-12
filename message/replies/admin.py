@@ -19,12 +19,14 @@ def admin(data):
         if '更新全部' in message:
             return Reply(gameData.update())
 
-        if '更新立绘' in message:
+        if '更新图片' in message:
             avatars, photo, skins = gameData.save_operator_photo()
+            enemies = gameData.save_enemies_photo()
             return Reply('更新了'
                          '\n -- %s 个干员头像'
                          '\n -- %s 张干员半身照'
-                         '\n -- %s 张干员皮肤' % (avatars, photo, skins))
+                         '\n -- %s 张干员皮肤'
+                         '\n -- %s 张敌人图片' % (avatars, photo, skins, enemies))
 
         if '公告' in message:
             database.user.set_waiting(user_id, 'Notice')

@@ -3,6 +3,7 @@ import os
 from modules.commonMethods import remove_punctuation, text_to_pinyin
 from database.baseController import BaseController
 from message.messageType import TextImage
+from functions.operator.initData import InitData
 
 database = BaseController()
 material_images_source = 'resource/images/materials/'
@@ -10,7 +11,7 @@ skill_images_source = 'resource/images/skills/'
 
 
 class MaterialCosts:
-    def __init__(self, extra):
+    def __init__(self):
         self.keywords = []
         self.operator_list = []
         self.operator_map = {}
@@ -34,7 +35,7 @@ class MaterialCosts:
             '1技能': 1, '2技能': 2, '3技能': 3
         }
 
-        keywords = [] + extra
+        keywords = [] + ['%s 100 n' % key for key in InitData.voices]
 
         def append_search_word(text):
             keywords.append('%s 100 n' % text)

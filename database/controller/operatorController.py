@@ -52,6 +52,12 @@ class Operator:
 
         return res['operator_id'] if res else None
 
+    def get_operator_by_id(self, operator_id):
+        where = Where({
+            'operator_id': operator_id
+        })
+        return self.db.select('t_operator', where=where, fetchone=True)
+
     def get_skill_id(self, skill_no, operator_id):
         res = self.db.select('t_operator_skill', where=Where({
             'skill_no': skill_no,
@@ -92,6 +98,15 @@ class Operator:
 
     def get_all_stories_title(self):
         return self.db.select('t_operator_stories', sql='SELECT * FROM t_operator_stories GROUP BY story_title')
+
+    def get_all_skins(self):
+        return self.db.select('t_operator_skins')
+
+    def find_operator_skin(self, skin_name):
+        where = Where({
+            'skin_name': skin_name
+        })
+        return self.db.select('t_operator_skins', where=where, fetchone=True)
 
     def find_operator_all_detail(self, operator_id):
         where = Where({

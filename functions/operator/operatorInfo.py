@@ -6,67 +6,51 @@ from library.numberTranslate import chinese_to_digits
 from database.baseController import BaseController
 from message.messageType import TextImage
 from functions.operator.materialsCosts import MaterialCosts, skill_images_source
+from functions.operator.initData import InitData
 
 database = BaseController()
 avatars_images_source = 'resource/images/avatars/'
 
-sp_type = {
-    1: '自动回复',
-    2: '攻击回复',
-    4: '受击回复',
-    8: '被动'
-}
-class_type = {
-    1: '先锋',
-    2: '近卫',
-    3: '重装',
-    4: '狙击',
-    5: '术师',
-    6: '辅助',
-    7: '医疗',
-    8: '特种'
-}
-skill_type = {
-    0: '被动',
-    1: '手动触发',
-    2: '自动触发'
-}
-skill_level = {
-    1: '等级1',
-    2: '等级2',
-    3: '等级3',
-    4: '等级4',
-    5: '等级5',
-    6: '等级6',
-    7: '等级7',
-    8: '专精1',
-    9: '专精2',
-    10: '专精3'
-}
-potential_rank = {
-    1: '一',
-    2: '丅',
-    3: '上',
-    4: '止',
-    5: '正'
-}
-
 
 class OperatorInfo:
     def __init__(self):
+        self.skins_table = {}
+        self.skins_keywords = []
+        self.stories_title = {}
 
+        self.init_skins_table()
+        self.init_stories_titles()
+
+    def init_skins_table(self):
+        skins_data = database.operator.get_all_skins()
+        skins_table = {}
+        skins_keywords = []
+
+        for item in skins_data:
+            if item['operator_id'] not in skins_table:
+                skins_table[item['operator_id']] = []
+            skins_table[item['operator_id']].append(item)
+            skins_keywords.append(item['skin_name'])
+
+        self.skins_table = skins_table
+        self.skins_keywords = skins_keywords
+
+        with open('resource/skins.txt', mode='w', encoding='utf-8') as file:
+            file.write('\n'.join([n + ' 100 n' for n in skins_keywords]))
+
+    def init_stories_titles(self):
         stories_titles = database.operator.get_all_stories_title()
 
         self.stories_title = {chinese_to_digits(item['story_title']): item['story_title'] for item in stories_titles}
-        self.stories_keyword = []
 
+        stories_keyword = []
         for index, item in self.stories_title.items():
             item = re.compile(r'？+', re.S).sub('', item)
             if item:
-                self.stories_keyword.append(item + ' 100 n')
+                stories_keyword.append(item + ' 100 n')
 
         with open('resource/stories.txt', mode='w', encoding='utf-8') as file:
-            file.write('\n'.join(self.stories_keyword))
+            file.write('\n'.join(stories_keyword))
 
     def get_detail_info(self, name):
 
@@ -86,7 +70,7 @@ class OperatorInfo:
                                      base['operator_en_name'],
                                      '★' * base['operator_rarity'])
 
-        text += '【%s干员】\n%s\n\n' % (class_type[base['operator_class']], detail['operator_desc'])
+        text += '【%s干员】\n%s\n\n' % (InitData.class_type[base['operator_class']], detail['operator_desc'])
         text += '%s\n -- 「%s」\n\n' % (detail['operator_usage'], detail['operator_quote'])
 
         text += '【信物】\n%s\n\n' % detail['operator_token'] if detail['operator_token'] else ''
@@ -108,7 +92,7 @@ class OperatorInfo:
 
         potential_text = ''
         for item in potential:
-            potential_text += '[%s] %s\n' % (potential_rank[item['potential_rank']], item['potential_desc'])
+            potential_text += '[%s] %s\n' % (InitData.potential_rank[item['potential_rank']], item['potential_desc'])
         text += ('【潜能】\n%s\n' % potential_text) if potential_text else ''
 
         building_text = ''
@@ -138,14 +122,14 @@ class OperatorInfo:
         result = database.operator.find_operator_skill_description(name, level, skill_index)
 
         if len(result):
-            text += '博士，这是干员%s技能%s的数据\n\n' % (name, skill_level[level])
+            text += '博士，这是干员%s技能%s的数据\n\n' % (name, InitData.skill_level[level])
 
             content, icons = self.load_skill_content(result, 28)
 
             text += content
             return TextImage(text, icons)
         else:
-            return '博士，没有找到干员%s技能%s的数据' % (name, skill_level[level])
+            return '博士，没有找到干员%s技能%s的数据' % (name, InitData.skill_level[level])
 
     @staticmethod
     def load_skill_content(result, position):
@@ -173,7 +157,7 @@ class OperatorInfo:
             yl.append(y)
 
             for item in skills[name]:
-                content += '%s / %s' % (sp_type[item['sp_type']], skill_type[item['skill_type']])
+                content += '%s / %s' % (InitData.sp_type[item['sp_type']], InitData.skill_type[item['skill_type']])
                 content += '%sSP：%s / %s\n' % (' ' * 5, item['sp_init'], item['sp_cost'])
                 if item['duration'] > 0:
                     content += '持续时间：%ss\n' % item['duration']

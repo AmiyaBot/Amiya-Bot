@@ -1,30 +1,22 @@
 import jieba
 import copy
+import re
+import os
 
 from modules.commonMethods import Reply, word_in_sentence, remove_punctuation
+from message.messageType import Image
 from database.baseController import BaseController
 from functions.operator.materialsCosts import MaterialCosts
 from functions.operator.operatorInfo import OperatorInfo
-
-voices = [
-    "任命助理", "任命队长", "编入队伍", "问候", "闲置",
-    "交谈1", "交谈2", "交谈3", "晋升后交谈1", "晋升后交谈2",
-    "信赖提升后交谈1", "信赖提升后交谈2", "信赖提升后交谈3",
-    "精英化晋升1", "精英化晋升2",
-    "行动出发", "行动失败", "行动开始", "3星结束行动", "4星结束行动", "非3星结束行动",
-    "选中干员1", "选中干员2", "部署1", "部署2", "作战中1", "作战中2", "作战中3", "作战中4",
-    "戳一下", "信赖触摸", "干员报到", "进驻设施", "观看作战记录", "标题"
-]
-voices_keywords = []
-for key in voices:
-    voices_keywords.append('%s 100 n' % key)
+from functions.operator.initData import InitData
 
 print('loading operators data...')
 database = BaseController()
-material_costs = MaterialCosts(voices_keywords)
 operator = OperatorInfo()
+material_costs = MaterialCosts()
 jieba.load_userdict('resource/operators.txt')
 jieba.load_userdict('resource/stories.txt')
+jieba.load_userdict('resource/skins.txt')
 
 
 class LoopBreak(Exception):
@@ -39,7 +31,7 @@ class LoopBreak(Exception):
 class Init:
     def __init__(self):
         self.function_id = 'checkOperator'
-        self.keyword = voices + material_costs.keywords
+        self.keyword = InitData.voices + material_costs.keywords + operator.skins_keywords
         self.stories_title = list(operator.stories_title.keys()) + [i for k, i in operator.stories_title.items()]
 
     def action(self, data):
@@ -55,10 +47,12 @@ class Init:
         )
         words = sorted(words, reverse=True, key=lambda i: len(i))
 
+        operator_id = None
         info = {
             'name': '',
             'level': 0,
             'skill': '',
+            'skin_key': '',
             'voice_key': '',
             'skill_index': 0,
             'stories_key': ''
@@ -68,7 +62,8 @@ class Init:
             'level': [material_costs.level_list],
             'skill': [material_costs.skill_map],
             'skill_index': [material_costs.skill_index_list],
-            'voice_key': [voices],
+            'skin_key': [operator.skins_keywords],
+            'voice_key': [InitData.voices],
             'stories_key': [self.stories_title]
         }
         info_key = list(info.keys())
@@ -86,6 +81,9 @@ class Init:
                             if type(source) is list:
                                 info[name] = item
 
+                            if name == 'name':
+                                operator_id = database.operator.get_operator_id(operator_name=info[name])
+
                             # 找到关键词后删除这个 key，后续不再匹配这个 key 的内容
                             info_key.remove(name)
 
@@ -93,6 +91,10 @@ class Init:
             except LoopBreak as value:
                 # print(value)
                 continue
+
+        # todo 皮肤资料
+        if info['skin_key']:
+            return self.find_skin(info['skin_key'])
 
         if info['name'] == '' and info['skill'] == '':
             return Reply('博士，想查询哪位干员的资料呢？')
@@ -128,6 +130,33 @@ class Init:
             if info['voice_key']:
                 return self.find_voice(info['name'], info['voice_key'])
 
+            # todo 皮肤列表
+            if word_in_sentence(message, ['皮肤', '服装']):
+                if operator_id not in operator.skins_table:
+                    amiya_id = database.operator.get_operator_id(operator_name='阿米娅')
+                    no_skin = '博士，干员%s暂时还没有皮肤哦～（兔兔都有%d个皮肤了 ^.^）' % (info['name'], len(operator.skins_table[amiya_id]))
+                    return Reply(no_skin)
+
+                skin_list = operator.skins_table[operator_id]
+
+                r = re.search(re.compile(r'第(\d+)个皮肤'), message)
+                if r:
+                    index = abs(int(r.group(1))) - 1
+                    if index >= len(skin_list):
+                        index = len(skin_list) - 1
+
+                    return self.find_skin(skin_list[index]['skin_name'])
+                else:
+                    text = '博士，为您找到干员%s的皮肤列表\n\n' % info['name']
+
+                    for index, item in enumerate(skin_list):
+                        idx = ('' if index + 1 >= 10 else '0') + str(index + 1)
+                        text += '%s [ %s - %s ] %s\n' % (idx, item['skin_group'], item['skin_name'], item['skin_usage'])
+
+                    text += '\n请和阿米娅说「阿米娅查看%s第 N 个皮肤」查看详情吧' % info['name']
+
+                    return Reply(text)
+
             if word_in_sentence(message, ['精英', '专精']):
                 return Reply('博士，要告诉阿米娅精英或专精等级哦')
 
@@ -146,3 +175,23 @@ class Init:
             text = '博士，为您找到干员%s的语音档案：\n\n【%s】\n%s' % (name, voice, result['voice_text'])
             return Reply(text)
         return Reply('抱歉博士，没有找到干员%s%s相关的语音档案' % (name, voice))
+
+    @staticmethod
+    def find_skin(skin_name):
+        skin = database.operator.find_operator_skin(skin_name)
+        if skin:
+            opt = database.operator.get_operator_by_id(skin['operator_id'])
+
+            text = '博士，为您找到干员%s的皮肤档案：\n\n【%s - %s】\n\n' % (opt['operator_name'], skin['skin_group'], skin['skin_name'])
+            text += skin['skin_source'] + '\n\n'
+            text += skin['skin_usage'] + '\n'
+            text += skin['skin_content'] + '\n\n'
+            text += ' -- ' + skin['skin_desc']
+
+            reply = [Reply(text)]
+
+            pic = 'resource/images/picture/%s.png' % skin['skin_image']
+            if os.path.exists(pic):
+                reply.append(Image(pic))
+
+            return reply
