@@ -192,6 +192,8 @@ class Init:
 
             pic = 'resource/images/picture/%s.png' % skin['skin_image']
             if os.path.exists(pic):
-                reply.append(Image(pic))
+                reply.append(Reply(Image(pic), at=False))
+            else:
+                reply.append(Reply('暂时无法获取到立绘图片～', at=False))
 
             return reply
