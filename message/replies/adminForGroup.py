@@ -42,28 +42,26 @@ def group_admin(data):
                 return Reply('阿米娅没有偷懒哦博士，请您也不要偷懒~')
 
         if '功能' in message:
-            for item in Function.index_reg:
-                r = re.search(re.compile(item), message)
-                if r:
-                    index = int(r.group(1))
-                    if 0 < index <= len(Function.function_list):
-                        index -= 1
-                        func = Function.function_list[index]
-                        if func['id']:
-                            group = Function.function_groups[func['id']]
-
-                            status = 0
-                            if word_in_sentence(message, ['关闭', '禁用']):
-                                status = 1
-                            if word_in_sentence(message, ['打开', '开启']):
-                                status = 2
-
-                            if status:
+            status = 0
+            if word_in_sentence(message, ['关闭', '禁用']):
+                status = 1
+            if word_in_sentence(message, ['打开', '开启']):
+                status = 2
+            if status:
+                for item in Function.index_reg:
+                    r = re.search(re.compile(item), message)
+                    if r:
+                        index = int(r.group(1))
+                        if 0 < index <= len(Function.function_list):
+                            index -= 1
+                            func = Function.function_list[index]
+                            if func['id']:
+                                group = Function.function_groups[func['id']]
                                 database.function.set_disable_function(group_id, func['id'], status == 1)
 
                                 text = '已在本群%s以下功能：\n\n' % ('关闭' if status == 1 else '打开')
                                 text += '\n'.join([('  --  ' + n) for n in group])
 
                                 return Reply(text, auto_image=False)
-                        else:
-                            return Reply('【%s】功能不可操作' % func['title'])
+                            else:
+                                return Reply('【%s】功能不可操作' % func['title'])
