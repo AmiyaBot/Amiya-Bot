@@ -73,11 +73,11 @@ class Mysql:
 
     def delete(self, table, where):
         sql = 'delete from %s' % table
-        sql += ' where %s' % ' and '.join(where)
+        sql += where.sql if isinstance(where, Where) else ' where %s' % where
 
         self.execute(sql)
 
-    def select(self, table=None, fields=None, sql=None, where=None, fetchone=False):
+    def select(self, table=None, fields=None, sql=None, where=None, group=None, fetchone=False):
 
         fields = [item[0] for item in self.execute('desc %s' % table).fetchall()] if table else fields
 
@@ -85,6 +85,8 @@ class Mysql:
             sql = 'select * from %s' % table
             if where:
                 sql += where.sql if isinstance(where, Where) else ' where %s' % where
+            if group:
+                sql += ' group by ' + group
 
         result = []
         for item in self.execute(sql).fetchall():

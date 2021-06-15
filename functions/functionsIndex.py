@@ -32,7 +32,13 @@ class FunctionsIndex:
         self.functions = [func() for func in priority]
 
     def action(self, data):
+        disable = database.function.get_disable_function(data['group_id'])
         for index, item in enumerate(self.functions):
+
+            # 过滤禁用的功能
+            if item.function_id in disable:
+                continue
+
             if word_in_sentence(data['text'], item.keyword):
                 result = item.action(data)
                 if result:
