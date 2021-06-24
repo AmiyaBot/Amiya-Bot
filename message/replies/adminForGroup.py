@@ -1,6 +1,5 @@
 import re
 import time
-import datetime
 
 from database.baseController import BaseController
 from functions.functionQuery.function import Function
@@ -15,7 +14,7 @@ def group_admin(data):
     permission = data['permission']
     group_id = data['group_id']
     user_id = data['user_id']
-    message = data['text']
+    message = data['text_digits']
 
     if permission in ['OWNER', 'ADMINISTRATOR'] or user_id == admin_id:
 

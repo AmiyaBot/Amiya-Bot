@@ -102,14 +102,20 @@ class AutomaticAction(HttpRequests):
 
                 self.send_admin('开始推送微博:\n%s' % new_id)
 
+                disable_groups = database.function.get_disable_function_groups('vblog')
+
                 for group in group_list:
+                    if group['id'] in disable_groups:
+                        continue
                     data = {'group_id': group['id']}
                     for index, item in enumerate(new_blog):
                         if item.content:
                             self.send_group_message(data, message_chain=item.content, at=False)
                     total += 1
-                complete = '微博推送完毕。共 %d 个群，成功 %d / %d，耗时：%ds' % \
-                           (len(group_list), total, len(group_list), time.time() - time_record)
+
+                complete = '微博推送完毕。已发送群 %d / %d，耗时：%ds' % \
+                           (total, len(group_list), time.time() - time_record)
+
                 self.send_admin(complete)
         except Exception as e:
             print('VBlog', e)

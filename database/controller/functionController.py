@@ -38,3 +38,14 @@ class Function:
         )
 
         return [item['function_id'] for item in result]
+
+    def get_disable_function_groups(self, function_id):
+        result = self.db.select(
+            't_function_disable',
+            where=Where({
+                'function_id': function_id,
+            }),
+            group='function_id'
+        )
+
+        return [item['group_id'] for item in result]

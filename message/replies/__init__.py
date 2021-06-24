@@ -41,28 +41,33 @@ def reply_func_list(data):
                 'func': function.action,
                 'need_call': True,
                 'without_call': True
-            },
-            {
-                # 打招呼
-                'func': greeting,
-                'need_call': False
-            },
-            {
-                # 信赖事件
-                'func': emotion,
-                'need_call': True
-            },
-            {
-                # 表情包
-                'func': face_image,
-                'need_call': True
-            },
-            # {
-            #     # 自然语言处理
-            #     'func': natural_language_processing,
-            #     'need_call': True
-            # }
+            }
         ]
+
+        disable = database.function.get_disable_function(data['group_id'])
+        if 'normal' not in disable:
+            replies += [
+                {
+                    # 打招呼
+                    'func': greeting,
+                    'need_call': False
+                },
+                {
+                    # 信赖事件
+                    'func': emotion,
+                    'need_call': True
+                },
+                {
+                    # 表情包
+                    'func': face_image,
+                    'need_call': True
+                },
+                # {
+                #     # 自然语言处理
+                #     'func': natural_language_processing,
+                #     'need_call': True
+                # }
+            ]
     else:
         replies += [
             {
