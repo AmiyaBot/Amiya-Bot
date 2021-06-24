@@ -51,7 +51,7 @@ class Init:
             for sub_item in function_list[index]['desc']:
                 text += '\n%s' % sub_item
 
-            return Reply(TextImage(text))
+            return text
 
         text = '博士，这是阿米娅的功能清单\n\n'
         text += '温馨提醒：使用阿米娅功能的时候，请务必在句子头部带上【阿米娅的名字或昵称】！\n'
