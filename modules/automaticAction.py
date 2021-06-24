@@ -47,7 +47,7 @@ class AutomaticAction(HttpRequests):
                     database.user.reset_state()
 
                     # 清空消息及图片记录
-                    database.message.del_message()
+                    database.message.del_message(days=7)
                     database.resource.del_image_id()
 
                     # 清除图片缓存

@@ -50,6 +50,11 @@ class MessageHandler(HttpRequests):
         # 输出记录
         if on_call:
             self.print_log(data)
+            database.message.add_message(
+                msg_type='call',
+                user_id=data['user_id'],
+                group_id=data['group_id']
+            )
 
         # 处理函数列表
         reply_func = reply_func_list(data)
@@ -115,6 +120,13 @@ class MessageHandler(HttpRequests):
         is_black = database.user.get_black_user(data['user_id'])
         if is_black:
             return False
+
+        if data['type'] == 'group':
+            database.message.add_message(
+                msg_type='talk',
+                user_id=data['user_id'],
+                group_id=data['group_id']
+            )
 
         # 消息速度限制
         message_speed = database.message.check_message_speed_by_user(data['user_id'], limit['seconds'])

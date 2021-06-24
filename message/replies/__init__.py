@@ -62,11 +62,11 @@ def reply_func_list(data):
                     'func': face_image,
                     'need_call': True
                 },
-                # {
-                #     # 自然语言处理
-                #     'func': natural_language_processing,
-                #     'need_call': True
-                # }
+                {
+                    # 自然语言处理
+                    'func': natural_language_processing,
+                    'need_call': True
+                }
             ]
     else:
         replies += [

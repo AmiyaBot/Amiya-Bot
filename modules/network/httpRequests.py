@@ -125,7 +125,11 @@ class HttpRequests:
 
     def send_message(self, data, message='', message_chain=None, at=False):
 
-        database.message.add_message(self_id, 'reply', reply_user=data['user_id'])
+        database.message.add_message(
+            msg_type='reply',
+            user_id=self_id,
+            reply_user=data['user_id']
+        )
 
         if data['type'] == 'group':
             self.send_group_message(data, message=message, message_chain=message_chain, at=at)
