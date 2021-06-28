@@ -105,7 +105,7 @@ class AutomaticAction(HttpRequests):
                 disable_groups = database.function.get_disable_function_groups('vblog')
 
                 for group in group_list:
-                    if group['id'] in disable_groups:
+                    if str(group['id']) in disable_groups:
                         continue
                     data = {'group_id': group['id']}
                     for index, item in enumerate(new_blog):

@@ -48,4 +48,4 @@ class Function:
             group='function_id'
         )
 
-        return [item['group_id'] for item in result]
+        return [str(item['group_id']) for item in result]
