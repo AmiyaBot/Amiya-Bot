@@ -2,6 +2,7 @@ import sys
 import json
 import time
 import copy
+import threading
 
 from message.replies import reply_func_list
 from message.eventsHandler import EventsHandler
@@ -20,6 +21,10 @@ amiya_name = database.config.get_amiya_name()
 class MessageHandler(HttpRequests):
     def __init__(self):
         super().__init__()
+
+        self.message_stack = []
+
+        threading.Thread(target=self.save_message).start()
 
     def on_message(self, message):
 
@@ -122,11 +127,13 @@ class MessageHandler(HttpRequests):
             return False
 
         if data['type'] == 'group':
-            database.message.add_message(
-                msg_type='talk',
-                user_id=data['user_id'],
-                group_id=data['group_id']
-            )
+            self.message_stack.append({
+                'msg_type': 'talk',
+                'group_id': data['group_id'],
+                'user_id': data['user_id'],
+                'reply_user': 0,
+                'msg_time': int(time.time())
+            })
 
         # 消息速度限制
         message_speed = database.message.check_message_speed_by_user(data['user_id'], limit['seconds'])
@@ -135,6 +142,13 @@ class MessageHandler(HttpRequests):
             return False
 
         return True
+
+    def save_message(self):
+        while True:
+            if self.message_stack:
+                database.message.batch_add_message(self.message_stack)
+                self.message_stack = []
+            time.sleep(60)
 
     @staticmethod
     def on_call(text, at):

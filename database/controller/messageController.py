@@ -16,6 +16,9 @@ class Message:
             'msg_time': int(time.time())
         })
 
+    def batch_add_message(self, data):
+        self.db.batch_insert('t_message', data=data)
+
     def del_message(self, days: int):
         last_time = int(time.time()) - days * 86400
 
