@@ -32,7 +32,7 @@ class MessageHandler(HttpRequests):
         if 'type' not in message:
             try:
                 date = time.strftime('%Y%m%d%H%M%S', time.localtime())
-                with open('remind/unknown_%s.txt' % date, mode='w+') as unknown:
+                with open('temp/unknown/unknown_%s.txt' % date, mode='w+') as unknown:
                     unknown.write(json.dumps(message, ensure_ascii=False))
             except Exception as e:
                 print('Remind', e)
