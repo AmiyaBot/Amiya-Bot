@@ -7,6 +7,11 @@
 
     「博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！」 -- 阿米娅
 
+## 共生项目
+
+- Amiya-Bot 的可视化后台管理：[Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) （开发中）
+- Amiya-Bot 的数据及资源文件：[Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource)
+
 ## 声明
 
 - Amiya-Bot 是在《明日方舟》爱好者群体中诞生的以便捷功能为主的聊天机器人
@@ -95,45 +100,45 @@ pip install -r requirements.txt
 
 ```json5
 {
-  // 机器人 QQ 号
-  "self_id": 1515361402,
-  // 管理员 QQ 号
-  "admin_id": 826197021,
-  "server": {
-    // mirai-api-http 服务配置
-    "server_ip": "127.0.0.1",
-    "server_port": 8060,
-    "auth_key": "AMIYARESTART"
-  },
-  "database": {
-    // 数据库配置
-    "host": "localhost",
-    "port": 3306,
-    "user": "root",
-    "password": "amiya520",
-    "db": "amiya"
-  },
-  "baidu_cloud": {
-    // 百度智能云配置
-    "enable": true,
-    "app_id": "2152****",
-    "api_key": "MM5pPVBBj***************",
-    "secret_key": "XRfGzEZufj1MdNKyz***************"
-  },
-  "message": {
-    // 消息指令的频率限制
-    "limit": {
-      "seconds": 10,
-      "max_count": 3
+    // 机器人 QQ 号
+    "self_id": 1515361402,
+    // 管理员 QQ 号
+    "admin_id": 826197021,
+    "server": {
+        // mirai-api-http 服务配置
+        "server_ip": "127.0.0.1",
+        "server_port": 8060,
+        "auth_key": "AMIYARESTART"
     },
-    // 文字回复的最大字符长度，超出则会转为图片发送
-    "reply_text_max_length": 100
-  },
-  "close_beta": {
-    // 是否启用封闭测试
-    "enable": false,
-    "group_id": 852191455
-  }
+    "database": {
+        // 数据库配置
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "amiya520",
+        "db": "amiya"
+    },
+    "baidu_cloud": {
+        // 百度智能云配置
+        "enable": true,
+        "app_id": "2152****",
+        "api_key": "MM5pPVBBj***************",
+        "secret_key": "XRfGzEZufj1MdNKyz***************"
+    },
+    "message": {
+        // 消息指令的频率限制
+        "limit": {
+            "seconds": 10,
+            "max_count": 3
+        },
+        // 文字回复的最大字符长度，超出则会转为图片发送
+        "reply_text_max_length": 100
+    },
+    "close_beta": {
+        // 是否启用封闭测试
+        "enable": false,
+        "group_id": 852191455
+    }
 }
 ```
 
@@ -178,12 +183,12 @@ python quickStart.py Test
 
 ```json5
 {
-  "close_beta": {
-    // 启用封闭测试
-    "enable": true,
-    // 指定测试群号
-    "group_id": 852191455
-  }
+    "close_beta": {
+        // 启用封闭测试
+        "enable": true,
+        // 指定测试群号
+        "group_id": 852191455
+    }
 }
 ```
 
@@ -197,16 +202,16 @@ python quickStart.py Test
 
 ```json5
 {
-  "baidu_cloud": {
-    // 是否启用百度智能云接口
-    "enable": false,
-    // APP ID
-    "app_id": "",
-    // API KEY
-    "api_key": "",
-    // SECRET KEY
-    "secret_key": ""
-  }
+    "baidu_cloud": {
+        // 是否启用百度智能云接口
+        "enable": false,
+        // APP ID
+        "app_id": "",
+        // API KEY
+        "api_key": "",
+        // SECRET KEY
+        "secret_key": ""
+    }
 }
 ```
 
@@ -214,17 +219,19 @@ python quickStart.py Test
 
 ```json5
 {
-  "message": {
-    // 此处示例为 10 秒内不能超过 3 次指令
-    "limit": {
-      "seconds": 10,
-      "max_count": 3
+    "message": {
+        // 此处示例为 10 秒内不能超过 3 次指令
+        "limit": {
+            "seconds": 10,
+            "max_count": 3
+        }
     }
-  }
 }
 ```
 
 ## 如何维护
+
+> 推荐搭建 [Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) 获得更好的可视化维护界面
 
 - Amiya 带有**自动维护**功能，会在每天凌晨4点执行以下操作：
     - 重置签到和心情值
@@ -250,16 +257,16 @@ VALUES ('银灰色的荣耀',
 // 比如当《集成战略》有新干员增加时，在无法抽卡获取的干员对应的列表里添加新干员名
 // 否则更新新数据后，干员会被归类到可获取的干员，造成抽卡异常产出
 {
-  "roguelike_only": [
-    "预备干员-近战",
-    "预备干员-狙击",
-    "预备干员-后勤",
-    "预备干员-术师",
-    "Sharp",
-    "Stormeye",
-    "Pith",
-    "Touch"
-  ]
+    "roguelike_only": [
+        "预备干员-近战",
+        "预备干员-狙击",
+        "预备干员-后勤",
+        "预备干员-术师",
+        "Sharp",
+        "Stormeye",
+        "Pith",
+        "Touch"
+    ]
 }
 ```
 
