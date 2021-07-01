@@ -26,10 +26,14 @@ class Operator(SourceBank):
         self.voice_list = voice_list
         self.skins_list = skins_list
 
-        # todo 兔兔的专属
+        # todo 阿米娅近卫
         if code == 'char_1001_amiya2':
             self.name = '阿米娅近卫'
             self.en_name = 'AmiyaGuard'
+
+        # todo 小车
+        if code in ['char_285_medic2', 'char_286_cast3', 'char_376_therex']:
+            self.tags.append('机械支援')
 
         self.data = data
 
