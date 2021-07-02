@@ -115,6 +115,10 @@ class Operator(SourceBank):
         skills_cost = {}
         for index, item in enumerate(self.data['skills']):
             code = item['skillId']
+
+            if code not in skill_data:
+                continue
+
             detail = skill_data[code]
             icon = 'skill_icon_' + (detail['iconId'] or detail['skillId'])
 
