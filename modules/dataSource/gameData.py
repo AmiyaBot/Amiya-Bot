@@ -1,11 +1,10 @@
 import re
-import time
 
 from database.baseController import BaseController
 from modules.commonMethods import remove_xml_tag, TimeRecord
-from modules.dataSource.updateConfig import Config
-from modules.dataSource.sourceBank import SourceBank
 from modules.dataSource.builder import Operator, OperatorTags
+from modules.dataSource.sourceBank import SourceBank
+from modules.dataSource.updateConfig import Config
 
 database = BaseController()
 
@@ -167,35 +166,46 @@ class GameData(SourceBank):
             operators = self.init_operators()
 
         print('开始下载干员图片资源...')
-        avatars = 0
-        photo = 0
-        skins = 0
+        avatars_count = 0
+        photo_count = 0
+        skills_count = 0
+        skills_total = 0
+        skins_count = 0
         skins_total = 0
         for operator in operators:
             print('正在下载干员 [%s] 图片资源...' % operator.name)
 
             print(' -- 头像...', end='')
             res = self.get_pic('char/profile/' + operator.id, 'avatars')
-            avatars += 1 if res else 0
+            avatars_count += 1 if res else 0
             print('OK' if res else 'NG')
 
             print(' -- 半身照...', end='')
             res = self.get_pic('char/halfPic/%s_1' % operator.id, 'photo', '?x-oss-process=style/small-test')
-            photo += 1 if res else 0
+            photo_count += 1 if res else 0
             print('OK' if res else 'NG')
+
+            skills_list = operator.skills(None)[0]
+            skills_total += len(skills_list)
+            for skill in skills_list:
+                print(' -- 技能图标 [%s]...' % skill['skill_name'], end='')
+                res = self.get_pic('skills/pics/' + skill['skill_icon'], 'skills')
+                skills_count += 1 if res else 0
+                print('OK' if res else 'NG')
 
             skins_list = operator.skins(None)
             skins_total += len(skins_list)
             for skin in skins_list:
                 print(' -- 立绘 [%s][%s]...' % (skin['skin_group'], skin['skin_name']), end='')
                 res = self.get_pic('char/set/' + skin['skin_image'], 'picture')
-                skins += 1 if res else 0
+                skins_count += 1 if res else 0
                 print('OK' if res else 'NG')
 
         print('干员图片资源下载完成')
-        return ('%d/%d' % (avatars, len(operators)),
-                '%d/%d' % (photo, len(operators)),
-                '%d/%d' % (skins, skins_total))
+        return ('%d/%d' % (avatars_count, len(operators)),
+                '%d/%d' % (photo_count, len(operators)),
+                '%d/%d' % (skills_count, skills_total),
+                '%d/%d' % (skins_count, skins_total))
 
     def save_materials_data(self):
         building_data = self.get_json_data('building_data')
@@ -306,7 +316,7 @@ class GameData(SourceBank):
         for index, item in enumerate(operators):
             print('保存干员 [%d/%d][%s]...' % (index + 1, len(operators), item.name), end='')
             self.save_operator_data(item)
-        avatars, photo, skins = self.save_operator_photo(operators)
+        avatars, photo, skills, skins = self.save_operator_photo(operators)
 
         print('开始更新敌人数据...')
         enemies = self.save_enemies_photo()
@@ -321,6 +331,7 @@ class GameData(SourceBank):
                   len(operators),
                   avatars,
                   photo,
+                  skills,
                   skins,
                   enemies,
                   materials,
@@ -329,6 +340,7 @@ class GameData(SourceBank):
                   '\n -- %s 位干员' \
                   '\n -- %s 个干员头像' \
                   '\n -- %s 张干员半身照' \
+                  '\n -- %s 个技能图标' \
                   '\n -- %s 张干员皮肤' \
                   '\n -- %s 张敌人图片' \
                   '\n -- %s 个材料' \
