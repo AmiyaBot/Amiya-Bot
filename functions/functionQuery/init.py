@@ -20,6 +20,9 @@ class Init:
         else:
             text = self.func_list(data)
 
+        if isinstance(text, Reply):
+            return text
+
         return Reply(TextImage(text))
 
     @staticmethod

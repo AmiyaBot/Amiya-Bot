@@ -296,6 +296,14 @@ class GameData(SourceBank):
 
         return '%d/%d' % (success, total)
 
+    def exec_sql_file(self):
+        for item in self.sql_files:
+            file = '%s/%s.sql' % (self.sql_path, item)
+
+            print('执行SQL文件 [%s]...' % file)
+            with open(file, mode='r', encoding='utf-8') as sql:
+                database.comb.execute(sql.read())
+
     def update(self, refresh=True, cache=False):
         print('准备开始全量更新...')
         time_rec = TimeRecord()
@@ -304,12 +312,14 @@ class GameData(SourceBank):
             cache = True
             print('网络配置关闭...')
 
+        self.download_resource(cache)
+        # self.download_sql_file(cache)
+        # self.exec_sql_file()
+
         if refresh:
             print('删除历史数据...')
             database.operator.delete_all_data()
             database.material.delete_all_data()
-
-        self.download_resource(cache)
 
         print('开始更新干员数据...')
         operators = self.init_operators()
