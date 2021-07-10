@@ -28,3 +28,12 @@ class Config:
             [item['config_values'] for item in self.get_config('amiya_touch', 'reply1')],
             [item['config_values'] for item in self.get_config('amiya_touch', 'reply2')]
         ]
+
+    def get_operator_gacha_config(self, group='limit'):
+        limit_operator = self.db.select(
+            't_operator_gacha_config',
+            where=Where({
+                'operator_type': ['in', Formula('(0, 1)')] if group == 'limit' else ['>', '1']
+            })
+        )
+        return [item['operator_name'] for item in limit_operator]

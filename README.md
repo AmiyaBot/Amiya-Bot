@@ -35,7 +35,7 @@
   以及其插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
   以便理解源码
     - 关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
-- 需要 python 3.7+
+- 需要 python 3.7 ~ 3.8
 - 需要 Mysql 8.0+
 
 ## 基础群组功能
@@ -72,7 +72,7 @@ Amiya 的管理功能仅限私聊，且只有管理员能够使用 Amiya 的私�
 
 - 发送`重启`关键字，Amiya 将会重启
 - 发送`更新全部`关键字，Amiya 即开始自动更新数据
-- 发送`更新立绘`关键字，Amiya 即开始自动更新图片资源
+- 发送`更新图片`关键字，Amiya 即开始自动更新图片资源
 - 群发公告
     - 发送`公告`关键字，待 Amiya 回复确认后，再发送`完整的文字公告`，此后 Amiya 将向所有群组发送该公告
 - 屏蔽用户
@@ -100,45 +100,45 @@ pip install -r requirements.txt
 
 ```json5
 {
-    // 机器人 QQ 号
-    "self_id": 1515361402,
-    // 管理员 QQ 号
-    "admin_id": 826197021,
-    "server": {
-        // mirai-api-http 服务配置
-        "server_ip": "127.0.0.1",
-        "server_port": 8060,
-        "auth_key": "AMIYARESTART"
+  // 机器人 QQ 号
+  "self_id": 1515361402,
+  // 管理员 QQ 号
+  "admin_id": 826197021,
+  "server": {
+    // mirai-api-http 服务配置
+    "server_ip": "127.0.0.1",
+    "server_port": 8060,
+    "auth_key": "AMIYARESTART"
+  },
+  "database": {
+    // 数据库配置
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "amiya520",
+    "db": "amiya"
+  },
+  "baidu_cloud": {
+    // 百度智能云配置
+    "enable": true,
+    "app_id": "2152****",
+    "api_key": "MM5pPVBBj***************",
+    "secret_key": "XRfGzEZufj1MdNKyz***************"
+  },
+  "message": {
+    // 消息指令的频率限制
+    "limit": {
+      "seconds": 10,
+      "max_count": 3
     },
-    "database": {
-        // 数据库配置
-        "host": "localhost",
-        "port": 3306,
-        "user": "root",
-        "password": "amiya520",
-        "db": "amiya"
-    },
-    "baidu_cloud": {
-        // 百度智能云配置
-        "enable": true,
-        "app_id": "2152****",
-        "api_key": "MM5pPVBBj***************",
-        "secret_key": "XRfGzEZufj1MdNKyz***************"
-    },
-    "message": {
-        // 消息指令的频率限制
-        "limit": {
-            "seconds": 10,
-            "max_count": 3
-        },
-        // 文字回复的最大字符长度，超出则会转为图片发送
-        "reply_text_max_length": 100
-    },
-    "close_beta": {
-        // 是否启用封闭测试
-        "enable": false,
-        "group_id": 852191455
-    }
+    // 文字回复的最大字符长度，超出则会转为图片发送
+    "reply_text_max_length": 100
+  },
+  "close_beta": {
+    // 是否启用封闭测试
+    "enable": false,
+    "group_id": 852191455
+  }
 }
 ```
 
@@ -183,12 +183,12 @@ python quickStart.py Test
 
 ```json5
 {
-    "close_beta": {
-        // 启用封闭测试
-        "enable": true,
-        // 指定测试群号
-        "group_id": 852191455
-    }
+  "close_beta": {
+    // 启用封闭测试
+    "enable": true,
+    // 指定测试群号
+    "group_id": 852191455
+  }
 }
 ```
 
@@ -202,16 +202,16 @@ python quickStart.py Test
 
 ```json5
 {
-    "baidu_cloud": {
-        // 是否启用百度智能云接口
-        "enable": false,
-        // APP ID
-        "app_id": "",
-        // API KEY
-        "api_key": "",
-        // SECRET KEY
-        "secret_key": ""
-    }
+  "baidu_cloud": {
+    // 是否启用百度智能云接口
+    "enable": false,
+    // APP ID
+    "app_id": "",
+    // API KEY
+    "api_key": "",
+    // SECRET KEY
+    "secret_key": ""
+  }
 }
 ```
 
@@ -219,19 +219,20 @@ python quickStart.py Test
 
 ```json5
 {
-    "message": {
-        // 此处示例为 10 秒内不能超过 3 次指令
-        "limit": {
-            "seconds": 10,
-            "max_count": 3
-        }
+  "message": {
+    // 此处示例为 10 秒内不能超过 3 次指令
+    "limit": {
+      "seconds": 10,
+      "max_count": 3
     }
+  }
 }
 ```
 
 ## 如何维护
 
-> 推荐搭建 [Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) 获得更好的可视化维护界面
+> 推荐搭建 [Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) 获得更好的可视化维护界面<br>
+> 否则部分数据维护可能需要自行到数据库修改
 
 - Amiya 带有**自动维护**功能，会在每天凌晨4点执行以下操作：
     - 重置签到和心情值
@@ -251,26 +252,8 @@ VALUES ('银灰色的荣耀',
         0)
 ```
 
-- 在有干员增加的版本，Amiya 在执行更新前，需手动配置更新文件`resource/config/update_config.json`以在更新时能正确获取数据
-
-```json5
-// 比如当《集成战略》有新干员增加时，在无法抽卡获取的干员对应的列表里添加新干员名
-// 否则更新新数据后，干员会被归类到可获取的干员，造成抽卡异常产出
-{
-    "roguelike_only": [
-        "预备干员-近战",
-        "预备干员-狙击",
-        "预备干员-后勤",
-        "预备干员-术师",
-        "Sharp",
-        "Stormeye",
-        "Pith",
-        "Touch"
-    ]
-}
-```
-
-- 任何配置改动后需重启 Amiya 后生效，手动重启 Amiya 只需要重新运行`amiya.py`即可
+- 在有干员增加的版本，Amiya 在执行更新前，需手动配置数据表`t_operator_gacha_config`添加无法通过抽卡获得的干员，否则更新新数据后，干员可能会被归类到可获取的干员，造成抽卡异常产出
+- 部分配置改动后需重启 Amiya 后生效，手动重启 Amiya 只需要重新运行`amiya.py`即可
     - 或者使用管理员命令`重启`
 
 ## 贡献
