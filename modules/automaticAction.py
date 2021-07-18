@@ -12,6 +12,7 @@ from functions.vblog.vblog import VBlog
 database = BaseController()
 blog = VBlog()
 
+import traceback
 
 def run_automatic_action():
     threading.Thread(target=AutomaticAction().run_loop).start()
@@ -118,4 +119,6 @@ class AutomaticAction(HttpRequests):
 
                 self.send_admin(complete)
         except Exception as e:
-            print('VBlog', e)
+            print('VBlog load error: ', e)
+            traceback.print_exc()
+            

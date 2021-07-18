@@ -27,7 +27,7 @@ class MessageHandler(HttpRequests):
         threading.Thread(target=self.save_message).start()
 
     def on_message(self, message):
-
+        message=message["data"]
         # 过滤未知的消息
         if 'type' not in message:
             try:

@@ -25,6 +25,8 @@ def face_image(data):
     if (only_at or eliminate_name(message)) and images:
         path = face_dir + random.choice(images)
         return Reply(Image(path), at=False)
+    else:
+        return None
 
 
 def eliminate_name(message):

@@ -57,10 +57,7 @@ class Image:
     def __init__(self, path):
         image_id = imageManager.image(path, 'group')
         self.item = [
-            {
-                'type': 'Image',
-                'imageId': image_id
-            }
+            image_id.to_chain()
         ]
 
 
@@ -69,8 +66,5 @@ class TextImage:
         image = create_image(text, 'Common', images)
         image_id = imageManager.image('resource/message/Common/' + image, 'group')
         self.item = [
-            {
-                'type': 'Image',
-                'imageId': image_id
-            }
+            image_id.to_chain()
         ]

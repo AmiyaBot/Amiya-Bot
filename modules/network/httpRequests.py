@@ -36,7 +36,7 @@ class HttpRequests:
         return False
 
     def init_session(self):
-        response = self.post('auth', {'authKey': config['server']['auth_key']})
+        response = self.post('verify', {'verifyKey': config['server']['auth_key']})
         session = response['session']
 
         session_record = self.get_session()
@@ -117,11 +117,12 @@ class HttpRequests:
             chain.insert(0,
                          {'type': 'AtAll', 'target': 0} if at == 'all' else {'type': 'At', 'target': data['user_id']})
 
-        self.post('sendGroupMessage', {
+        res=self.post('sendGroupMessage', {
             'sessionKey': session,
             'target': data['group_id'],
             'messageChain': chain
         })
+        
 
     def send_message(self, data, message='', message_chain=None, at=False):
 

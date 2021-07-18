@@ -1,3 +1,4 @@
+from modules.config import get_config
 import requests
 import threading
 
@@ -6,23 +7,15 @@ from modules.network.httpRequests import HttpRequests
 from message.messageHandler import MessageHandler
 
 message = MessageHandler()
-http = HttpRequests()
+config=get_config()
+verifyCode=config["server"]["auth_key"]
+self_qq=config["self_id"]
 
 
 def start():
-    try:
-        # 请求更新 session
-        http.init_session()
-        print('Session init success.')
-    except requests.exceptions.ConnectionError:
-        # 请求失败则重试
-        print('Server not found.')
-        start()
-    else:
-        # 连接 websocket 服务
-        session = http.get_session()
-        websocket = Websocket(session, handler=message.on_message)
-        threading.Thread(target=websocket.run_forever).start()
+    
+    websocket = Websocket(verify=verifyCode,qqid=self_qq, handler=message.on_message)
+    threading.Thread(target=websocket.run_forever).start()
 
 
 if __name__ == '__main__':
