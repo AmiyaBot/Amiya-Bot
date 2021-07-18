@@ -21,3 +21,7 @@
 !.gitkeep
 
 start.bat
+
+config.json
+_config.json
+/.vscode
