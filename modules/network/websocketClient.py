@@ -29,7 +29,7 @@ class Websocket(WebSocketClient):
 
     def opened(self):
         # 启动循环事件线程
-        run_automatic_action()
+        run_automatic_action(self)
         print('websocket connecting success')
 
     def closed(self, code, reason=None):

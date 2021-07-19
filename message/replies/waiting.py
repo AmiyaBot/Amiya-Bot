@@ -25,15 +25,15 @@ def waiting(data):
         wait = user['waiting']
 
         # 群发公告
-        if wait == 'Notice':
-            database.user.set_waiting(user_id, '')
-            group_list = request.get_group_list()
-            time_record = time.time()
-            for group in group_list:
-                request.send_group_message({'group_id': group['id']}, message=message, at=False)
-            return Reply('公告群发完毕，共 %s 个群，耗时：%ds' % (len(group_list), time.time() - time_record))
+        # if wait == 'Notice':
+        #     database.user.set_waiting(user_id, '')
+        #     group_list = request.get_group_list()
+        #     time_record = time.time()
+        #     for group in group_list:
+        #         request.send_group_message({'group_id': group['id']}, message=message, at=False)
+        #     return Reply('公告群发完毕，共 %s 个群，耗时：%ds' % (len(group_list), time.time() - time_record))
 
-            # 公招图像识别
+        # 公招图像识别
         if wait == 'Recruit' and 'image' in data and data['image']:
             text = ''
             try:

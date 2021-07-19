@@ -13,13 +13,15 @@ database = BaseController()
 blog = VBlog()
 
 
-def run_automatic_action():
-    threading.Thread(target=AutomaticAction().run_loop).start()
+def run_automatic_action(websocket):
+    threading.Thread(target=AutomaticAction(websocket).run_loop).start()
 
 
 class AutomaticAction(HttpRequests):
-    def __init__(self):
+    def __init__(self, websocket):
         super().__init__()
+
+        self.websocket = websocket
 
     def run_loop(self):
         self.send_admin('启动完毕')
@@ -72,7 +74,7 @@ class AutomaticAction(HttpRequests):
                         'group_id': item['group_id'],
                         'type': item['message_type']
                     }
-                    self.send_message(data, text, at=True)
+                    self.websocket.send_message(data, text, at=True)
         except Exception as e:
             self.send_admin('理智提醒发生错误：' + str(e))
 
@@ -107,10 +109,10 @@ class AutomaticAction(HttpRequests):
                 for group in group_list:
                     if str(group['id']) in disable_groups:
                         continue
-                    data = {'group_id': group['id']}
+                    data = {'group_id': group['id'], 'type': 'group'}
                     for index, item in enumerate(new_blog):
                         if item.content:
-                            self.send_group_message(data, message_chain=item.content, at=False)
+                            self.websocket.send_message(data, message_chain=item.content, at=False)
                     total += 1
 
                 complete = '微博推送完毕。已发送群 %d / %d，耗时：%ds' % \
