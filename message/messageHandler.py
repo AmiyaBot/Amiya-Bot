@@ -30,12 +30,6 @@ class MessageHandler(HttpRequests):
 
         # 过滤未知的消息
         if 'type' not in message:
-            try:
-                date = time.strftime('%Y%m%d%H%M%S', time.localtime())
-                with open('temp/unknown/unknown_%s.txt' % date, mode='w+') as unknown:
-                    unknown.write(json.dumps(message, ensure_ascii=False))
-            except Exception as e:
-                print('Remind', e)
             return False
 
         # 过滤非聊天的消息

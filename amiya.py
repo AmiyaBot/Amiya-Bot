@@ -20,8 +20,7 @@ def start():
         start()
     else:
         # 连接 websocket 服务
-        session = http.get_session()
-        websocket = Websocket(session, handler=message.on_message)
+        websocket = Websocket(handler=message.on_message)
         threading.Thread(target=websocket.run_forever).start()
 
 

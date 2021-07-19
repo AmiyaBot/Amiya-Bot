@@ -19,7 +19,7 @@ class HttpRequests:
         self.config = config
 
     def url(self, interface):
-        return 'http://%s:%d/%s' % (self.config['server']['server_ip'], self.config['server']['server_port'], interface)
+        return 'http://%s:%d/%s' % (self.config['server']['server_ip'], self.config['server']['http_port'], interface)
 
     def post(self, interface, data):
         response = self.request.post(self.url(interface), data=json.dumps(data), headers={
@@ -36,14 +36,14 @@ class HttpRequests:
         return False
 
     def init_session(self):
-        response = self.post('auth', {'authKey': config['server']['auth_key']})
+        response = self.post('verify', {'verifyKey': config['server']['auth_key']})
         session = response['session']
 
         session_record = self.get_session()
         if session_record:
             self.post('release', {'sessionKey': session_record, 'qq': self_id})
 
-        self.post('verify', {'sessionKey': session, 'qq': self_id})
+        self.post('bind', {'sessionKey': session, 'qq': self_id})
 
         with open(session_file, mode='w+') as session_record:
             session_record.write(session)
@@ -65,12 +65,14 @@ class HttpRequests:
             }]
         else:
             response = self.get('groupList?sessionKey=%s' % session)
-            group_list = {}
-            for item in response:
-                if item['id'] not in group_list:
-                    group_list[item['id']] = item
-            group_list = [n for i, n in group_list.items()]
-            return group_list
+            if response and response['code'] == 0:
+                group_list = {}
+                for item in response['data']:
+                    if item['id'] not in group_list:
+                        group_list[item['id']] = item
+                group_list = [n for i, n in group_list.items()]
+                return group_list
+            return []
 
     def handle_join_group(self, data, operate):
         self.post('/resp/botInvitedJoinGroupRequestEvent', {

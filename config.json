@@ -3,7 +3,8 @@
     "admin_id": 826197021,
     "server": {
         "server_ip": "127.0.0.1",
-        "server_port": 8060,
+        "http_port": 8080,
+        "tcp_port": 8060,
         "auth_key": "AMIYARESTART"
     },
     "database": {

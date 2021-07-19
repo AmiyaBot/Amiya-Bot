@@ -7,12 +7,17 @@ from modules.config import get_config
 
 
 class Websocket(WebSocketClient):
-    def __init__(self, session, handler=None):
+    def __init__(self, handler=None):
         server = get_config('server')
+        self_id = get_config('self_id')
 
         host = server['server_ip']
-        port = server['server_port']
-        super().__init__('ws://%s:%d/all?sessionKey=%s' % (host, port, session))
+        port = server['tcp_port']
+        auth = server['auth_key']
+
+        ws = 'ws://%s:%d/all?verifyKey=%s&&qq=%s' % (host, port, auth, self_id)
+
+        super().__init__(ws)
         self.connect()
         self.handler = handler
 
@@ -25,6 +30,6 @@ class Websocket(WebSocketClient):
         print('websocket lose connection')
 
     def received_message(self, message):
-        data = json.loads(str(message))
+        data = json.loads(str(message))['data']
         if self.handler:
             threading.Timer(0, self.handler, args=(data,)).start()
