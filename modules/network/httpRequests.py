@@ -2,10 +2,7 @@ import os
 import json
 import requests
 
-from database.baseController import BaseController
 from modules.config import get_config
-
-database = BaseController()
 
 config = get_config()
 self_id = str(config['self_id'])
@@ -88,42 +85,6 @@ class HttpRequests:
         if flag:
             session = self.get_session()
             self.post('quit', {'sessionKey': session, 'target': group_id})
-
-    def send_private_message(self, data, message='', message_chain=None):
-        session = self.get_session()
-        if message_chain and type(message_chain) is list:
-            chain = message_chain
-        else:
-            chain = [{
-                'type': 'Plain',
-                'text': message
-            }]
-
-        self.post('sendFriendMessage', {
-            'sessionKey': session,
-            'target': data['user_id'],
-            'messageChain': chain
-        })
-
-    def send_group_message(self, data, message='', message_chain=None, at=False):
-        session = self.get_session()
-        if message_chain and type(message_chain) is list:
-            chain = message_chain
-        else:
-            chain = [{
-                'type': 'Plain',
-                'text': message
-            }]
-        if at:
-            chain.insert(0, {'type': 'Plain', 'text': '\n'})
-            chain.insert(0,
-                         {'type': 'AtAll', 'target': 0} if at == 'all' else {'type': 'At', 'target': data['user_id']})
-
-        self.post('sendGroupMessage', {
-            'sessionKey': session,
-            'target': data['group_id'],
-            'messageChain': chain
-        })
 
     def send_message(self, data, message='', message_chain=None, at=False):
 

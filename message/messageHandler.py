@@ -8,6 +8,7 @@ from message.replies import reply_func_list
 from message.eventsHandler import EventsHandler
 from database.baseController import BaseController
 from library.numberTranslate import chinese_to_digits
+from modules.network.websocketClient import Websocket
 from modules.network.httpRequests import HttpRequests
 from modules.commonMethods import Reply, text_to_pinyin
 from modules.config import get_config
@@ -19,9 +20,10 @@ amiya_name = database.config.get_amiya_name()
 
 
 class MessageHandler(HttpRequests):
-    def __init__(self):
+    def __init__(self, websocket: Websocket):
         super().__init__()
 
+        self.websocket = websocket
         self.message_stack = []
 
         threading.Thread(target=self.save_message).start()
@@ -96,7 +98,7 @@ class MessageHandler(HttpRequests):
             print(content)
             return False
 
-        self.send_message(data, message_chain=content, at=res.at)
+        self.websocket.send_message(data, message_chain=content, at=res.at)
 
     def message_filter(self, data):
         if data is False:
