@@ -86,18 +86,5 @@ class HttpRequests:
             session = self.get_session()
             self.post('quit', {'sessionKey': session, 'target': group_id})
 
-    def send_message(self, data, message='', message_chain=None, at=False):
-
-        database.message.add_message(
-            msg_type='reply',
-            user_id=self_id,
-            reply_user=data['user_id']
-        )
-
-        if data['type'] == 'group':
-            self.send_group_message(data, message=message, message_chain=message_chain, at=at)
-        else:
-            self.send_private_message(data, message=message, message_chain=message_chain)
-
     def send_admin(self, text):
         self.send_private_message({'user_id': admin_id}, text)
