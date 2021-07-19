@@ -87,4 +87,14 @@ class HttpRequests:
             self.post('quit', {'sessionKey': session, 'target': group_id})
 
     def send_admin(self, text):
-        self.send_private_message({'user_id': admin_id}, text)
+        session = self.get_session()
+        self.post('sendFriendMessage', {
+            'sessionKey': session,
+            'target': admin_id,
+            'messageChain': [
+                {
+                    'type': 'Plain',
+                    'text': text
+                }
+            ]
+        })
