@@ -9,8 +9,10 @@ database = BaseController()
 
 
 class EventsHandler(HttpRequests):
-    def __init__(self):
+    def __init__(self, websocket):
         super().__init__()
+
+        self.websocket = websocket
 
     def on_events(self, message):
 
@@ -27,8 +29,9 @@ class EventsHandler(HttpRequests):
             print('Remind2', e)
 
         if events_type == 'MemberJoinEvent':
-            self.send_group_message(
+            self.websocket.send_message(
                 data={
+                    'type': 'group',
                     'user_id': message['member']['id'],
                     'group_id': message['member']['group']['id']
                 },
@@ -37,8 +40,9 @@ class EventsHandler(HttpRequests):
             )
 
         if events_type == 'BotJoinGroupEvent':
-            self.send_group_message(
+            self.websocket.send_message(
                 data={
+                    'type': 'group',
                     'group_id': message['group']['id']
                 },
                 message='博士，初次见面，这里是阿米娅2号，姐姐去了很远的地方，今后就由我来代替姐姐的工作吧，请多多指教哦'

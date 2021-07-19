@@ -8,20 +8,19 @@ from message.replies import reply_func_list
 from message.eventsHandler import EventsHandler
 from database.baseController import BaseController
 from library.numberTranslate import chinese_to_digits
-from modules.network.httpRequests import HttpRequests
 from modules.commonMethods import Reply, text_to_pinyin
 from modules.config import get_config
 
 config = get_config()
 database = BaseController()
-events = EventsHandler()
 amiya_name = database.config.get_amiya_name()
 
 
-class MessageHandler(HttpRequests):
+class MessageHandler:
     def __init__(self, websocket):
         super().__init__()
 
+        self.events = EventsHandler(websocket)
         self.websocket = websocket
         self.message_stack = []
 
@@ -35,7 +34,7 @@ class MessageHandler(HttpRequests):
 
         # 过滤非聊天的消息
         if message['type'] not in ['GroupMessage', 'FriendMessage']:
-            events.on_events(message)
+            self.events.on_events(message)
             return False
 
         # 重组消息对象
