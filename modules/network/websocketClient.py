@@ -12,14 +12,14 @@ database = BaseController()
 
 class Websocket(WebSocketClient):
     def __init__(self):
-        server = get_config('server')
-        self_id = get_config('self_id')
+        self.self_id = get_config('self_id')
 
+        server = get_config('server')
         host = server['server_ip']
         port = server['tcp_port']
         auth = server['auth_key']
 
-        ws = 'ws://%s:%d/all?verifyKey=%s&&qq=%s' % (host, port, auth, self_id)
+        ws = 'ws://%s:%d/all?verifyKey=%s&&qq=%s' % (host, port, auth, self.self_id)
 
         super().__init__(ws)
 
@@ -49,7 +49,7 @@ class Websocket(WebSocketClient):
     def send_message(self, data, message='', message_chain=None, at=False):
         database.message.add_message(
             msg_type='reply',
-            user_id=self_id,
+            user_id=self.self_id,
             reply_user=data['user_id']
         )
 
