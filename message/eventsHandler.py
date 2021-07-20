@@ -2,17 +2,12 @@ import os
 import time
 import json
 
-from database.baseController import BaseController
 from modules.network.httpRequests import HttpRequests
-
-database = BaseController()
 
 
 class EventsHandler(HttpRequests):
-    def __init__(self, websocket):
+    def __init__(self):
         super().__init__()
-
-        self.websocket = websocket
 
     def on_events(self, message):
 
@@ -29,7 +24,7 @@ class EventsHandler(HttpRequests):
             print('Remind2', e)
 
         if events_type == 'MemberJoinEvent':
-            self.websocket.send_message(
+            self.send_message(
                 data={
                     'type': 'group',
                     'user_id': message['member']['id'],
@@ -40,7 +35,7 @@ class EventsHandler(HttpRequests):
             )
 
         if events_type == 'BotJoinGroupEvent':
-            self.websocket.send_message(
+            self.send_message(
                 data={
                     'type': 'group',
                     'group_id': message['group']['id']

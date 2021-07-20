@@ -13,18 +13,16 @@ database = BaseController()
 blog = VBlog()
 
 
-def run_automatic_action(websocket):
-    threading.Thread(target=AutomaticAction(websocket).run_loop).start()
+def run_automatic_action():
+    threading.Thread(target=AutomaticAction().run_loop).start()
 
 
 class AutomaticAction(HttpRequests):
-    def __init__(self, websocket):
+    def __init__(self):
         super().__init__()
 
-        self.websocket = websocket
-
     def run_loop(self):
-        self.send_admin('启动完毕')
+        self.send_to_admin('启动完毕')
         while True:
             self.actions()
             time.sleep(30)
@@ -58,9 +56,9 @@ class AutomaticAction(HttpRequests):
                     # 记录维护时间
                     maintain_record(str(now_time))
 
-                    self.send_admin('维护结束，最后维护时间 %s' % now_time)
+                    self.send_to_admin('维护结束，最后维护时间 %s' % now_time)
         except Exception as e:
-            self.send_admin('维护发生错误：' + str(e))
+            self.send_to_admin('维护发生错误：' + str(e))
 
     def intellect_full_alarm(self):
         try:
@@ -74,50 +72,48 @@ class AutomaticAction(HttpRequests):
                         'group_id': item['group_id'],
                         'type': item['message_type']
                     }
-                    self.websocket.send_message(data, text, at=True)
+                    self.send_message(data, text, at=True)
         except Exception as e:
-            self.send_admin('理智提醒发生错误：' + str(e))
+            self.send_to_admin('理智提醒发生错误：' + str(e))
 
     def send_new_blog(self):
         blog_file = 'temp/blog.txt'
-        try:
-            # 获取发送过的微博ID记录
-            record_id = []
-            if os.path.exists(blog_file):
-                with open(blog_file, mode='r') as file:
-                    record_id = file.read().split('\n')
 
-            # 获取新ID
-            new_id = blog.requests_content(only_id=True)
+        # 获取发送过的微博ID记录
+        record_id = []
+        if os.path.exists(blog_file):
+            with open(blog_file, mode='r') as file:
+                record_id = file.read().split('\n')
 
-            if new_id and isinstance(new_id, str) and new_id not in record_id:
-                new_blog = blog.requests_content()
+        # 获取新ID
+        new_id = blog.requests_content(only_id=True)
 
-                record_id.append(new_id)
-                with open(blog_file, mode='w+') as file:
-                    record_id = record_id[-5:] if len(record_id) >= 5 else record_id
-                    file.write('\n'.join(record_id))
+        if new_id and isinstance(new_id, str) and new_id not in record_id:
+            new_blog = blog.requests_content()
 
-                group_list = self.get_group_list()
-                time_record = time.time()
-                total = 0
+            record_id.append(new_id)
+            with open(blog_file, mode='w+') as file:
+                record_id = record_id[-5:] if len(record_id) >= 5 else record_id
+                file.write('\n'.join(record_id))
 
-                self.send_admin('开始推送微博:\n%s' % new_id)
+            group_list = self.get_group_list()
+            time_record = time.time()
+            total = 0
 
-                disable_groups = database.function.get_disable_function_groups('vblog')
+            self.send_to_admin('开始推送微博:\n%s' % new_id)
 
-                for group in group_list:
-                    if str(group['id']) in disable_groups:
-                        continue
-                    data = {'group_id': group['id'], 'type': 'group'}
-                    for index, item in enumerate(new_blog):
-                        if item.content:
-                            self.websocket.send_message(data, message_chain=item.content, at=False)
-                    total += 1
+            disable_groups = database.function.get_disable_function_groups('vblog')
 
-                complete = '微博推送完毕。已发送群 %d / %d，耗时：%ds' % \
-                           (total, len(group_list), time.time() - time_record)
+            for group in group_list:
+                if str(group['id']) in disable_groups:
+                    continue
+                data = {'group_id': group['id'], 'type': 'group'}
+                for index, item in enumerate(new_blog):
+                    if item.content:
+                        self.send_message(data, message_chain=item.content, at=False)
+                total += 1
 
-                self.send_admin(complete)
-        except Exception as e:
-            print('VBlog', e)
+            complete = '微博推送完毕。已发送群 %d / %d，耗时：%ds' % \
+                       (total, len(group_list), time.time() - time_record)
+
+            self.send_to_admin(complete)

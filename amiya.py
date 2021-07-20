@@ -8,8 +8,7 @@ from modules.network.httpRequests import HttpRequests
 def start():
     try:
         # 请求更新 session
-        http = HttpRequests()
-        http.init_session()
+        HttpRequests().init_session()
         print('http session init success.')
     except requests.exceptions.ConnectionError:
         # 请求失败则重试
@@ -17,8 +16,7 @@ def start():
         start()
     else:
         # 连接 websocket 服务
-        websocket = Websocket()
-        threading.Thread(target=websocket.run_forever).start()
+        threading.Thread(target=Websocket().run_forever).start()
 
 
 if __name__ == '__main__':

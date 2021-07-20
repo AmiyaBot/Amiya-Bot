@@ -20,7 +20,7 @@ class MessageHandler:
     def __init__(self, websocket):
         super().__init__()
 
-        self.events = EventsHandler(websocket)
+        self.events = EventsHandler()
         self.websocket = websocket
         self.message_stack = []
 

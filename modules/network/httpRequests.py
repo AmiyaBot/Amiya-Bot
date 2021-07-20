@@ -2,18 +2,16 @@ import os
 import json
 import requests
 
+from modules.network.chainBuilder import Chain
 from modules.config import get_config
 
-config = get_config()
-self_id = str(config['self_id'])
-admin_id = str(config['admin_id'])
 session_file = 'temp/session.txt'
 
 
 class HttpRequests:
     def __init__(self):
         self.request = requests.session()
-        self.config = config
+        self.config = get_config()
 
     def url(self, interface):
         return 'http://%s:%d/%s' % (self.config['server']['server_ip'], self.config['server']['http_port'], interface)
@@ -33,8 +31,9 @@ class HttpRequests:
         return False
 
     def init_session(self):
-        response = self.post('verify', {'verifyKey': config['server']['auth_key']})
+        response = self.post('verify', {'verifyKey': self.config['server']['auth_key']})
         session = response['session']
+        self_id = get_config('self_id')
 
         session_record = self.get_session()
         if session_record:
@@ -54,11 +53,11 @@ class HttpRequests:
                     return session
         return ''
 
-    def get_group_list(self, close_beta=config['close_beta']['enable']):
+    def get_group_list(self):
         session = self.get_session()
-        if close_beta:
+        if self.config['close_beta']['enable']:
             return [{
-                'id': config['close_beta']['group_id']
+                'id': self.config['close_beta']['group_id']
             }]
         else:
             response = self.get('groupList?sessionKey=%s' % session)
@@ -86,15 +85,11 @@ class HttpRequests:
             session = self.get_session()
             self.post('quit', {'sessionKey': session, 'target': group_id})
 
-    def send_admin(self, text):
+    def send_message(self, data, message='', message_chain=None, at=False):
         session = self.get_session()
-        self.post('sendFriendMessage', {
-            'sessionKey': session,
-            'target': admin_id,
-            'messageChain': [
-                {
-                    'type': 'Plain',
-                    'text': text
-                }
-            ]
-        })
+        command, content = Chain(session, data, message, message_chain, at).content()
+
+        self.post(command, content)
+
+    def send_to_admin(self, text):
+        self.send_message({'user_id': get_config('admin_id'), 'type': 'friend'}, text)
