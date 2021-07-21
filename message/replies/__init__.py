@@ -6,6 +6,7 @@ from .emotion import emotion
 from .waiting import waiting
 from .greeting import greeting
 from .faceImage import face_image
+from .wordLearn import word_learn
 from .adminForGroup import group_admin
 from .nlp import natural_language_processing
 
@@ -19,6 +20,12 @@ def reply_func_list(data):
             # 等待事件
             'func': waiting,
             'need_call': False
+        },
+        {
+            # 词汇学习
+            'func': word_learn,
+            'need_call': False,
+            'without_call': True
         }
     ]
 
@@ -35,14 +42,11 @@ def reply_func_list(data):
             return [group_admin_func]
 
         replies.append(group_admin_func)
-        replies += [
-            {
-                # 使用功能
-                'func': function.action,
-                'need_call': True,
-                'without_call': True
-            }
-        ]
+        replies.append({
+            'func': function.action,
+            'need_call': True,
+            'without_call': True
+        })
 
         disable = database.function.get_disable_function(data['group_id'])
         if 'normal' not in disable:
@@ -68,13 +72,12 @@ def reply_func_list(data):
                     'need_call': True
                 }
             ]
+    elif data['type'] == 'friend':
+        replies.append({
+            'func': admin,
+            'need_call': False
+        })
     else:
-        replies += [
-            {
-                # 管理员指令
-                'func': admin,
-                'need_call': False
-            }
-        ]
+        return []
 
     return replies

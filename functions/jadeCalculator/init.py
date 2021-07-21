@@ -5,14 +5,14 @@ from modules.commonMethods import Reply
 from functions.jadeCalculator.calculator import calc_jade
 
 re_list = [
-    "(\\d+)年(\\d+)月(\\d+)日.*玉",
-    "(\\d+)年(\\d+)月(\\d+)号.*玉",
-    "(\\d+)-(\\d+)-(\\d+).*玉",
-    "(\\d+)/(\\d+)/(\\d+).*玉",
-    "(\\d+)月(\\d+)日.*玉",
-    "(\\d+)月(\\d+)号.*玉",
-    "(\\d+)-(\\d+).*玉",
-    "(\\d+)/(\\d+).*玉"
+    '(\\d+)年(\\d+)月(\\d+)日.*玉',
+    '(\\d+)年(\\d+)月(\\d+)号.*玉',
+    '(\\d+)-(\\d+)-(\\d+).*玉',
+    '(\\d+)/(\\d+)/(\\d+).*玉',
+    '(\\d+)月(\\d+)日.*玉',
+    '(\\d+)月(\\d+)号.*玉',
+    '(\\d+)-(\\d+).*玉',
+    '(\\d+)/(\\d+).*玉'
 ]
 
 
@@ -31,7 +31,7 @@ class Init:
             if r:
                 length = item.count('\\d+')
                 if length == 2:
-                    date = ['2021', r.group(1), r.group(2)]
+                    date = [time.localtime().tm_year, r.group(1), r.group(2)]
                 else:
                     date = [r.group(1), r.group(2), r.group(3)]
                 date = '-'.join(date)

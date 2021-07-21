@@ -19,7 +19,12 @@ class Chain:
             command = 'sendGroupMessage'
 
             if 'user_id' in self.data:
-                database.message.add_message(msg_type='reply', user_id=self_id, reply_user=self.data['user_id'])
+                database.message.add_message(
+                    msg_type='reply',
+                    user_id=self_id,
+                    group_id=self.data['group_id'],
+                    reply_user=self.data['user_id']
+                )
         else:
             content = self.__private_message()
             command = 'sendFriendMessage'

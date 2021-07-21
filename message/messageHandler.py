@@ -49,11 +49,12 @@ class MessageHandler:
         # 输出记录
         if on_call:
             self.print_log(data)
-            database.message.add_message(
-                msg_type='call',
-                user_id=data['user_id'],
-                group_id=data['group_id']
-            )
+            if 'group_id' in data:
+                database.message.add_message(
+                    msg_type='call',
+                    user_id=data['user_id'],
+                    group_id=data['group_id']
+                )
 
         # 处理函数列表
         reply_func = reply_func_list(data)

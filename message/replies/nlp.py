@@ -8,10 +8,10 @@ config = get_config('baidu_cloud')
 nlp = NaturalLanguage(config)
 
 
-def natural_language_processing(message):
+def natural_language_processing(data):
     result = None
     try:
-        result = nlp.emotion(message)
+        result = nlp.emotion(data['text'])
     except Exception as e:
         print('NLP', e)
 
