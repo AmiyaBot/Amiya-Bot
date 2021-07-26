@@ -117,6 +117,7 @@ class GameData(SourceBank):
 
         skins = operator.skins(operator_id)
         detail = operator.detail(operator_id)
+        trust = operator.trust(operator_id)
         voices = operator.voices(operator_id)
         stories = operator.stories(operator_id)
         talents = operator.talents(operator_id)
@@ -126,6 +127,7 @@ class GameData(SourceBank):
         skills, skills_id, skills_cost, skills_desc = operator.skills(operator_id)
 
         database.operator.add_operator_detail([detail])
+        database.operator.add_operator_trust([trust])
 
         if skins:
             database.operator.add_operator_skins(skins)

@@ -67,6 +67,23 @@ class Operator(SourceBank):
 
         return detail
 
+    def trust(self, operator_id):
+        favorKeyFrames = self.data['favorKeyFrames'][1]['data']
+
+        trust = {
+            'operator_id': operator_id,
+            'max_hp': favorKeyFrames['maxHp'],
+            'attack': favorKeyFrames['atk'],
+            'defense': favorKeyFrames['def'],
+            'magic_resistance': favorKeyFrames['magicResistance'],
+            'cost': favorKeyFrames['cost'],
+            'block_count': favorKeyFrames['blockCnt'],
+            'attack_time': favorKeyFrames['baseAttackTime'],
+            'respawn_time': favorKeyFrames['respawnTime']
+
+        }
+        return trust
+
     def talents(self, operator_id):
         talents = []
         if self.data['talents']:

@@ -11,6 +11,9 @@ class Operator:
     def add_operator_detail(self, data):
         self.db.batch_insert('t_operator_detail', data=data)
 
+    def add_operator_trust(self, data):
+        self.db.batch_insert('t_operator_trust', data=data)
+
     def add_operator_evolve_costs(self, data):
         self.db.batch_insert('t_operator_evolve_costs', data=data)
 
@@ -114,11 +117,12 @@ class Operator:
         })
         base = self.db.select('t_operator', where=where, fetchone=True)
         detail = self.db.select('t_operator_detail', where=where, fetchone=True)
+        trust = self.db.select('t_operator_trust', where=where, fetchone=True)
         talents = self.db.select('t_operator_talents', where=where)
         potential = self.db.select('t_operator_potential', where=where)
         building_skill = self.db.select('t_operator_building_skill', where=where)
 
-        return base, detail, talents, potential, building_skill
+        return base, detail, trust ,talents, potential, building_skill
 
     def find_operator_evolve_costs(self, name, level):
 
@@ -243,6 +247,7 @@ class Operator:
             't_operator',
             't_operator_building_skill',
             't_operator_detail',
+            't_operator_trust',
             't_operator_evolve_costs',
             't_operator_potential',
             't_operator_skill',
