@@ -31,7 +31,7 @@ class Init:
             if r:
                 length = item.count('\\d+')
                 if length == 2:
-                    date = [time.localtime().tm_year, r.group(1), r.group(2)]
+                    date = [str(time.localtime().tm_year), r.group(1), r.group(2)]
                 else:
                     date = [r.group(1), r.group(2), r.group(3)]
                 date = '-'.join(date)
