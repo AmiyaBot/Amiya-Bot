@@ -1,7 +1,7 @@
 from message.messageHandler import MessageHandler
 from modules.config import get_config
 
-message = MessageHandler()
+message = MessageHandler(None)
 
 
 def on_message(text, sender_id, group_id):

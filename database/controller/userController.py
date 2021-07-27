@@ -54,7 +54,7 @@ class User:
     def set_gacha_pool(self, user_id, pool_id):
         self.db.update(
             table='t_user',
-            where=Where({'user_id': user_id}),
+            where=Where({'user_id': user_id}) if user_id else None,
             data={
                 'gacha_pool': pool_id
             }

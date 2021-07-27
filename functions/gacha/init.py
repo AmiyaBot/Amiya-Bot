@@ -3,6 +3,7 @@ import re
 from database.baseController import BaseController
 from message.messageType import TextImage
 from modules.commonMethods import Reply, word_in_sentence
+from modules.config import get_config
 from functions.gacha.gacha import GaCha
 
 database = BaseController()
@@ -28,6 +29,7 @@ class Init:
 
     def action(self, data):
 
+        admin_id = get_config('admin_id')
         user_id = data['user_id']
         message = data['text_digits']
         message_ori = data['text']
@@ -73,6 +75,10 @@ class Init:
                 idx = int(r.group(1)) - 1
                 if 0 <= idx < len(self.all_pools):
                     message_ori = self.all_pools[idx]['pool_name']
+
+            if user_id == admin_id and '所有人' in message:
+                return self.change_pool(None, message_ori)
+
             return self.change_pool(user_id, message_ori)
 
         if word_in_sentence(message, ['查看', '卡池', '列表']):
@@ -112,8 +118,10 @@ class Init:
     def change_pool(self, user_id, message):
         for item in self.all_pools:
             if item['pool_name'] in message:
+
                 database.user.set_gacha_pool(user_id, item['pool_id'])
-                text = ['博士的卡池已切换为【%s】\n' % item['pool_name']]
+
+                text = ['%s博士的卡池已切换为【%s】\n' % ('所有' if not user_id else '', item['pool_name'])]
                 if item['pickup_6']:
                     text.append('[★★★★★★] %s' % item['pickup_6'].replace(',', '、'))
                 if item['pickup_5']:
@@ -122,7 +130,8 @@ class Init:
                     text.append('[☆☆☆☆　　] %s' % item['pickup_4'].replace(',', '、'))
                 text = '\n'.join(text)
                 return Reply(text)
-        return Reply('博士，没有找到这个卡池哦')
+
+        return Reply('博士，要告诉阿米娅准确的卡池序号或名称哦')
 
 
 def find_once(reg, text):
