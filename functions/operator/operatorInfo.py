@@ -55,8 +55,9 @@ class OperatorInfo:
     def get_detail_info(self, name):
 
         operator_id = database.operator.get_operator_id(operator_name=name)
-        base, detail, trust, talents, potential, building_skill = database.operator.find_operator_all_detail(operator_id)
-    
+        base, detail, trust, talents, potential, building_skill = database.operator.find_operator_all_detail(
+            operator_id
+        )
 
         text = '博士，为您找到以下干员资料\n\n\n\n\n\n\n'
         icons = [
@@ -77,9 +78,14 @@ class OperatorInfo:
         text += '【信物】\n%s\n\n' % detail['operator_token'] if detail['operator_token'] else ''
 
         text += '【精英%s级属性】\n' % detail['max_level']
-        text += ' -- 生命值：%s\n' % (detail['max_hp'] if trust['max_hp'] == '0' else f"{detail['max_hp']}({trust['max_hp']})")
-        text += ' -- 攻击力：%s\n' % (detail['attack'] if trust['attack'] == '0' else f"{detail['attack']}({trust['attack']})")
-        text += ' -- 防御力：%s\n' % (detail['defense'] if trust['defense'] == '0' else f"{detail['defence']}({trust['defense']})")
+
+        text += ' -- 生命值：%s\n' % (
+            detail['max_hp'] if trust['max_hp'] == '0' else f"{detail['max_hp']}({trust['max_hp']})")
+        text += ' -- 攻击力：%s\n' % (
+            detail['attack'] if trust['attack'] == '0' else f"{detail['attack']}({trust['attack']})")
+        text += ' -- 防御力：%s\n' % (
+            detail['defense'] if trust['defense'] == '0' else f"{detail['defense']}({trust['defense']})")
+
         text += ' -- 魔法抗性：%s\n' % detail['magic_resistance']
         text += ' -- 费用：%s\n' % detail['cost']
         text += ' -- 阻挡数：%s\n' % detail['block_count']
