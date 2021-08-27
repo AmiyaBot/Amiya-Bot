@@ -84,15 +84,7 @@ class SourceBank:
 
     def get_pic(self, name, _type, _param='', _wiki='', _index=''):
 
-        if os.path.exists('ignore.json'):
-            with open('ignore.json', mode='r', encoding='utf-8') as file:
-                ignore = json.load(file)
-                if 'image_download' not in ignore:
-                    ignore['image_download'] = []
-        else:
-            ignore = {
-                'image_download': []
-            }
+        ignore = self.reset_ignore()
 
         url = f'{self.pics_source}/{name}.png{_param}'
         save_path = f'{self.pics_path}/{_type}'
@@ -174,7 +166,7 @@ class SourceBank:
                 os.remove(self.local_version_file)
                 raise Exception(f'data [{name}] download failed')
 
-    def download_bot_resource(self):
+    def download_bot_resource(self, refresh=False):
         bot_file = files()
         for name, _list in bot_file.items():
             if type(_list) is str:
@@ -185,7 +177,7 @@ class SourceBank:
                 save = f'{path}/{item.split("/")[-1]}'
                 url = f'{self.bot_source}/{item}'
 
-                if os.path.exists(save) is False:
+                if os.path.exists(save) is False or refresh:
                     if os.path.exists(path) is False:
                         os.makedirs(path)
 
@@ -200,3 +192,22 @@ class SourceBank:
                             exec_sql_file(file=save)
                     else:
                         raise Exception(f'file [{item}] download failed')
+
+    @staticmethod
+    def reset_ignore(reset=False):
+        if os.path.exists('ignore.json'):
+            with open('ignore.json', mode='r', encoding='utf-8') as file:
+                ignore = json.load(file)
+                if 'image_download' not in ignore:
+                    ignore['image_download'] = []
+        else:
+            ignore = {
+                'image_download': []
+            }
+
+        if reset:
+            ignore['image_download'] = []
+            with open('ignore.json', mode='w+', encoding='utf-8') as file:
+                file.write(json.dumps(ignore, ensure_ascii=False))
+
+        return ignore

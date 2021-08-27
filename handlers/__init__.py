@@ -1,4 +1,5 @@
 import re
+import json
 import threading
 
 from core import AmiyaBot, Message, Chain
@@ -55,8 +56,15 @@ class Handlers:
             self.bot.send_err = False
             return reply.text('已关闭报错推送')
 
+        if '强制更新' in message:
+            self.bot.send_to_admin('开始强制更新...')
+            self.arknights.download_bot_resource(True)
+            self.arknights.reset_ignore(True)
+            self.bot.restart()
+            return reply.text('即将重新启动...')
+
         if '重启' in message:
-            threading.Timer(3, self.bot.restart).start()
+            self.bot.restart()
             return reply.text('即将重新启动...')
 
         if '屏蔽' in message:
