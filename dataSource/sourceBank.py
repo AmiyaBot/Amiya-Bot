@@ -4,6 +4,7 @@ import json
 import requests
 
 from core.util import log
+from core.database.manager import exec_sql_file
 from core.util.config import files
 from requests_html import HTMLSession, HTML
 
@@ -20,7 +21,8 @@ class SourceBank:
             'face': 'resource/images/face',
             'style': 'resource/style',
             'gacha': 'resource/images/gacha',
-            'class': 'resource/images/class'
+            'class': 'resource/images/class',
+            'database': 'resource/database'
         }
 
         self.github_source = 'https://cdn.jsdelivr.net/gh/Kengxxiao/ArknightsGameData@master/zh_CN/gamedata'
@@ -175,6 +177,9 @@ class SourceBank:
     def download_bot_resource(self):
         bot_file = files()
         for name, _list in bot_file.items():
+            if type(_list) is str:
+                _list = [_list]
+
             for item in _list:
                 path = self.bot_paths[name]
                 save = f'{path}/{item.split("/")[-1]}'
@@ -190,3 +195,8 @@ class SourceBank:
                     if data:
                         with open(save, mode='wb+') as src:
                             src.write(data)
+
+                        if name == 'database':
+                            exec_sql_file(file=save)
+                    else:
+                        raise Exception(f'file [{item}] download failed')

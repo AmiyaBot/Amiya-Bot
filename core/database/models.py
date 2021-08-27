@@ -56,7 +56,7 @@ class Disable(BaseModel):
 
 class Pool(BaseModel):
     pool_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
-    pool_name = TextField()
+    pool_name = TextField(unique=True)
     pickup_6 = TextField(null=True)
     pickup_5 = TextField(null=True)
     pickup_4 = TextField(null=True)

@@ -133,7 +133,7 @@ class Message:
     def __save_events_file(self):
         # noinspection PyBroadException
         try:
-            path = 'resource/events'
+            path = 'log/events'
             if os.path.exists(path) is False:
                 os.makedirs(path)
 

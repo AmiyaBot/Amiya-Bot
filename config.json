@@ -5,7 +5,7 @@
         "serverIp": "127.0.0.1",
         "httpPort": 8080,
         "websocketPort": 8060,
-        "authKey": "AMIYARESTART"
+        "authKey": "AmiyaBot"
     },
     "baiduCloud": {
         "enable": false,
