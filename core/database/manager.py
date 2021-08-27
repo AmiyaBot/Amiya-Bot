@@ -1,3 +1,5 @@
+from core.util import log
+
 from .models import *
 
 
