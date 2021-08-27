@@ -19,7 +19,7 @@ class DataBase:
 
 
 def exec_sql_file(file):
-    with open(file, mode='r') as f:
+    with open(file, mode='r', encoding='utf-8') as f:
         sql = f.read().strip('\n').split('\n')
     for line in sql:
         try:
