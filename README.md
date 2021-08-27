@@ -1,4 +1,4 @@
-# Amiya-Bot
+# Amiya-Bot 4.0 Beta
 
 > 基于 [mirai-console](https://github.com/mamoe/mirai-console) 和 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的QQ聊天机器人<br>
 > 本质为一个 websocket 客户端
@@ -6,6 +6,8 @@
 > 名字源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也和游戏相关。
 
     「博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！」 -- 阿米娅
+
+> 注意：该版本仍处于测试阶段，近期可能会进行大量修改！！！
 
 ## 共生项目
 
@@ -25,18 +27,23 @@
 
 - [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)
 - [KokodaYo](https://www.kokodayo.fun/)
+- [PRTS](http://prts.wiki/)
 - [明日方舟官方微博](https://m.weibo.cn/u/6279793937)
 - [刀客塔的办公室](https://github.com/Rominwolf/doctors_office)
 
 ## 准备
 
-- 想要创建自己的 Amiya，建议拥有一定编程基础，否则以下说明将难以理解
-- 建议先了解 [mirai-console](https://github.com/mamoe/mirai-console)
+- 想要创建自己的 Amiya，如果你不是开发者，你无需理解 Amiya 的源码。只需要你能够熟悉使用 mirai 相关套件即可。（请等待后续发布的安装包）
+- 若你是开发者，建议先了解 [mirai-console](https://github.com/mamoe/mirai-console)
   以及其插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
   以便理解源码
     - 关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
 - 需要 python 3.7 ~ 3.8
-- 需要 Mysql 8.0+
+
+## 部署
+
+- 代码部署请查看[开发者文档](https://github.com/vivien8261/Amiya-Bot/blob/master/_docs/deployment.md)
+- 安装包部署请等待近期发布...
 
 ## 基础群组功能
 
@@ -49,6 +56,7 @@ Amiya 的基础功能可以通过在群组里向 Amiya 发送`Amiya有什么功�
     - 精英化材料
     - 技能专精材料
     - 技能数据
+    - 模组数据
     - 档案
     - 语音资料
     - 皮肤资料
@@ -71,147 +79,24 @@ Amiya 的基础功能可以通过在群组里向 Amiya 发送`Amiya有什么功�
 Amiya 的管理功能仅限私聊，且只有管理员能够使用 Amiya 的私聊
 
 - 发送`重启`关键字，Amiya 将会重启
-- 发送`更新全部`关键字，Amiya 即开始自动更新数据
-- 发送`更新图片`关键字，Amiya 即开始自动更新图片资源
-- 群发公告
-    - 发送`公告`关键字，待 Amiya 回复确认后，再发送`完整的文字公告`，此后 Amiya 将向所有群组发送该公告
 - 屏蔽用户
-    - 发送`屏蔽 + QQ号`，Amiya 会屏蔽该用户，此后 Amiya 将不会再回应该用户的消息
-
-## 注意
-
-本项目代码含有以下特点
-
-- 注释较少（会慢慢补充）
-- 通过遍历文件的类加载方法
-- 通过线程而非协程的异步实现方式
-- 强制重启进程
-
-## 开始使用
-
-1. 必须先前往仓库 [Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource) 并根据说明完成数据导入和前序工作
-2. 安装 python 依赖
-
-```bash
-pip install -r requirements.txt
-```
-
-3. 配置`config.json`
-
-```json5
-{
-  // 机器人 QQ 号
-  "self_id": 1515361402,
-  // 管理员 QQ 号
-  "admin_id": 826197021,
-  "server": {
-    // mirai-api-http 服务配置
-    "server_ip": "127.0.0.1",
-    "server_port": 8060,
-    "auth_key": "AMIYARESTART"
-  },
-  "database": {
-    // 数据库配置
-    "host": "localhost",
-    "port": 3306,
-    "user": "root",
-    "password": "amiya520",
-    "db": "amiya"
-  },
-  "baidu_cloud": {
-    // 百度智能云配置
-    "enable": true,
-    "app_id": "2152****",
-    "api_key": "MM5pPVBBj***************",
-    "secret_key": "XRfGzEZufj1MdNKyz***************"
-  },
-  "message": {
-    // 消息指令的频率限制
-    "limit": {
-      "seconds": 10,
-      "max_count": 3
-    },
-    // 文字回复的最大字符长度，超出则会转为图片发送
-    "reply_text_max_length": 100
-  },
-  "close_beta": {
-    // 是否启用封闭测试
-    "enable": false,
-    "group_id": 852191455
-  }
-}
-```
-
-4. 执行首次更新，导入所有数据和资源（重要）
-    - 更新会扫描所有未保存的数据，首次更新视网速情况需要一定的耗时
-    - `updateAllData.py`会删除所有历史数据并重新执行更新，后续视需要也可以重复执行
-
-```bash
-python updateData.py
-```
-
-5. 启动 Amiya 入口程序
-
-```bash
-python amiya.py
-```
-
-6. 短暂的启动过程后，若控制台显示了 websocket 连接成功，表示 Amiya 启动成功
-
-```
-...
-websocket connecting success
-```
-
-7. 现在，唤醒你的 Amiya 吧！
-
-## 功能测试方式
-
-- 快速启动
-    - 不需要启动`mirai-console`
-    - 直接运行脚本`quickStart.py`并带上参数`Test`
-    - 然后在控制台模拟交互
-
-```bash
-python quickStart.py Test
-```
-
-- 实际环境的封闭测试
-    - 配置`config.json`里的封闭测试相关项
-    - 再通过上述步骤启动 Amiya
-    - 之后，Amiya 仅会回应封闭测试指定的群
-
-```json5
-{
-  "close_beta": {
-    // 启用封闭测试
-    "enable": true,
-    // 指定测试群号
-    "group_id": 852191455
-  }
-}
-```
+    - 发送`屏蔽/解除 + QQ号`，Amiya 会屏蔽或解除该用户，屏蔽后 Amiya 将不会再回应该用户的消息
+- 更多功能将会陆续推出...
 
 ## 功能使用注意
 
 - **禁言会导致 Amiya 退群！！！**
-- 要使用抽卡功能，请在更新数据后，在数据表`t_pool`内维护卡池信息
-    - 亦可导入资源文件`t_pool.sql`快速获取历史卡池
 - 自然语言处理方法和公招图像识别需要调用 [百度智能云](https://cloud.baidu.com/)
   的接口，如需使用需要自行申请并配置`config.json`
 
 ```json5
 {
-  "baidu_cloud": {
-    // 是否启用百度智能云接口
-    "enable": false,
-    // APP ID
-    "app_id": "",
-    // API KEY
-    "api_key": "",
-    // SECRET KEY
-    "secret_key": ""
-  }
+    "baiduCloud": {
+        "enable": true,
+        "appId": "21*****7",
+        "apiKey": "MM************GnL5",
+        "secretKey": "XR*********************U7UM"
+    }
 }
 ```
 
@@ -219,13 +104,13 @@ python quickStart.py Test
 
 ```json5
 {
-  "message": {
-    // 此处示例为 10 秒内不能超过 3 次指令
-    "limit": {
-      "seconds": 10,
-      "max_count": 3
+    "message": {
+        // 10秒内最多3次指令
+        "limit": {
+            "seconds": 10,
+            "maxCount": 3
+        }
     }
-  }
 }
 ```
 
@@ -238,23 +123,14 @@ python quickStart.py Test
     - 重置签到和心情值
     - 清空消息及图片记录
     - 清除图片缓存
-- 干员数据请使用**管理员功能**执行更新
-- 卡池目前需要手动到数据表`t_pool`维护，维护好的卡池可以通过 Amiya 切换卡池的功能进行更换
-    - Tips: Pickup 的干员可以是虚构的不存在的干员，因为抽卡命中 Pickup 时，是直接使用 Pickup 字段的干员而非从干员表获取
+- Amiya 在每次启动时都会**自动检查更新**。下载新数据和图片资源，请保持良好的网络环境更新。
+- 在有干员增加的版本，需手动配置`configure/limitOperator.xml`添加无法通过抽卡获得的干员，否则新干员可能会被归类到可获取的干员，造成抽卡异常产出
+- 部分配置改动后需重启 Amiya 后生效
 
-```mysql
--- 新卡池数据插入语句示例
-INSERT INTO t_pool (pool_name, pickup_6, pickup_5, pickup_4, limit_pool)
-VALUES ('银灰色的荣耀',
-        '银灰',
-        '初雪,崖心',
-        '角峰',
-        0)
-```
+## 关于 3.0 迁移到 4.0
 
-- 在有干员增加的版本，Amiya 在执行更新前，需手动配置数据表`t_operator_gacha_config`添加无法通过抽卡获得的干员，否则更新新数据后，干员可能会被归类到可获取的干员，造成抽卡异常产出
-- 部分配置改动后需重启 Amiya 后生效，手动重启 Amiya 只需要重新运行`amiya.py`即可
-    - 或者使用管理员命令`重启`
+- 4.0 版本重写了大部分核心代码并舍弃了 Mysql 数据库，已导致 3.0 的代码无法迁移。
+- 4.0 在启动时会在目录下创建`amiya.db`Sqlite 数据库。内含的`user`表与旧版本`t_user`表字段一致。用户数据可以手动迁移到Sqlite
 
 ## 贡献
 

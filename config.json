@@ -8,10 +8,10 @@
         "authKey": "AMIYARESTART"
     },
     "baiduCloud": {
-        "enable": true,
-        "appId": "21529697",
-        "apiKey": "MM5pPVBBjruOzExxKpaXGnL5",
-        "secretKey": "XRfGzEZufj1MdNKyz7yh5eXiAZczU7UM"
+        "enable": false,
+        "appId": "",
+        "apiKey": "",
+        "secretKey": ""
     },
     "message": {
         "limit": {

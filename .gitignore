@@ -1,23 +1,13 @@
 /.idea/
 /venv/
-/temp/
-/dist/
 /build/
-/remind/
-/console/
-/resource/data/
-/resource/images/
-/resource/message/
-/resource/*.txt
+/dist/
+/log/
+/resource/
 
 .DS_Store
-
 *.pyc
-*.otf
-*.png
-*.exe
-*.spec
 
-!.gitkeep
-
-start.bat
+amiya.db
+session.txt
+ignore.json
