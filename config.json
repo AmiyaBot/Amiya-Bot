@@ -1,35 +1,29 @@
 {
-    "self_id": 1515361402,
-    "admin_id": 826197021,
+    "selfId": 1515361402,
+    "adminId": 826197021,
     "server": {
-        "server_ip": "127.0.0.1",
-        "http_port": 8080,
-        "tcp_port": 8060,
-        "auth_key": "AMIYARESTART"
+        "serverIp": "127.0.0.1",
+        "httpPort": 8080,
+        "websocketPort": 8060,
+        "authKey": "AMIYARESTART"
     },
-    "database": {
-        "host": "localhost",
-        "port": 3306,
-        "user": "root",
-        "password": "amiya520",
-        "db": "amiya"
-    },
-    "baidu_cloud": {
-        "enable": false,
-        "app_id": "",
-        "api_key": "",
-        "secret_key": ""
+    "baiduCloud": {
+        "enable": true,
+        "appId": "21529697",
+        "apiKey": "MM5pPVBBjruOzExxKpaXGnL5",
+        "secretKey": "XRfGzEZufj1MdNKyz7yh5eXiAZczU7UM"
     },
     "message": {
         "limit": {
             "seconds": 10,
-            "max_count": 3
+            "maxCount": 3
         },
-        "reply_text_max_length": 100,
-        "console_temp_images": ""
+        "replyMaxLength": 100
     },
-    "close_beta": {
+    "closeBeta": {
         "enable": false,
-        "group_id": 852191455
-    }
+        "groupId": 653031149
+    },
+    "tempFolders": [],
+    "offline": true
 }

@@ -1,0 +1,15 @@
+<reward>
+    <reply>
+        <feeling>2</feeling>
+    </reply>
+    <greeting>
+        <coupon>50</coupon>
+        <feeling>50</feeling>
+    </greeting>
+    <gameJadeReward>
+        <signIn>200</signIn>
+        <dailyTasks>100</dailyTasks>
+        <weeklyTasks>500</weeklyTasks>
+        <weeklyBattle>1800</weeklyBattle>
+    </gameJadeReward>
+</reward>

@@ -1,42 +1,73 @@
-from message.messageHandler import MessageHandler
-from modules.config import get_config
+from core.util.config import config
+from core.util import log
+from core import Message
 
-message = MessageHandler(None)
+from amiya import Main
 
 
-def on_message(text, sender_id, group_id):
-    message.on_message({
-        'type': 'GroupMessage',
-        'messageChain': [
+class QuickStart:
+    def __init__(self):
+        self.config = config()
+        self.type = 'group'
+
+        if self.config['offline'] is not True:
+            raise Exception('discontinued starting because config <offline> should be "True".')
+
+        self.bot = Main()
+
+    def message(self, text):
+        return Message(
             {
-                'type': 'Plain',
-                'text': text
+                'type': 'GroupMessage' if self.type == 'group' else 'FriendMessage',
+                'messageChain': [
+                    {
+                        'type': 'Plain',
+                        'text': text
+                    }
+                ],
+                'sender': {
+                    'id': self.config['adminId'],
+                    'permission': 'OWNER',
+                    'nickname': 'OWNER',
+                    'memberName': 'OWNER',
+                    'remark': 'none',
+                    'group': {
+                        'id': self.config['closeBeta']['groupId']
+                    }
+                }
             }
-        ],
-        'sender': {
-            'id': sender_id,
-            'permission': 'OWNER',
-            'nickname': 'OWNER',
-            'memberName': 'OWNER',
-            'remark': 'none',
-            'group': {
-                'id': group_id
-            }
-        }
-    })
+        )
+
+    def change_type(self, text):
+        if text in ['group', 'friend']:
+            self.type = text
+            log.info(f'message type change to {text}.')
+            return False
+        return True
+
+    def start(self):
+        try:
+            log.info('input the message to talk.')
+            while True:
+                text = input(f'{self.type} message: ')
+                if self.change_type(text):
+                    res = self.bot.on_group_message(self.message(text))
+                    if res:
+                        self.bot.send_message(res)
+        except KeyboardInterrupt:
+            pass
+
+    def unit_test(self, text):
+        res = self.bot.on_group_message(self.message(text))
+        if res:
+            self.bot.send_message(res)
 
 
 if __name__ == '__main__':
-    print('Testing started.')
-    print('Enter a message and press enter to interact.')
+    s = QuickStart()
 
-    config = get_config()
+    # 对话式测试
+    s.start()
 
-    try:
-        while True:
-            message_text = input()
-            if message_text:
-                on_message(message_text, config['admin_id'], config['close_beta']['group_id'])
-
-    except KeyboardInterrupt:
-        pass
+    # 快速测试单句指令
+    # s.unit_test('兔兔理智多少了')
