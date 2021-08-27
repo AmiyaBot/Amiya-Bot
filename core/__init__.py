@@ -88,7 +88,7 @@ class AmiyaBot(WebSocket):
     @staticmethod
     def restart(delay=3):
         python = sys.executable
-        threading.Timer(delay, os.execl, args=(python, python, *sys.argv))
+        threading.Timer(delay, os.execl, args=(python, python, *sys.argv)).start()
 
     @abc.abstractmethod
     def message_filter(self, data: Message) -> bool:
