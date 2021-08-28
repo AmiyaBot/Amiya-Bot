@@ -16,12 +16,12 @@ class Arknights(GameData):
         super().__init__(auto_update=True, check_assets=True)
 
         self.funcs = [
+            Gacha(self),
             Calculator(self),
             Operator(self),
             Material(self),
             Recruit(self, bot),
             Enemy(self),
-            Gacha(self),
         ]
 
     def find_results(self, data: Message):
