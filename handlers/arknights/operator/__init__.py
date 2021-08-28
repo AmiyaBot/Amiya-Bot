@@ -66,7 +66,8 @@ class Operator(FuncInterface):
                                     setattr(info, name, source[item])
                                 if type(source) is list:
                                     setattr(info, name, item)
-                                raise LoopBreak(index, name)
+                                if name != 'name':
+                                    raise LoopBreak(index, name)
 
                     if index == len(words) - 1:
                         raise LoopBreak('done')
