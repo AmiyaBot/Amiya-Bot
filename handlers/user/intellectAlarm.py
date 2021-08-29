@@ -28,11 +28,11 @@ class IntellectAlarm(FuncInterface):
             full_num = int(r.group(2))
 
             if cur_num < 0 or full_num <= 0:
-                return Reply('啊这…看来博士是真的没有理智了……回头问问可露希尔能不能多给点理智合剂……')
+                return reply.text('啊这…看来博士是真的没有理智了……回头问问可露希尔能不能多给点理智合剂……')
             if cur_num >= full_num:
-                return Reply('阿米娅已经帮博士记…呜……阿米娅现在可以提醒博士了吗')
+                return reply.text('阿米娅已经帮博士记…呜……阿米娅现在可以提醒博士了吗')
             if full_num > 135:
-                return Reply('博士的理智有这么高吗？')
+                return reply.text('博士的理智有这么高吗？')
 
             full_time = (full_num - cur_num) * 6 * 60 + int(time.time())
 
