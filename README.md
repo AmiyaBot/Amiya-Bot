@@ -1,13 +1,10 @@
 # Amiya-Bot 4.0 Beta
 
 > 基于 [mirai-console](https://github.com/mamoe/mirai-console) 和 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的QQ聊天机器人<br>
-> 本质为一个 websocket 客户端
-
-> 名字源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也和游戏相关。
+> 项目名称源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也和游戏相关。
+> <br><br>注意：该版本仍处于测试阶段，近期可能会进行大量修改！！！
 
     「博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！」 -- 阿米娅
-
-> 注意：该版本仍处于测试阶段，近期可能会进行大量修改！！！
 
 ## 共生项目
 
@@ -16,14 +13,14 @@
 
 ## 声明
 
-- Amiya-Bot 是在《明日方舟》爱好者群体中诞生的以便捷功能为主的聊天机器人
+- Amiya-Bot 是在《明日方舟》爱好者群体中诞生的以便捷娱乐功能为主的聊天机器人
 - 本项目拒绝加入与金钱相关的功能，并在遵守法律法规且符合社会主义核心价值观的前提下使用
 - 创建者需承诺不得使用本项目进行**任何形式的盈利行为**
-- 本项目不承担因违反上述所带来的一切后果
+- 本项目不承担因违反上述声明所带来的一切后果
 
 ## 鸣谢
 
-部分功能的信息需要从各大渠道获取，特鸣谢以下网站和项目
+部分功能的数据或代码设计需从各大渠道获取和参考，特鸣谢以下网站和项目
 
 - [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)
 - [KokodaYo](https://www.kokodayo.fun/)
@@ -33,12 +30,12 @@
 
 ## 准备
 
-- 想要创建自己的 Amiya，如果你不是开发者，你无需理解 Amiya 的源码。只需要你能够熟悉使用 mirai 相关套件即可。（请等待后续发布的安装包）
+- 想要创建自己的 Amiya，如果你不是开发者，你可无需理解 Amiya 的源码。仅需你能够熟悉使用 mirai 相关套件即可。（请等待后续发布的安装包）
 - 若你是开发者，建议先了解 [mirai-console](https://github.com/mamoe/mirai-console)
   以及其插件 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
   以便理解源码
     - 关于 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的使用请到官方 Github 下查看
-- 需要 python 3.7 ~ 3.8
+- 需要 python 3.7 ~ 3.8 环境
 
 ## 部署
 
@@ -116,16 +113,17 @@ Amiya 的管理功能仅限私聊，且只有管理员能够使用 Amiya 的私�
 
 ## 如何维护
 
-> 推荐搭建 [Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) 获得更好的可视化维护界面<br>
-> 否则部分数据维护可能需要自行到数据库修改
+> 推荐使用 [Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) 获得更好的可视化维护界面，否则部分数据维护需要到数据库修改<br>
+> 使用方法请阅读说明文档（暂无）<br>
+> 4.0 版本以后，不再需要手动部署 Amiya-Bot-console，Amiya-Bot 会在启动时自动部署
 
-- Amiya 带有**自动维护**功能，会在每天凌晨4点执行以下操作：
-    - 重置签到和心情值
-    - 清空消息及图片记录
-    - 清除图片缓存
-- Amiya 在每次启动时都会**自动检查更新**。下载新数据和图片资源，请保持良好的网络环境更新。
-- 在有干员增加的版本，需手动配置`configure/limitOperator.xml`添加无法通过抽卡获得的干员，否则新干员可能会被归类到可获取的干员，造成抽卡异常产出
-- 部分配置改动后需重启 Amiya 后生效
+- Amiya 带有`自动维护`功能，会在每天凌晨4点执行以下操作：
+    - 重置所有用户的签到状态和心情值
+    - 清空一定时间前的历史消息及图片ID记录
+    - 清除本地缓存
+- Amiya 在每次启动时都会执行`更新检查`。如需更新则会下载新数据和图片资源，请保持良好的网络环境更新。
+    - Amiya 会在更新时对下载失败但不影响运行的资源作忽略处理，在第二次启动时跳过下载。如果重要的资源被忽略，请用管理员命令`强制更新`重新检查资源。
+- 部分配置改动后需重启 Amiya 生效
 
 ## 关于 3.0 迁移到 4.0
 
@@ -141,6 +139,6 @@ Amiya 的管理功能仅限私聊，且只有管理员能够使用 Amiya 的私�
 
 ## TODO
 
-- [ ] [TODO](https://github.com/vivien8261/Amiya-Bot/issues/5)
+- [ ] [更新计划](https://github.com/vivien8261/Amiya-Bot/projects/1)
 - [ ] <del>与明日方舟主题不相关的功能</del>
 

@@ -47,7 +47,8 @@ class QuickStart:
 
     def start(self):
         try:
-            log.info('input the message to talk.')
+            log.info('input the message to test.')
+            log.info('input "group" or "friend" to change the message type.')
             while True:
                 text = input(f'{self.type} message: ')
                 if self.change_type(text):

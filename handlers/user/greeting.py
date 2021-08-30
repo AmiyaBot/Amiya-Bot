@@ -14,7 +14,7 @@ def greeting(data: Message):
     if data.is_bad_call:
         return Chain(data).text(f'哼！Dr.{nickname}不许叫人家{data.bad_name}，不然人家要生气了！')
 
-    if '签到' in message:
+    if '签到' in message and data.is_call:
         status = sign_in(data, 1)
         if status:
             return Chain(data).text(status['text'])

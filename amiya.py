@@ -6,7 +6,7 @@ from core.util.config import config
 from core.util.common import TimeRecord
 from core.database.models import Message as MessageBase
 
-from handlers import Handlers
+from handlers.messageHandlers import Handlers
 from handlers.automaticEvents import AutomaticEvents
 
 limit = config('message.limit')
