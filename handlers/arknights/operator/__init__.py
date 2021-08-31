@@ -36,12 +36,6 @@ class Operator(FuncInterface):
         jieba.load_userdict('resource/stories.txt')
         jieba.load_userdict('resource/skins.txt')
 
-    def __cut_words(self, text) -> list:
-        text = text.lower().replace(' ', '')
-        for item in self.keywords + self.keywords_pinyin + ['材料']:
-            text = text.replace(item, '')
-        return jieba.lcut(text)
-
     @staticmethod
     def __search_info(words, info_source):
         info = InfoInterface()
@@ -62,11 +56,10 @@ class Operator(FuncInterface):
                                     raise LoopBreak(index, name)
 
                             elif item in source:
-                                if type(source) is dict:
-                                    setattr(info, name, source[item])
-                                if type(source) is list:
-                                    setattr(info, name, item)
-                                if name != 'name':
+                                value = source[item] if type(source) is dict else item
+                                setattr(info, name, value)
+
+                                if name != 'name' or (name == 'name' and value != '阿米娅'):
                                     raise LoopBreak(index, name)
 
                     if index == len(words) - 1:
@@ -82,7 +75,6 @@ class Operator(FuncInterface):
 
     @FuncInterface.is_disable
     def check(self, data: Message):
-        words = self.__cut_words(data.text_digits)
         keyword = []
         keyword += InitData.voices
         keyword += InitData.skins
@@ -90,7 +82,7 @@ class Operator(FuncInterface):
         keyword += self.operator_info.skins_keywords
         keyword += self.keywords
 
-        for item in words:
+        for item in data.text_cut + data.text_cut_pinyin:
             if item in keyword:
                 return True
         return False
@@ -98,9 +90,7 @@ class Operator(FuncInterface):
     @FuncInterface.is_used
     def action(self, data: Message):
         message = data.text_digits
-
-        words = self.__cut_words(message) + self.__cut_words(data.text)
-        words = sorted(words, reverse=True, key=lambda i: len(i)) + self.__cut_words(data.text_pinyin)
+        words = data.text_cut + data.text_cut_pinyin
         skin_word = word_in_sentence(message, InitData.skins)
 
         info_source = {

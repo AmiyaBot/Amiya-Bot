@@ -89,6 +89,9 @@ class Handlers:
         event_name = data.event_name
         message = data.message
 
+        if event_name == 'BotReloginEvent':
+            self.bot.send_to_admin('重新登陆')
+
         if event_name == 'MemberJoinEvent':
             data.type = 'group'
             data.user_id = message['member']['id']

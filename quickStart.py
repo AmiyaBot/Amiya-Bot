@@ -70,10 +70,10 @@ if __name__ == '__main__':
     c = Console()
 
     # console 测试
-    c.start()
+    # c.start()
 
     # 对话式测试
-    # s.start()
+    s.start()
 
     # 快速测试单句指令
     # s.unit_test('兔兔理智多少了')

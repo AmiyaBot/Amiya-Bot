@@ -36,7 +36,7 @@ class Enemy(FuncInterface):
     def action(self, data: Message):
 
         message = data.text
-        words = jieba.lcut(message)
+        words = data.text_cut
         reply = Chain(data)
 
         for item in words:

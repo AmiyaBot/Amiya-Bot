@@ -1,5 +1,7 @@
 import re
 import json
+import jieba
+import itertools
 import traceback
 
 from core.util import log
@@ -27,6 +29,8 @@ class Message:
         self.text_ori = ''
         self.text_digits = ''
         self.text_pinyin = ''
+        self.text_cut = ''
+        self.text_cut_pinyin = ''
 
         self.at_target = ''
 
@@ -74,7 +78,14 @@ class Message:
         self.text_digits = chinese_to_digits(self.text)
         self.text_pinyin = text_to_pinyin(self.text)
 
+        chars = self.__cut_words(self.text) + self.__cut_words(self.text_digits)
+        words = list(set(chars))
+        words = sorted(words, key=chars.index)
+        # words = sorted(words, reverse=True, key=lambda i: len(i))
+
         self.text_ori = text
+        self.text_cut = words
+        self.text_cut_pinyin = [text_to_pinyin(char) for char in words] + self.__cut_words(self.text_pinyin)
 
     def __format_message(self):
         data = self.message
@@ -128,6 +139,12 @@ class Message:
         text = re.sub(r'\W', '', text).strip()
         if text == '' and (self.is_at or self.is_call):
             self.is_only_call = True
+
+    @staticmethod
+    def __cut_words(text):
+        return jieba.lcut(
+            text.lower().replace(' ', '')
+        )
 
     def __save_events_file(self):
         # noinspection PyBroadException
