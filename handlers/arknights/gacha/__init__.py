@@ -28,7 +28,7 @@ class Gacha(FuncInterface):
 
     @FuncInterface.is_disable
     def check(self, data: Message):
-        for item in ['抽', '连', '寻访', '保底', '卡池']:
+        for item in ['抽', '连', '寻访', '保底', '卡池', '池子']:
             if item in data.text:
                 return True
         return False
@@ -85,7 +85,7 @@ class Gacha(FuncInterface):
                 trans_image=False
             )
 
-        if word_in_sentence(message, ['查看', '卡池', '列表']):
+        if word_in_sentence(message, ['查看', '卡池', '池子', '列表']):
             return reply.text_image(self.pool.pool_list())
 
         if word_in_sentence(message, ['抽', '寻访']):

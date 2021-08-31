@@ -10,7 +10,6 @@ from ..util.common import make_folder
 log_path = 'log/console'
 
 jieba.setLogLevel(jieba.logging.INFO)
-make_folder(log_path)
 
 
 def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True):
@@ -39,6 +38,7 @@ def capitalize(text: str):
 
 
 def write_in_log(text):
+    make_folder(log_path)
     file = f'{log_path}/%s.log' % time.strftime('%Y%m%d', time.localtime())
 
     # noinspection PyBroadException

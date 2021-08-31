@@ -57,10 +57,10 @@ class Operator(FuncInterface):
 
                             elif item in source:
                                 value = source[item] if type(source) is dict else item
+                                if value == '阿米娅':
+                                    continue
                                 setattr(info, name, value)
-
-                                if name != 'name' or (name == 'name' and value != '阿米娅'):
-                                    raise LoopBreak(index, name)
+                                raise LoopBreak(index, name)
 
                     if index == len(words) - 1:
                         raise LoopBreak('done')
@@ -113,8 +113,11 @@ class Operator(FuncInterface):
         if not info.name and not info.skill:
             info.name = '阿米娅'
 
-        # if info.name and (info.skill_index or info.skill) and not info.level:
-        #     info.level = 7
+        if info.name and (info.skill_index or info.skill) and not info.level:
+            info.level = 8 if '材料' in message else 7
+
+        if info.level <= 7 and '材料' in message:
+            return reply.text('博士，暂时只可以查询专一以上的材料哦')
 
         if info.level != 0:
             if info.level < 0:
