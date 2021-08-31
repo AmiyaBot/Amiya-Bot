@@ -8,10 +8,10 @@ from .materialData import MaterialData
 
 
 class Material(FuncInterface):
-    def __init__(self, game_data):
+    def __init__(self, data_source):
         super().__init__(function_id='checkMaterial')
 
-        self.material_data = MaterialData(game_data)
+        self.material_data = MaterialData(data_source)
 
         jieba.load_userdict('resource/materials.txt')
 

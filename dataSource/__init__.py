@@ -7,11 +7,12 @@ from .sourceBank import SourceBank
 from .updateConfig import Config
 
 
-class GameData(SourceBank):
+class DataSource(SourceBank):
     def __init__(self, auto_update=True, check_assets=True):
         super().__init__()
         self.download_resource(not auto_update)
         self.download_bot_resource()
+        self.download_bot_console()
 
         self.operators = self.init_operators()
         self.enemies = self.init_enemies()

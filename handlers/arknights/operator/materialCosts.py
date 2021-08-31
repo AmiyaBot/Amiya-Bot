@@ -2,7 +2,7 @@ import os
 
 from core.util import log
 from core.util.common import text_to_pinyin, remove_punctuation
-from dataSource import GameData, Operator
+from dataSource import DataSource, Operator
 
 from .initData import InfoInterface, InitData
 from .operatorInfo import OperatorInfo
@@ -12,7 +12,7 @@ skill_images_source = 'resource/images/skills/'
 
 
 class MaterialCosts:
-    def __init__(self, data: GameData):
+    def __init__(self, data: DataSource):
         self.data = data
         self.keywords = []
 

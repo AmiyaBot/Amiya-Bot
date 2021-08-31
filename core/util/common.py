@@ -116,7 +116,7 @@ def integer(value):
     return value
 
 
-def make_dir(path):
+def make_folder(path):
     if not os.path.exists(path):
         try:
             os.makedirs(path)

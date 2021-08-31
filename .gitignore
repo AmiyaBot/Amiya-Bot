@@ -2,6 +2,7 @@
 /venv/
 /build/
 /dist/
+/view/
 /log/
 /resource/
 

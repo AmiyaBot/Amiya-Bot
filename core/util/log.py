@@ -6,38 +6,18 @@ import shutil
 import datetime
 import traceback
 
-from ..util.common import make_dir
+from ..util.common import make_folder
+
+log_path = 'log/console'
 
 jieba.setLogLevel(jieba.logging.INFO)
-
-log_dir = 'log/console'
-null_dir = 'log/null'
-
-make_dir(log_dir)
-make_dir(null_dir)
-
-stdout = sys.stdout
-stderr = sys.stderr
-sys.stdout = open(null_dir, 'w+')
-sys.stderr = open(null_dir, 'w+')
-
-
-class releasePrint:
-    def __enter__(self):
-        sys.stdout.close()
-        sys.stderr.close()
-        sys.stdout = stdout
-        sys.stderr = stderr
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        sys.stdout = open(null_dir, 'w+')
-        sys.stderr = open(null_dir, 'w+')
+make_folder(log_path)
 
 
 def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True):
     date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     front = f'[{date}]' \
-            f'[{capitalize(title)}]' \
+            f'[{title.upper()}]' \
             f'{" " if msg[0] != "[" else ""}'
 
     text = capitalize(msg)
@@ -45,8 +25,7 @@ def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True
         text = text.replace('\n', '\n' + ' ' * len(front))
     text = front + text
 
-    with releasePrint():
-        print(text)
+    print(text)
 
     if log:
         write_in_log(text)
@@ -61,7 +40,7 @@ def capitalize(text: str):
 
 
 def write_in_log(text):
-    file = f'{log_dir}/%s.log' % time.strftime('%Y%m%d', time.localtime())
+    file = f'{log_path}/%s.log' % time.strftime('%Y%m%d', time.localtime())
 
     # noinspection PyBroadException
     try:
@@ -75,10 +54,10 @@ def clean_log(days, extra: list = None):
     day_ago = datetime.datetime.now() - datetime.timedelta(days=int(days))
     day_ago = int(day_ago.strftime('%Y%m%d'))
 
-    if os.path.exists(log_dir) is False:
+    if os.path.exists(log_path) is False:
         return False
 
-    for root, dirs, files in os.walk(log_dir):
+    for root, dirs, files in os.walk(log_path):
         for item in files:
             filename = int(item.split('.')[0])
             if filename < day_ago:

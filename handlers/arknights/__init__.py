@@ -1,5 +1,5 @@
 from core import Message
-from dataSource import GameData
+from dataSource import DataSource
 
 from ..funcInterface import FuncInterface
 
@@ -11,7 +11,7 @@ from .enemy import Enemy
 from .gacha import Gacha
 
 
-class Arknights(GameData):
+class Arknights(DataSource):
     def __init__(self, bot):
         super().__init__(auto_update=True, check_assets=True)
 

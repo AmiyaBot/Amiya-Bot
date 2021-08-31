@@ -9,7 +9,7 @@ nlp = NaturalLanguage(config('baiduCloud'))
 
 def natural_language_processing(data: Message):
     result = nlp.emotion(data.text)
-    if result and result['items']:
+    if result and 'items' in result and result['items']:
         item = result['items'][0]
         label = item['label']
         text = ''

@@ -22,12 +22,12 @@ class LoopBreak(Exception):
 
 
 class Operator(FuncInterface):
-    def __init__(self, game_data):
+    def __init__(self, data_source):
         super().__init__(function_id='checkOperator')
 
-        self.operator_module = OperatorModules(game_data)
-        self.material_costs = MaterialCosts(game_data)
-        self.operator_info = OperatorInfo(game_data)
+        self.operator_module = OperatorModules(data_source)
+        self.material_costs = MaterialCosts(data_source)
+        self.operator_info = OperatorInfo(data_source)
 
         self.keywords = ['模组', '资料', '信息']
         self.keywords_pinyin = [text_to_pinyin(item) for item in self.keywords + ['材料']]

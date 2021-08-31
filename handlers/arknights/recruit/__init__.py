@@ -9,19 +9,19 @@ from core.util.config import config
 from core.util.common import all_item_in_text, insert_empty
 from core.util.baiduCloud import OpticalCharacterRecognition
 from core.database.models import User
-from dataSource import GameData, Operator
+from dataSource import DataSource, Operator
 
 from handlers.funcInterface import FuncInterface
 
 
 class Recruit(FuncInterface):
-    def __init__(self, game_data: GameData, bot: AmiyaBot):
+    def __init__(self, data_source: DataSource, bot: AmiyaBot):
         super().__init__(function_id='recruit')
 
         self.ocr = OpticalCharacterRecognition(config('baiduCloud'))
 
         self.bot = bot
-        self.data = game_data
+        self.data = data_source
         self.tags = []
 
         self.init_tags_list()

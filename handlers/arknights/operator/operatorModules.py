@@ -2,7 +2,7 @@ import os
 
 from core.util.imageCreator import split_text
 from core.util.common import integer
-from dataSource import GameData, Operator
+from dataSource import DataSource, Operator
 from dataSource.builder import parse_template, attr_dict
 
 from .initData import InfoInterface
@@ -11,7 +11,7 @@ material_images_source = 'resource/images/materials/'
 
 
 class OperatorModules:
-    def __init__(self, data: GameData):
+    def __init__(self, data: DataSource):
         self.data = data
 
     def find_operator_module(self, info: InfoInterface):

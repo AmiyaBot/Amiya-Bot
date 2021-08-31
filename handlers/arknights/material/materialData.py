@@ -1,7 +1,7 @@
 import os
 
 from core.util import log
-from dataSource import GameData
+from dataSource import DataSource
 
 PL = {
     'SOMETIMES': '罕见',
@@ -18,7 +18,7 @@ material_images_source = 'resource/images/materials/'
 
 
 class MaterialData:
-    def __init__(self, data: GameData):
+    def __init__(self, data: DataSource):
         self.data = data
         self.material_list = []
 

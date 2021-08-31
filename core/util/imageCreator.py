@@ -3,7 +3,7 @@ import os
 import shutil
 import datetime
 
-from core.util.common import make_dir
+from core.util.common import make_folder
 from PIL import Image, ImageDraw, ImageFont
 
 temp_dir = 'log/message'
@@ -68,7 +68,7 @@ def create_image(text: str, folder, images=None):
             image.paste(img, box=item['pos'], mask=img)
 
     path = '%s/%s' % (temp_dir, folder)
-    make_dir(path)
+    make_folder(path)
 
     name = '%s.png' % datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
     path = '%s/%s' % (path, name)
@@ -122,7 +122,7 @@ def create_gacha_result(result: list):
     image.paste(icon, box=(image.size[0] - 30, 0), mask=icon)
 
     path = '%s/Gacha' % temp_dir
-    make_dir(path)
+    make_folder(path)
 
     name = '%s.png' % datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
     path = '%s/%s' % (path, name)

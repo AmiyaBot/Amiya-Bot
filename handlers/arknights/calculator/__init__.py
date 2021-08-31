@@ -2,7 +2,7 @@ import re
 import time
 
 from core import Message, Chain
-from dataSource import GameData
+from dataSource import DataSource
 from handlers.funcInterface import FuncInterface
 
 from .calculator import calc_jade
@@ -20,10 +20,10 @@ re_list = [
 
 
 class Calculator(FuncInterface):
-    def __init__(self, game_data: GameData):
+    def __init__(self, data_source: DataSource):
         super().__init__(function_id='jadeCalculator')
 
-        self.data = game_data
+        self.data = data_source
 
     @FuncInterface.is_disable
     def check(self, data: Message):

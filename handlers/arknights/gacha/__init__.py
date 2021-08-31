@@ -2,7 +2,7 @@ import re
 
 from core import Message, Chain
 from core.util.common import word_in_sentence
-from dataSource import GameData
+from dataSource import DataSource
 from handlers.funcInterface import FuncInterface
 
 from .gacha import GachaForUser, GachaPool
@@ -20,10 +20,10 @@ re_list = [
 
 
 class Gacha(FuncInterface):
-    def __init__(self, game_data: GameData):
+    def __init__(self, data_source: DataSource):
         super().__init__(function_id='gacha')
 
-        self.data = game_data
+        self.data = data_source
         self.pool = GachaPool()
 
     @FuncInterface.is_disable

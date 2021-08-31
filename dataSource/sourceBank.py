@@ -5,7 +5,7 @@ import requests
 
 from core.util import log
 from core.util.config import files
-from core.util.common import make_dir
+from core.util.common import make_folder
 from core.database.manager import exec_sql_file
 from requests_html import HTMLSession, HTML
 
@@ -18,6 +18,7 @@ class SourceBank:
         }
 
         self.bot_source = 'https://cdn.jsdelivr.net/gh/vivien8261/Amiya-Bot-resource@master'
+        self.bot_console = 'https://cdn.jsdelivr.net/gh/vivien8261/Amiya-Bot-console@master'
         self.bot_paths = {
             'face': 'resource/images/face',
             'style': 'resource/style',
@@ -56,7 +57,7 @@ class SourceBank:
         self.wiki_session = HTMLSession()
 
         for item in [self.resource_path, self.pics_path]:
-            make_dir(item)
+            make_folder(item)
 
     def request_file(self, url, stringify=True):
         try:
@@ -90,7 +91,7 @@ class SourceBank:
         save_path = f'{self.pics_path}/{_type}'
         image_path = f'{save_path}/{name.split("/")[-1]}.png'
 
-        make_dir(save_path)
+        make_folder(save_path)
 
         if os.path.exists(image_path) is False and image_path not in ignore['image_download']:
 
@@ -177,7 +178,7 @@ class SourceBank:
                 url = f'{self.bot_source}/{item}'
 
                 if os.path.exists(save) is False or refresh:
-                    make_dir(path)
+                    make_folder(path)
 
                     log.info(f'downloading file [{item}]...')
 
@@ -190,6 +191,30 @@ class SourceBank:
                             exec_sql_file(file=save)
                     else:
                         raise Exception(f'file [{item}] download failed')
+
+    def download_bot_console(self):
+        version = self.request_file(f'{self.bot_console}/.version').strip('\n').split('\n')
+        for file in version:
+            view_path = f'view/{file}'
+            if not os.path.exists(view_path):
+                folder = '/'.join(view_path.split('/')[0:-1])
+                suffix = view_path.split('.')[-1]
+
+                make_folder(folder)
+
+                text_file = suffix in ['html', 'css', 'js', 'map']
+                url = f'{self.bot_console}/dist/{file}'
+
+                log.info(f'downloading file [{view_path}]...')
+
+                data = self.request_file(url, stringify=text_file)
+                if data:
+                    with open(view_path,
+                              mode='w+' if text_file else 'wb+',
+                              encoding='utf-8' if text_file else None) as src:
+                        src.write(data)
+                else:
+                    log.error(f'file [{item}] download failed')
 
     @staticmethod
     def reset_ignore(reset=False):

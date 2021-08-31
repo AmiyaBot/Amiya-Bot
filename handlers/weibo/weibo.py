@@ -6,7 +6,7 @@ import traceback
 
 from core import Message, Chain
 from core.util import log
-from core.util.common import remove_xml_tag, make_dir
+from core.util.common import remove_xml_tag, make_folder
 from core.util.imageCreator import char_seat
 from handlers.funcInterface import FuncInterface
 
@@ -98,7 +98,7 @@ class WeiBo(FuncInterface):
                 continue
             temp = 'log/weibo'
             path = '%s/%s' % (temp, name)
-            make_dir(temp)
+            make_folder(temp)
             if os.path.exists(path) is False:
                 stream = requests.get(pic_url, headers=self.headers, stream=True)
                 if stream.status_code == 200:

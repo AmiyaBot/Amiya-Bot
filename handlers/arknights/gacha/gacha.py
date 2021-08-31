@@ -5,7 +5,7 @@ from core import Message, Chain
 from core.database.models import User, Pool
 from core.util.common import insert_empty
 from core.util.imageCreator import create_gacha_result
-from dataSource import GameData, Operator
+from dataSource import DataSource, Operator
 
 avatar_resource = 'resource/images/avatars'
 class_index = {
@@ -21,9 +21,9 @@ class_index = {
 
 
 class GachaForUser:
-    def __init__(self, data: Message, game_data: GameData):
+    def __init__(self, data: Message, data_source: DataSource):
         self.data = data
-        self.game_data = game_data
+        self.data_source = data_source
 
         pool = Pool.get_by_id(data.user_info.gacha_pool)
 
@@ -75,7 +75,7 @@ class GachaForUser:
 
     def __get_gacha_operator(self, extra):
         opts = []
-        for name, item in self.game_data.operators.items():
+        for name, item in self.data_source.operators.items():
             if name in extra or (item.rarity >= 3 and not item.limit and not item.unavailable):
                 opts.append(item)
         return opts
@@ -190,8 +190,8 @@ class GachaForUser:
             star = '☆' if rarity < 5 else '★'
             result += '%s%s%s\n\n' % (' ' * 15, insert_empty(name, 6, True), star * rarity)
 
-            if name in self.game_data.operators:
-                opt: Operator = self.game_data.operators[name]
+            if name in self.data_source.operators:
+                opt: Operator = self.data_source.operators[name]
                 avatar_path = '%s/%s.png' % (avatar_resource, opt.id)
 
                 if os.path.exists(avatar_path):

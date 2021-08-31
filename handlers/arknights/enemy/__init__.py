@@ -5,16 +5,16 @@ import random
 from core import Message, Chain
 from core.util import log
 from core.util.common import find_similar_list, remove_xml_tag, integer
-from dataSource import GameData
+from dataSource import DataSource
 from handlers.funcInterface import FuncInterface
 
 
 class Enemy(FuncInterface):
-    def __init__(self, game_data: GameData):
+    def __init__(self, data_source: DataSource):
         super().__init__(function_id='checkEnemy')
 
-        self.data = game_data
-        self.keywords = list(game_data.enemies.keys())
+        self.data = data_source
+        self.keywords = list(data_source.enemies.keys())
 
         self.init_enemies()
 

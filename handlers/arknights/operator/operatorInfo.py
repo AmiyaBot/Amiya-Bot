@@ -5,7 +5,7 @@ from core.util import log
 from core.util.imageCreator import split_text
 from core.util.numberTranslate import chinese_to_digits
 from core.util.common import word_in_sentence, integer
-from dataSource import GameData, Operator
+from dataSource import DataSource, Operator
 from dataSource.builder import attr_dict
 
 from .initData import InfoInterface, InitData
@@ -15,7 +15,7 @@ avatars_images_source = 'resource/images/avatars/'
 
 
 class OperatorInfo:
-    def __init__(self, data: GameData):
+    def __init__(self, data: DataSource):
         self.data = data
         self.stories_title = {}
         self.skins_table = {}
