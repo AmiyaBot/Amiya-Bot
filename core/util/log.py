@@ -1,13 +1,37 @@
 import os
+import sys
 import time
 import jieba
 import shutil
 import datetime
 import traceback
 
+from ..util.common import make_dir
+
 jieba.setLogLevel(jieba.logging.INFO)
 
 log_dir = 'log/console'
+null_dir = 'log/null'
+
+make_dir(log_dir)
+make_dir(null_dir)
+
+stdout = sys.stdout
+stderr = sys.stderr
+sys.stdout = open(null_dir, 'w+')
+sys.stderr = open(null_dir, 'w+')
+
+
+class releasePrint:
+    def __enter__(self):
+        sys.stdout.close()
+        sys.stderr.close()
+        sys.stdout = stdout
+        sys.stderr = stderr
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout = open(null_dir, 'w+')
+        sys.stderr = open(null_dir, 'w+')
 
 
 def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True):
@@ -21,7 +45,8 @@ def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True
         text = text.replace('\n', '\n' + ' ' * len(front))
     text = front + text
 
-    print(text)
+    with releasePrint():
+        print(text)
 
     if log:
         write_in_log(text)
@@ -36,12 +61,6 @@ def capitalize(text: str):
 
 
 def write_in_log(text):
-    if not os.path.exists(log_dir):
-        try:
-            os.makedirs(log_dir)
-        except FileExistsError:
-            pass
-
     file = f'{log_dir}/%s.log' % time.strftime('%Y%m%d', time.localtime())
 
     # noinspection PyBroadException

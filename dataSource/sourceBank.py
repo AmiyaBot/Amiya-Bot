@@ -4,8 +4,9 @@ import json
 import requests
 
 from core.util import log
-from core.database.manager import exec_sql_file
 from core.util.config import files
+from core.util.common import make_dir
+from core.database.manager import exec_sql_file
 from requests_html import HTMLSession, HTML
 
 
@@ -55,8 +56,7 @@ class SourceBank:
         self.wiki_session = HTMLSession()
 
         for item in [self.resource_path, self.pics_path]:
-            if os.path.exists(item) is False:
-                os.makedirs(item)
+            make_dir(item)
 
     def request_file(self, url, stringify=True):
         try:
@@ -90,8 +90,7 @@ class SourceBank:
         save_path = f'{self.pics_path}/{_type}'
         image_path = f'{save_path}/{name.split("/")[-1]}.png'
 
-        if os.path.exists(save_path) is False:
-            os.makedirs(save_path)
+        make_dir(save_path)
 
         if os.path.exists(image_path) is False and image_path not in ignore['image_download']:
 
@@ -178,8 +177,7 @@ class SourceBank:
                 url = f'{self.bot_source}/{item}'
 
                 if os.path.exists(save) is False or refresh:
-                    if os.path.exists(path) is False:
-                        os.makedirs(path)
+                    make_dir(path)
 
                     log.info(f'downloading file [{item}]...')
 

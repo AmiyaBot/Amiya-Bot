@@ -1,3 +1,4 @@
+import os
 import re
 import time
 import difflib
@@ -113,3 +114,11 @@ def integer(value):
     if type(value) is float and int(value) == value:
         value = int(value)
     return value
+
+
+def make_dir(path):
+    if not os.path.exists(path):
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass

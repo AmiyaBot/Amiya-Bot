@@ -5,7 +5,7 @@ import traceback
 
 from core.util import log
 from core.util.config import config, keyword
-from core.util.common import text_to_pinyin, remove_punctuation
+from core.util.common import text_to_pinyin, remove_punctuation, make_dir
 from core.util.numberTranslate import chinese_to_digits
 from core.database.models import User, Group
 
@@ -134,8 +134,7 @@ class Message:
         # noinspection PyBroadException
         try:
             path = 'log/events'
-            if os.path.exists(path) is False:
-                os.makedirs(path)
+            make_dir(path)
 
             with open(f'{path}/{self.event_name}.json', mode='w+', encoding='utf-8') as remind:
                 remind.write(json.dumps(self.message, ensure_ascii=False))
