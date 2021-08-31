@@ -1,9 +1,11 @@
 import re
 import json
+import time
 import threading
 
 from core import AmiyaBot, Message, Chain
-from core.database.models import User
+from core.util.config import config
+from core.database.models import User, Message as MessageBase
 
 from .admin.groupAdmin import group_admin_handler
 from .normal.nlp import natural_language_processing
@@ -15,6 +17,10 @@ from .user.intellectAlarm import IntellectAlarm
 from .menu.menu import Menu
 from .weibo.weibo import WeiBo
 from .arknights import Arknights
+
+limit = config('message.limit')
+account = config('selfId')
+close_beta = config('closeBeta')
 
 
 class Handlers:
@@ -114,6 +120,31 @@ class Handlers:
                 flag=event_name == 'BotMuteEvent'
             )
             self.bot.send_to_admin(f'已退出群{group_id}，原因：{event_name}')
+
+    def filter_handler(self, data: Message):
+        if data.is_admin is False and data.type == 'friend':
+            return False
+
+        if data.group_id and close_beta['enable']:
+            if str(data.group_id) != str(close_beta['groupId']):
+                return False
+
+        for item in ['Q群管家', '小冰']:
+            if item in data.text:
+                return False
+
+        if data.is_black:
+            return False
+
+        speed = MessageBase.select().where(
+            MessageBase.user_id == account,
+            MessageBase.target_id == data.user_id,
+            MessageBase.msg_time >= time.time() - limit['seconds']
+        )
+        if speed.count() >= limit['maxCount']:
+            return Chain(data).dont_at().text('博士说话太快了，请慢一些吧～')
+
+        return self.group_admin_handler(data) if data.type == 'group' else True
 
     @staticmethod
     def group_admin_handler(data: Message):

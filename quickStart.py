@@ -1,3 +1,4 @@
+from console.server.app import Console
 from core.util.config import config
 from core.util import log
 from core import Message
@@ -66,9 +67,13 @@ class QuickStart:
 
 if __name__ == '__main__':
     s = QuickStart()
+    c = Console()
+
+    # console 测试
+    c.start()
 
     # 对话式测试
-    s.start()
+    # s.start()
 
     # 快速测试单句指令
     # s.unit_test('兔兔理智多少了')

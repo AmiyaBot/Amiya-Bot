@@ -7,6 +7,10 @@
         "websocketPort": 8060,
         "authKey": "AmiyaBot"
     },
+    "console": {
+        "host": "0.0.0.0",
+        "port": 80
+    },
     "baiduCloud": {
         "enable": false,
         "appId": "",

@@ -8,3 +8,5 @@ pypinyin~=0.41.0
 zhon~=1.1.5
 Pillow~=7.2.0
 baidu-aip~=2.2.18.0
+gevent~=21.8.0
+Flask~=2.0.1

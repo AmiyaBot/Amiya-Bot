@@ -1,6 +1,7 @@
 import abc
 import json
 import time
+import threading
 
 from ws4py.client.threadedclient import WebSocketClient
 from core.resolver.messageChain import Chain, Message
@@ -43,13 +44,9 @@ class WebSocket(WebSocketClient):
 
         try:
             self.connect()
-            self.run_forever()
-        except KeyboardInterrupt:
-            return False
+            threading.Thread(target=self.run_forever).start()
         except ConnectionRefusedError:
-            pass
-
-        raise Exception(f'cannot connect websocket server from mirai-api-http.')
+            raise Exception(f'cannot connect websocket server from mirai-api-http.')
 
     def closed(self, code, reason=None):
         log.info(f'websocket closed [{code}] {reason}')
