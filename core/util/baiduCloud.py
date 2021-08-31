@@ -1,6 +1,4 @@
-import os
 import requests
-import datetime
 import traceback
 
 from core.util import log

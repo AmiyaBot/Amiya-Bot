@@ -1,7 +1,5 @@
 import re
-import json
 import time
-import threading
 
 from core import AmiyaBot, Message, Chain
 from core.util.config import config

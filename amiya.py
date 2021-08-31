@@ -1,6 +1,4 @@
-import time
-
-from core import AmiyaBot, Message, Chain
+from core import AmiyaBot, Message
 from core.util import log
 from core.util.common import TimeRecord
 

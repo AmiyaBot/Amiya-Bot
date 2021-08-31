@@ -1,6 +1,5 @@
 import re
 import os
-import shutil
 import datetime
 
 from core.util.common import make_folder

@@ -2,7 +2,6 @@ import os
 import re
 import time
 import requests
-import traceback
 
 from core import Message, Chain
 from core.util import log

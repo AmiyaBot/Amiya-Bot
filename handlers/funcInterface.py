@@ -1,5 +1,4 @@
 import abc
-import jieba
 
 from core import Message, Chain
 from core.database.models import Disable, Function

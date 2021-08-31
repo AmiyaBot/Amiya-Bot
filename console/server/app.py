@@ -1,6 +1,5 @@
 import os
 import sys
-import threading
 
 from logging.config import dictConfig
 from gevent import pywsgi
