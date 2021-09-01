@@ -1,22 +1,18 @@
 import re
 import os
 import json
-import requests
 
 from core.util import log
 from core.util.config import files
 from core.util.common import make_folder
 from core.database.manager import exec_sql_file
-from requests_html import HTMLSession, HTML
+from core.network.httpRequests import DownloadTools
+
+from .wiki import Wiki
 
 
-class SourceBank:
+class SourceBank(DownloadTools):
     def __init__(self):
-        self.headers = {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) '
-                          'AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'
-        }
-
         self.bot_source = 'https://cdn.jsdelivr.net/gh/vivien8261/Amiya-Bot-resource@master'
         self.bot_console = 'https://cdn.jsdelivr.net/gh/vivien8261/Amiya-Bot-console@master'
         self.bot_paths = {
@@ -31,7 +27,6 @@ class SourceBank:
         self.resource_path = 'resource/data'
 
         self.pics_source = 'https://andata.somedata.top/dataX'
-        self.pics_source_wiki = 'http://prts.wiki'
         self.pics_path = 'resource/images'
 
         self.resource = [
@@ -51,37 +46,12 @@ class SourceBank:
             'excel/item_table'
         ]
         self.source_bank = {}
+        self.wiki = Wiki()
 
         self.local_version_file = f'{self.resource_path}/version.txt'
 
-        self.wiki_session = HTMLSession()
-
         for item in [self.resource_path, self.pics_path]:
             make_folder(item)
-
-    def request_file(self, url, stringify=True):
-        try:
-            stream = requests.get(url, headers=self.headers, stream=True)
-            if stream.status_code == 200:
-                if stringify:
-                    return str(stream.content, encoding='utf-8')
-                else:
-                    return stream.content
-        except Exception as e:
-            log.error(repr(e))
-        return False
-
-    def request_file_from_wiki(self, name):
-        try:
-            url = f'{self.pics_source_wiki}/w/文件:{name}.png'
-            html: HTML = self.wiki_session.get(url, headers=self.headers).html
-
-            file = html.find('#file > a', first=True)
-            furl = self.pics_source_wiki + file.attrs['href']
-            return self.request_file(furl, stringify=False)
-        except Exception as e:
-            log.error(repr(e))
-        return False
 
     def get_pic(self, name, _type, _param='', _wiki='', _index=''):
 
@@ -97,7 +67,7 @@ class SourceBank:
 
             log.info(f'downloading image {_index or "_/_"} [{image_path}]...')
 
-            pic = self.request_file_from_wiki(_wiki) if _wiki else self.request_file(url, stringify=False)
+            pic = self.wiki.request_pic_from_wiki(_wiki) if _wiki else self.request_file(url, stringify=False)
             if pic:
                 with open(image_path, mode='wb+') as _pic:
                     _pic.write(pic)
@@ -214,7 +184,7 @@ class SourceBank:
                               encoding='utf-8' if text_file else None) as src:
                         src.write(data)
                 else:
-                    log.error(f'file [{item}] download failed')
+                    log.error(f'file [{file}] download failed')
 
     @staticmethod
     def reset_ignore(reset=False):

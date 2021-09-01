@@ -2,10 +2,12 @@ import re
 
 from core.resolver.message import Message
 from core.resolver.lib.imageManager import ImageManager
+from core.resolver.lib.voiceManager import VoiceManager
 from core.util.config import reward, config
 from core.util.imageCreator import create_image
 
 Image = ImageManager()
+Voice = VoiceManager()
 def_feeling = reward('reply.feeling')
 max_length = config('message.replyMaxLength')
 
@@ -16,6 +18,7 @@ class Chain:
         self.feeling = feeling
 
         self.chain = []
+        self.voices = []
         self.command = 'sendFriendMessage'
         self.target = data.user_id
         self.record = ''
@@ -78,6 +81,11 @@ class Chain:
         self.chain += chain
         return self
 
+    def text_image(self, text, images=None, title='Common'):
+        return self.image(
+            path=create_image(text, title, images)
+        )
+
     def image(self, path):
         self.chain.append({
             'type': 'Image',
@@ -85,7 +93,9 @@ class Chain:
         })
         return self
 
-    def text_image(self, text, images=None, title='Common'):
-        return self.image(
-            path=create_image(text, title, images)
-        )
+    def voice(self, path):
+        self.voices.append({
+            'type': 'Voice',
+            'path': Voice.voice(path)
+        })
+        return self

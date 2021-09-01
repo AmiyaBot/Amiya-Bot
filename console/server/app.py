@@ -63,4 +63,4 @@ class Console:
     def app_path():
         if hasattr(sys, 'frozen'):
             return os.path.dirname(sys.executable)
-        return '/'.join(sys.argv[0].replace('\\', '/').split('/')[0:-1])
+        return os.path.dirname(__file__).replace('\\', '/').replace('console/server', '')

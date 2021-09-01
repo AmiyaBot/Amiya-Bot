@@ -5,7 +5,7 @@ import time
 import threading
 
 from core.network.websocket import WebSocket
-from core.network.httpRequests import HttpRequests
+from core.network.httpRequests import MiraiHttp
 from core.resolver.message import Message
 from core.resolver.messageChain import Chain
 from core.database.manager import DataBase, Message as MessageBase
@@ -19,7 +19,7 @@ class AmiyaBot(WebSocket):
         DataBase.create_base()
 
         self.message_stack = []
-        self.http = HttpRequests()
+        self.http = MiraiHttp()
 
         init = self.http.init_session()
         if init is False:

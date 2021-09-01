@@ -32,6 +32,12 @@ class WebSocket(WebSocketClient):
         except OSError:
             pass
 
+    def __send(self, data):
+        if self.offline is False:
+            self.send(data)
+        else:
+            print(json.loads(data)['content']['messageChain'])
+
     @abc.abstractmethod
     def handler(self, data):
         pass
@@ -79,8 +85,20 @@ class WebSocket(WebSocketClient):
 
         self.send_message(Chain(data).text(message))
 
-    def send_message(self, reply: Chain, sync_id: int = 1):
-        msg = json.dumps(
+    def send_message(self, reply: Chain, update: bool = True):
+        if update:
+            self.update_record(reply)
+
+        self.__send(self.build_message(reply))
+
+        if reply.voices:
+            for voice in reply.voices:
+                self.__send(
+                    self.build_message(Chain(reply.data), chain=voice)
+                )
+
+    def build_message(self, reply: Chain, chain: dict = None, sync_id: int = 1):
+        return json.dumps(
             {
                 'syncId': sync_id,
                 'command': reply.command,
@@ -88,11 +106,12 @@ class WebSocket(WebSocketClient):
                 'content': {
                     'sessionKey': self.session,
                     'target': reply.target,
-                    'messageChain': reply.chain
+                    'messageChain': chain or reply.chain
                 }
             }
         )
 
+    def update_record(self, reply: Chain):
         MessageBase.create(
             user_id=self.account,
             target_id=reply.data.user_id,
@@ -105,8 +124,3 @@ class WebSocket(WebSocketClient):
             user_feeling=User.user_feeling + reply.feeling,
             message_num=User.message_num + 1
         ).where(User.user_id == reply.data.user_id).execute()
-
-        if self.offline is False:
-            self.send(msg)
-        else:
-            log.info('--> ' + json.dumps(reply.chain, ensure_ascii=False))

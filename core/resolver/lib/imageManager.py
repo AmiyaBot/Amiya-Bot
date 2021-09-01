@@ -1,11 +1,11 @@
 import random
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-from core.network.httpRequests import HttpRequests
+from core.network.httpRequests import MiraiHttp
 from core.database.models import Images
 
 
-class ImageManager(HttpRequests):
+class ImageManager(MiraiHttp):
     def __init__(self):
         super().__init__()
 

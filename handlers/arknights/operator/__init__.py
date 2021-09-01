@@ -2,8 +2,9 @@ import re
 import copy
 import jieba
 
-from core import Message, Chain
+from core import Message, Chain, AmiyaBot
 from core.util.common import find_similar_string, word_in_sentence, text_to_pinyin
+from dataSource import DataSource
 from handlers.funcInterface import FuncInterface
 
 from .operatorModules import OperatorModules
@@ -22,12 +23,14 @@ class LoopBreak(Exception):
 
 
 class Operator(FuncInterface):
-    def __init__(self, data_source):
+    def __init__(self, data_source: DataSource, bot: AmiyaBot):
         super().__init__(function_id='checkOperator')
 
         self.operator_module = OperatorModules(data_source)
         self.material_costs = MaterialCosts(data_source)
         self.operator_info = OperatorInfo(data_source)
+        self.data_source = data_source
+        self.bot = bot
 
         self.keywords = ['模组', '资料', '信息']
         self.keywords_pinyin = [text_to_pinyin(item) for item in self.keywords + ['材料']]
@@ -118,7 +121,16 @@ class Operator(FuncInterface):
 
             # 语音
             elif info.voice_key:
-                result = self.operator_info.get_voice(info)
+                result, exists = self.operator_info.get_voice(info)
+                if exists:
+                    file = self.data_source.wiki.voice_exists(info.name, info.voice_key)
+                    if not file:
+                        self.bot.send_message(Chain(data).text('正在下载语音文件，博士请稍等...'))
+                        file = self.data_source.wiki.request_voice_from_wiki(info.name, info.voice_key)
+                        if not file:
+                            self.bot.send_message(Chain(data).text('博士，语音文件下载失败...>.<'))
+                    if file:
+                        reply.voice(file)
 
             # 皮肤
             elif skin_word:

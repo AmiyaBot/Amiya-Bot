@@ -18,7 +18,7 @@ class Arknights(DataSource):
         self.funcs = [
             Gacha(self),
             Calculator(self),
-            Operator(self),
+            Operator(self, bot),
             Material(self),
             Recruit(self, bot),
             Enemy(self),
