@@ -32,6 +32,7 @@ class Operator(FuncInterface):
         self.keywords = ['模组', '资料', '信息']
         self.keywords_pinyin = [text_to_pinyin(item) for item in self.keywords + ['材料']]
 
+        jieba.del_word('兔兔山')
         jieba.load_userdict('resource/operators.txt')
         jieba.load_userdict('resource/stories.txt')
         jieba.load_userdict('resource/skins.txt')
