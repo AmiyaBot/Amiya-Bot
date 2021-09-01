@@ -57,35 +57,11 @@ class Message:
         if _format and message is not None:
             self.__format_message()
 
-    def _trans_text(self, text='', message_chain=None):
-        if message_chain:
-            for chain in message_chain:
-                if chain['type'] == 'At':
-                    self.at_target = chain['target']
-                    if self.at_target == CONF['selfId']:
-                        self.is_at = True
-
-                if chain['type'] == 'Plain':
-                    text += chain['text'].strip()
-
-                if chain['type'] == 'Face':
-                    self.face.append(chain['faceId'])
-
-                if chain['type'] == 'Image':
-                    self.image = chain['url'].strip()
-
-        self.text = remove_punctuation(text)
-        self.text_digits = chinese_to_digits(self.text)
-        self.text_pinyin = text_to_pinyin(self.text)
-
-        chars = self.__cut_words(self.text) + self.__cut_words(self.text_digits)
-        words = list(set(chars))
-        words = sorted(words, key=chars.index)
-        # words = sorted(words, reverse=True, key=lambda i: len(i))
-
-        self.text_ori = text
-        self.text_cut = words
-        self.text_cut_pinyin = [text_to_pinyin(char) for char in words] + self.__cut_words(self.text_pinyin)
+    @staticmethod
+    def cut_words(text):
+        return jieba.lcut(
+            text.lower().replace(' ', '')
+        )
 
     def __format_message(self):
         data = self.message
@@ -117,9 +93,39 @@ class Message:
         self.is_admin = self.user_id == CONF['adminId']
         self.is_black = bool(self.user_info.black)
 
-        self._trans_text(message_chain=data['messageChain'])
+        self.__trans_text(message_chain=data['messageChain'])
 
         self.__check_call()
+
+    def __trans_text(self, text='', message_chain=None):
+        if message_chain:
+            for chain in message_chain:
+                if chain['type'] == 'At':
+                    self.at_target = chain['target']
+                    if self.at_target == CONF['selfId']:
+                        self.is_at = True
+
+                if chain['type'] == 'Plain':
+                    text += chain['text'].strip()
+
+                if chain['type'] == 'Face':
+                    self.face.append(chain['faceId'])
+
+                if chain['type'] == 'Image':
+                    self.image = chain['url'].strip()
+
+        self.text = remove_punctuation(text)
+        self.text_digits = chinese_to_digits(self.text)
+        self.text_pinyin = text_to_pinyin(self.text)
+
+        chars = self.cut_words(self.text) + self.cut_words(self.text_digits)
+        words = list(set(chars))
+        words = sorted(words, key=chars.index)
+        # words = sorted(words, reverse=True, key=lambda i: len(i))
+
+        self.text_ori = text
+        self.text_cut = words
+        self.text_cut_pinyin = [text_to_pinyin(char) for char in words]
 
     def __check_call(self):
         text = self.text
@@ -139,12 +145,6 @@ class Message:
         text = re.sub(r'\W', '', text).strip()
         if text == '' and (self.is_at or self.is_call):
             self.is_only_call = True
-
-    @staticmethod
-    def __cut_words(text):
-        return jieba.lcut(
-            text.lower().replace(' ', '')
-        )
 
     def __save_events_file(self):
         # noinspection PyBroadException
