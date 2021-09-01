@@ -10,3 +10,4 @@ Pillow~=7.2.0
 baidu-aip~=2.2.18.0
 gevent~=21.8.0
 Flask~=2.0.1
+graiax-silkcoder~=0.0.16
