@@ -3,7 +3,7 @@ import asyncio
 
 from graiax import silkcoder
 from core.util.config import config
-from core.util.common import make_folder
+from core.util.common import make_folder, text_to_pinyin
 
 loop = asyncio.get_event_loop()
 mirai_folder = config('miraiFolder')
@@ -14,7 +14,7 @@ class VoiceManager:
         pass
 
     def voice(self, path):
-        filename = path.split('/')[-1].split('.')[0] + '.silk'
+        filename = text_to_pinyin(path.split('/')[-1].split('.')[0]) + '.silk'
         folder = f'{mirai_folder}/data/net.mamoe.mirai-api-http/voices'
         target = f'{folder}/{filename}'
 
@@ -26,4 +26,6 @@ class VoiceManager:
 
     @staticmethod
     async def silk_encode(path, res):
-        return await silkcoder.encode(path, res, rate=100000)
+        silk: bytes = await silkcoder.encode(path, rate=100000)
+        with open(res, mode='wb+') as file:
+            file.write(silk)
