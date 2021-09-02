@@ -32,9 +32,6 @@ class Operator(FuncInterface):
         self.data_source = data_source
         self.bot = bot
 
-        self.keywords = ['模组', '资料', '信息']
-        self.keywords_pinyin = [text_to_pinyin(item) for item in self.keywords + ['材料']]
-
         jieba.del_word('兔兔山')
         jieba.load_userdict('resource/operators.txt')
         jieba.load_userdict('resource/stories.txt')
@@ -43,11 +40,11 @@ class Operator(FuncInterface):
     @FuncInterface.is_disable
     def check(self, data: Message):
         keyword = []
+        keyword += InitData.keyword
         keyword += InitData.voices
         keyword += InitData.skins
         keyword += self.material_costs.keywords
         keyword += self.operator_info.skins_keywords
-        keyword += self.keywords
 
         for item in self.__words_list(data):
             if item in keyword:
@@ -59,17 +56,16 @@ class Operator(FuncInterface):
         message = data.text_digits
         skin_word = word_in_sentence(message, InitData.skins)
 
-        words = self.__words_list(data)
-        info = self.__search_info(words, {
+        info = self.__search_info(self.__words_list(data), {
             'name': [self.material_costs.operator_map, self.material_costs.operator_list],
-            'level': [self.material_costs.skill_level_list],
+            'level': [InitData.skill_level_list],
             'skill': [self.material_costs.skill_map],
-            'skill_index': [self.material_costs.skill_index_list],
+            'skill_index': [InitData.skill_index_list],
             'skin_key': [self.operator_info.skins_keywords],
             'voice_key': [InitData.voices],
             'story_key': [self.operator_info.stories_title]
         })
-        info_sup = self.__search_info(data.cut_words(data.text_pinyin), {
+        info_sup = self.__search_info(self.__words_list(data, pinyin_only=True), {
             'name': [self.material_costs.operator_map, self.material_costs.operator_list],
             'skill': [self.material_costs.skill_map]
         })
@@ -123,10 +119,11 @@ class Operator(FuncInterface):
             elif info.voice_key:
                 result, exists = self.operator_info.get_voice(info)
                 if exists:
-                    file = self.data_source.wiki.voice_exists(info.name, info.voice_key)
+                    operator_name = self.data_source.operators[info.name].name
+                    file = self.data_source.wiki.voice_exists(operator_name, info.voice_key)
                     if not file:
                         self.bot.send_message(Chain(data).text('正在下载语音文件，博士请稍等...'))
-                        file = self.data_source.wiki.request_voice_from_wiki(info.name, info.voice_key)
+                        file = self.data_source.wiki.request_voice_from_wiki(operator_name, info.voice_key)
                         if not file:
                             self.bot.send_message(Chain(data).text('博士，语音文件下载失败...>.<'))
                     if file:
@@ -159,7 +156,7 @@ class Operator(FuncInterface):
                 result = '博士，要告诉阿米娅语音的详细标题哦'
 
             else:
-                if info.name == '阿米娅' and not word_in_sentence(message, ['资料', '信息']):
+                if info.name == '阿米娅' and not word_in_sentence(message, ['资料', '简历']):
                     return False
                 result = self.operator_info.get_detail_info(info)
 
@@ -177,7 +174,12 @@ class Operator(FuncInterface):
         return False
 
     @staticmethod
-    def __words_list(data: Message):
+    def __words_list(data: Message, pinyin_only=False):
+        if pinyin_only:
+            text = data.text
+            for item in InitData.keyword + InitData.skins + InitData.voices:
+                text = text.replace(item, '')
+            return data.cut_words(text_to_pinyin(text))
         return data.text_cut + data.text_cut_pinyin
 
     @staticmethod
@@ -201,8 +203,11 @@ class Operator(FuncInterface):
 
                             elif item in source:
                                 value = source[item] if type(source) is dict else item
+
+                                # 这里要先忽略自己，否则所有搜索都可能变成自己……
                                 if value == '阿米娅':
                                     continue
+
                                 setattr(info, name, value)
                                 raise LoopBreak(index, name)
 

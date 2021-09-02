@@ -8,7 +8,7 @@ from core.network.httpRequests import MiraiHttp
 from core.database.models import Upload
 
 loop = asyncio.get_event_loop()
-mirai_folder = config('miraiFolder') or 'log/voices'
+mirai_folder = config('miraiFolder') or 'log'
 cache_folder = 'data/net.mamoe.mirai-api-http/voices'
 
 
@@ -18,7 +18,8 @@ class VoiceManager(MiraiHttp):
 
     def voice(self, path: str, voice_type: str):
         filename = text_to_pinyin(path.split('/')[-1].split('.')[0]) + '.silk'
-        folder = f'{mirai_folder}/{cache_folder}'
+        group = filename.split('_')[0]
+        folder = f'{mirai_folder}/{cache_folder}/{group}'
         target = f'{folder}/{filename}'
 
         if not os.path.exists(target):
@@ -26,7 +27,7 @@ class VoiceManager(MiraiHttp):
             loop.run_until_complete(self.silk_encode(path, target))
 
         # 根据配置支持本地和上传两种模式
-        if mirai_folder == 'log/voices':
+        if mirai_folder == 'log':
             rec: Upload = Upload.get_or_none(path=target, type=voice_type)
             if rec:
                 return rec.mirai_id, True

@@ -288,7 +288,7 @@ class Operator:
             self.tags.append(Config.high_star[str(self.rarity)])
 
         if self.id in ['char_285_medic2', 'char_286_cast3', 'char_376_therex']:
-            self.tags.append('机械支援')
+            self.tags.append('支援机械')
 
     def __extra(self):
         if self.id == 'char_1001_amiya2':

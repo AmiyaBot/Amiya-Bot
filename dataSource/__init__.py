@@ -1,6 +1,6 @@
 import re
 
-from core.util.common import remove_xml_tag
+from core.util.common import remove_punctuation, remove_xml_tag
 
 from .builder import Operator
 from .sourceBank import SourceBank
@@ -49,13 +49,13 @@ class DataSource(SourceBank):
         skins_map = {}
 
         map_data = (
-            (voice_data, voice_map),
-            (skins_data, skins_map)
+            (voice_data, voice_map, 'wordKey'),
+            (skins_data, skins_map, 'charId')
         )
 
         for map_item in map_data:
             for n, item in map_item[0].items():
-                char_id = item['charId']
+                char_id = item[map_item[-1]]
                 if char_id not in map_item[1]:
                     map_item[1][char_id] = []
 
@@ -76,7 +76,7 @@ class DataSource(SourceBank):
                 )
             )
 
-        return {item.name: item for item in operators}
+        return {remove_punctuation(item.name): item for item in operators}
 
     def init_materials(self):
         building_data = self.get_json_data('building_data')

@@ -85,7 +85,7 @@ class OperatorInfo:
         voices = operator.voices()
         for item in voices:
             if item['voice_title'] == info.voice_key:
-                return f'博士，为您找到干员{info.name}的语音档案：\n\n【{info.voice_key}】\n{item["voice_text"]}', True
+                return f'博士，为您找到干员{info.name}的语音档案：\n\n【{info.voice_key}】\n\n{item["voice_text"]}', True
 
         return f'博士，没有找到干员{info.name}{info.voice_key}相关的语音档案', False
 

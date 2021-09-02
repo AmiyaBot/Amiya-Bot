@@ -39,6 +39,7 @@ class Wiki(DownloadTools):
 
     def request_voice_from_wiki(self, operator, name):
         try:
+            operator = '阿米娅(近卫)' if operator == '阿米娅近卫' else operator
             urls = self.get_voice_urls(operator)
             filename = f'{operator}_{name}.wav'
             if filename in urls:
@@ -54,6 +55,7 @@ class Wiki(DownloadTools):
 
     @staticmethod
     def voice_exists(operator, name):
+        operator = '阿米娅(近卫)' if operator == '阿米娅近卫' else operator
         folder = f'{voices_source}/{operator}'
         file = f'{folder}/{operator}_{name}.wav'
         if not os.path.exists(file):

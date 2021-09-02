@@ -1,7 +1,6 @@
 import re
 import json
 import jieba
-import itertools
 import traceback
 
 from core.util import log
@@ -28,7 +27,6 @@ class Message:
         self.image = ''
         self.text_ori = ''
         self.text_digits = ''
-        self.text_pinyin = ''
         self.text_cut = ''
         self.text_cut_pinyin = ''
 
@@ -116,7 +114,6 @@ class Message:
 
         self.text = remove_punctuation(text)
         self.text_digits = chinese_to_digits(self.text)
-        self.text_pinyin = text_to_pinyin(self.text)
 
         chars = self.cut_words(self.text) + self.cut_words(self.text_digits)
         words = list(set(chars))

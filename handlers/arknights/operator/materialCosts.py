@@ -23,28 +23,11 @@ class MaterialCosts:
 
         self.skill_map = {}
         self.skill_operator = {}
-        self.skill_index_list = {
-            '1技能': 1, '2技能': 2, '3技能': 3
-        }
-        self.skill_level_list = {
-            '精1': -1, '精英1': -1,
-            '精2': -2, '精英2': -2,
-            '1级': 1, '等级1': 1,
-            '2级': 2, '等级2': 2,
-            '3级': 3, '等级3': 3,
-            '4级': 4, '等级4': 4,
-            '5级': 5, '等级5': 5,
-            '6级': 6, '等级6': 6,
-            '7级': 7, '等级7': 7,
-            '专1': 8, '专精1': 8,
-            '专2': 9, '专精2': 9,
-            '专3': 10, '专精3': 10
-        }
 
         self.build_dict()
 
     def build_dict(self):
-        log.info('building operator\'s materials keywords dict...')
+        log.info('building operator\'s info and skills keywords dict...')
 
         keywords = ['%s 500 n' % key for key in InitData.voices]
 
@@ -54,22 +37,23 @@ class MaterialCosts:
             if dict_word not in keywords:
                 keywords.append(dict_word)
 
-        for key in self.skill_index_list:
+        for key in InitData.skill_index_list:
             append_word(key)
 
-        for key in self.skill_level_list:
+        for key in InitData.skill_level_list:
             append_word(key)
 
         for name, item in self.data.operators.items():
             p_name = text_to_pinyin(name)
+            e_name = remove_punctuation(item.en_name)
 
             self.operator_list.append(name)
             self.operator_map[p_name] = name
-            self.operator_map[item.en_name] = name
+            self.operator_map[e_name] = name
 
             append_word(name)
             append_word(p_name)
-            append_word(item.en_name)
+            append_word(e_name)
 
             skills = item.skills()[0]
 
