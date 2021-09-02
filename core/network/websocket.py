@@ -89,7 +89,8 @@ class WebSocket(WebSocketClient):
         if update:
             self.update_record(reply)
 
-        self.__send(self.build_message(reply))
+        if reply.chain:
+            self.__send(self.build_message(reply))
 
         if reply.voices:
             for voice in reply.voices:

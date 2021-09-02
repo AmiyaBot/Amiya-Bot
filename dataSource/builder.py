@@ -48,6 +48,7 @@ class Operator:
         self.id = code
         self.name = data['name']
         self.en_name = data['appellation']
+        self.wiki_name = data['name']
         self.rarity = data['rarity'] + 1
         self.classes = Config.classes[data['profession']]
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']
@@ -294,3 +295,4 @@ class Operator:
         if self.id == 'char_1001_amiya2':
             self.name = '阿米娅近卫'
             self.en_name = 'AmiyaGuard'
+            self.wiki_name = '阿米娅(近卫)'

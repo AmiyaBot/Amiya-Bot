@@ -7,7 +7,7 @@ from core.database.models import User, Message as MessageBase
 
 from .admin.groupAdmin import group_admin_handler
 from .normal.nlp import natural_language_processing
-from .normal.face import get_face
+from .normal.touch import get_random_reply
 from .user.emotion import emotion
 from .user.greeting import greeting
 from .user.userInfo import UserInfo
@@ -15,14 +15,17 @@ from .user.intellectAlarm import IntellectAlarm
 from .menu.menu import Menu
 from .weibo.weibo import WeiBo
 from .arknights import Arknights
+from .eventHandlers import EventHandlers
 
 limit = config('message.limit')
 account = config('selfId')
 close_beta = config('closeBeta')
 
 
-class Handlers:
+class Handlers(EventHandlers):
     def __init__(self, bot: AmiyaBot):
+        super().__init__(bot)
+
         self.bot = bot
         self.arknights = Arknights(bot)
         self.functions = [
@@ -34,7 +37,7 @@ class Handlers:
 
     def reply_group_message(self, data: Message):
         if data.is_only_call:
-            return Chain(data).dont_at().image(get_face())
+            return get_random_reply(data)
 
         if data.is_call or data.user_info.waiting:
             ark_result = self.arknights.find_results(data)
@@ -84,43 +87,6 @@ class Handlers:
                     return reply.text(f'已{"屏蔽" if s else "解除"}用户【{mute_id}】')
                 else:
                     return reply.text(f'没有找到用户【{mute_id}】')
-
-    def event_handler(self, data: Message):
-        event_name = data.event_name
-        message = data.message
-
-        if event_name == 'BotReloginEvent':
-            self.bot.send_to_admin('重新登陆')
-
-        if event_name == 'MemberJoinEvent':
-            data.type = 'group'
-            data.user_id = message['member']['id']
-            data.group_id = message['member']['group']['id']
-            data.nickname = message['member']['memberName']
-            self.bot.send_message(
-                Chain(data).text(f'欢迎新博士{data.nickname}~，我是阿米娅，请多多指教哦')
-            )
-
-        if event_name == 'BotJoinGroupEvent':
-            data.type = 'group'
-            data.group_id = message['group']['id']
-            self.bot.send_message(
-                Chain(data).text('博士，初次见面，这里是阿米娅2号，姐姐去了很远的地方，今后就由我来代替姐姐的工作吧，请多多指教哦')
-            )
-
-        if event_name == 'BotInvitedJoinGroupRequestEvent':
-            self.bot.http.handle_join_group(message)
-
-        if event_name in ['BotMuteEvent', 'BotLeaveEventKick']:
-            if 'operator' in message:
-                message = message['operator']
-            group_id = message['group']['id']
-
-            self.bot.http.leave_group(
-                group_id=group_id,
-                flag=event_name == 'BotMuteEvent'
-            )
-            self.bot.send_to_admin(f'已退出群{group_id}，原因：{event_name}')
 
     def filter_handler(self, data: Message):
         if data.is_admin is False and data.type == 'friend':

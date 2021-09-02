@@ -28,3 +28,7 @@ def reward(name: str = None):
 
 def files(name: str = None):
     return get(read_xml('configure/botFiles.xml'), name)
+
+
+def nudge(name: str = None):
+    return get(read_xml('configure/nudge.xml'), name)

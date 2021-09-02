@@ -13,6 +13,7 @@ class DataSource(SourceBank):
         self.download_resource(not auto_update)
         self.download_bot_resource()
         self.download_bot_console()
+        self.wiki.download_self_voices()
 
         self.operators = self.init_operators()
         self.enemies = self.init_enemies()

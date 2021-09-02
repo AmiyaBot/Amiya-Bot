@@ -3,10 +3,12 @@ import urllib.parse
 
 from core.util import log
 from core.util.common import make_folder
+from core.util.config import nudge
 from core.network.httpRequests import DownloadTools
 from requests_html import HTMLSession, HTML
 
 voices_source = 'resource/voices'
+nudge_reply = nudge('reply')
 
 
 class Wiki(DownloadTools):
@@ -37,25 +39,41 @@ class Wiki(DownloadTools):
             log.error(repr(e))
         return False
 
-    def request_voice_from_wiki(self, operator, name):
+    def request_voice_from_wiki(self, operator, url, filename):
+        file = f'{voices_source}/{operator}/{filename}'
+        if os.path.exists(file):
+            return file
+
+        log.info(f'downloading file [{filename}]...')
+        res = self.request_file(url, stringify=False)
+        if res:
+            with open(file, mode='wb+') as src:
+                src.write(res)
+            return file
+
+    def download_operator_voices(self, operator, name):
         try:
-            operator = '阿米娅(近卫)' if operator == '阿米娅近卫' else operator
             urls = self.get_voice_urls(operator)
             filename = f'{operator}_{name}.wav'
             if filename in urls:
-                res = self.request_file(urls[filename], stringify=False)
-                if res:
-                    file = f'{voices_source}/{operator}/{filename}'
-                    with open(file, mode='wb+') as src:
-                        src.write(res)
-                    return file
+                return self.request_voice_from_wiki(operator, urls[filename], filename)
         except Exception as e:
             log.error(repr(e))
         return False
 
+    def download_self_voices(self):
+        try:
+            for name in ['阿米娅', '阿米娅(近卫)']:
+                urls = self.get_voice_urls(name)
+                talks = [f'{name}_{item}.wav' for item in nudge_reply]
+                for filename in urls:
+                    if filename in talks:
+                        self.request_voice_from_wiki(name, urls[filename], filename)
+        except Exception as e:
+            log.error(repr(e))
+
     @staticmethod
     def voice_exists(operator, name):
-        operator = '阿米娅(近卫)' if operator == '阿米娅近卫' else operator
         folder = f'{voices_source}/{operator}'
         file = f'{folder}/{operator}_{name}.wav'
         if not os.path.exists(file):

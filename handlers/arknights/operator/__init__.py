@@ -118,12 +118,13 @@ class Operator(FuncInterface):
             # 语音
             elif info.voice_key:
                 result, exists = self.operator_info.get_voice(info)
+                result = result.replace('{@nickname}', data.nickname)
                 if exists:
-                    operator_name = self.data_source.operators[info.name].name
-                    file = self.data_source.wiki.voice_exists(operator_name, info.voice_key)
+                    wiki_name = self.data_source.operators[info.name].wiki_name
+                    file = self.data_source.wiki.voice_exists(wiki_name, info.voice_key)
                     if not file:
                         self.bot.send_message(Chain(data).text('正在下载语音文件，博士请稍等...'))
-                        file = self.data_source.wiki.request_voice_from_wiki(operator_name, info.voice_key)
+                        file = self.data_source.wiki.download_operator_voices(wiki_name, info.voice_key)
                         if not file:
                             self.bot.send_message(Chain(data).text('博士，语音文件下载失败...>.<'))
                     if file:
