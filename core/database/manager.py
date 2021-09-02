@@ -9,7 +9,7 @@ class DataBase:
         tables = (
             User,
             Group,
-            Images,
+            Upload,
             Message,
             Function,
             Disable,

@@ -76,4 +76,4 @@ if __name__ == '__main__':
     s.start()
 
     # 快速测试单句指令
-    # s.unit_test('兔兔理智多少了')
+    # s.unit_test('兔兔语音阿米娅闲置')

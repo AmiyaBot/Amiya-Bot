@@ -6,7 +6,7 @@ from core.util import log
 from core.util.config import config
 from core.util.common import insert_zero
 from core.util.imageCreator import temp_dir
-from core.database.models import User, Images, Message, Intellect
+from core.database.models import User, Upload, Message, Intellect
 
 
 class AutomaticEvents:
@@ -34,7 +34,7 @@ class AutomaticEvents:
                     # 清空图片记录及一个月前的消息记录
                     last_time = int(time.time()) - 30 * 86400
                     Message.delete().where(Message.msg_time <= last_time).execute()
-                    Images.truncate_table()
+                    Upload.truncate_table()
 
                     # 清除缓存
                     log.clean_log(3, extra=[temp_dir] + config('tempFolders'))

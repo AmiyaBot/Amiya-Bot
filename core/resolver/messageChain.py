@@ -94,8 +94,10 @@ class Chain:
         return self
 
     def voice(self, path):
+        value, is_id = Voice.voice(path, self.data.type)
+        field = 'voiceId' if is_id else 'path'
         self.voices.append({
             'type': 'Voice',
-            'path': Voice.voice(path)
+            field: value
         })
         return self

@@ -1,7 +1,9 @@
 import os
 import json
+import random
 import requests
 
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 from core.database.models import Group
 from core.util.config import config
 from core.util import log
@@ -70,12 +72,28 @@ class MiraiHttp:
 
         return False
 
-    def get_image_id(self, multipart_data):
+    def get_mirai_id(self, path, msg_type, _t):
         if self.offline:
             return 'None'
 
+        _type = {
+            'image': ('uploadImage', 'imageId', 'img'),
+            'voice': ('uploadVoice', 'voiceId', 'voice')
+        }
+        _type = _type[_t]
+
+        resource = '/'.join(path.replace('\\', '/').split('/')[:-1])
+        multipart_data = MultipartEncoder(
+            fields={
+                'sessionKey': self.get_session(),
+                'type': msg_type,
+                _type[-1]: (path.replace(resource, ''), open(path, 'rb'), 'application/octet-stream')
+            },
+            boundary=str(random.randint(int(1e28), int(1e29 - 1)))
+        )
+
         response = self.request.post(
-            url=self.__url('uploadImage'),
+            url=self.__url(_type[0]),
             data=multipart_data,
             headers={
                 'Content-Type': multipart_data.content_type
@@ -83,7 +101,7 @@ class MiraiHttp:
         )
         if response.status_code == 200:
             data = json.loads(response.text)
-            return data['imageId']
+            return data[_type[1]]
         return False
 
     def get_group_list(self):

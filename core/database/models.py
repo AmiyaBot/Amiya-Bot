@@ -28,9 +28,9 @@ class Group(BaseModel):
     sleep_time = BigIntegerField(default=0)
 
 
-class Images(BaseModel):
-    image_path = TextField(primary_key=True)
-    image_type = TextField()
+class Upload(BaseModel):
+    path = TextField(primary_key=True)
+    type = TextField()
     mirai_id = TextField()
 
 
