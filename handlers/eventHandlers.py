@@ -15,7 +15,7 @@ class EventHandlers:
         if event_name == 'BotReloginEvent':
             self.bot.send_to_admin('重新登陆')
 
-        if event_name == 'NudgeEvent':
+        if event_name == 'NudgeEvent' and message['target'] == self.bot.account:
             data.type = 'group'
             data.group_id = message['subject']['id']
             self.bot.send_message(
