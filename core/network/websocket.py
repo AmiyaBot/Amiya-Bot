@@ -94,10 +94,10 @@ class WebSocket(WebSocketClient):
         if reply.voices:
             for voice in reply.voices:
                 self.__send(
-                    self.build_message(Chain(reply.data), chain=voice)
+                    self.build_message(Chain(reply.data), chain=[voice])
                 )
 
-    def build_message(self, reply: Chain, chain: dict = None, sync_id: int = 1):
+    def build_message(self, reply: Chain, chain: list = None, sync_id: int = 1):
         return json.dumps(
             {
                 'syncId': sync_id,
