@@ -37,13 +37,13 @@ class Handlers:
             return Chain(data).dont_at().image(get_face())
 
         if data.is_call or data.user_info.waiting:
-            for func in self.functions:
-                if func.check(data):
-                    return func.action(data)
-
             ark_result = self.arknights.find_results(data)
             if ark_result:
                 return ark_result
+
+            for func in self.functions:
+                if func.check(data):
+                    return func.action(data)
 
             for action in [emotion, natural_language_processing]:
                 result = action(data)
