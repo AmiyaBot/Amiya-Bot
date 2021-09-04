@@ -34,4 +34,5 @@
     <gacha>Images/Gacha/6.png</gacha>
     <gacha>Images/Gacha/bg.png</gacha>
     <database>Database/pool.sql</database>
+    <database>Database/gacha_config.sql</database>
 </botFiles>

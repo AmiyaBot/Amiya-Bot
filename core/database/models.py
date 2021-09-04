@@ -22,6 +22,14 @@ class User(BaseModel):
     waiting = TextField(null=True)
 
 
+class Admin(BaseModel):
+    user_id = TextField(primary_key=True)
+    password = TextField()
+    last_login = BigIntegerField()
+    last_login_ip = TextField(null=True)
+    active = IntegerField(default=1)
+
+
 class Group(BaseModel):
     group_id = TextField(primary_key=True)
     active = IntegerField(default=1)
@@ -62,6 +70,12 @@ class Pool(BaseModel):
     pickup_4 = TextField(null=True)
     pickup_s = TextField(null=True)
     limit_pool = IntegerField()
+
+
+class GachaConfig(BaseModel):
+    conf_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
+    operator_name = TextField()
+    operator_type = IntegerField()
 
 
 class Intellect(BaseModel):

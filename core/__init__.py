@@ -13,6 +13,8 @@ from core.util import log
 
 
 class AmiyaBot(WebSocket):
+    handlers = None
+
     def __init__(self):
         super().__init__()
 

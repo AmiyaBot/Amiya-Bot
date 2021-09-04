@@ -7,7 +7,7 @@ import traceback
 
 from ..util.common import make_folder
 
-log_path = 'log/console'
+log_path = 'log'
 
 jieba.setLogLevel(jieba.logging.INFO)
 
@@ -37,13 +37,21 @@ def capitalize(text: str):
     return text[0].upper() + text[1:]
 
 
-def write_in_log(text):
-    make_folder(log_path)
-    file = f'{log_path}/%s.log' % time.strftime('%Y%m%d', time.localtime())
+def today_log(index=-1, title='running'):
+    path = f'{log_path}/{title}'
+    file = time.strftime('%Y%m%d', time.localtime()) + '.log'
 
+    make_folder(path)
+
+    t = path, f'{path}/{file}'
+
+    return t if index == -1 else t[index]
+
+
+def write_in_log(text):
     # noinspection PyBroadException
     try:
-        with open(file, encoding='utf-8', mode='a+') as log:
+        with open(today_log(1), encoding='utf-8', mode='a+') as log:
             log.write(text + '\n')
     except Exception:
         info(traceback.format_exc(), title='error', log=False)
@@ -53,10 +61,9 @@ def clean_log(days, extra: list = None):
     day_ago = datetime.datetime.now() - datetime.timedelta(days=int(days))
     day_ago = int(day_ago.strftime('%Y%m%d'))
 
-    if os.path.exists(log_path) is False:
-        return False
+    path = today_log(0)
 
-    for root, dirs, files in os.walk(log_path):
+    for root, dirs, files in os.walk(path):
         for item in files:
             filename = int(item.split('.')[0])
             if filename < day_ago:

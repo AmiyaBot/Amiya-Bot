@@ -42,7 +42,7 @@ class WebSocket(WebSocketClient):
     def handler(self, data):
         pass
 
-    def start(self):
+    def client_start(self):
         if self.offline:
             msg = 'discontinued starting because config <offline> is "True".'
             log.info(msg)
@@ -60,6 +60,8 @@ class WebSocket(WebSocketClient):
 
     def received_message(self, message):
         data = json.loads(str(message))['data']
+
+        print(data)
 
         if 'session' in data:
             self.session = data['session']

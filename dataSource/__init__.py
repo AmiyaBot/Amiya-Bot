@@ -4,7 +4,7 @@ from core.util.common import remove_punctuation, remove_xml_tag
 
 from .builder import Operator
 from .sourceBank import SourceBank
-from .updateConfig import Config
+from .unitConfig import Config
 
 
 class DataSource(SourceBank):

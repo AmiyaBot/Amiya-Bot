@@ -1,14 +1,19 @@
 import os
 import sys
+import datetime
+import logging.config
 
-from logging.config import dictConfig
+from flask import Flask
+from flask_cors import CORS
 from gevent import pywsgi
-from flask import Flask, render_template
 
-from core.util.config import config
+from core import AmiyaBot
 from core.util import log
+from core.util.config import config
 
-dictConfig({
+from .interface import Intreface
+
+logging.config.dictConfig({
     'version': 1,
     'formatters': {
         'default': {
@@ -30,22 +35,18 @@ dictConfig({
 })
 
 
-class Console:
-    def __init__(self):
+class Console(Intreface):
+    def __init__(self, bot: AmiyaBot):
         conf = config('console')
         path = self.app_path()
         app = Flask(__name__, static_folder=f'{path}/view/static', template_folder=f'{path}/view')
 
-        @app.after_request
-        def cors(environ):
-            environ.headers['Access-Control-Allow-Origin'] = '*'
-            environ.headers['Access-Control-Allow-Method'] = '*'
-            environ.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
-            return environ
+        app.secret_key = 'amiya_console'
+        app.permanent_session_lifetime = datetime.timedelta(hours=3)
 
-        @app.route('/', methods=['GET'])
-        def home():
-            return render_template('index.html', input_text='', res_text='')
+        CORS(app, supports_credentials=True)
+
+        super().__init__(app, bot)
 
         host = (conf['host'], conf['port'])
 

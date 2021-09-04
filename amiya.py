@@ -13,8 +13,9 @@ class Main(AmiyaBot):
         log.info(f'starting AmiyaBot...')
 
         super().__init__()
-        self.handlers = Handlers(self)
         self.automaticEvents = AutomaticEvents(self)
+        self.handlers = Handlers(self)
+        self.console = Console(self)
 
         log.info(f'AmiyaBot ready to connect, starting used {tr.rec()} sec.')
 
@@ -36,5 +37,6 @@ class Main(AmiyaBot):
 
 
 if __name__ == '__main__':
-    Main().start()
-    Console().start()
+    amiya = Main()
+    amiya.client_start()
+    amiya.console.start()

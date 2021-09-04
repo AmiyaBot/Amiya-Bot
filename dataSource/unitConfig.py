@@ -1,9 +1,7 @@
-from core.util.xmlReader import read_xml
+from core.database.models import GachaConfig
 
 
 class Config:
-    conf = read_xml('configure/limitOperator.xml')
-
     high_star = {
         '5': '资深干员',
         '6': '高级资深干员'
@@ -23,8 +21,12 @@ class Config:
         'RANGED': '远程'
     }
 
-    limit = conf['limit'].split(',') + conf['linkage'].split(',')
-
+    limit = []
     unavailable = []
-    for name, item in conf['unavailable'].items():
-        unavailable += item.split(',')
+
+    for item in GachaConfig.select():
+        item: GachaConfig
+        if item.operator_type in [0, 1]:
+            limit.append(item.operator_name)
+        else:
+            unavailable.append(item.operator_name)

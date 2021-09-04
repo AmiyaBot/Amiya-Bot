@@ -2,7 +2,7 @@ import re
 
 from core.util.common import remove_xml_tag, integer
 
-from .updateConfig import Config
+from .unitConfig import Config
 from .sourceBank import SourceBank
 
 attr_dict = {
