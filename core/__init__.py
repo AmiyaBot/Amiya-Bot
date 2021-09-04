@@ -11,14 +11,14 @@ from core.resolver.messageChain import Chain
 from core.database.manager import DataBase, Message as MessageBase
 from core.util import log
 
+DataBase.create_base()
+
 
 class AmiyaBot(WebSocket):
     handlers = None
 
     def __init__(self):
         super().__init__()
-
-        DataBase.create_base()
 
         self.message_stack = []
         self.http = MiraiHttp()
@@ -30,7 +30,7 @@ class AmiyaBot(WebSocket):
     def __save_message(self):
         while True:
             if self.message_stack:
-                MessageBase.insert_many(self.message_stack)
+                MessageBase.insert_many(self.message_stack).execute()
                 self.message_stack = []
             time.sleep(30)
 
