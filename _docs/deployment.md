@@ -23,7 +23,12 @@ pip install -r requirements.txt
         "serverIp": "127.0.0.1",
         "httpPort": 8080,
         "websocketPort": 8060,
-        "authKey": "AMIYARESTART"
+        "authKey": "AmiyaBot"
+    },
+    "console": {
+        // console 管理员后台配置
+        "host": "0.0.0.0",
+        "port": 8000
     },
     "baiduCloud": {
         // 百度智能云配置
@@ -47,6 +52,7 @@ pip install -r requirements.txt
         "groupId": 653031149
     },
     "tempFolders": [],
+    "miraiFolder": "",
     // 是否启用离线测试
     "offline": false
 }
@@ -80,5 +86,6 @@ python quickStart.py
         "enable": true,
         "groupId": 653031149
     },
+    "offline": false
 }
 ```

@@ -1,6 +1,7 @@
 import re
 import os
 import json
+import shutil
 
 from core.util import log
 from core.util.config import files
@@ -87,12 +88,12 @@ class SourceBank(DownloadTools):
         return self.source_bank[name]
 
     def check_update(self):
-        log.info('checking update...')
+        log.info('checking Github update...')
 
         version = self.request_file(f'{self.github_source}/excel/data_version.txt')
 
         if version is False:
-            log.info(f'version file request failed.')
+            log.info(f'Github version file request failed.')
             return False
 
         local_ver = 'None'
@@ -106,12 +107,12 @@ class SourceBank(DownloadTools):
             if latest_ver != local_ver:
                 with open(self.local_version_file, mode='w+') as v:
                     v.write(latest_ver)
-                log.info(f'new version detected: latest {latest_ver} --> local {local_ver}')
+                log.info(f'new Github version detected: latest {latest_ver} --> local {local_ver}')
                 return True
 
-            log.info(f'version is up to date: {latest_ver}')
+            log.info(f'Github version is up to date: {latest_ver}')
         else:
-            log.info(f'update check failed.')
+            log.info(f'Github update check failed.')
 
         return False
 
@@ -163,10 +164,36 @@ class SourceBank(DownloadTools):
                         raise Exception(f'file [{item}] download failed')
 
     def download_bot_console(self):
-        version = self.request_file(f'{self.bot_console}/.version').strip('\n').split('\n')
-        for file in version:
+        log.info('checking Console update...')
+
+        file_list = self.request_file(f'{self.bot_console}/.version').strip('\n').split('\n')
+
+        version = file_list.pop(0)
+
+        local_ver = None
+        local_version_file = 'view/version.txt'
+        need_update = False
+        if os.path.exists(local_version_file) is False:
+            need_update = True
+        else:
+            with open(local_version_file, mode='r') as lv:
+                local_ver = lv.read()
+                if version != local_ver:
+                    need_update = True
+
+        if need_update:
+            log.info(f'new Console version detected: latest {version} --> local {local_ver}')
+            shutil.rmtree('view')
+        else:
+            log.info(f'Console version is up to date: {version}')
+
+        make_folder('view')
+        with open(local_version_file, mode='w+') as lv:
+            lv.write(version)
+
+        for file in file_list:
             view_path = f'view/{file}'
-            if not os.path.exists(view_path):
+            if not os.path.exists(view_path) or need_update:
                 folder = '/'.join(view_path.split('/')[0:-1])
                 suffix = view_path.split('.')[-1]
 

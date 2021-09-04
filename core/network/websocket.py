@@ -61,8 +61,6 @@ class WebSocket(WebSocketClient):
     def received_message(self, message):
         data = json.loads(str(message))['data']
 
-        print(data)
-
         if 'session' in data:
             self.session = data['session']
             log.info('init websocket session: ' + self.session)

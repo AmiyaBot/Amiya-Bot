@@ -40,3 +40,8 @@ def auth_controller(app: Flask):
             .execute()
 
         return response(message='登录成功')
+
+    @app.route('/logout', methods=['POST'])
+    def logout():
+        session.clear()
+        return response(message='退出登录成功')

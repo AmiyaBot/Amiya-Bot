@@ -1,6 +1,8 @@
 import os
 import re
 import time
+import string
+import random
 import difflib
 import datetime
 import pypinyin
@@ -114,6 +116,14 @@ def integer(value):
     if type(value) is float and int(value) == value:
         value = int(value)
     return value
+
+
+def random_code(length):
+    pool = string.digits + string.ascii_letters
+    code = ''
+    for i in range(length):
+        code += random.choice(pool)
+    return code
 
 
 def make_folder(path):

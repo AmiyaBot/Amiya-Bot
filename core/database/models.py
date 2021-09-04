@@ -25,7 +25,7 @@ class User(BaseModel):
 class Admin(BaseModel):
     user_id = TextField(primary_key=True)
     password = TextField()
-    last_login = BigIntegerField()
+    last_login = BigIntegerField(null=True)
     last_login_ip = TextField(null=True)
     active = IntegerField(default=1)
 

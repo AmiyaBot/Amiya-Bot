@@ -67,7 +67,7 @@ class AmiyaBot(WebSocket):
                 'msg_time': int(time.time())
             })
 
-            if data.is_at or data.is_call:
+            if data.is_at or data.is_call or data.type == 'friend':
                 log.info(
                     f'{("[GID %s]" % data.group_id) if data.group_id else ""}'
                     f'[UID {data.user_id}][{data.nickname}] '
@@ -101,7 +101,7 @@ class AmiyaBot(WebSocket):
         :param data: Message
         :return: bool | Chain
         """
-        return False
+        pass
 
     @abc.abstractmethod
     def on_private_message(self, data: Message) -> Chain:
