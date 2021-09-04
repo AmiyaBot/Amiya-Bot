@@ -10,7 +10,6 @@
 ## mirai 配置
 此处略，详见[Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource/blob/35726a7310c6beeffb9fde1dbf5415170e815d05/README.md)文档<br>
 注：除mirai配置部分(**不包括mirai-api-http**)外其他部分由于版本更新**已不具有参考价值**。<br>
-mirai-api-http的使用请到[官方Github](https://github.com/project-mirai/mirai-api-http)下查看
 
 ## Amiya 配置
 按照注释编辑`config.json`
