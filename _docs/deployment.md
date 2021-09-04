@@ -1,17 +1,20 @@
 # Amiya-Bot 4.0 开发者文档
 
-## 代码部署
+## 环境要求
+-[mirai-console](https://github.com/mamoe/mirai-console)
+    -[mirai-api-http](https://github.com/project-mirai/mirai-api-http)
+-[Python 3.7~3.8](https://www.python.org/)
+mirai-console可使用mirai-console-loader代替。
+> mirai-console-loader 是 mirai-console 的官方启动器，若能自己启动 mirai-console，可不使用。<br>
+> 注意：**仅限 Windows 系统**。
 
-> 简单三步，启动你的 Amiya
+## mirai 配置
+此处略，详见[Amiya-Bot-resource的历史readme](https://github.com/vivien8261/Amiya-Bot-resource/blob/35726a7310c6beeffb9fde1dbf5415170e815d05/README.md)
+注：除mirai配置部分(**不包括mirai-api-http**)外其他部分由于版本更新**已不具有参考价值**。
+    mirai-api-http的使用请到[官方Github](https://github.com/project-mirai/mirai-api-http)下查看
 
-1. 安装 python 依赖
-
-```bash
-pip install -r requirements.txt
-```
-
-2. 配置`config.json`
-
+## Amiya 配置
+按照注释编辑`config.json`
 ```json5
 {
     // 机器人 QQ 号
@@ -52,13 +55,33 @@ pip install -r requirements.txt
 }
 ```
 
-3. 启动 Amiya 入口程序
+## Python 配置
+
+1.安装Python
+略，或[此处](https://www.baidu.com/s?wd=python%E5%AE%89%E8%A3%85)
+
+2. 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+Windows可直接运行requirements.cmd
+
+## 启动
 
 ```bash
 python amiya.py
 ```
 
-## 功能测试方式
+或直接打开start.cmd（Windows）/start.sh（Linux）
+注：Centos等自带Python2的系统应需使用python3命令。
+
+```bash
+python3 amiya.py
+```
+
+## 功能测试
 
 - 离线测试
     - 不需要启动`mirai-console`
