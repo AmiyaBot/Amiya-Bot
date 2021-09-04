@@ -1,9 +1,9 @@
 # Amiya-Bot 4.0 开发者文档
 
 ## 环境要求
--[mirai-console](https://github.com/mamoe/mirai-console)
-    -[mirai-api-http](https://github.com/project-mirai/mirai-api-http)
--[Python 3.7~3.8](https://www.python.org/)
+- [mirai-console](https://github.com/mamoe/mirai-console)
+    - [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
+- [Python 3.7~3.8](https://www.python.org/)
 mirai-console可使用mirai-console-loader代替。
 > mirai-console-loader 是 mirai-console 的官方启动器，若能自己启动 mirai-console，可不使用。<br>
 > 注意：**仅限 Windows 系统**。
