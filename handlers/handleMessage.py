@@ -6,41 +6,25 @@ from core.util.config import config
 from core.util.common import random_code
 from core.database.models import User, Admin, Message as MessageBase
 
-from .admin.groupAdmin import group_admin_handler
-from .normal.nlp import natural_language_processing
-from .normal.touch import get_random_reply
-from .user.emotion import emotion
-from .user.greeting import greeting
-from .user.userInfo import UserInfo
-from .user.intellectAlarm import IntellectAlarm
-from .menu.menu import Menu
-from .weibo.weibo import WeiBo
-from .arknights import Arknights
-from .eventHandlers import EventHandlers
+from handlers.functions import FunctionIndexes, manager_handler, random_reply, greeting
+from handlers.handleWaiting import waiting_event
 
 limit = config('message.limit')
 account = config('selfId')
 close_beta = config('closeBeta')
 
 
-class Handlers(EventHandlers):
+class Handlers(FunctionIndexes):
     def __init__(self, bot: AmiyaBot):
         super().__init__(bot)
-
         self.bot = bot
-        self.arknights = Arknights(bot)
-        self.functions = [
-            Menu(),
-            WeiBo(),
-            UserInfo(),
-            IntellectAlarm()
-        ]
 
+    @waiting_event
     def reply_group_message(self, data: Message):
         if data.is_only_call:
-            return get_random_reply(data)
+            return random_reply(data)
 
-        if data.is_call or data.user_info.waiting:
+        if data.is_call:
             ark_result = self.arknights.find_results(data)
             if ark_result:
                 return ark_result
@@ -49,13 +33,14 @@ class Handlers(EventHandlers):
                 if func.check(data):
                     return func.action(data)
 
-            for action in [emotion, natural_language_processing]:
+            for action in self.actions:
                 result = action(data)
                 if result:
                     return result
 
         return greeting(data)
 
+    @waiting_event
     def reply_private_message(self, data: Message):
         message = data.text
         reply = Chain(data)
@@ -107,7 +92,8 @@ class Handlers(EventHandlers):
                     Admin.update(active=1).where(Admin.user_id == user_id).execute()
                     return reply.text(f'启用管理员【{user_id}】')
 
-    def filter_handler(self, data: Message):
+    @staticmethod
+    def message_filter(data: Message):
         if data.is_admin is False and data.type == 'friend':
             return False
 
@@ -130,8 +116,4 @@ class Handlers(EventHandlers):
         if speed.count() >= limit['maxCount']:
             return Chain(data).dont_at().text('博士说话太快了，请慢一些吧～')
 
-        return self.group_admin_handler(data) if data.type == 'group' else True
-
-    @staticmethod
-    def group_admin_handler(data: Message):
-        return group_admin_handler(data)
+        return manager_handler(data) if data.type == 'group' else True

@@ -55,11 +55,17 @@ class WebSocket(WebSocketClient):
             raise Exception(f'cannot connect websocket server from mirai-api-http.')
 
     def closed(self, code, reason=None):
-        log.info(f'websocket closed [{code}] {reason}')
+        log.info(f'websocket closed [{code}] {str(reason, encoding="utf-8")}')
         self.executor.terminate()
 
     def received_message(self, message):
-        data = json.loads(str(message))['data']
+        data = json.loads(str(message))
+
+        if 'data' not in data:
+            self.close()
+            return False
+
+        data = data['data']
 
         if 'session' in data:
             self.session = data['session']

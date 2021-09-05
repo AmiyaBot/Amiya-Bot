@@ -3,7 +3,7 @@ import time
 
 from core import Message, Chain
 from core.database.models import Intellect
-from handlers.funcInterface import FuncInterface
+from handlers.functions import FuncInterface
 
 
 class IntellectAlarm(FuncInterface):

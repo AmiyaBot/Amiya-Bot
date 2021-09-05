@@ -102,6 +102,7 @@ class Message:
                     self.at_target = chain['target']
                     if self.at_target == CONF['selfId']:
                         self.is_at = True
+                        self.is_call = True
 
                 if chain['type'] == 'Plain':
                     text += chain['text'].strip()

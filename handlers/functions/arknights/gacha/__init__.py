@@ -3,7 +3,7 @@ import re
 from core import Message, Chain
 from core.util.common import word_in_sentence
 from dataSource import DataSource
-from handlers.funcInterface import FuncInterface
+from handlers.functions import FuncInterface
 
 from .gacha import GachaForUser, GachaPool
 
@@ -36,7 +36,7 @@ class Gacha(FuncInterface):
     @FuncInterface.is_used
     def action(self, data: Message):
 
-        GC = GachaForUser(data, self.data)
+        gc = GachaForUser(data, self.data)
 
         coupon = data.user_info.coupon
         message = data.text_digits
@@ -57,12 +57,12 @@ class Gacha(FuncInterface):
                     return reply.text('博士，您的寻访凭证（%d张）不够哦~' % coupon)
 
                 if times <= 10:
-                    return GC.detailed_mode(times, ten_times=times == 10)
+                    return gc.detailed_mode(times, ten_times=times == 10)
                 else:
-                    return GC.continuous_mode(times)
+                    return gc.continuous_mode(times)
 
         if '保底' in message:
-            return reply.text(GC.check_break_even())
+            return reply.text(gc.check_break_even())
 
         if word_in_sentence(message, ['多少', '几']):
             text = '博士的寻访凭证还剩余 %d 张~' % coupon

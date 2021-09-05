@@ -11,7 +11,7 @@ from core.util.baiduCloud import OpticalCharacterRecognition
 from core.database.models import User
 from dataSource import DataSource, Operator
 
-from handlers.funcInterface import FuncInterface
+from handlers.functions import FuncInterface
 
 
 class Recruit(FuncInterface):
@@ -44,9 +44,6 @@ class Recruit(FuncInterface):
 
     @FuncInterface.is_disable
     def check(self, data: Message):
-        if data.user_info.waiting == 'Recruit' and data.image:
-            return True
-
         for item in ['公招', '公开招募'] + self.tags:
             if item in data.text:
                 return True

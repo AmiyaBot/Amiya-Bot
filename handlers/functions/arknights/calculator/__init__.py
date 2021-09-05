@@ -3,7 +3,7 @@ import time
 
 from core import Message, Chain
 from dataSource import DataSource
-from handlers.funcInterface import FuncInterface
+from handlers.functions import FuncInterface
 
 from .calculator import calc_jade
 

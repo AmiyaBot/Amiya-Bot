@@ -57,8 +57,6 @@ class AmiyaBot(WebSocket):
             return False
 
         if data.type:
-            filter_result = self.message_filter(data)
-
             self.message_stack.append({
                 'user_id': data.user_id,
                 'target_id': data.at_target,
@@ -67,7 +65,9 @@ class AmiyaBot(WebSocket):
                 'msg_time': int(time.time())
             })
 
-            if data.is_at or data.is_call or data.type == 'friend':
+            filter_result = self.message_filter(data)
+
+            if data.is_call or data.type == 'friend':
                 log.info(
                     f'{("[GID %s]" % data.group_id) if data.group_id else ""}'
                     f'[UID {data.user_id}][{data.nickname}] '

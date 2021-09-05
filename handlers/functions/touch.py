@@ -9,7 +9,7 @@ nudge_reply = nudge('reply')
 wiki = Wiki()
 
 
-def get_random_reply(data: Message):
+def random_reply(data: Message):
     r = random.randint(1, 10)
     return get_face(data) if r >= 2 else get_voice(data)
 

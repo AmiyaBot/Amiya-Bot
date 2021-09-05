@@ -5,7 +5,7 @@ import jieba
 from core import Message, Chain, AmiyaBot
 from core.util.common import find_similar_string, word_in_sentence, text_to_pinyin
 from dataSource import DataSource
-from handlers.funcInterface import FuncInterface
+from handlers.functions import FuncInterface
 
 from .operatorModules import OperatorModules
 from .materialCosts import MaterialCosts

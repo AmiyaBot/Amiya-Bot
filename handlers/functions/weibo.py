@@ -7,7 +7,7 @@ from core import Message, Chain
 from core.util import log
 from core.util.common import remove_xml_tag, make_folder
 from core.util.imageCreator import char_seat
-from handlers.funcInterface import FuncInterface
+from handlers.functions import FuncInterface
 
 weibo_id = '6279793937'
 

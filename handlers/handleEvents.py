@@ -1,6 +1,6 @@
 from core import AmiyaBot, Message, Chain
-from handlers.normal.touch import get_random_reply
 from dataSource.wiki import Wiki
+from handlers.functions import random_reply
 
 
 class EventHandlers:
@@ -19,7 +19,7 @@ class EventHandlers:
             data.type = 'group'
             data.group_id = message['subject']['id']
             self.bot.send_message(
-                get_random_reply(data)
+                random_reply(data)
             )
 
         if event_name == 'MemberJoinEvent':

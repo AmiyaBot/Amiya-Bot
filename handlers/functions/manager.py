@@ -5,7 +5,7 @@ from core.database.models import Group
 from core.util.common import word_in_sentence, calc_time_total
 
 
-def group_admin_handler(data: Message):
+def manager_handler(data: Message):
     message = data.text
     reply = Chain(data)
 

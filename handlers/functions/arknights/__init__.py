@@ -1,7 +1,6 @@
 from core import Message
 from dataSource import DataSource
-
-from ..funcInterface import FuncInterface
+from handlers.functions import FuncInterface
 
 from .calculator import Calculator
 from .operator import Operator
@@ -15,13 +14,20 @@ class Arknights(DataSource):
     def __init__(self, bot):
         super().__init__(auto_update=True, check_assets=True)
 
+        self.Calculator = Calculator(self)
+        self.Operator = Operator(self, bot)
+        self.Material = Material(self)
+        self.Recruit = Recruit(self, bot)
+        self.Enemy = Enemy(self)
+        self.Gacha = Gacha(self)
+
         self.funcs = [
-            Gacha(self),
-            Calculator(self),
-            Operator(self, bot),
-            Material(self),
-            Recruit(self, bot),
-            Enemy(self),
+            self.Gacha,
+            self.Calculator,
+            self.Operator,
+            self.Material,
+            self.Recruit,
+            self.Enemy,
         ]
 
     def find_results(self, data: Message):
