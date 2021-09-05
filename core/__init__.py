@@ -61,6 +61,7 @@ class AmiyaBot(WebSocket):
                 'user_id': data.user_id,
                 'target_id': data.at_target,
                 'group_id': data.group_id,
+                'record': 'call' if data.is_call else '',
                 'msg_type': data.type,
                 'msg_time': int(time.time())
             })

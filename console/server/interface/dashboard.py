@@ -49,7 +49,7 @@ def dashboard_controller(app: Flask):
                 res[hour]['talk'] += 1
                 if item.user_id == account:
                     res[hour]['reply'] += 1
-                if item.target_id == account:
+                if item.record == 'call':
                     res[hour]['call'] += 1
 
         return response(res)
