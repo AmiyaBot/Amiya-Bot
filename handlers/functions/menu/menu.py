@@ -3,7 +3,7 @@ import re
 from core import Message, Chain
 from core.database.models import Disable
 from core.util.common import word_in_sentence
-from handlers.functions import FuncInterface
+from handlers.constraint import FuncInterface
 
 from .function import Function
 

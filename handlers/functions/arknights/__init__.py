@@ -1,6 +1,6 @@
 from core import Message
 from dataSource import DataSource
-from handlers.functions import FuncInterface
+from handlers.constraint import FuncInterface
 
 from .calculator import Calculator
 from .operator import Operator

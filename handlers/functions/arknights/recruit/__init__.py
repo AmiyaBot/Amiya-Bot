@@ -11,7 +11,7 @@ from core.util.baiduCloud import OpticalCharacterRecognition
 from core.database.models import User
 from dataSource import DataSource, Operator
 
-from handlers.functions import FuncInterface
+from handlers.constraint import FuncInterface
 
 
 class Recruit(FuncInterface):

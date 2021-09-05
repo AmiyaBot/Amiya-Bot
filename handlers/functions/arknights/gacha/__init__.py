@@ -3,7 +3,7 @@ import re
 from core import Message, Chain
 from core.util.common import word_in_sentence
 from dataSource import DataSource
-from handlers.functions import FuncInterface
+from handlers.constraint import FuncInterface
 
 from .gacha import GachaForUser, GachaPool
 

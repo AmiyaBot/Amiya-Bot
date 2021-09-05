@@ -2,7 +2,7 @@ import jieba
 
 from core import Message, Chain
 from core.util.common import find_similar_string
-from handlers.functions import FuncInterface
+from handlers.constraint import FuncInterface
 
 from .materialData import MaterialData
 

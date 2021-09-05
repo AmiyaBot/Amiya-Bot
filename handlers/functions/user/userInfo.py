@@ -2,7 +2,7 @@ import random
 
 from core import Message, Chain
 from core.database.models import Pool
-from handlers.functions import FuncInterface
+from handlers.constraint import FuncInterface
 
 touch = [
     {

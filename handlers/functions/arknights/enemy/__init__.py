@@ -6,7 +6,7 @@ from core import Message, Chain
 from core.util import log
 from core.util.common import find_similar_list, remove_xml_tag, integer
 from dataSource import DataSource
-from handlers.functions import FuncInterface
+from handlers.constraint import FuncInterface
 
 
 class Enemy(FuncInterface):
