@@ -14,8 +14,8 @@ from .wiki import Wiki
 
 class SourceBank(DownloadTools):
     def __init__(self):
-        self.bot_source = 'https://cdn.jsdelivr.net/gh/vivien8261/Amiya-Bot-resource@master'
-        self.bot_console = 'https://cdn.jsdelivr.net/gh/vivien8261/Amiya-Bot-console@master'
+        self.bot_source = 'http://vivien8261.gitee.io/amiya-bot-resource'
+        self.bot_console = 'http://vivien8261.gitee.io/amiya-bot-console'
         self.bot_paths = {
             'face': 'resource/images/face',
             'style': 'resource/style',
@@ -183,7 +183,8 @@ class SourceBank(DownloadTools):
 
         if need_update:
             log.info(f'new Console version detected: latest {version} --> local {local_ver}')
-            shutil.rmtree('view')
+            if os.path.exists('view'):
+                shutil.rmtree('view')
         else:
             log.info(f'Console version is up to date: {version}')
 
