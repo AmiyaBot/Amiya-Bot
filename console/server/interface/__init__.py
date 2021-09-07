@@ -4,6 +4,7 @@ from core import AmiyaBot
 
 from .auth import auth_controller
 from .user import user_controller
+from .admin import admin_controller
 from .gacha import gacha_controller
 from .operator import operator_controller
 from .dashboard import dashboard_controller
@@ -19,6 +20,7 @@ class Intreface:
 
         auth_controller(app)
         user_controller(app)
+        admin_controller(app)
         gacha_controller(app)
         operator_controller(app, data)
         dashboard_controller(app)

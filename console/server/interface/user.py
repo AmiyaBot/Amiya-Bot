@@ -1,12 +1,10 @@
-from flask import Flask, session, request
+from flask import Flask, request
 
-from core.util.config import config
 from core.database.models import User
 from core.database.manager import select_for_paginate
 
 from ..response import response
-
-super_admin = config('adminId')
+from .auth import super_user
 
 
 def user_controller(app: Flask):
@@ -43,11 +41,8 @@ def user_controller(app: Flask):
         return response(message='设置成功')
 
     @app.route('/user/sendCoupon', methods=['POST'])
+    @super_user
     def send_coupon():
-        user = session.get('user')
-        if user != super_admin:
-            return response(code=0, message='您没有此接口的改写权限')
-
         params = request.json
 
         value = int(params['value'])

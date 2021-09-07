@@ -30,6 +30,15 @@ class Admin(BaseModel):
     active = IntegerField(default=1)
 
 
+class AdminTraceLog(BaseModel):
+    log_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
+    user_id = TextField()
+    interface = TextField()
+    methods = TextField()
+    params = TextField()
+    time = BigIntegerField()
+
+
 class Group(BaseModel):
     group_id = TextField(primary_key=True)
     active = IntegerField(default=1)

@@ -1,19 +1,53 @@
 import time
+import json
 
+from functools import wraps
 from flask import Flask, session, request
 
-from core.database.models import Admin
+from core.util.config import config
+from core.database.models import Admin, AdminTraceLog
 
 from ..response import response
+
+
+def super_user(func=None):
+    if func is None:
+        return str(session.get('user')) == str(config('adminId'))
+
+    @wraps(func)
+    def check():
+        if str(session.get('user')) != str(config('adminId')):
+            return response(code=0, message='您没有此接口的操作权限')
+        return func()
+
+    return check
 
 
 def auth_controller(app: Flask):
     @app.before_request
     def verify_access():
         url = request.path
+        user = session.get('user')
+        methods = request.method
+        params = json.dumps(request.json, ensure_ascii=False)
+
         if not url.startswith('/static') and url not in ['/', '/login']:
-            if not session.get('user'):
+            if not user:
                 return response(code=400, message='登录失效')
+
+            admin: Admin = Admin.get_or_none(user_id=user)
+            if not admin or admin.active == 0:
+                session.clear()
+                return response(code=400, message='您已被强制退出')
+
+        if user and url not in ['/editPassword']:
+            AdminTraceLog.create(
+                user_id=user,
+                interface=url,
+                methods=methods,
+                params=params,
+                time=int(time.time()),
+            )
 
     @app.route('/login', methods=['POST'])
     def login():
@@ -40,6 +74,19 @@ def auth_controller(app: Flask):
             .execute()
 
         return response(message='登录成功')
+
+    @app.route('/editPassword', methods=['POST'])
+    def edit_password():
+        user_id = session.get('user')
+        password = request.json['password']
+        new_password = request.json['newPassword']
+
+        admin = Admin.get_or_none(user_id=user_id, password=password)
+        if admin:
+            Admin.update(password=new_password).where(Admin.user_id == user_id).execute()
+            return response(message='修改成功')
+        else:
+            return response(message='密码错误', code=0)
 
     @app.route('/logout', methods=['POST'])
     def logout():

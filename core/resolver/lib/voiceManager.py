@@ -42,6 +42,6 @@ class VoiceManager(MiraiHttp):
 
     @staticmethod
     async def silk_encode(path, res):
-        silk: bytes = await silkcoder.encode(path, rate=100000)
+        silk: bytes = await silkcoder.encode(path)
         with open(res, mode='wb+') as file:
             file.write(silk)

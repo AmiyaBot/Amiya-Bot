@@ -10,6 +10,7 @@ class DataBase:
         tables = (
             User,
             Admin,
+            AdminTraceLog,
             Group,
             Upload,
             Message,

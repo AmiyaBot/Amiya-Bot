@@ -3,7 +3,7 @@ import time
 
 from core import AmiyaBot, Message, Chain
 from core.util.config import config
-from core.util.common import random_code
+from core.util.common import random_code, word_in_sentence
 from core.database.models import User, Admin, Message as MessageBase
 
 from handlers.functions import FunctionIndexes, manager_handler, random_reply, greeting
@@ -79,18 +79,19 @@ class Handlers(FunctionIndexes):
             if r:
                 user_id = int(r.group(1))
                 user = Admin.get_or_none(user_id=user_id)
+
                 if '注册' in message and not user:
                     password = random_code(10)
                     Admin.create(user_id=user_id, password=password)
                     return reply.text(f'管理员{user_id}注册成功，初始密码：{password}')
+
                 if not user:
                     return reply.text(f'没有找到管理员【{user_id}】')
-                if '禁用' in message:
-                    Admin.update(active=0).where(Admin.user_id == user_id).execute()
-                    return reply.text(f'禁用管理员【{user_id}】')
-                if '启用' in message:
-                    Admin.update(active=1).where(Admin.user_id == user_id).execute()
-                    return reply.text(f'启用管理员【{user_id}】')
+
+                if word_in_sentence(message, ['禁用', '启用']):
+                    status = int('启用' in message)
+                    Admin.update(active=status).where(Admin.user_id == user_id).execute()
+                    return reply.text(f'{"启用" if status else "禁用"}管理员【{user_id}】')
 
     @staticmethod
     def message_filter(data: Message):

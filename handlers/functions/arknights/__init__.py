@@ -23,11 +23,11 @@ class Arknights(DataSource):
 
         self.funcs = [
             self.Gacha,
+            self.Enemy,
             self.Calculator,
             self.Operator,
             self.Material,
             self.Recruit,
-            self.Enemy,
         ]
 
     def find_results(self, data: Message):
