@@ -13,7 +13,11 @@ wiki = Wiki()
 @disable_func(function_id='normal')
 def random_reply(data: Message):
     r = random.randint(1, 10)
-    return get_face(data) if r >= 2 else get_voice(data)
+    if r == 10:
+        return get_voice(data)
+    # if r >= 7:
+    #     return Chain(data).dont_at().poke()
+    return get_face(data)
 
 
 def get_face(data: Message):

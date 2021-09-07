@@ -49,6 +49,13 @@ class Chain:
                 break
         return self
 
+    def poke(self, name='Poke'):
+        self.chain.append({
+            'type': 'Poke',
+            'name': name
+        })
+        return self
+
     def text(self, text, trans_image=True):
         chain = []
         r = re.findall(r'(\[face(\d+)])', text)

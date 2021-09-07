@@ -18,9 +18,9 @@ class EventHandlers:
         if event_name == 'NudgeEvent' and message['target'] == self.bot.account:
             data.type = 'group'
             data.group_id = message['subject']['id']
-            self.bot.send_message(
-                random_reply(data)
-            )
+            reply = random_reply(data)
+            if reply:
+                self.bot.send_message(reply)
 
         if event_name == 'MemberJoinEvent':
             data.type = 'group'
