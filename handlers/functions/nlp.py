@@ -3,10 +3,12 @@ import random
 from core import Message, Chain
 from core.util.config import config
 from core.util.baiduCloud import NaturalLanguage
+from handlers.constraint import disable_func
 
 nlp = NaturalLanguage(config('baiduCloud'))
 
 
+@disable_func(function_id='normal')
 def natural_language_processing(data: Message):
     result = nlp.emotion(data.text)
     if result and 'items' in result and result['items']:

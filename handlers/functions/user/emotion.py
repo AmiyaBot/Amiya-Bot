@@ -3,10 +3,12 @@ import random
 from core import Message, Chain
 from core.util.config import keyword
 from core.util.common import word_in_sentence, check_sentence_by_re
+from handlers.constraint import disable_func
 
 keyword = keyword()
 
 
+@disable_func(function_id='normal')
 def emotion(data: Message):
     message = data.text
 

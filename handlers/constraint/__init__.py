@@ -1,7 +1,25 @@
 import abc
 
+from functools import wraps
 from core import Message, Chain
 from core.database.models import Disable, Function
+
+
+def disable_func(function_id):
+    def decorator(func):
+        @wraps(func)
+        def action(data: Message):
+            disable = Disable.select().where(
+                Disable.group_id == data.group_id,
+                Disable.function_id == function_id
+            )
+            if disable.count():
+                return False
+            return func(data)
+
+        return action
+
+    return decorator
 
 
 class FuncId:

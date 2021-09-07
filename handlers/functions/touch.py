@@ -4,11 +4,13 @@ import random
 from core import Chain, Message
 from core.util.config import nudge
 from dataSource.wiki import Wiki
+from handlers.constraint import disable_func
 
 nudge_reply = nudge('reply')
 wiki = Wiki()
 
 
+@disable_func(function_id='normal')
 def random_reply(data: Message):
     r = random.randint(1, 10)
     return get_face(data) if r >= 2 else get_voice(data)
