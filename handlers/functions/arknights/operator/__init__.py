@@ -39,6 +39,9 @@ class Operator(FuncInterface):
 
     @FuncInterface.is_disable
     def check(self, data: Message):
+        if '敌人' in data.text:
+            return False
+
         keyword = []
         keyword += InitData.keyword
         keyword += InitData.voices
