@@ -30,8 +30,9 @@ def auth_controller(app: Flask):
         user = session.get('user')
         methods = request.method
         params = json.dumps(request.json, ensure_ascii=False)
+        static = url.startswith('/static')
 
-        if not url.startswith('/static') and url not in ['/', '/login']:
+        if not static and url not in ['/', '/login']:
             if not user:
                 return response(code=400, message='登录失效')
 
@@ -40,7 +41,7 @@ def auth_controller(app: Flask):
                 session.clear()
                 return response(code=400, message='您已被强制退出')
 
-        if user and url not in ['/editPassword']:
+        if not static and user and url not in ['/editPassword']:
             AdminTraceLog.create(
                 user_id=user,
                 interface=url,

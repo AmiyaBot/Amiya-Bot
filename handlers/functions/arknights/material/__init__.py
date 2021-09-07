@@ -3,6 +3,7 @@ import jieba
 from core import Message, Chain
 from core.util.common import find_similar_string
 from handlers.constraint import FuncInterface
+from handlers.functions.user.intellectAlarm import IntellectAlarm
 
 from .materialData import MaterialData
 
@@ -17,6 +18,9 @@ class Material(FuncInterface):
 
     @FuncInterface.is_disable
     def check(self, data: Message):
+        if IntellectAlarm.priority(data):
+            return False
+
         for item in ['材料'] + self.material_data.material_list:
             if item in data.text:
                 return True

@@ -12,6 +12,10 @@ class FuncInterface:
     def __init__(self, function_id):
         self.function_id = function_id
 
+    @staticmethod
+    def priority(data: Message) -> bool:
+        pass
+
     @abc.abstractmethod
     def check(self, data: Message) -> bool:
         pass
