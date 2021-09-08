@@ -114,8 +114,7 @@ Amiya 的管理功能仅限私聊，且只有管理员能够使用 Amiya 的私�
 ## 如何维护
 
 > 推荐使用 [Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) 获得更好的可视化维护界面，否则部分数据维护需要到数据库修改<br>
-> 使用方法请阅读说明文档（暂无）<br>
-> 4.0 版本以后，不再需要手动部署 Amiya-Bot-console，Amiya-Bot 会在启动时自动部署
+> 使用方法请阅读 [说明文档](https://github.com/vivien8261/Amiya-Bot/blob/master/_docs/console.md) <br>
 
 - Amiya 带有`自动维护`功能，会在每天凌晨4点执行以下操作：
     - 重置所有用户的签到状态和心情值
