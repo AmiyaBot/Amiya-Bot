@@ -4,7 +4,7 @@ import random
 import requests
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-from core.database.models import Group
+from core.database.models import Group, GroupSleep, GroupSetting
 from core.util.config import config
 from core.util import log
 
@@ -104,24 +104,46 @@ class MiraiHttp:
             return data[_type[1]]
         return False
 
+    def get_member_list(self, group_id):
+        response = self.__get(f'memberList?sessionKey={self.session}&target={group_id}')
+        if response and response['code'] == 0:
+            member_list = {}
+            for item in response['data']:
+                if item['id'] not in member_list:
+                    member_list[item['id']] = {
+                        'user_id': item['id'],
+                        'user_name': item['memberName'],
+                        'permission': item['permission'],
+                        'sp_title': item['specialTitle'],
+                        'join_time': item['joinTimestamp'],
+                        'last_speak_time': item['lastSpeakTimestamp']
+                    }
+            member_list = [n for i, n in member_list.items()]
+            return member_list
+        return []
+
     def get_group_list(self):
-        beta = config('closeBeta')
-        if beta['enable']:
-            return [
-                {
-                    'id': beta['groupId']
-                }
-            ]
-        else:
-            response = self.__get('groupList?sessionKey=%s' % self.session)
-            if response and response['code'] == 0:
-                group_list = {}
-                for item in response['data']:
-                    if item['id'] not in group_list:
-                        group_list[item['id']] = item
-                group_list = [n for i, n in group_list.items()]
-                return group_list
-            return []
+        response = self.__get(f'groupList?sessionKey={self.session}')
+        if response and response['code'] == 0:
+            group_list = {}
+            for item in response['data']:
+                if item['id'] not in group_list:
+                    group_list[item['id']] = {
+                        'group_id': item['id'],
+                        'group_name': item['name'],
+                        'permission': item['permission']
+                    }
+            group_list = [n for i, n in group_list.items()]
+            return group_list
+        return []
+
+    def send_nudge(self, user_id, group_id):
+        self.__post('sendNudge', {
+            'sessionKey': self.session,
+            'target': user_id,
+            'subject': group_id,
+            'kind': 'Group'
+        })
 
     def handle_join_group(self, event, allow=True):
         self.__post('/resp/botInvitedJoinGroupRequestEvent', {
@@ -137,6 +159,8 @@ class MiraiHttp:
         if flag:
             self.__post('quit', {'sessionKey': self.session, 'target': group_id})
         Group.delete().where(Group.group_id == group_id).execute()
+        GroupSleep.delete().where(GroupSleep.group_id == group_id).execute()
+        GroupSetting.delete().where(GroupSetting.group_id == group_id).execute()
 
     @staticmethod
     def get_session():

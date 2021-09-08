@@ -41,8 +41,20 @@ class AdminTraceLog(BaseModel):
 
 class Group(BaseModel):
     group_id = TextField(primary_key=True)
+    group_name = TextField()
+    permission = TextField()
+
+
+class GroupSleep(BaseModel):
+    group_id = TextField(primary_key=True)
     active = IntegerField(default=1)
     sleep_time = BigIntegerField(default=0)
+
+
+class GroupSetting(BaseModel):
+    group_id = TextField(primary_key=True)
+    send_notice = IntegerField(default=0)
+    send_weibo = IntegerField(default=0)
 
 
 class Upload(BaseModel):

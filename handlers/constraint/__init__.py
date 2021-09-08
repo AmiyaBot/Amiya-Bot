@@ -6,16 +6,21 @@ from core.database.models import Disable, Function
 
 
 def disable_func(function_id):
+    """
+    标记函数是否可被禁用，被装饰的函数第一个参数必须是 Message 类
+    """
+
     def decorator(func):
         @wraps(func)
-        def action(data: Message):
+        def action(*args, **kwargs):
+            data: Message = args[0]
             disable = Disable.select().where(
                 Disable.group_id == data.group_id,
                 Disable.function_id == function_id
             )
             if disable.count():
                 return False
-            return func(data)
+            return func(*args, **kwargs)
 
         return action
 

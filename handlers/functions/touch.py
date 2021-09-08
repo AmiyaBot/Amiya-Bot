@@ -1,7 +1,7 @@
 import os
 import random
 
-from core import Chain, Message
+from core import Chain, Message, AmiyaBot
 from core.util.config import nudge
 from dataSource.wiki import Wiki
 from handlers.constraint import disable_func
@@ -11,12 +11,13 @@ wiki = Wiki()
 
 
 @disable_func(function_id='normal')
-def random_reply(data: Message):
+def random_reply(data: Message, bot: AmiyaBot):
     r = random.randint(1, 10)
     if r == 10:
         return get_voice(data)
-    # if r >= 7:
-    #     return Chain(data).dont_at().poke()
+    if r >= 7:
+        bot.http.send_nudge(data.user_id, data.group_id)
+        return False
     return get_face(data)
 
 

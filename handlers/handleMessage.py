@@ -22,7 +22,7 @@ class Handlers(FunctionIndexes):
     @waiting_event
     def reply_group_message(self, data: Message):
         if data.is_only_call:
-            return random_reply(data)
+            return random_reply(data, self.bot)
 
         if data.is_call:
             ark_result = self.arknights.find_results(data)
@@ -110,8 +110,8 @@ class Handlers(FunctionIndexes):
             return False
 
         speed = MessageBase.select().where(
-            MessageBase.user_id == account,
-            MessageBase.target_id == data.user_id,
+            MessageBase.user_id == data.user_id,
+            MessageBase.record == 'call',
             MessageBase.msg_time >= time.time() - limit['seconds']
         )
         if speed.count() >= limit['maxCount']:

@@ -12,6 +12,8 @@ class DataBase:
             Admin,
             AdminTraceLog,
             Group,
+            GroupSleep,
+            GroupSetting,
             Upload,
             Message,
             Function,

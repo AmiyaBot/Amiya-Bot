@@ -17,8 +17,9 @@ class EventHandlers:
 
         if event_name == 'NudgeEvent' and message['target'] == self.bot.account:
             data.type = 'group'
+            data.user_id = message['fromId']
             data.group_id = message['subject']['id']
-            reply = random_reply(data)
+            reply = random_reply(data, self.bot)
             if reply:
                 self.bot.send_message(reply)
 
@@ -41,7 +42,7 @@ class EventHandlers:
         if event_name == 'BotInvitedJoinGroupRequestEvent':
             self.bot.http.handle_join_group(message)
 
-        if event_name in ['BotMuteEvent', 'BotLeaveEventKick']:
+        if event_name in ['BotMuteEvent', 'BotLeaveEventKick', 'BotLeaveEventActive']:
             if 'operator' in message:
                 message = message['operator']
             group_id = message['group']['id']
