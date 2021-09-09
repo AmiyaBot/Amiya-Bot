@@ -1,5 +1,10 @@
 # Amiya-Bot 4.0 开发者文档
 
+## 关于 Amiya-Bot 3.0 迁移到 4.0
+
+- 4.0 版本重写了大部分核心代码并舍弃了 Mysql 数据库，已导致 3.0 的代码无法迁移。
+- 4.0 在启动时会在目录下创建 `amiya.db` Sqlite 数据库。内含的 `user` 表与旧版本 `t_user` 表字段一致。用户数据可以手动迁移到Sqlite
+
 ## 代码部署
 
 > 简单三步，启动你的 Amiya
@@ -67,8 +72,8 @@ python amiya.py
 ## 功能测试方式
 
 - 离线测试
-    - 不需要启动`mirai-console`
-    - 配置 `offline: true` 直接运行脚本`quickStart.py`
+    - 不需要启动 `mirai-console`
+    - 配置 `offline: true` 直接运行脚本 `quickStart.py`
     - 然后在控制台模拟交互
 
 ```bash
@@ -76,8 +81,7 @@ python quickStart.py
 ```
 
 - 实际环境的封闭测试
-    - 配置封闭测试相关项
-    - 再通过上述步骤启动 Amiya
+    - 配置封闭测试相关项后启动 Amiya
     - 之后，Amiya 仅会回应封闭测试指定的群
 
 ```json5
