@@ -51,8 +51,8 @@ class Handlers(FunctionIndexes):
 
         if '强制更新' in message:
             self.bot.send_to_admin('开始强制更新...')
-            self.arknights.download_bot_resource(True)
-            self.arknights.reset_ignore(True)
+            self.arknights.download_bot_resource(refresh=True)
+            self.arknights.get_ignore(reset=True)
             self.bot.restart()
             return reply.text('即将重新启动...')
 

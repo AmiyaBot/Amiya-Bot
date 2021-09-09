@@ -2,19 +2,26 @@ import os
 import time
 import traceback
 
+from core import AmiyaBot, Message, Chain
 from core.util import log
 from core.util.config import config
-from core.util.common import insert_zero
+from core.util.common import insert_zero, TimeRecorder
 from core.util.imageCreator import temp_dir
-from core.database.models import User, Upload, Message, Intellect
+from core.database.models import User, Upload, Message, Intellect, GroupSetting
+
+from dataSource.sourceBank import SourceBank
+from handlers.functions.weibo import Weibo
+
+weibo = Weibo()
 
 
 class AutomaticEvents:
-    def __init__(self, bot):
+    def __init__(self, bot: AmiyaBot):
         self.bot = bot
 
     def exec_all_tasks(self, times):
         self.maintain()
+        self.push_new_weibo()
         self.intellect_full_alarm()
 
     def maintain(self):
@@ -47,6 +54,48 @@ class AutomaticEvents:
             log.error(traceback.format_exc())
             self.bot.send_to_admin(f'维护发生错误：{repr(e)}')
 
+    def push_new_weibo(self):
+        try:
+            ignore = SourceBank.get_ignore()
+            new_id = weibo.requests_content(0, only_id=True)
+            group_list = [item['group_id'] for item in self.bot.http.get_group_list()]
+            enables_list = [int(item.group_id) for item in GroupSetting.select().where(GroupSetting.send_weibo == 1)]
+
+            record = ignore['weibo_download']
+            target = list(
+                set(group_list).intersection(
+                    set(enables_list)
+                )
+            )
+
+            if not isinstance(new_id, str) or new_id in ignore['weibo_download']:
+                return False
+
+            record.append(new_id)
+            record = record[-5:] if len(record) >= 5 else record
+            ignore['weibo_download'] = record
+            SourceBank.save_ignore(ignore)
+
+            self.bot.send_to_admin(f'开始推送微博:\n{new_id}\n目标群数: {len(target)}')
+
+            time_rec = TimeRecorder()
+            result, detail_url, pics_list = weibo.requests_content(0)
+
+            for group_id in target:
+                with self.bot.send_custom_message(group_id=group_id) as reply:
+                    reply: Chain
+                    reply.text(detail_url + '\n')
+                    reply.text(result)
+                    if pics_list:
+                        for pic in pics_list:
+                            reply.image(pic)
+
+            self.bot.send_to_admin(f'微博推送结束，耗时{time_rec.total()}')
+
+        except Exception as e:
+            log.error(traceback.format_exc())
+            self.bot.send_to_admin(f'微博推送发生错误：{repr(e)}')
+
     def intellect_full_alarm(self):
         try:
             conditions = (Intellect.status == 0, Intellect.full_time <= int(time.time()))
@@ -56,12 +105,9 @@ class AutomaticEvents:
                 for item in results:
                     item: Intellect
                     text = f'博士！博士！您的理智已经满{item.full_num}了，快点上线查看吧～'
-                    self.bot.send_to_user(
-                        message=text,
-                        user_id=item.user_id,
-                        group_id=item.group_id,
-                        _type=item.message_type
-                    )
+                    with self.bot.send_custom_message(item.user_id, item.group_id, item.message_type) as reply:
+                        reply: Chain
+                        reply.text(text)
         except Exception as e:
             log.error(traceback.format_exc())
             self.bot.send_to_admin(f'理智提醒发生错误：{repr(e)}')

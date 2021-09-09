@@ -1,6 +1,6 @@
 from core import AmiyaBot, Message
 from core.util import log
-from core.util.common import TimeRecord
+from core.util.common import TimeRecorder
 
 from console.server.app import Console
 from handlers.handleEvents import EventHandlers
@@ -10,7 +10,7 @@ from handlers.automaticEvents import AutomaticEvents
 
 class Main(AmiyaBot):
     def __init__(self):
-        tr = TimeRecord()
+        tr = TimeRecorder()
         log.info(f'starting AmiyaBot...')
 
         super().__init__()

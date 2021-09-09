@@ -2,6 +2,7 @@ import os
 import re
 import time
 import requests
+import traceback
 
 from core import Message, Chain
 from core.util import log
@@ -12,7 +13,7 @@ from handlers.constraint import FuncInterface
 weibo_id = '6279793937'
 
 
-class WeiBo(FuncInterface):
+class Weibo(FuncInterface):
     def __init__(self):
         super().__init__(function_id='weibo')
 
@@ -47,6 +48,7 @@ class WeiBo(FuncInterface):
             index = 1
 
         if index:
+            # noinspection PyBroadException
             try:
                 result, detail_url, pics_list = self.requests_content(index - 1)
                 reply.text(detail_url + '\n')
@@ -55,8 +57,8 @@ class WeiBo(FuncInterface):
                     for pic in pics_list:
                         reply.image(pic)
                 return reply
-            except Exception as e:
-                log.error(repr(e))
+            except Exception:
+                log.error(traceback.format_exc())
                 return reply.text('博士…暂时无法获取微博呢…请稍后再试吧')
         else:
             result = self.get_blog_list()
@@ -66,9 +68,6 @@ class WeiBo(FuncInterface):
         session = requests.session()
 
         cards = self.get_cards_list()
-
-        if index >= len(cards):
-            return '博士，只能获取到列表内的微博哦'
 
         target_blog = cards[index]
         blog = target_blog['mblog']

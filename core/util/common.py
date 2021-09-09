@@ -11,7 +11,7 @@ from string import punctuation
 from zhon.hanzi import punctuation as punctuation_cn
 
 
-class TimeRecord:
+class TimeRecorder:
     def __init__(self):
         self.time = time.time()
 

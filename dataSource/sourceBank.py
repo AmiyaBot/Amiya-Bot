@@ -56,7 +56,7 @@ class SourceBank(DownloadTools):
 
     def get_pic(self, name, _type, _param='', _wiki='', _index=''):
 
-        ignore = self.reset_ignore()
+        ignore = self.get_ignore()
 
         url = f'{self.pics_source}/{name}.png{_param}'
         save_path = f'{self.pics_path}/{_type}'
@@ -215,15 +215,18 @@ class SourceBank(DownloadTools):
                     log.error(f'file [{file}] download failed')
 
     @staticmethod
-    def reset_ignore(reset=False):
+    def get_ignore(reset=False):
         if os.path.exists('ignore.json'):
             with open('ignore.json', mode='r', encoding='utf-8') as file:
                 ignore = json.load(file)
                 if 'image_download' not in ignore:
                     ignore['image_download'] = []
+                if 'weibo_download' not in ignore:
+                    ignore['weibo_download'] = []
         else:
             ignore = {
-                'image_download': []
+                'image_download': [],
+                'weibo_download': []
             }
 
         if reset:
@@ -232,3 +235,8 @@ class SourceBank(DownloadTools):
                 file.write(json.dumps(ignore, ensure_ascii=False))
 
         return ignore
+
+    @staticmethod
+    def save_ignore(data):
+        with open('ignore.json', mode='w+', encoding='utf-8') as file:
+            file.write(json.dumps(data, ensure_ascii=False))

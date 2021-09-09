@@ -26,7 +26,8 @@ class Chain:
         if self.data.type == 'group':
             self.command = 'sendGroupMessage'
             self.target = data.group_id
-            self.at()
+            if data.user_id:
+                self.at()
 
     def rec(self, record):
         self.record = record

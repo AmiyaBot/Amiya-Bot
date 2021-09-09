@@ -3,6 +3,7 @@ import json
 import time
 import threading
 
+from contextlib import contextmanager
 from ws4py.client.threadedclient import WebSocketClient
 from core.resolver.messageChain import Chain, Message
 from core.asyncio.threadPool import ThreadPool
@@ -80,16 +81,22 @@ class WebSocket(WebSocketClient):
             self.send_to_admin(result.replace('  ', '    '))
 
     def send_to_admin(self, message: str):
-        self.send_to_user(message, user_id=config('adminId'), _type='friend')
+        with self.send_custom_message(user_id=config('adminId'), _type='friend') as reply:
+            reply: Chain
+            reply.text(message)
 
-    def send_to_user(self, message: str, user_id: int, group_id: int = 0, _type='group'):
+    @contextmanager
+    def send_custom_message(self, user_id: int = 0, group_id: int = 0, _type='group'):
         data = Message()
 
         data.type = _type
         data.user_id = user_id
         data.group_id = group_id
 
-        self.send_message(Chain(data).text(message))
+        reply = Chain(data)
+        yield reply
+
+        self.send_message(reply, update=False)
 
     def send_message(self, reply: Chain, update: bool = True):
         if update:
