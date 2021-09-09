@@ -2,7 +2,7 @@ import os
 import time
 import traceback
 
-from core import AmiyaBot, Message, Chain
+from core import AmiyaBot, Chain
 from core.util import log
 from core.util.config import config
 from core.util.common import insert_zero, TimeRecorder

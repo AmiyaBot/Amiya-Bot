@@ -21,10 +21,10 @@ class Weibo(FuncInterface):
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) '
                           'AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1',
             'Content-Type': 'application/json; charset=utf-8',
-            'Referer': 'https://m.weibo.cn/u/%s' % weibo_id,
+            'Referer': f'https://m.weibo.cn/u/{weibo_id}',
             'Accept-Language': 'zh-CN,zh;q=0.9'
         }
-        self.url = 'https://m.weibo.cn/api/container/getIndex?uid=%s&type=uid&value=%s' % (weibo_id, weibo_id)
+        self.url = f'https://m.weibo.cn/api/container/getIndex?uid={weibo_id}&type=uid&value={weibo_id}'
 
     @FuncInterface.is_disable
     def check(self, data: Message):
@@ -78,7 +78,7 @@ class Weibo(FuncInterface):
             return item_id
 
         # 获取完整正文
-        url = 'https://m.weibo.cn/statuses/extend?id=%s' % blog['id']
+        url = 'https://m.weibo.cn/statuses/extend?id=' + blog['id']
         result = session.get(url, headers=self.headers).json()
         html_text = result['data']['longTextContent']
         html_text = re.sub('<br />', '\n', html_text)
@@ -95,7 +95,7 @@ class Weibo(FuncInterface):
             if suffix.lower() == 'gif':
                 continue
             temp = 'log/weibo'
-            path = '%s/%s' % (temp, name)
+            path = f'{temp}/{name}'
             make_folder(temp)
             if os.path.exists(path) is False:
                 stream = requests.get(pic_url, headers=self.headers, stream=True)
@@ -122,7 +122,7 @@ class Weibo(FuncInterface):
                 container_id = tab['containerid']
 
         # 获取正文列表
-        result = session.get(self.url + '&containerid=%s' % container_id, headers=self.headers).json()
+        result = session.get(self.url + f'&containerid={container_id}', headers=self.headers).json()
 
         cards = []
         for item in result['data']['cards']:
