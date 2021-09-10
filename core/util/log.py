@@ -1,11 +1,12 @@
 import os
+import sys
 import time
 import jieba
 import shutil
 import datetime
 import traceback
 
-from tqdm import tqdm
+from typing import Union
 
 from ..util.common import make_folder
 
@@ -57,14 +58,33 @@ def error(msg: str, stdout=print):
     info(msg, title='error', alignment=False, stdout=stdout)
 
 
-def download_progress(data, title: str = 'data', unit: str = 'file'):
-    ctrl = tqdm(data, unit=unit)
+def download_progress(data: Union[dict, list], title: str = 'data'):
+    data = data.keys() if type(data) is dict else data
     status = StatusCalculator()
-    for item in ctrl:
+
+    def print_bar(i):
         date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-        ctrl.set_description(f'[{date}][INFO] Downloading {title}')
+        curr = int(i / len(data) * 100)
+        block = int(curr / 4)
+        bar = '=' * block + ' ' * (25 - block)
+
+        success = status.total['success']
+        fail = status.total['fail']
+
+        print('\r', end='')
+        print(
+            f'[{date}][INFO] Downloading {title} {i}/{len(data)} [{bar}] {curr}% ({success} OK, {fail} FAIL)',
+            end=''
+        )
+
+        sys.stdout.flush()
+
+    print_bar(0)
+    for index, item in enumerate(data):
         yield item, status
-        ctrl.set_postfix(success=status.total['success'], fail=status.total['fail'])
+        print_bar(index + 1)
+
+    print()
 
 
 def capitalize(text: str):

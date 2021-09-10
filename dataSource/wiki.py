@@ -1,4 +1,5 @@
 import os
+import traceback
 import urllib.parse
 
 from core.util import log
@@ -30,13 +31,14 @@ class Wiki(DownloadTools):
         return files
 
     def request_pic_from_wiki(self, name):
+        # noinspection PyBroadException
         try:
             html = self.get_page(f'{self.wiki_url}/w/文件:{name}.png')
             file = html.find('#file > a', first=True)
             furl = self.wiki_url + file.attrs['href']
             return self.request_file(furl, stringify=False)
-        except Exception as e:
-            log.error(repr(e))
+        except Exception:
+            log.error(traceback.format_exc(), stdout=False)
         return False
 
     def request_voice_from_wiki(self, operator, url, filename):

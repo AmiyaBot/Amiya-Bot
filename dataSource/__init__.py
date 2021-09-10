@@ -161,7 +161,7 @@ class DataSource(SourceBank):
         return stage_list
 
     def download_operators_photo(self, operators):
-        for name, status in log.download_progress(operators, 'operators images', unit='operator'):
+        for name, status in log.download_progress(operators, 'operators images'):
             item = operators[name]
 
             status.res(self.get_pic('char/profile/' + item.id, 'avatars'))
