@@ -44,9 +44,9 @@ class Wiki(DownloadTools):
         if os.path.exists(file):
             return file
 
-        log.info(f'downloading file [{filename}]...')
         res = self.request_file(url, stringify=False)
         if res:
+            make_folder(f'{voices_source}/{operator}')
             with open(file, mode='wb+') as src:
                 src.write(res)
             return file
@@ -61,14 +61,20 @@ class Wiki(DownloadTools):
             log.error(repr(e))
         return False
 
-    def download_self_voices(self):
+    def download_amiya_voices(self):
         try:
             for name in ['阿米娅', '阿米娅(近卫)']:
                 urls = self.get_voice_urls(name)
                 talks = [f'{name}_{item}.wav' for item in nudge_reply]
-                for filename in urls:
-                    if filename in talks:
-                        self.request_voice_from_wiki(name, urls[filename], filename)
+
+                for file, status in log.download_progress(urls, f'{name} voices'):
+                    if file in talks:
+                        res = self.request_voice_from_wiki(name, urls[file], file)
+                        if res:
+                            status.success()
+                        else:
+                            status.fail()
+
         except Exception as e:
             log.error(repr(e))
 

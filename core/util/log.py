@@ -5,14 +5,35 @@ import shutil
 import datetime
 import traceback
 
+from tqdm import tqdm
+
 from ..util.common import make_folder
 
 log_path = 'log'
-
 jieba.setLogLevel(jieba.logging.INFO)
 
 
-def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True):
+class StatusCalculator:
+    def __init__(self):
+        self.total = {
+            'success': 0,
+            'fail': 0
+        }
+
+    def res(self, res):
+        if res:
+            self.success()
+        else:
+            self.fail()
+
+    def success(self):
+        self.total['success'] += 1
+
+    def fail(self):
+        self.total['fail'] += 1
+
+
+def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True, stdout=print):
     date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     front = f'[{date}]' \
             f'[{title.upper()}]' \
@@ -23,14 +44,27 @@ def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True
         text = text.replace('\n', '\n' + ' ' * len(front))
     text = front + text
 
-    print(text)
+    if stdout:
+        stdout(text)
 
     if log:
         write_in_log(text)
 
+    return text
 
-def error(msg: str):
-    info(msg, title='error', alignment=False)
+
+def error(msg: str, stdout=print):
+    info(msg, title='error', alignment=False, stdout=stdout)
+
+
+def download_progress(data, title: str = 'data', unit: str = 'file'):
+    ctrl = tqdm(data, unit=unit)
+    status = StatusCalculator()
+    for item in ctrl:
+        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        ctrl.set_description(f'[{date}][INFO] Downloading {title}')
+        yield item, status
+        ctrl.set_postfix(success=status.total['success'], fail=status.total['fail'])
 
 
 def capitalize(text: str):

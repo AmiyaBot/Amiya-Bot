@@ -12,3 +12,4 @@ gevent~=21.8.0
 Flask~=2.0.1
 Flask-Cors~=3.0.10
 graiax-silkcoder~=0.0.16
+tqdm~=4.62.2

@@ -54,7 +54,7 @@ class SourceBank(DownloadTools):
         for item in [self.resource_path, self.pics_path]:
             make_folder(item)
 
-    def get_pic(self, name, _type, _param='', _wiki='', _index=''):
+    def get_pic(self, name, _type, _param='', _wiki=''):
 
         ignore = self.get_ignore()
 
@@ -65,9 +65,6 @@ class SourceBank(DownloadTools):
         make_folder(save_path)
 
         if os.path.exists(image_path) is False and image_path not in ignore['image_download']:
-
-            log.info(f'downloading image {_index or "_/_"} [{image_path}]...')
-
             pic = self.wiki.request_pic_from_wiki(_wiki) if _wiki else self.request_file(url, stringify=False)
             if pic:
                 with open(image_path, mode='wb+') as _pic:
@@ -77,6 +74,7 @@ class SourceBank(DownloadTools):
                 ignore['image_download'].append(image_path)
                 with open('ignore.json', mode='w+', encoding='utf-8') as file:
                     file.write(json.dumps(ignore, ensure_ascii=False))
+                return False
         else:
             return True
 
@@ -121,18 +119,19 @@ class SourceBank(DownloadTools):
         if self.check_update() is False:
             use_cache = True
 
-        for name in self.resource:
+        for name, status in log.download_progress(self.resource, 'data resource'):
             url = '%s/%s.json' % (self.github_source, name)
             path = '%s/%s.json' % (self.resource_path, name.split('/')[-1])
 
             if use_cache and os.path.exists(path):
+                status.success()
                 continue
 
-            log.info(f'downloading data [{name}]...')
             data = self.request_file(url)
             if data:
                 with open(path, mode='w+', encoding='utf-8') as src:
                     src.write(data)
+                    status.success()
             else:
                 os.remove(self.local_version_file)
                 raise Exception(f'data [{name}] download failed')
@@ -143,15 +142,13 @@ class SourceBank(DownloadTools):
             if type(_list) is str:
                 _list = [_list]
 
-            for item in _list:
+            for item, status in log.download_progress(_list, name):
                 path = self.bot_paths[name]
                 save = f'{path}/{item.split("/")[-1]}'
                 url = f'{self.bot_source}/{item}'
 
                 if os.path.exists(save) is False or refresh:
                     make_folder(path)
-
-                    log.info(f'downloading file [{item}]...')
 
                     data = self.request_file(url, stringify=False)
                     if data:
@@ -162,6 +159,8 @@ class SourceBank(DownloadTools):
                             exec_sql_file(file=save)
                     else:
                         raise Exception(f'file [{item}] download failed')
+
+                status.success()
 
     def download_bot_console(self):
         log.info('checking Console update...')
@@ -192,7 +191,7 @@ class SourceBank(DownloadTools):
         with open(local_version_file, mode='w+') as lv:
             lv.write(version)
 
-        for file in file_list:
+        for file, status in log.download_progress(file_list, 'console'):
             view_path = f'view/{file}'
             if not os.path.exists(view_path) or need_update:
                 folder = '/'.join(view_path.split('/')[0:-1])
@@ -203,16 +202,18 @@ class SourceBank(DownloadTools):
                 text_file = suffix in ['html', 'css', 'js', 'map']
                 url = f'{self.bot_console}/dist/{file}'
 
-                log.info(f'downloading file [{view_path}]...')
-
                 data = self.request_file(url, stringify=text_file)
                 if data:
                     with open(view_path,
                               mode='w+' if text_file else 'wb+',
                               encoding='utf-8' if text_file else None) as src:
                         src.write(data)
+                        status.success()
                 else:
-                    log.error(f'file [{file}] download failed')
+                    log.error(f'file [{file}] download failed', stdout=False)
+                    status.fail()
+            else:
+                status.success()
 
     @staticmethod
     def get_ignore(reset=False):

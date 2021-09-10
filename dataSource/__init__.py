@@ -1,5 +1,6 @@
 import re
 
+from core.util import log
 from core.util.common import remove_punctuation, remove_xml_tag
 
 from .builder import Operator
@@ -13,7 +14,7 @@ class DataSource(SourceBank):
         self.download_resource(not auto_update)
         self.download_bot_resource()
         self.download_bot_console()
-        self.wiki.download_self_voices()
+        self.wiki.download_amiya_voices()
 
         self.operators = self.init_operators()
         self.enemies = self.init_enemies()
@@ -160,41 +161,40 @@ class DataSource(SourceBank):
         return stage_list
 
     def download_operators_photo(self, operators):
-        for index, name in enumerate(operators.keys()):
+        for name, status in log.download_progress(operators, 'operators images', unit='operator'):
             item = operators[name]
-            idx = f'{index + 1}/{len(operators.keys())}'
 
-            self.get_pic('char/profile/' + item.id, 'avatars', _index=idx)
-            self.get_pic('char/halfPic/%s_1' % item.id, 'photo', '?x-oss-process=style/small-test', _index=idx)
+            status.res(self.get_pic('char/profile/' + item.id, 'avatars'))
+            status.res(self.get_pic('char/halfPic/%s_1' % item.id, 'photo', '?x-oss-process=style/small-test'))
 
             skills_list = item.skills()[0]
             for skill in skills_list:
-                self.get_pic('skills/pics/' + skill['skill_icon'], 'skills', _index=idx)
+                res = self.get_pic('skills/pics/' + skill['skill_icon'], 'skills')
+                status.res(res)
 
             skins_list = item.skins()
             for skin in skins_list:
-                self.get_pic('char/set/' + skin['skin_image'], 'picture', _index=idx)
+                res = self.get_pic('char/set/' + skin['skin_image'], 'picture')
+                status.res(res)
+
+            status.success()
 
     def download_materials_icon(self, materials):
-        for index, m_id in enumerate(materials.keys()):
+        for m_id, status in log.download_progress(materials, 'materials icon'):
             item = materials[m_id]
-            idx = f'{index + 1}/{len(materials.keys())}'
-
-            self.get_pic(
+            res = self.get_pic(
                 name='item/pic/' + item['material_icon'],
                 _wiki='道具_带框_' + item['material_name'],
-                _type='materials',
-                _index=idx
+                _type='materials'
             )
+            status.res(res)
 
     def download_enemies_photo(self, enemies):
-        for index, name in enumerate(enemies.keys()):
+        for name, status in log.download_progress(enemies, 'enemies photo'):
             item = enemies[name]
-            idx = f'{index + 1}/{len(enemies.keys())}'
-
-            self.get_pic(
+            res = self.get_pic(
                 name='enemy/pic/' + item['info']['enemyId'],
                 _type='enemy',
-                _param='?x-oss-process=style/jpg-test',
-                _index=idx
+                _param='?x-oss-process=style/jpg-test'
             )
+            status.res(res)
