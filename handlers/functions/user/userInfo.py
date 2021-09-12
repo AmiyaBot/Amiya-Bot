@@ -49,7 +49,7 @@ class UserInfo(FuncInterface):
 
     @staticmethod
     def priority(data: Message):
-        for item in ['信赖', '关系', '好感', '我的信息', '个人信息']:
+        for item in ['关系', '好感', '我的信息', '个人信息']:
             if item in data.text:
                 return True
         return False

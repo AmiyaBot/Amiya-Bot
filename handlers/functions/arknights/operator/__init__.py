@@ -98,8 +98,8 @@ class Operator(FuncInterface):
             info.skill = info_sup.skill
 
         # 没有查找到技能等级但有技能信息时，修改到默认等级
-        if info.name and (info.skill_index or info.skill) and not info.level:
-            info.level = 8 if '材料' in message else 7
+        # if info.name and (info.skill_index or info.skill) and not info.level:
+        #     info.level = 8 if '材料' in message else 7
 
         if info.level != 0:
             if info.level < 0:
