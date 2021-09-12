@@ -8,7 +8,7 @@ from core.network.websocket import WebSocket
 from core.network.httpRequests import MiraiHttp
 from core.resolver.message import Message
 from core.resolver.messageChain import Chain
-from core.database.manager import DataBase, Message as MessageBase
+from core.database.manager import DataBase, Group, GroupSetting, Message as MessageBase
 from core.util import log
 
 DataBase.create_base()
@@ -87,6 +87,21 @@ class AmiyaBot(WebSocket):
 
         if reply:
             self.send_message(reply)
+
+    def push_notice(self, user, text):
+        groups = GroupSetting.select().where(GroupSetting.send_notice == 1)
+        group_name = {
+            item.group_id: item.group_name
+            for item in Group.select().where(Group.group_id.in_([item.group_id for item in groups]))
+        }
+
+        self.send_to_admin(f'开始推送公告，目标群：{groups.count()}\n\n{text}')
+        for item in groups:
+            item: GroupSetting
+            with self.send_custom_message(group_id=item.group_id) as reply:
+                reply: Chain
+                reply.text(f'{group_name[item.group_id]}的博士们，有来自管理员{user}的公告：\n\n{text}')
+            time.sleep(0.5)
 
     @staticmethod
     def restart(delay=3):

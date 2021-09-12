@@ -25,6 +25,13 @@ class Enemy(FuncInterface):
         with open('resource/enemies.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([f'{name} 500 n' for name in self.keywords]))
 
+    @staticmethod
+    def priority(data: Message):
+        for item in ['敌人', '敌方']:
+            if item in data.text:
+                return True
+        return False
+
     @FuncInterface.is_disable
     def check(self, data: Message):
         for item in ['敌人', '敌方'] + self.keywords:

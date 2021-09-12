@@ -1,4 +1,5 @@
 from core import AmiyaBot, Message, Chain
+from core.database.models import User
 from dataSource.wiki import Wiki
 from handlers.functions import random_reply
 
@@ -19,6 +20,11 @@ class EventHandlers:
             data.type = 'group'
             data.user_id = message['fromId']
             data.group_id = message['subject']['id']
+
+            user: User = User.get_or_none(user_id=data.user_id)
+            if user and user.black == 1:
+                return False
+
             reply = random_reply(data, self.bot)
             if reply:
                 self.bot.send_message(reply)

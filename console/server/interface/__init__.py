@@ -3,6 +3,7 @@ from flask import Flask, render_template
 from core import AmiyaBot
 
 from .auth import auth_controller
+from .file import file_controller
 from .user import user_controller
 from .admin import admin_controller
 from .gacha import gacha_controller
@@ -19,7 +20,8 @@ class Intreface:
 
         data = bot.handlers.arknights
 
-        auth_controller(app)
+        auth_controller(app, bot)
+        file_controller(app)
         user_controller(app)
         admin_controller(app)
         gacha_controller(app)

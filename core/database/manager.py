@@ -14,11 +14,13 @@ class DataBase:
             Group,
             GroupSleep,
             GroupSetting,
+            GroupNotice,
             Upload,
             Message,
             Function,
             Disable,
             Pool,
+            PoolSpOperator,
             GachaConfig,
             Intellect
         )
@@ -41,6 +43,7 @@ def exec_sql_file(file):
 def select_for_paginate(model,
                         equal: dict = None,
                         contains: dict = None,
+                        join: dict = None,
                         order_by: tuple = None,
                         page: int = 1,
                         page_size: int = 10):
@@ -63,6 +66,9 @@ def select_for_paginate(model,
 
     if where:
         data = data.where(*tuple(where))
+
+    if join:
+        data = data.join(**join)
 
     if order_by:
         data = data.order_by(*order_by)

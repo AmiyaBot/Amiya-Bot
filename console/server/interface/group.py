@@ -1,9 +1,14 @@
-from flask import Flask, request
+import time
+import threading
+
+from flask import Flask, session, request
 
 from core import AmiyaBot
-from core.database.models import sqlite_db, Group, GroupSleep, GroupSetting
+from core.database.models import sqlite_db, Group, GroupSleep, GroupSetting, GroupNotice
+from core.database.manager import select_for_paginate
 
 from ..response import response
+from .auth import super_user
 
 
 def group_controller(app: Flask, bot: AmiyaBot):
@@ -18,6 +23,12 @@ def group_controller(app: Flask, bot: AmiyaBot):
                 where.append(f"g.group_name like '%{params['search']['group_name']}%'")
             if params['search']['permission']:
                 where.append(f"g.permission = '{params['search']['permission']}'")
+            if params['search']['active']:
+                where.append(f"g2.active = '{params['search']['active']}'")
+            if params['search']['send_notice']:
+                where.append(f"g3.send_notice = '{params['search']['send_notice']}'")
+            if params['search']['send_weibo']:
+                where.append(f"g3.send_weibo = '{params['search']['send_weibo']}'")
         if where:
             where = 'where ' + ' and '.join(where)
 
@@ -99,3 +110,43 @@ def group_controller(app: Flask, bot: AmiyaBot):
     def leave_group():
         members = bot.http.leave_group(request.json['group_id'])
         return response(members)
+
+    @app.route('/group/getGroupNoticeByPages', methods=['POST'])
+    def get_group_notice_by_pages():
+        params = request.json
+        contains = {}
+
+        if params['search']:
+            contains = {
+                'content': params['search']['content'],
+                'send_user': params['search']['send_user']
+            }
+
+        data, count = select_for_paginate(GroupNotice,
+                                          contains=contains,
+                                          page=params['page'],
+                                          page_size=params['pageSize'])
+
+        return response({'count': count, 'data': data})
+
+    @app.route('/group/pushNotice', methods=['POST'])
+    def push_notice():
+        params = request.json
+        user = session.get('user')
+
+        threading.Timer(0, bot.push_notice, args=(user, params['content'])).start()
+
+        GroupNotice.create(
+            content=params['content'],
+            send_time=int(time.time()),
+            send_user=user
+        )
+
+        return response(message='开始推送公告')
+
+    @app.route('/group/delNotice', methods=['POST'])
+    @super_user
+    def del_notice():
+        params = request.json
+        GroupNotice.delete().where(GroupNotice.notice_id == params['notice_id']).execute()
+        return response(message='删除成功')

@@ -65,11 +65,11 @@ class Wiki(DownloadTools):
 
     def download_amiya_voices(self):
         try:
-            for name in ['阿米娅', '阿米娅(近卫)']:
+            for en, name in {'Amiya': '阿米娅', 'AmiyaGuard': '阿米娅(近卫)'}.items():
                 urls = self.get_voice_urls(name)
                 talks = [f'{name}_{item}.wav' for item in nudge_reply]
 
-                for file, status in log.download_progress(urls, f'{name} voices'):
+                for file, status in log.download_progress(urls, f'{en} voices'):
                     if file in talks:
                         res = self.request_voice_from_wiki(name, urls[file], file)
                         if res:

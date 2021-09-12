@@ -89,6 +89,7 @@ class AutomaticEvents:
                     if pics_list:
                         for pic in pics_list:
                             reply.image(pic)
+                time.sleep(0.5)
 
             self.bot.send_to_admin(f'微博推送结束，耗时{time_rec.total()}')
 

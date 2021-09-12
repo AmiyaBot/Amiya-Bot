@@ -34,6 +34,35 @@ class StatusCalculator:
         self.total['fail'] += 1
 
 
+def download_progress(data: Union[dict, list], title: str = 'data'):
+    data = data.keys() if type(data) is dict else data
+    status = StatusCalculator()
+
+    def print_bar(i):
+        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        curr = int(i / len(data) * 100)
+        block = int(curr / 4)
+        bar = '=' * block + ' ' * (25 - block)
+
+        success = status.total['success']
+        fail = status.total['fail']
+
+        print('\r', end='')
+        print(
+            f'[{date}][INFO] Loading src {title} {i}/{len(data)} [{bar}] {curr}% ({success} OK, {fail} FAIL)',
+            end=''
+        )
+
+        sys.stdout.flush()
+
+    print_bar(0)
+    for index, item in enumerate(data):
+        yield item, status
+        print_bar(index + 1)
+
+    print()
+
+
 def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True, stdout=print):
     date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     front = f'[{date}]' \
@@ -56,35 +85,6 @@ def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True
 
 def error(msg: str, stdout=print):
     info(msg, title='error', alignment=False, stdout=stdout)
-
-
-def download_progress(data: Union[dict, list], title: str = 'data'):
-    data = data.keys() if type(data) is dict else data
-    status = StatusCalculator()
-
-    def print_bar(i):
-        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-        curr = int(i / len(data) * 100)
-        block = int(curr / 4)
-        bar = '=' * block + ' ' * (25 - block)
-
-        success = status.total['success']
-        fail = status.total['fail']
-
-        print('\r', end='')
-        print(
-            f'[{date}][INFO] Downloading {title} {i}/{len(data)} [{bar}] {curr}% ({success} OK, {fail} FAIL)',
-            end=''
-        )
-
-        sys.stdout.flush()
-
-    print_bar(0)
-    for index, item in enumerate(data):
-        yield item, status
-        print_bar(index + 1)
-
-    print()
 
 
 def capitalize(text: str):

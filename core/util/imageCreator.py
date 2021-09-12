@@ -91,7 +91,11 @@ def create_gacha_result(result: list):
             img = Image.open(rarity).convert('RGBA')
             image.paste(img, box=(x, 0), mask=img)
 
-        photo = 'resource/images/photo/%s_1.png' % item['photo']
+        if 'temp_photo' in item and item['temp_photo']:
+            photo = item['temp_photo']
+        else:
+            photo = 'resource/images/photo/%s_1.png' % item['photo']
+
         if os.path.exists(photo):
             img = Image.open(photo).convert('RGBA')
 

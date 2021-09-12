@@ -57,6 +57,13 @@ class GroupSetting(BaseModel):
     send_weibo = IntegerField(default=0)
 
 
+class GroupNotice(BaseModel):
+    notice_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
+    content = TextField()
+    send_time = BigIntegerField()
+    send_user = TextField()
+
+
 class Upload(BaseModel):
     path = TextField(primary_key=True)
     type = TextField()
@@ -91,6 +98,15 @@ class Pool(BaseModel):
     pickup_4 = TextField(null=True)
     pickup_s = TextField(null=True)
     limit_pool = IntegerField()
+
+
+class PoolSpOperator(BaseModel):
+    sp_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
+    pool_id = IntegerField()
+    operator_name = TextField()
+    rarity = IntegerField()
+    classes = TextField()
+    image = TextField()
 
 
 class GachaConfig(BaseModel):

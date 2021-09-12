@@ -12,6 +12,9 @@ from .materialCosts import MaterialCosts
 from .operatorInfo import OperatorInfo
 from .initData import InfoInterface, InitData
 
+from ..enemy import Enemy
+from ...user.userInfo import UserInfo
+
 
 class LoopBreak(Exception):
     def __init__(self, index, name=''):
@@ -39,7 +42,7 @@ class Operator(FuncInterface):
 
     @FuncInterface.is_disable
     def check(self, data: Message):
-        if '敌人' in data.text:
+        if UserInfo.priority(data) or Enemy.priority(data):
             return False
 
         keyword = []

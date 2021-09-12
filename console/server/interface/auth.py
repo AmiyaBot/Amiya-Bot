@@ -4,6 +4,7 @@ import json
 from functools import wraps
 from flask import Flask, session, request
 
+from core import AmiyaBot
 from core.util.config import config
 from core.database.models import Admin, AdminTraceLog
 
@@ -23,7 +24,7 @@ def super_user(func=None):
     return check
 
 
-def auth_controller(app: Flask):
+def auth_controller(app: Flask, bot: AmiyaBot):
     @app.before_request
     def verify_access():
         url = request.path
@@ -93,3 +94,8 @@ def auth_controller(app: Flask):
     def logout():
         session.clear()
         return response(message='退出登录成功')
+
+    @app.route('/restart', methods=['POST'])
+    def restart():
+        bot.restart()
+        return response(code=300, message='即将进入重启，重启需要一定时间，请耐心等待...')

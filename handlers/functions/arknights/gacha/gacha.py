@@ -2,7 +2,7 @@ import os
 import random
 
 from core import Message, Chain
-from core.database.models import User, Pool
+from core.database.models import User, Pool, PoolSpOperator
 from core.util.common import insert_empty
 from core.util.imageCreator import create_gacha_result
 from dataSource import DataSource, Operator
@@ -25,7 +25,7 @@ class GachaForUser:
         self.data = data
         self.data_source = data_source
 
-        pool = Pool.get_by_id(data.user_info.gacha_pool)
+        pool: Pool = Pool.get_by_id(data.user_info.gacha_pool)
 
         special = pool.pickup_s.split(',') if pool.pickup_s else []
         weight = {}
@@ -50,7 +50,7 @@ class GachaForUser:
             }
 
         self.operator = class_group
-        self.temp_operator = self.__get_temp_operator()
+        self.temp_operator = self.__get_temp_operator(pool.pool_id)
         self.break_even = self.data.user_info.gacha_break_even
         self.limit_pool = pool.limit_pool
         self.pick_up_name = pool.pool_name
@@ -81,18 +81,17 @@ class GachaForUser:
         return opts
 
     @staticmethod
-    def __get_temp_operator():
+    def __get_temp_operator(pool_id):
         operators = {}
-        temp_path = 'resource/tempOperator.txt'
-        if os.path.exists(temp_path):
-            with open(temp_path, mode='r', encoding='utf-8') as tp:
-                ct = [item.split(',') for item in tp.read().strip('\n').split('\n')]
-                for item in ct:
-                    operators[item[0]] = {
-                        'photo': 'None',
-                        'rarity': item[1],
-                        'class': class_index[int(item[2])].lower()
-                    }
+        sp = PoolSpOperator.select().where(PoolSpOperator.pool_id == pool_id)
+        for item in sp:
+            item: PoolSpOperator
+            operators[item.operator_name] = {
+                'photo': '',
+                'temp_photo': f'resource/images/temp/{item.image}' if item.image else None,
+                'rarity': item.rarity,
+                'class': item.classes
+            }
         return operators
 
     def continuous_mode(self, times):
