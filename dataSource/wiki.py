@@ -65,7 +65,11 @@ class Wiki(DownloadTools):
 
     def download_amiya_voices(self):
         try:
-            for en, name in {'Amiya': '阿米娅', 'AmiyaGuard': '阿米娅(近卫)'}.items():
+            voices = {
+                'Amiya': '阿米娅',
+                # 'AmiyaGuard': '阿米娅(近卫)'
+            }
+            for en, name in voices.items():
                 urls = self.get_voice_urls(name)
                 talks = [f'{name}_{item}.wav' for item in nudge_reply]
 

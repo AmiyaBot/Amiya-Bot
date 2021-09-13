@@ -32,7 +32,8 @@ def get_face(data: Message):
 
 
 def get_voice(data: Message):
-    name = random.choice(['阿米娅', '阿米娅(近卫)'])
+    # name = random.choice(['阿米娅', '阿米娅(近卫)'])
+    name = '阿米娅'
     voice = random.choice(nudge_reply)
     file = wiki.voice_exists(name, voice)
     if not file:

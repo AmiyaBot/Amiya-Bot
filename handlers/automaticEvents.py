@@ -93,6 +93,8 @@ class AutomaticEvents:
 
             self.bot.send_to_admin(f'微博推送结束，耗时{time_rec.total()}')
 
+        except IndexError:
+            pass
         except Exception as e:
             log.error(traceback.format_exc())
             self.bot.send_to_admin(f'微博推送发生错误：{repr(e)}')
