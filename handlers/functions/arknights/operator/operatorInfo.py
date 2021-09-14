@@ -2,7 +2,7 @@ import os
 import re
 
 from core.util import log
-from core.util.imageCreator import split_text
+from core.util.imageCreator import TextParser, line_height, side_padding
 from core.util.numberTranslate import chinese_to_digits
 from core.util.common import word_in_sentence, integer
 from dataSource import DataSource, Operator
@@ -12,6 +12,8 @@ from .initData import InfoInterface, InitData
 
 skill_images_source = 'resource/images/skills/'
 avatars_images_source = 'resource/images/avatars/'
+
+icon_size = 36
 
 
 class OperatorInfo:
@@ -117,7 +119,7 @@ class OperatorInfo:
             {
                 'path': avatars_images_source + operator.id + '.png',
                 'size': (80, 80),
-                'pos': (10, 30)
+                'pos': (side_padding, 30)
             }
         ]
 
@@ -125,12 +127,12 @@ class OperatorInfo:
                                      operator.en_name,
                                      '★' * operator.rarity)
 
-        text += '【职业】%s - %s\n%s\n\n' % (operator.classes, operator.classes_sub, detail['operator_trait'])
+        text += '【职业】%s - %s\n　%s\n\n' % (operator.classes, operator.classes_sub, detail['operator_trait'])
         text += '%s\n -- 「%s」\n\n' % (detail['operator_usage'], detail['operator_quote'])
 
-        text += '【信物】\n%s\n\n' % detail['operator_token'] if detail['operator_token'] else ''
+        text += '【信物】\n　%s\n\n' % detail['operator_token'] if detail['operator_token'] else ''
 
-        text += '【精英%s级属性】\n' % detail['max_level']
+        text += '【精英 %s 级属性】\n' % detail['max_level']
 
         for key, name in attr_dict.items():
             text += f' -- {name}：'
@@ -142,17 +144,18 @@ class OperatorInfo:
 
         talents_text = ''
         for item in talents:
-            talents_text += '<%s>\n%s\n' % (item['talents_name'], item['talents_desc'])
+            talents_text += '<[%s@#174CC6]>\n　%s\n' % (item['talents_name'], item['talents_desc'])
         text += ('\n【天赋】\n%s\n' % talents_text) if talents_text else ''
 
         potential_text = ''
         for item in potential:
-            potential_text += '[%s] %s\n' % (InitData.potential_rank[item['potential_rank']], item['potential_desc'])
+            potential_text += '　[%s] %s\n' % (InitData.potential_rank[item['potential_rank']], item['potential_desc'])
         text += ('【潜能】\n%s\n' % potential_text) if potential_text else ''
 
         building_text = ''
         for item in building_skills:
-            building_text += '<%s>[精英%s解锁]\n%s\n' % (item['bs_name'], item['bs_unlocked'], item['bs_desc'])
+            building_text += '<[%s@#174CC6]>\n　[精英%s解锁@#D60008]\n　%s\n' % \
+                             (item['bs_name'], item['bs_unlocked'], item['bs_desc'])
         text += ('【基建技能】\n%s\n' % building_text) if building_text else ''
 
         info.level = 7
@@ -178,8 +181,7 @@ class OperatorInfo:
 
         if result:
             text += '【7级技能】\n\n'
-            top = len(split_text(text)) * 17 + 11
-
+            top = TextParser(text).line * line_height + int(line_height / 2) + side_padding
             content, skill_icons = self.build_skill_content(result, top)
 
             text += content
@@ -219,7 +221,8 @@ class OperatorInfo:
         if len(result):
             text = f'博士，这是干员{info.name}技能{InitData.skill_level[info.level]}的数据\n\n'
 
-            content, icons = self.build_skill_content(result, 28)
+            top = side_padding + line_height + int((line_height * 3 - icon_size) / 2)
+            content, icons = self.build_skill_content(result, top)
 
             text += content
             return text, icons
@@ -265,7 +268,7 @@ class OperatorInfo:
             content = ''
             index = list(skills.keys()).index(name)
 
-            y += 51 if index else 0
+            y += 55 if index else 0
             yl.append(y)
 
             for item in skills[name]:
@@ -276,14 +279,14 @@ class OperatorInfo:
                 content += '%s\n\n' % item['description'].replace('\\\\n', '\n')
                 text += content
 
-                y += len(split_text(content)) * 17
+                y += TextParser(content).line * line_height
 
         for index, item in enumerate(skill_images):
             if os.path.exists(item):
                 icons.append({
                     'path': item,
-                    'size': (35, 35),
-                    'pos': (10, yl[index])
+                    'size': (icon_size, icon_size),
+                    'pos': (side_padding, yl[index])
                 })
 
         return text, icons

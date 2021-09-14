@@ -10,49 +10,93 @@ font_file = 'resource/style/AdobeHeitiStd-Regular.otf'
 logo_file = 'resource/style/rabbit.png'
 logo_file_white = 'resource/style/rabbit-white.png'
 
-
-def cut_code(code, length):
-    code_list = re.findall('.{' + str(length) + '}', code)
-    code_list.append(code[(len(code_list) * length):])
-    res_list = []
-    for n in code_list:
-        if n != '':
-            res_list.append(n)
-    return res_list
+line_height = 18
+side_padding = 10
 
 
-def char_seat(char):
-    return 0.5 if 32 <= ord(char) <= 126 else 1
+class TextParser:
+    def __init__(self, text: str, color='#000000', font_size=15, max_seat=510):
+        self.font = ImageFont.truetype(font_file, font_size)
+        self.text = text
+        self.color = color
+        self.max_seat = max_seat
+        self.char_list = []
+        self.line = 0
+
+        self.__parse()
+
+    def __parse(self):
+        text = self.text.strip('\n')
+        search = re.findall(r'\[(.*?)@#(.*?)]', text)
+
+        color_pos = {0: self.color}
+
+        for item in search:
+            temp = f'[{item[0]}@#{item[1]}]'
+            index = text.index(temp)
+            color_pos[index] = f'#{item[1]}'
+            color_pos[index + len(item[0])] = self.color
+            text = text.replace(temp, item[0], 1)
+
+        length = 0
+        sub_text = ''
+        cur_color = self.color
+        for idx, char in enumerate(text):
+            if idx in color_pos:
+                if cur_color != color_pos[idx] and sub_text:
+                    self.__append_row(cur_color, sub_text, enter=False)
+                    sub_text = ''
+                cur_color = color_pos[idx]
+
+            length += self.__font_seat(char)[0]
+            sub_text += char
+
+            if length >= self.max_seat or char == '\n' or idx == len(text) - 1:
+                self.__append_row(cur_color, sub_text)
+                sub_text = ''
+                length = 0
+
+    def __append_row(self, color, text, enter=True):
+        if enter:
+            self.line += 1
+        self.char_list.append(
+            (enter, color, text, *self.__font_seat(text))
+        )
+
+    def __font_seat(self, char):
+        return self.font.getsize_multiline(char)
+
+    @staticmethod
+    def char_seat(char):
+        return 0.58 if 32 <= ord(char) <= 126 else 1
+
+    @staticmethod
+    def cut_code(code, length):
+        code_list = re.findall('.{' + str(length) + '}', code)
+        code_list.append(code[(len(code_list) * length):])
+        res_list = []
+        for n in code_list:
+            if n != '':
+                res_list.append(n)
+        return res_list
 
 
-def split_text(text, max_seat=36):
-    text = text.strip('\n').split('\n')
+def create_image(text: str, folder, images=None, font_size=15):
+    text = TextParser(text, font_size=font_size)
 
-    new_text = []
-    for item in text:
-
-        item_len = 0
-        item_sub = ''
-
-        for char in item:
-            item_len += char_seat(char)
-            item_sub += char
-            if item_len >= max_seat:
-                item_len = 0
-                item_sub += '\n'
-
-        new_text.append(item_sub)
-
-    return '\n'.join(new_text).split('\n')
-
-
-def create_image(text: str, folder, images=None):
-    text = '\n'.join(split_text(text))
-    height = len(text.split('\n')) + 1
-    image = Image.new('RGB', (550, height * 18), (255, 255, 255))
+    height = text.line + 2
+    image = Image.new('RGB', (550, height * line_height), (245, 245, 245))
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype(font_file, 14)
-    draw.text((10, 5), text, font=font, fill='#000000')
+    font = text.font
+
+    col = side_padding
+    row = 0
+    for line, item in enumerate(text.char_list):
+        draw.text((col, side_padding + row * line_height), item[2], font=font, fill=item[1])
+        col += item[3]
+        if item[0]:
+            row += 1
+            col = side_padding
 
     icon = Image.open(logo_file)
     icon = icon.resize(size=(30, 30))
@@ -76,7 +120,7 @@ def create_image(text: str, folder, images=None):
     return path
 
 
-def create_gacha_result(result: list):
+def create_gacha_image(result: list):
     image = Image.open('resource/images/gacha/bg.png')
     draw = ImageDraw.ImageDraw(image)
 

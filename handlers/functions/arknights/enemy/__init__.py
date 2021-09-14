@@ -5,6 +5,7 @@ import random
 from core import Message, Chain
 from core.util import log
 from core.util.common import find_similar_list, remove_xml_tag, integer
+from core.util.imageCreator import line_height, side_padding
 from dataSource import DataSource
 from handlers.constraint import FuncInterface
 
@@ -110,7 +111,7 @@ class Enemy(FuncInterface):
             {
                 'path': 'resource/images/enemy/%s.png' % data['enemyId'],
                 'size': (80, 80),
-                'pos': (10, 30)
+                'pos': (side_padding, side_padding + line_height + int((line_height * 6 - 80) / 2))
             }
         ]
 

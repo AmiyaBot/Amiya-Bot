@@ -4,7 +4,7 @@ import random
 from core import Message, Chain
 from core.database.models import User, Pool, PoolSpOperator
 from core.util.common import insert_empty
-from core.util.imageCreator import create_gacha_result
+from core.util.imageCreator import create_gacha_image
 from dataSource import DataSource, Operator
 
 avatar_resource = 'resource/images/avatars'
@@ -222,7 +222,7 @@ class GachaForUser:
 
                 result_list.append(op_dt)
 
-            reply.image(create_gacha_result(result_list))
+            reply.image(create_gacha_image(result_list))
 
         return reply.text_image(result, icons)
 

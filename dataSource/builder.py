@@ -22,7 +22,7 @@ def parse_template(blackboard, description):
         '0%': lambda v: f'{round(v * 100)}%'
     }
     data_dict = {item['key']: item['value'] for index, item in enumerate(blackboard)}
-    desc = remove_xml_tag(description)
+    desc = remove_xml_tag(description.replace('>-{', '>{'))
     format_str = re.findall(r'({(\S+?)})', desc)
     if format_str:
         for desc_item in format_str:
@@ -34,7 +34,7 @@ def parse_template(blackboard, description):
                 if len(key) >= 2 and key[1] in formatter:
                     value = formatter[key[1]](value)
 
-                desc = desc.replace(desc_item[0], str(value))
+                desc = desc.replace(desc_item[0], f' [{value}@#174CC6] ')
 
     return desc
 
@@ -90,7 +90,7 @@ class Operator:
             'operator_usage': self.data['itemUsage'] or '',
             'operator_quote': self.data['itemDesc'] or '',
             'operator_token': token['description'] if token else '',
-            'max_level': '%s-%s' % (len(self.data['phases']) - 1, max_phases['maxLevel'])
+            'max_level': '%s - %s' % (len(self.data['phases']) - 1, max_phases['maxLevel'])
         }
         detail.update(max_attr)
 

@@ -4,7 +4,7 @@ import threading
 from flask import Flask, session, request
 
 from core import AmiyaBot
-from core.database.models import sqlite_db, Group, GroupSleep, GroupSetting, GroupNotice
+from core.database.models import sqlite_db, Group, GroupActive, GroupSetting, GroupNotice
 from core.database.manager import select_for_paginate
 
 from ..response import response
@@ -88,10 +88,10 @@ def group_controller(app: Flask, bot: AmiyaBot):
         group_id = params['group_id']
 
         if 'active' in params:
-            GroupSleep.insert(group_id=group_id, active=params['active']).on_conflict(
-                conflict_target=[GroupSleep.group_id],
+            GroupActive.insert(group_id=group_id, active=params['active']).on_conflict(
+                conflict_target=[GroupActive.group_id],
                 update={
-                    GroupSleep.active: params['active']
+                    GroupActive.active: params['active']
                 }
             ).execute()
         else:

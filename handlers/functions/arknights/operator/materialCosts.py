@@ -2,6 +2,7 @@ import os
 
 from core.util import log
 from core.util.common import text_to_pinyin, remove_punctuation
+from core.util.imageCreator import line_height, side_padding
 from dataSource import DataSource, Operator
 
 from .initData import InfoInterface, InitData
@@ -9,6 +10,8 @@ from .operatorInfo import OperatorInfo
 
 material_images_source = 'resource/images/materials/'
 skill_images_source = 'resource/images/skills/'
+
+icon_size = 36
 
 
 class MaterialCosts:
@@ -142,7 +145,7 @@ class MaterialCosts:
                 if os.path.exists(item):
                     icons.append({
                         'path': item,
-                        'size': (35, 35),
+                        'size': (icon_size, icon_size),
                         'pos': (5, 26 + index * 34)
                     })
         else:
@@ -174,23 +177,26 @@ class MaterialCosts:
                     text += ' -- %s%s * %s\n\n' % (' ' * 15, item['material_name'], item['use_number'])
                     material_images.append(material_images_source + item['material_icon'] + '.png')
 
+            top = side_padding + line_height + int((line_height * 3 - icon_size) / 2)
+            content_height = line_height * 10
             for index, item in enumerate(skill_images):
                 if os.path.exists(item):
                     icons.append({
                         'path': item,
-                        'size': (35, 35),
-                        'pos': (10, 28 + 170 * index)
+                        'size': (icon_size, icon_size),
+                        'pos': (side_padding, top + content_height * index)
                     })
 
-            i, n = 0, 34
+            top += line_height * 3
+            i, n = 0, line_height * 2
             for index, item in enumerate(material_images):
                 if index and index % 3 == 0:
                     i += n * 2
                 if os.path.exists(item):
                     icons.append({
                         'path': item,
-                        'size': (35, 35),
-                        'pos': (30, 80 + i)
+                        'size': (icon_size, icon_size),
+                        'pos': (30, top + i)
                     })
                 i += n
         else:

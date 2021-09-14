@@ -7,7 +7,7 @@ from core.util import log
 from core.util.config import config, keyword
 from core.util.common import text_to_pinyin, remove_punctuation, make_folder
 from core.util.numberTranslate import chinese_to_digits
-from core.database.models import User, GroupSleep
+from core.database.models import User, GroupActive
 
 CONF = config()
 NAME = keyword('name')
@@ -18,7 +18,7 @@ class Message:
     解析 mirai 消息链为一切可用的信息
     """
     user_info: User
-    group_info: GroupSleep
+    group_active: GroupActive
 
     def __init__(self, message=None, _format=True):
         self.type = ''
@@ -77,7 +77,7 @@ class Message:
             self.nickname = data['sender']['memberName']
             self.is_group_admin = data['sender']['permission'] in ['OWNER', 'ADMINISTRATOR']
 
-            self.group_info, self.is_new_group = GroupSleep.get_or_create(group_id=self.group_id)
+            self.group_active, self.is_new_group = GroupActive.get_or_create(group_id=self.group_id)
 
         else:
             self.is_event = True

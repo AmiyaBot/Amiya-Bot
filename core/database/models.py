@@ -45,7 +45,7 @@ class Group(BaseModel):
     permission = TextField()
 
 
-class GroupSleep(BaseModel):
+class GroupActive(BaseModel):
     group_id = TextField(primary_key=True)
     active = IntegerField(default=1)
     sleep_time = BigIntegerField(default=0)

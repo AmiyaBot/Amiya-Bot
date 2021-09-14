@@ -5,7 +5,7 @@ import requests
 import traceback
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-from core.database.models import Group, GroupSleep, GroupSetting
+from core.database.models import Group, GroupActive, GroupSetting
 from core.util.config import config
 from core.util import log
 
@@ -160,7 +160,7 @@ class MiraiHttp:
         if flag:
             self.__post('quit', {'sessionKey': self.session, 'target': group_id})
         Group.delete().where(Group.group_id == group_id).execute()
-        GroupSleep.delete().where(GroupSleep.group_id == group_id).execute()
+        GroupActive.delete().where(GroupActive.group_id == group_id).execute()
         GroupSetting.delete().where(GroupSetting.group_id == group_id).execute()
 
     @staticmethod

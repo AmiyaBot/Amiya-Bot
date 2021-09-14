@@ -12,7 +12,7 @@ class DataBase:
             Admin,
             AdminTraceLog,
             Group,
-            GroupSleep,
+            GroupActive,
             GroupSetting,
             GroupNotice,
             Upload,

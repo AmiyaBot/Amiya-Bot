@@ -7,7 +7,7 @@ import traceback
 from core import Message, Chain
 from core.util import log
 from core.util.common import remove_xml_tag, make_folder
-from core.util.imageCreator import char_seat
+from core.util.imageCreator import TextParser
 from handlers.constraint import FuncInterface
 
 weibo_id = '6279793937'
@@ -143,7 +143,7 @@ class Weibo(FuncInterface):
             content = ''
             for char in detail:
                 content += char
-                length += char_seat(char)
+                length += TextParser.char_seat(char)
                 if length >= 32:
                     content += '...'
                     break

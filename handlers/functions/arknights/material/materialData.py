@@ -1,6 +1,7 @@
 import os
 
 from core.util import log
+from core.util.imageCreator import line_height, side_padding
 from dataSource import DataSource
 
 PL = {
@@ -15,6 +16,8 @@ TY = {
     'MANUFACTURE': ('制造站', '生产')
 }
 material_images_source = 'resource/images/materials/'
+
+icon_size = 36
 
 
 class MaterialData:
@@ -51,7 +54,7 @@ class MaterialData:
             {
                 'path': material_images_source + material['material_icon'] + '.png',
                 'size': (80, 80),
-                'pos': (10, 30)
+                'pos': (side_padding, side_padding + line_height + int((line_height * 6 - 80) / 2))
             }
         ]
 
@@ -62,7 +65,7 @@ class MaterialData:
             for item in made:
                 item_material = self.data.materials[item['use_material_id']]
 
-                text += '%s%s * %s\n\n' % (' ' * 12, item_material['material_name'], item['use_number'])
+                text += '%s%s * %s\n\n' % (' ' * 15, item_material['material_name'], item['use_number'])
                 material_images.append(material_images_source + item_material['material_icon'] + '.png')
 
         if material_id in self.data.materials_source:
@@ -95,8 +98,8 @@ class MaterialData:
             if os.path.exists(item):
                 icons.append({
                     'path': item,
-                    'size': (35, 35),
-                    'pos': (5, 145 + index * 34)
+                    'size': (icon_size, icon_size),
+                    'pos': (side_padding, line_height * 9 + index * line_height * 2)
                 })
 
         text += '\n' + material['material_desc']

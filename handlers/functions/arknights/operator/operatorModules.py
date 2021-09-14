@@ -1,13 +1,15 @@
 import os
 
-from core.util.imageCreator import split_text
 from core.util.common import integer
+from core.util.imageCreator import TextParser, line_height, side_padding
 from dataSource import DataSource, Operator
 from dataSource.builder import parse_template, attr_dict
 
 from .initData import InfoInterface
 
 material_images_source = 'resource/images/materials/'
+
+icon_size = 36
 
 
 class OperatorModules:
@@ -27,7 +29,7 @@ class OperatorModules:
         text = f'博士，为您找到干员{name}的模组信息'
         icons = []
 
-        i, n = 0, 34
+        i, n = 0, line_height * 2
 
         materials = self.data.materials
         material_images = []
@@ -80,7 +82,7 @@ class OperatorModules:
             text += '[解锁材料]'
             if item['itemCost']:
                 text += '\n\n'
-                i = len(split_text(text)) * 17 + 11
+                i = TextParser(text).line * line_height + side_padding + int((line_height * 3 - icon_size) / 2)
                 for cost in item['itemCost']:
                     material = materials[cost['id']]
                     text += ' -- %s%s * %s\n\n' % (' ' * 15, material['material_name'], cost['count'])
@@ -95,7 +97,7 @@ class OperatorModules:
             if os.path.exists(item):
                 icons.append({
                     'path': item,
-                    'size': (35, 35),
+                    'size': (icon_size, icon_size),
                     'pos': (30, i)
                 })
             i += n
