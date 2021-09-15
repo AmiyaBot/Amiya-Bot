@@ -4,7 +4,7 @@ import random
 from core import Message, Chain
 from core.database.models import User, Pool, PoolSpOperator
 from core.util.common import insert_empty
-from core.util.imageCreator import create_gacha_image
+from core.util.imageCreator import create_gacha_image, side_padding, line_height
 from dataSource import DataSource, Operator
 
 avatar_resource = 'resource/images/avatars'
@@ -183,6 +183,10 @@ class GachaForUser:
         result = f'阿米娅给博士扔来了{times}张简历，博士细细地检阅着...\n\n【{self.pick_up_name}】\n\n'
         icons = []
 
+        icon_size = 36
+        offset = int((line_height * 3 - icon_size) / 2)
+        top = side_padding + line_height * 2 + offset + 5
+
         for index, item in enumerate(operators):
             name = item['name']
             rarity = item['rarity']
@@ -196,8 +200,8 @@ class GachaForUser:
                 if os.path.exists(avatar_path):
                     icons.append({
                         'path': avatar_path,
-                        'size': (34, 34),
-                        'pos': (10, 60 + 34 * index)
+                        'size': (icon_size, icon_size),
+                        'pos': (side_padding, top + offset + icon_size * index)
                     })
 
                 operators_info[name] = {
