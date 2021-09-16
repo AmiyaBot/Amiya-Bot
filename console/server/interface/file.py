@@ -10,6 +10,15 @@ from ..response import response
 
 
 def file_controller(app: Flask):
+    @app.route('/getSourceDownloadState', methods=['POST'])
+    def get_src_info():
+        with open('resource/.src', mode='r') as file:
+            content = file.read().strip('\n').split('\n')
+
+        content = {item[0]: item[1] for item in [n.split('\t') for n in content]}
+
+        return response(content)
+
     @app.route('/upload', methods=['POST'])
     def upload():
         make_folder('resource/images/temp')

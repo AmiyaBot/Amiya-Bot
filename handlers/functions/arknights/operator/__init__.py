@@ -186,8 +186,13 @@ class Operator(FuncInterface):
             text = data.text
             for item in InitData.keyword + InitData.skins + InitData.voices:
                 text = text.replace(item, '')
-            return data.cut_words(text_to_pinyin(text))
-        return data.text_cut + data.text_cut_pinyin
+            res = data.cut_words(text_to_pinyin(text))
+        else:
+            res = data.text_cut + data.text_cut_pinyin
+
+        res = list(filter(lambda x: x not in ['li', 'xi', 'a'], res))
+
+        return res
 
     @staticmethod
     def __search_info(words, info_source):

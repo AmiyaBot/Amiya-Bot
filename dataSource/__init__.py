@@ -165,26 +165,43 @@ class DataSource(SourceBank):
         return stage_list
 
     def download_operators_photo(self, operators):
-        for name, status in log.download_progress(operators, 'operators', _total=False):
+        rec = {
+            'avatars': [0, 0],
+            'photo': [0, 0],
+            'skills': [0, 0],
+            'picture': [0, 0]
+        }
+        for name, status in log.download_src(operators, 'operators', _total=False, _record=False):
             item = operators[name]
             skills_list = item.skills()[0]
             skins_list = item.skins()
 
             status.total += len(skills_list) + len(skins_list) + 2
 
-            status.set_res(self.get_pic('char/profile/' + item.id, 'avatars'))
-            status.set_res(self.get_pic('char/halfPic/%s_1' % item.id, 'photo', '?x-oss-process=style/small-test'))
+            res = self.get_pic('char/profile/' + item.id, 'avatars')
+            rec['avatars'][int(res)] += 1
+            status.set_res(res)
+
+            res = self.get_pic('char/halfPic/%s_1' % item.id, 'photo', '?x-oss-process=style/small-test')
+            rec['photo'][int(res)] += 1
+            status.set_res(res)
 
             for skill in skills_list:
                 res = self.get_pic('skills/pics/' + skill['skill_icon'], 'skills')
+                rec['skills'][int(res)] += 1
                 status.set_res(res)
 
             for skin in skins_list:
                 res = self.get_pic('char/set/' + skin['skin_image'], 'picture')
+                rec['picture'][int(res)] += 1
                 status.set_res(res)
 
+        with open(f'resource/.src', mode='a+') as src:
+            for name, item in rec.items():
+                src.write(f'{name}\t{item[1]}/{sum(item)}\n')
+
     def download_materials_icon(self, materials):
-        for m_id, status in log.download_progress(materials, 'materials'):
+        for m_id, status in log.download_src(materials, 'materials'):
             item = materials[m_id]
             res = self.get_pic(
                 name='item/pic/' + item['material_icon'],
@@ -194,7 +211,7 @@ class DataSource(SourceBank):
             status.set_res(res)
 
     def download_enemies_photo(self, enemies):
-        for name, status in log.download_progress(enemies, 'enemies'):
+        for name, status in log.download_src(enemies, 'enemies'):
             item = enemies[name]
             res = self.get_pic(
                 name='enemy/pic/' + item['info']['enemyId'],

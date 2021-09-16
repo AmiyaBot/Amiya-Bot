@@ -72,7 +72,7 @@ class Wiki(DownloadTools):
                 urls = self.get_voice_urls(name)
                 talks = [f'{name}_{item}.wav' for item in nudge]
 
-                for file, status in log.download_progress(urls, f'{en}Voices', _total=False):
+                for file, status in log.download_src(urls, f'{en}Voices', _total=False):
                     if file in talks:
                         status.total += 1
                         res = self.request_voice_from_wiki(name, urls[file], file)

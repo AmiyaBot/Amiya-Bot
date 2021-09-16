@@ -9,6 +9,7 @@ from core.network.httpRequests import MiraiHttp
 from core.resolver.message import Message
 from core.resolver.messageChain import Chain
 from core.database.manager import DataBase, Group, GroupSetting, Message as MessageBase
+from core.util.config import config
 from core.util import log
 
 DataBase.create_base()
@@ -46,6 +47,8 @@ class AmiyaBot(WebSocket):
         threading.Thread(target=self.__loop_machine).start()
 
         self.send_to_admin('启动完毕')
+        with self.send_custom_message(group_id=config.account.group.groupId) as reply:
+            reply.text('阿米娅已重新启动~~')
 
     def handler(self, data):
         data = Message(data)

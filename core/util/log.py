@@ -36,7 +36,7 @@ class StatusCalculator:
         self.res['fail'] += 1
 
 
-def download_progress(data: Union[dict, list], title: str = 'data', _total=True):
+def download_src(data: Union[dict, list], title: str = 'data', _total=True, _record=True):
     data = data.keys() if type(data) is dict else data
     status = StatusCalculator()
     success = 0
@@ -70,8 +70,9 @@ def download_progress(data: Union[dict, list], title: str = 'data', _total=True)
         print_bar(index + 1)
 
     print()
-    with open(f'resource/.src', mode='a+') as src:
-        src.write(f'{title}\t{success}/{status.total}\n')
+    if _record:
+        with open(f'resource/.src', mode='a+') as src:
+            src.write(f'{title}\t{success}/{status.total}\n')
 
 
 def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True, stdout=print):

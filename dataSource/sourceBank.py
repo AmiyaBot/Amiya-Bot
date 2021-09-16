@@ -122,7 +122,7 @@ class SourceBank(DownloadTools):
         if self.check_update() is False:
             use_cache = True
 
-        for name, status in log.download_progress(self.resource, 'gameData'):
+        for name, status in log.download_src(self.resource, 'gameData'):
             url = '%s/%s.json' % (self.github_source, name)
             path = '%s/%s.json' % (self.resource_path, name.split('/')[-1])
 
@@ -140,11 +140,11 @@ class SourceBank(DownloadTools):
                 raise Exception(f'data [{name}] download failed')
 
     def download_bot_resource(self, refresh=False):
-        for name, _list in files.files.items():
+        for name, _list in files.items():
             if type(_list) is str:
                 _list = [_list]
 
-            for item, status in log.download_progress(_list, name):
+            for item, status in log.download_src(_list, name):
                 path = self.bot_paths[name]
                 save = f'{path}/{item.split("/")[-1]}'
                 url = f'{self.bot_source}/{item}'
@@ -193,7 +193,7 @@ class SourceBank(DownloadTools):
         with open(local_version_file, mode='w+') as lv:
             lv.write(version)
 
-        for file, status in log.download_progress(file_list, 'console'):
+        for file, status in log.download_src(file_list, 'console'):
             view_path = f'view/{file}'
             if not os.path.exists(view_path) or need_update:
                 folder = '/'.join(view_path.split('/')[0:-1])
