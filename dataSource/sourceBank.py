@@ -64,7 +64,10 @@ class SourceBank(DownloadTools):
 
         make_folder(save_path)
 
-        if os.path.exists(image_path) is False and image_path not in ignore['image_download']:
+        if image_path in ignore['image_download']:
+            return False
+
+        if os.path.exists(image_path) is False:
             pic = self.wiki.request_pic_from_wiki(_wiki) if _wiki else self.request_file(url, stringify=False)
             if pic:
                 with open(image_path, mode='wb+') as _pic:
@@ -119,7 +122,7 @@ class SourceBank(DownloadTools):
         if self.check_update() is False:
             use_cache = True
 
-        for name, status in log.download_progress(self.resource, 'data resource'):
+        for name, status in log.download_progress(self.resource, 'gameData'):
             url = '%s/%s.json' % (self.github_source, name)
             path = '%s/%s.json' % (self.resource_path, name.split('/')[-1])
 
@@ -137,8 +140,7 @@ class SourceBank(DownloadTools):
                 raise Exception(f'data [{name}] download failed')
 
     def download_bot_resource(self, refresh=False):
-        bot_file = files()
-        for name, _list in bot_file.items():
+        for name, _list in files.files.items():
             if type(_list) is str:
                 _list = [_list]
 

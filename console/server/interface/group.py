@@ -16,19 +16,36 @@ def group_controller(app: Flask, bot: AmiyaBot):
     def get_group_by_pages():
         params = request.json
         where = []
+        order = ''
         if params['search']:
-            if params['search']['group_id']:
-                where.append(f"g.group_id like '%{params['search']['group_id']}%'")
-            if params['search']['group_name']:
-                where.append(f"g.group_name like '%{params['search']['group_name']}%'")
-            if params['search']['permission']:
-                where.append(f"g.permission = '{params['search']['permission']}'")
-            if params['search']['active']:
-                where.append(f"g2.active = '{params['search']['active']}'")
-            if params['search']['send_notice']:
-                where.append(f"g3.send_notice = '{params['search']['send_notice']}'")
-            if params['search']['send_weibo']:
-                where.append(f"g3.send_weibo = '{params['search']['send_weibo']}'")
+
+            like = {'g.group_id': 'group_id', 'g.group_name': 'group_name'}
+            equal = {
+                'g.permission': 'permission',
+                'g2.active': 'active',
+                'g3.send_notice': 'send_notice',
+                'g3.send_weibo': 'send_weibo'
+            }
+
+            for field, item in like.items():
+                if params['search'][item]:
+                    where.append(f"{field} like '%{params['search'][item]}%'")
+
+            for field, item in equal.items():
+                if params['search'][item]:
+                    where.append(f"{field} = '{params['search'][item]}'")
+
+            if '_sort' in params['search'] and params['search']['_sort']['order']:
+                order_by = 'desc' if params['search']['_sort']['order'] == 'descending' else 'asc'
+                field = params['search']['_sort']['field']
+
+                if field == 'group_id':
+                    order = f'order by g.group_id {order_by}'
+                if field == 'group_name':
+                    order = f'order by g.group_name {order_by}'
+                if field == 'message_num':
+                    order = f'order by g4.message_num {order_by}'
+
         if where:
             where = 'where ' + ' and '.join(where)
 
@@ -42,11 +59,10 @@ def group_controller(app: Flask, bot: AmiyaBot):
                g3.send_weibo,
                g4.message_num
         from "group" g
-                 left join groupsleep g2 on g.group_id = g2.group_id
+                 left join groupactive g2 on g.group_id = g2.group_id
                  left join groupsetting g3 on g.group_id = g3.group_id
                  left join (select count(*) message_num, group_id from message where record = 'call' group by group_id)
-                           g4 on g.group_id = g4.group_id {where if where else ''}
-        order by g4.message_num desc
+                           g4 on g.group_id = g4.group_id {where if where else ''} {order if order else ''}
         '''
 
         fields = [

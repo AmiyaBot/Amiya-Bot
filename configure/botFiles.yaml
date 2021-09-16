@@ -1,0 +1,46 @@
+files:
+    face:
+        - Images/Face/face1.png
+        - Images/Face/face2.png
+        - Images/Face/face3.png
+        - Images/Face/face4.png
+        - Images/Face/face5.png
+        - Images/Face/face6.png
+        - Images/Face/face7.png
+        - Images/Face/face8.png
+        - Images/Face/face9.png
+        - Images/Face/face10.png
+        - Images/Face/face11.png
+        - Images/Face/face12.png
+        - Images/Face/face13.png
+        - Images/Face/face14.png
+        - Images/Face/face15.png
+        - Images/Face/face16.png
+
+    style:
+        - Font/AdobeHeitiStd-Regular.otf
+        - Font/rabbit.png
+        - Font/rabbit-white.png
+
+    class:
+        - Images/Class/caster.png
+        - Images/Class/medic.png
+        - Images/Class/pioneer.png
+        - Images/Class/sniper.png
+        - Images/Class/special.png
+        - Images/Class/support.png
+        - Images/Class/tank.png
+        - Images/Class/warrior.png
+
+    gacha:
+        - Images/Gacha/1.png
+        - Images/Gacha/2.png
+        - Images/Gacha/3.png
+        - Images/Gacha/4.png
+        - Images/Gacha/5.png
+        - Images/Gacha/6.png
+        - Images/Gacha/bg.png
+
+    database:
+        - Database/pool.sql
+        - Database/gacha_config.sql

@@ -13,3 +13,5 @@ Flask~=2.0.1
 Flask-Cors~=3.0.10
 graiax-silkcoder~=0.0.16
 Werkzeug~=2.0.1
+PyYAML~=5.4.1
+attrdict~=2.0.1

@@ -14,15 +14,15 @@ from core.util import log
 
 class WebSocket(WebSocketClient):
     def __init__(self):
-        server = config('server')
-        account = config('selfId')
+        server = config.miraiApi
+        account = config.account.bot
 
-        host = f'{server["serverIp"]}:{server["websocketPort"]}'
+        host = f'{server.host}:{server.port.ws}'
 
-        super().__init__(f'ws://{host}/all?verifyKey={server["authKey"]}&&qq={account}')
+        super().__init__(f'ws://{host}/all?verifyKey={server.authKey}&&qq={account}')
 
         self.executor = ThreadPool()
-        self.offline = config('offline')
+        self.offline = config.setting.offline
         self.account = account
         self.session = None
         self.send_err = True
@@ -81,7 +81,7 @@ class WebSocket(WebSocketClient):
             self.send_to_admin(result.replace('  ', '    '))
 
     def send_to_admin(self, message: str):
-        with self.send_custom_message(user_id=config('adminId'), _type='friend') as reply:
+        with self.send_custom_message(user_id=config.account.admin, _type='friend') as reply:
             reply: Chain
             reply.text(message)
 

@@ -11,6 +11,10 @@ from .unitConfig import Config
 class DataSource(SourceBank):
     def __init__(self, auto_update=True, check_assets=True):
         super().__init__()
+
+        with open('resource/.src', mode='w+') as src:
+            src.write('')
+
         self.download_resource(not auto_update)
         self.download_bot_resource()
         self.download_bot_console()
@@ -161,40 +165,40 @@ class DataSource(SourceBank):
         return stage_list
 
     def download_operators_photo(self, operators):
-        for name, status in log.download_progress(operators, 'operators images'):
+        for name, status in log.download_progress(operators, 'operators', _total=False):
             item = operators[name]
-
-            status.res(self.get_pic('char/profile/' + item.id, 'avatars'))
-            status.res(self.get_pic('char/halfPic/%s_1' % item.id, 'photo', '?x-oss-process=style/small-test'))
-
             skills_list = item.skills()[0]
+            skins_list = item.skins()
+
+            status.total += len(skills_list) + len(skins_list) + 2
+
+            status.set_res(self.get_pic('char/profile/' + item.id, 'avatars'))
+            status.set_res(self.get_pic('char/halfPic/%s_1' % item.id, 'photo', '?x-oss-process=style/small-test'))
+
             for skill in skills_list:
                 res = self.get_pic('skills/pics/' + skill['skill_icon'], 'skills')
-                status.res(res)
+                status.set_res(res)
 
-            skins_list = item.skins()
             for skin in skins_list:
                 res = self.get_pic('char/set/' + skin['skin_image'], 'picture')
-                status.res(res)
-
-            status.success()
+                status.set_res(res)
 
     def download_materials_icon(self, materials):
-        for m_id, status in log.download_progress(materials, 'materials icon'):
+        for m_id, status in log.download_progress(materials, 'materials'):
             item = materials[m_id]
             res = self.get_pic(
                 name='item/pic/' + item['material_icon'],
                 _wiki='道具_带框_' + item['material_name'],
                 _type='materials'
             )
-            status.res(res)
+            status.set_res(res)
 
     def download_enemies_photo(self, enemies):
-        for name, status in log.download_progress(enemies, 'enemies photo'):
+        for name, status in log.download_progress(enemies, 'enemies'):
             item = enemies[name]
             res = self.get_pic(
                 name='enemy/pic/' + item['info']['enemyId'],
                 _type='enemy',
                 _param='?x-oss-process=style/jpg-test'
             )
-            status.res(res)
+            status.set_res(res)

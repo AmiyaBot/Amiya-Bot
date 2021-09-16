@@ -11,6 +11,7 @@ def user_controller(app: Flask):
     @app.route('/user/getUsersByPages', methods=['POST'])
     def get_users_by_pages():
         params = request.json
+        sort = None
         equal = {}
         contains = {}
 
@@ -22,11 +23,15 @@ def user_controller(app: Flask):
             contains = {
                 'user_id': params['search']['user_id']
             }
+            if '_sort' in params['search']:
+                order_by = 'desc' if params['search']['_sort']['order'] == 'descending' else 'asc'
+                field = params['search']['_sort']['field']
+                sort = (getattr(getattr(User, field), order_by)(),)
 
         data, count = select_for_paginate(User,
                                           equal,
                                           contains,
-                                          order_by=(User.sign_in.desc(), User.user_feeling.desc()),
+                                          order_by=sort,
                                           page=params['page'],
                                           page_size=params['pageSize'])
 

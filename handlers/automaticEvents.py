@@ -4,7 +4,6 @@ import traceback
 
 from core import AmiyaBot, Chain
 from core.util import log
-from core.util.config import config
 from core.util.common import insert_zero, TimeRecorder
 from core.util.imageCreator import temp_dir
 from core.database.models import User, Upload, Message, Intellect, GroupSetting
@@ -44,7 +43,7 @@ class AutomaticEvents:
                     Upload.truncate_table()
 
                     # 清除缓存
-                    log.clean_log(3, extra=[temp_dir] + config('tempFolders'))
+                    log.clean_log(3, extra=[temp_dir])
 
                     # 记录维护时间
                     maintain_record(str(now_time))

@@ -8,7 +8,7 @@ from core.network.httpRequests import MiraiHttp
 from core.database.models import Upload
 
 loop = asyncio.get_event_loop()
-mirai_folder = config('miraiFolder') or 'log'
+mirai_folder = config.miraiApi.folder or 'log'
 cache_folder = 'data/net.mamoe.mirai-api-http/voices'
 
 

@@ -5,8 +5,6 @@ from core.util.config import reward
 from core.database.models import User
 from handlers.constraint import disable_func
 
-reward = reward('greeting')
-
 
 @disable_func(function_id='normal')
 def greeting(data: Message):
@@ -48,8 +46,8 @@ def sign_in(data: Message, sign_type=0):
     user = data.user_info
 
     if user.sign_in == 0:
-        coupon = reward['coupon']
-        feeling = reward['feeling']
+        coupon = reward.greeting.coupon
+        feeling = reward.greeting.feeling
         User.update(
             sign_in=1,
             coupon=User.coupon + coupon,

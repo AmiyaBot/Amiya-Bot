@@ -12,12 +12,13 @@ from ..response import response
 
 
 def super_user(func=None):
+    admin = str(config.account.admin)
     if func is None:
-        return str(session.get('user')) == str(config('adminId'))
+        return str(session.get('user')) == admin
 
     @wraps(func)
     def check():
-        if str(session.get('user')) != str(config('adminId')):
+        if str(session.get('user')) != admin:
             return response(code=0, message='您没有此接口的操作权限')
         return func()
 

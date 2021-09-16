@@ -5,10 +5,17 @@ from core.util import log
 from aip import AipNlp, AipOcr
 
 
+class Options:
+    enable: bool
+    appId: int
+    apiKey: str
+    secretKey: str
+
+
 class NaturalLanguage:
-    def __init__(self, options):
-        if options['enable']:
-            self.client = AipNlp(options['appId'], options['apiKey'], options['secretKey'])
+    def __init__(self, options: Options):
+        if options.enable:
+            self.client = AipNlp(str(options.appId), options.apiKey, options.secretKey)
             self.enable = True
         else:
             self.client = None
@@ -30,9 +37,9 @@ class NaturalLanguage:
 
 
 class OpticalCharacterRecognition:
-    def __init__(self, options):
-        if options['enable']:
-            self.client = AipOcr(options['appId'], options['apiKey'], options['secretKey'])
+    def __init__(self, options: Options):
+        if options.enable:
+            self.client = AipOcr(str(options.appId), options.apiKey, options.secretKey)
             self.enable = True
         else:
             self.client = None

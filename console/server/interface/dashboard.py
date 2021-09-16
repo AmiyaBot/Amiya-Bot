@@ -7,7 +7,7 @@ from core.util.config import config
 
 from ..response import response
 
-account = config('selfId')
+account = config.account.bot
 
 
 def get_last_time(hour=24):

@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import time
 import jieba
 import shutil
@@ -16,40 +17,48 @@ jieba.setLogLevel(jieba.logging.INFO)
 
 class StatusCalculator:
     def __init__(self):
-        self.total = {
+        self.res = {
             'success': 0,
             'fail': 0
         }
+        self.total = 0
 
-    def res(self, res):
+    def set_res(self, res):
         if res:
             self.success()
         else:
             self.fail()
 
     def success(self):
-        self.total['success'] += 1
+        self.res['success'] += 1
 
     def fail(self):
-        self.total['fail'] += 1
+        self.res['fail'] += 1
 
 
-def download_progress(data: Union[dict, list], title: str = 'data'):
+def download_progress(data: Union[dict, list], title: str = 'data', _total=True):
     data = data.keys() if type(data) is dict else data
     status = StatusCalculator()
+    success = 0
+
+    if _total:
+        status.total = len(data)
 
     def print_bar(i):
+        nonlocal success
+
         date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         curr = int(i / len(data) * 100)
         block = int(curr / 4)
         bar = '=' * block + ' ' * (25 - block)
 
-        success = status.total['success']
-        fail = status.total['fail']
+        success = status.res['success']
+        fail = status.res['fail']
 
         print('\r', end='')
         print(
-            f'[{date}][INFO] Loading src {title} {i}/{len(data)} [{bar}] {curr}% ({success} OK, {fail} FAIL)',
+            f'[{date}][INFO] Inspecting src '
+            f'{title} {i}/{len(data)}({status.total}) [{bar}] {curr}% ({success} OK, {fail} FAIL)',
             end=''
         )
 
@@ -61,6 +70,8 @@ def download_progress(data: Union[dict, list], title: str = 'data'):
         print_bar(index + 1)
 
     print()
+    with open(f'resource/.src', mode='a+') as src:
+        src.write(f'{title}\t{success}/{status.total}\n')
 
 
 def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True, stdout=print):

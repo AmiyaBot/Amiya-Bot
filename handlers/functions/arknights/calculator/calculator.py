@@ -2,11 +2,11 @@ import time
 
 from core.util.config import reward
 
-Conf = reward('gameJadeReward')
-SignIn = Conf['signIn']
-DailyTasks = Conf['dailyTasks']
-WeeklyTasks = Conf['weeklyTasks']
-WeeklyBattle = Conf['weeklyBattle']
+Conf = reward.gameJadeReward
+SignIn = Conf.signIn
+DailyTasks = Conf.dailyTasks
+WeeklyTasks = Conf.weeklyTasks
+WeeklyBattle = Conf.weeklyBattle
 
 
 def calc_jade(end_date):

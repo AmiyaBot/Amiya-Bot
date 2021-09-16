@@ -1,0 +1,33 @@
+account:
+    bot: 1515361402
+    admin: 826197021
+    group:
+        groupId: 362165038
+        closeBeta: false
+
+miraiApi:
+    host: 127.0.0.1
+    port:
+        http: 8080
+        ws: 8060
+    authKey: AmiyaBot
+    folder:
+
+console:
+    host: 0.0.0.0
+    port: 80
+
+baiduCloud:
+    enable: false
+    appId:
+    apiKey:
+    secretKey:
+
+message:
+    limit:
+        seconds: 10
+        maxCount: 3
+    transToImageLength: 100
+
+setting:
+    offline: false

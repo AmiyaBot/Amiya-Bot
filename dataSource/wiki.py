@@ -9,7 +9,6 @@ from core.network.httpRequests import DownloadTools
 from requests_html import HTMLSession, HTML
 
 voices_source = 'resource/voices'
-nudge_reply = nudge('reply')
 
 
 class Wiki(DownloadTools):
@@ -71,15 +70,13 @@ class Wiki(DownloadTools):
             }
             for en, name in voices.items():
                 urls = self.get_voice_urls(name)
-                talks = [f'{name}_{item}.wav' for item in nudge_reply]
+                talks = [f'{name}_{item}.wav' for item in nudge]
 
-                for file, status in log.download_progress(urls, f'{en} voices'):
+                for file, status in log.download_progress(urls, f'{en}Voices', _total=False):
                     if file in talks:
+                        status.total += 1
                         res = self.request_voice_from_wiki(name, urls[file], file)
-                        if res:
-                            status.success()
-                        else:
-                            status.fail()
+                        status.set_res(res)
 
         except Exception as e:
             log.error(repr(e))

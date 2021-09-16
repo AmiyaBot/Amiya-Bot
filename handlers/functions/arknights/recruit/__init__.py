@@ -18,7 +18,7 @@ class Recruit(FuncInterface):
     def __init__(self, data_source: DataSource, bot: AmiyaBot):
         super().__init__(function_id='recruit')
 
-        self.ocr = OpticalCharacterRecognition(config('baiduCloud'))
+        self.ocr = OpticalCharacterRecognition(config.baiduCloud)
 
         self.bot = bot
         self.data = data_source

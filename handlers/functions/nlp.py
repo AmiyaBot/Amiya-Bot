@@ -5,7 +5,7 @@ from core.util.config import config
 from core.util.baiduCloud import NaturalLanguage
 from handlers.constraint import disable_func
 
-nlp = NaturalLanguage(config('baiduCloud'))
+nlp = NaturalLanguage(config.baiduCloud)
 
 
 @disable_func(function_id='normal')

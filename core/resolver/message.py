@@ -9,9 +9,6 @@ from core.util.common import text_to_pinyin, remove_punctuation, make_folder
 from core.util.numberTranslate import chinese_to_digits
 from core.database.models import User, GroupActive
 
-CONF = config()
-NAME = keyword('name')
-
 
 class Message:
     """
@@ -88,7 +85,7 @@ class Message:
         self.user_id = data['sender']['id']
         self.user_info, self.is_new_user = User.get_or_create(user_id=self.user_id)
 
-        self.is_admin = self.user_id == CONF['adminId']
+        self.is_admin = self.user_id == config.account.admin
         self.is_black = bool(self.user_info.black)
 
         self.__trans_text(message_chain=data['messageChain'])
@@ -100,7 +97,7 @@ class Message:
             for chain in message_chain:
                 if chain['type'] == 'At':
                     self.at_target = chain['target']
-                    if self.at_target == CONF['selfId']:
+                    if self.at_target == config.account.bot:
                         self.is_at = True
                         self.is_call = True
 
@@ -128,13 +125,13 @@ class Message:
     def __check_call(self):
         text = self.text
 
-        for item in NAME['bad'].split(','):
+        for item in keyword.name.bad:
             if text.startswith(item):
                 self.bad_name = item
                 self.is_bad_call = True
                 break
 
-        for item in NAME['good'].split(','):
+        for item in keyword.name.good:
             if text.startswith(item):
                 self.is_call = True
 

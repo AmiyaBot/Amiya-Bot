@@ -7,10 +7,9 @@ from amiya import Main
 
 class QuickStart:
     def __init__(self):
-        self.config = config()
         self.type = 'group'
 
-        if self.config['offline'] is not True:
+        if config.setting.offline is not True:
             raise Exception('discontinued starting because config <offline> should be "True".')
 
         self.bot = Main()
@@ -26,13 +25,13 @@ class QuickStart:
                     }
                 ],
                 'sender': {
-                    'id': self.config['adminId'],
+                    'id': config.account.admin,
                     'permission': 'OWNER',
                     'nickname': 'OWNER',
                     'memberName': 'OWNER',
                     'remark': 'none',
                     'group': {
-                        'id': self.config['closeBeta']['groupId']
+                        'id': config.account.group.groupId
                     }
                 }
             }

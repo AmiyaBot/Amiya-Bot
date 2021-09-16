@@ -8,12 +8,10 @@ from core.util.imageCreator import create_image
 
 Image = ImageManager()
 Voice = VoiceManager()
-def_feeling = reward('reply.feeling')
-max_length = config('message.replyMaxLength')
 
 
 class Chain:
-    def __init__(self, data: Message, feeling: int = def_feeling):
+    def __init__(self, data: Message, feeling: int = reward.reply.feeling):
         self.data = data
         self.feeling = feeling
 
@@ -71,7 +69,7 @@ class Chain:
                         'faceId': face[index]
                     })
         else:
-            if trans_image and len(text) >= max_length:
+            if trans_image and len(text) >= config.message.transToImageLength:
                 self.text_image(text)
             else:
                 chain.append({

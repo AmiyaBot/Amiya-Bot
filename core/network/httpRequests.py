@@ -14,12 +14,12 @@ session_file = 'session.txt'
 
 class MiraiHttp:
     def __init__(self):
-        server = config('server')
+        server = config.miraiApi
 
-        self.offline = config('offline')
+        self.offline = config.setting.offline
 
-        self.host = f'{server["serverIp"]}:{server["httpPort"]}'
-        self.auth_key = server['authKey']
+        self.host = f'{server.host}:{server.port.http}'
+        self.auth_key = server.authKey
         self.request = requests.session()
         self.session = self.get_session()
 
@@ -52,7 +52,7 @@ class MiraiHttp:
                     return False
 
                 session = response['session']
-                self_id = config('selfId')
+                self_id = config.account.bot
 
                 log.info('init http session: ' + session)
 

@@ -9,9 +9,8 @@ from core.database.models import User, Admin, Message as MessageBase
 from handlers.functions import FunctionIndexes, manager_handler, random_reply, greeting
 from handlers.handleWaiting import waiting_event
 
-limit = config('message.limit')
-account = config('selfId')
-close_beta = config('closeBeta')
+limit = config.message.limit
+account = config.account.bot
 
 
 class Handlers(FunctionIndexes):
@@ -98,8 +97,8 @@ class Handlers(FunctionIndexes):
         if data.is_admin is False and data.type == 'friend':
             return False
 
-        if data.group_id and close_beta['enable']:
-            if str(data.group_id) != str(close_beta['groupId']):
+        if data.group_id and config.account.group.groupId and config.account.group.closeBeta:
+            if str(data.group_id) != str(config.account.group.groupId):
                 return False
 
         for item in ['Q群管家', '小冰']:
@@ -112,9 +111,9 @@ class Handlers(FunctionIndexes):
         speed = MessageBase.select().where(
             MessageBase.user_id == data.user_id,
             MessageBase.record == 'call',
-            MessageBase.msg_time >= time.time() - limit['seconds']
+            MessageBase.msg_time >= time.time() - limit.seconds
         )
-        if speed.count() >= limit['maxCount']:
+        if speed.count() >= limit.maxCount:
             return Chain(data).dont_at().text('博士说话太快了，请慢一些吧～')
 
         return manager_handler(data) if data.type == 'group' else True

@@ -37,7 +37,7 @@ logging.config.dictConfig({
 
 class Console(Intreface):
     def __init__(self, bot: AmiyaBot):
-        conf = config('console')
+        conf = config.console
         path = self.app_path()
         app = Flask(__name__, static_folder=f'{path}/view/static', template_folder=f'{path}/view')
 
@@ -48,7 +48,7 @@ class Console(Intreface):
 
         super().__init__(app, bot)
 
-        host = (conf['host'], conf['port'])
+        host = (conf.host, conf.port)
 
         self.host = 'http://%s:%s' % host
         self.server = pywsgi.WSGIServer(host, app, log=app.logger)

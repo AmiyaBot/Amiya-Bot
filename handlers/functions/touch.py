@@ -6,7 +6,6 @@ from core.util.config import nudge
 from dataSource.wiki import Wiki
 from handlers.constraint import disable_func
 
-nudge_reply = nudge('reply')
 wiki = Wiki()
 
 
@@ -34,7 +33,7 @@ def get_face(data: Message):
 def get_voice(data: Message):
     # name = random.choice(['阿米娅', '阿米娅(近卫)'])
     name = '阿米娅'
-    voice = random.choice(nudge_reply)
+    voice = random.choice(nudge)
     file = wiki.voice_exists(name, voice)
     if not file:
         file = wiki.download_operator_voices(name, voice)

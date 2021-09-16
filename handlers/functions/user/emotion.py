@@ -5,8 +5,6 @@ from core.util.config import keyword
 from core.util.common import word_in_sentence, check_sentence_by_re
 from handlers.constraint import disable_func
 
-keyword = keyword()
-
 
 @disable_func(function_id='normal')
 def emotion(data: Message):
@@ -16,10 +14,10 @@ def emotion(data: Message):
 
     mood = data.user_info.user_mood
 
-    name_good = keyword['name']['good'].split(',')
-    keyword_bad = keyword['keyword']['bad'].split(',')
-    keyword_good = keyword['keyword']['good'].split(',')
-    touch_reply = keyword['touch']['reply']
+    name_good = keyword.name.good
+    keyword_bad = keyword.keyword.bad
+    keyword_good = keyword.keyword.good
+    touch_reply = keyword.touch
 
     if check_sentence_by_re(message, keyword_bad, name_good):
         reply.feeling = -5
