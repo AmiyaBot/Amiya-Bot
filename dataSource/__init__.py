@@ -60,7 +60,10 @@ class DataSource(SourceBank):
         )
 
         for map_item in map_data:
-            for n, item in map_item[0].items():
+            data = map_item[0]
+            if 'charWords' in data:
+                data = data['charWords']
+            for n, item in data.items():
                 char_id = item[map_item[-1]]
                 if char_id not in map_item[1]:
                     map_item[1][char_id] = []
