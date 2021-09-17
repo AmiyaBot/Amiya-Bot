@@ -1,13 +1,23 @@
+from typing import Dict, Type
+
 from core import Message
 from dataSource import DataSource
 from handlers.constraint import FuncInterface
+from handlers.functions.arknights.calculator import Calculator
+from handlers.functions.arknights.operator import Operator
+from handlers.functions.arknights.material import Material
+from handlers.functions.arknights.recruit import Recruit
+from handlers.functions.arknights.enemy import Enemy
+from handlers.functions.arknights.gacha import Gacha
 
-from .calculator import Calculator
-from .operator import Operator
-from .material import Material
-from .recruit import Recruit
-from .enemy import Enemy
-from .gacha import Gacha
+function_dict: Dict[str, Type[FuncInterface]] = {
+    'jadeCalculator': Calculator,
+    'checkOperator': Operator,
+    'checkMaterial': Material,
+    'checkEnemy': Enemy,
+    'recruit': Recruit,
+    'gacha': Gacha
+}
 
 
 class Arknights(DataSource):

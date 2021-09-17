@@ -1,25 +1,25 @@
 import time
 
-from core.util.config import reward
-
-Conf = reward.gameJadeReward
-SignIn = Conf.signIn
-DailyTasks = Conf.dailyTasks
-WeeklyTasks = Conf.weeklyTasks
-WeeklyBattle = Conf.weeklyBattle
+from core.util.config import func_setting
 
 
 def calc_jade(end_date):
     dates = calc_date(end_date)
 
+    conf = func_setting().jadeSetting
+    sign_in = conf.signIn
+    daily_tasks = conf.dailyTasks
+    weekly_tasks = conf.weeklyTasks
+    weekly_battle = conf.weeklyBattle
+
     types = {'s': 0, 'd': 0, 't': 0, 'b': 0}
 
     for item in dates:
-        types['s'] += SignIn
-        types['d'] += DailyTasks
+        types['s'] += sign_in
+        types['d'] += daily_tasks
         if item['weekDate'] == 0:
-            types['t'] += WeeklyTasks
-            types['b'] += WeeklyBattle
+            types['t'] += weekly_tasks
+            types['b'] += weekly_battle
 
     jade = 0
     for i in types:

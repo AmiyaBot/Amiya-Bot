@@ -21,7 +21,7 @@ class Intreface:
         data = bot.handlers.arknights
 
         auth_controller(app, bot)
-        file_controller(app)
+        file_controller(app, bot, data)
         user_controller(app)
         admin_controller(app)
         gacha_controller(app)

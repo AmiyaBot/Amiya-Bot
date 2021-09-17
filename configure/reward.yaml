@@ -4,9 +4,3 @@ reply:
 greeting:
     coupon: 50
     feeling: 50
-
-gameJadeReward:
-    signIn: 200
-    dailyTasks: 100
-    weeklyTasks: 500
-    weeklyBattle: 1800

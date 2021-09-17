@@ -15,7 +15,7 @@ side_padding = 10
 
 
 class TextParser:
-    def __init__(self, text: str, color='#000000', font_size=15, max_seat=510):
+    def __init__(self, text: str, color='#000000', font_size=15, max_seat=560):
         self.font = ImageFont.truetype(font_file, font_size)
         self.text = text
         self.color = color
@@ -85,7 +85,7 @@ def create_image(text: str, folder, images=None, font_size=15):
     text = TextParser(text, font_size=font_size)
 
     height = text.line + 2
-    image = Image.new('RGB', (550, height * line_height), (245, 245, 245))
+    image = Image.new('RGB', (600, height * line_height), (245, 245, 245))
     draw = ImageDraw.Draw(image)
     font = text.font
 

@@ -2,18 +2,19 @@ import yaml
 
 from attrdict import AttrDict
 
-with open('config.yaml', mode='r', encoding='utf-8') as f:
-    config = AttrDict(yaml.safe_load(f))
 
-with open('configure/keyword.yaml', mode='r', encoding='utf-8') as f:
-    keyword = AttrDict(yaml.safe_load(f))
+def read_yaml(path):
+    with open(path, mode='r', encoding='utf-8') as f:
+        content = AttrDict(yaml.safe_load(f))
+    return content
 
-with open('configure/nudge.yaml', mode='r', encoding='utf-8') as f:
-    nudge = AttrDict(yaml.safe_load(f)).nudge
 
-with open('configure/reward.yaml', mode='r', encoding='utf-8') as f:
-    reward = AttrDict(yaml.safe_load(f))
+def func_setting():
+    return read_yaml('configure/functionSetting.yaml')
 
-with open('configure/botFiles.yaml', mode='r', encoding='utf-8') as f:
-    files = AttrDict(yaml.safe_load(f)).files
 
+config = read_yaml('config.yaml')
+keyword = read_yaml('configure/keyword.yaml')
+reward = read_yaml('configure/reward.yaml')
+nudge = read_yaml('configure/nudge.yaml').nudge
+files = read_yaml('configure/botFiles.yaml').files

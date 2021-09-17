@@ -1,6 +1,7 @@
 import re
 
 from core import Message, Chain
+from core.util.config import func_setting
 from core.database.models import Disable
 from core.util.common import word_in_sentence
 from handlers.constraint import FuncInterface
@@ -32,7 +33,7 @@ class Menu(FuncInterface):
 
         function_list = Function.function_list
 
-        disable = Disable.select().where(Disable.group_id == data.group_id)
+        disable = Disable.select().where(Disable.group_id == data.group_id, Disable.status == 1)
         dis_list = [item.function_id for item in disable]
 
         message = data.text_digits
@@ -92,14 +93,22 @@ class Menu(FuncInterface):
 
         text = '博士，这是阿米娅的功能清单\n\n'
         text += '注意：使用阿米娅功能的时候，请务必在句子头部带上【阿米娅的名字或昵称】！\n'
-        indent = 0
+        indent = [0, 0]
+
+        setting = func_setting().globalState
+        for f_id, state in setting.items():
+            if not state:
+                indent[0] = 5
+                break
 
         if dis_list:
             text += f'\n注意：本群【{data.group_id}】启用了功能关闭，被关闭的功能将在下面标注\n'
-            indent = 5
+            indent[1] = 5
 
         for index, item in enumerate(function_list):
-            text += '\n%s[%d] %s' % ('【已关闭】' if item['id'] in dis_list else '　' * indent, index + 1, item['title'])
+            disabled = '【已禁用】' if item['id'] in setting and not setting[item['id']] else '　' * indent[0]
+            close = '【已关闭】' if item['id'] in dis_list else '　' * indent[1]
+            text += '\n%s%s[%d] %s' % (disabled, close, index + 1, item['title'])
 
         text += '\n\n查看功能详情，请发送「阿米娅查看第 N 个功能」或「阿米娅查看【功能名】」来获取使用方法'
         text += '\n关闭功能，请管理员发送「阿米娅关闭第 N 个功能」或「阿米娅关闭【功能名】」'

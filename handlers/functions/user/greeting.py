@@ -3,10 +3,10 @@ import time
 from core import Message, Chain
 from core.util.config import reward
 from core.database.models import User
-from handlers.constraint import disable_func
+from handlers.constraint import FuncInterface
 
 
-@disable_func(function_id='normal')
+@FuncInterface.is_disable_func(function_id='normal')
 def greeting(data: Message):
     message = data.text
     nickname = data.nickname

@@ -141,7 +141,7 @@ class Function:
             'desc': ['发送「阿米娅2020年8月15日前可得到多少玉」（年份非必须）']
         },
         {
-            'id': 'intellectFullAlarm',
+            'id': 'intellectAlarm',
             'title': '理智恢复提醒',
             'desc': [
                 '发送「阿米娅理智 N 满 N 告诉我」',

@@ -6,6 +6,7 @@ import traceback
 
 from core import Message, Chain
 from core.util import log
+from core.util.config import func_setting
 from core.util.common import remove_xml_tag, make_folder
 from core.util.imageCreator import TextParser
 from handlers.constraint import FuncInterface
@@ -86,13 +87,14 @@ class Weibo(FuncInterface):
         html_text = html_text.strip('\n')
 
         # 获取静态图片列表
+        setting = func_setting().weiboSetting
         pics_list = []
         pics = blog['pics'] if 'pics' in blog else []
         for pic in pics:
             pic_url = pic['large']['url']
             name = pic_url.split('/')[-1]
             suffix = name.split('.')[-1]
-            if suffix.lower() == 'gif':
+            if suffix.lower() == 'gif' and not setting.weiboSendGIF:
                 continue
             temp = 'log/weibo'
             path = f'{temp}/{name}'

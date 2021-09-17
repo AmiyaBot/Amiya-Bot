@@ -4,12 +4,12 @@ import random
 from core import Chain, Message, AmiyaBot
 from core.util.config import nudge
 from dataSource.wiki import Wiki
-from handlers.constraint import disable_func
+from handlers.constraint import FuncInterface
 
 wiki = Wiki()
 
 
-@disable_func(function_id='normal')
+@FuncInterface.is_disable_func(function_id='normal')
 def random_reply(data: Message, bot: AmiyaBot):
     r = random.randint(1, 10)
     if r == 10:

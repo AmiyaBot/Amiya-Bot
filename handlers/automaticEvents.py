@@ -5,6 +5,7 @@ import traceback
 from core import AmiyaBot, Chain
 from core.util import log
 from core.util.common import insert_zero, TimeRecorder
+from core.util.config import func_setting
 from core.util.imageCreator import temp_dir
 from core.database.models import User, Upload, Message, Intellect, GroupSetting
 
@@ -17,11 +18,18 @@ weibo = Weibo()
 class AutomaticEvents:
     def __init__(self, bot: AmiyaBot):
         self.bot = bot
+        self.times = 0
 
     def exec_all_tasks(self, times):
-        self.maintain()
-        self.push_new_weibo()
+        setting = func_setting().weiboSetting
+
+        self.times += 1
+        if self.times >= setting.checkRate / 30 and setting.weiboAutoPush:
+            self.times = 0
+            self.push_new_weibo()
+
         self.intellect_full_alarm()
+        self.maintain()
 
     def maintain(self):
         now = time.localtime(time.time())
