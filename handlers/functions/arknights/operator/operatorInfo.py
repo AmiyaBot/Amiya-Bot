@@ -127,6 +127,8 @@ class OperatorInfo:
                                      operator.en_name,
                                      '★' * operator.rarity)
 
+        text += '%s\n' % operator.range
+
         text += '【职业】%s - %s\n　%s\n\n' % (operator.classes, operator.classes_sub, detail['operator_trait'])
         text += '%s\n -- 「%s」\n\n' % (detail['operator_usage'], detail['operator_quote'])
 
@@ -268,10 +270,11 @@ class OperatorInfo:
             content = ''
             index = list(skills.keys()).index(name)
 
-            y += 55 if index else 0
+            y += 48 if index else 0
             yl.append(y)
 
             for item in skills[name]:
+                content += '%s\n' % item['range']
                 content += '%s / %s' % (InitData.sp_type[item['sp_type']], InitData.skill_type[item['skill_type']])
                 content += '%sSP：%s / %s\n' % (' ' * 5, item['sp_init'], item['sp_cost'])
                 if item['duration'] > 0:

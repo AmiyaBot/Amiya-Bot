@@ -40,6 +40,7 @@ class SourceBank(DownloadTools):
             'excel/uniequip_table',
             'excel/charword_table',
             'excel/building_data',
+            'excel/range_table',
             'excel/gacha_table',
             'excel/stage_table',
             'excel/skill_table',

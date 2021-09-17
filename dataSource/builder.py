@@ -1,5 +1,6 @@
 import re
 
+from core.util.imageCreator import build_range
 from core.util.common import remove_xml_tag, integer
 
 from .unitConfig import Config
@@ -44,6 +45,11 @@ class Operator:
         self.parent = parent
 
         sub_classes = parent.get_json_data('uniequip_table')['subProfDict']
+        range_data = self.parent.get_json_data('range_table')
+        range_id = data['phases'][-1]['rangeId']
+        range_map = '无范围'
+        if range_id in range_data:
+            range_map = build_range(range_data[range_id]['grids'])
 
         self.id = code
         self.name = data['name']
@@ -55,6 +61,7 @@ class Operator:
         self.classes_code = list(Config.classes.keys()).index(data['profession']) + 1
         self.type = Config.types[data['position']]
         self.tags = data['tagList']
+        self.range = range_map
 
         self.limit = self.name in Config.limit
         self.unavailable = self.name in Config.unavailable
@@ -134,6 +141,7 @@ class Operator:
 
     def skills(self):
         skill_data = self.parent.get_json_data('skill_table')
+        range_data = self.parent.get_json_data('range_table')
 
         skills = []
         skills_id = []
@@ -160,6 +168,11 @@ class Operator:
 
             for lev, desc in enumerate(detail['levels']):
                 description = parse_template(desc['blackboard'], desc['description'])
+
+                skill_range = self.range
+                if desc['rangeId'] in range_data:
+                    skill_range = build_range(range_data[desc['rangeId']]['grids'])
+
                 skills_desc[code].append({
                     'skill_level': lev + 1,
                     'skill_type': desc['skillType'],
@@ -168,7 +181,8 @@ class Operator:
                     'sp_cost': desc['spData']['spCost'],
                     'duration': integer(desc['duration']),
                     'description': description.replace('\\n', '\n'),
-                    'max_charge': desc['spData']['maxChargeTime']
+                    'max_charge': desc['spData']['maxChargeTime'],
+                    'range': skill_range
                 })
 
             for lev, cond in enumerate(item['levelUpCostCond']):

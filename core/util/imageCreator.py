@@ -10,7 +10,7 @@ font_file = 'resource/style/AdobeHeitiStd-Regular.otf'
 logo_file = 'resource/style/rabbit.png'
 logo_file_white = 'resource/style/rabbit-white.png'
 
-line_height = 18
+line_height = 16
 side_padding = 10
 
 
@@ -51,8 +51,14 @@ class TextParser:
             length += self.__font_seat(char)[0]
             sub_text += char
 
-            if length >= self.max_seat or char == '\n' or idx == len(text) - 1:
-                self.__append_row(cur_color, sub_text)
+            is_end = idx == len(text) - 1
+            if length >= self.max_seat or char == '\n' or is_end:
+                enter = True
+                if not is_end:
+                    if text[idx + 1] == '\n' and sub_text != '\n' and sub_text[-1] != '\n':
+                        enter = False
+
+                self.__append_row(cur_color, sub_text, enter=enter)
                 sub_text = ''
                 length = 0
 
@@ -100,7 +106,7 @@ def create_image(text: str, folder, images=None, font_size=15):
 
     icon = Image.open(logo_file)
     icon = icon.resize(size=(30, 30))
-    image.paste(icon, box=(520, 0), mask=icon)
+    image.paste(icon, box=(570, 0), mask=icon)
 
     if images:
         for item in images:
@@ -179,3 +185,37 @@ def create_gacha_image(result: list):
     image.save(path, quality=80)
 
     return path
+
+
+def build_range(grids: list):
+    _max = [0, 0, 0, 0]
+    for item in [{'row': 0, 'col': 0}] + grids:
+        row = item['row']
+        col = item['col']
+        if row <= _max[0]:
+            _max[0] = row
+        if row >= _max[1]:
+            _max[1] = row
+        if col <= _max[2]:
+            _max[2] = col
+        if col >= _max[3]:
+            _max[3] = col
+
+    width = abs(_max[2]) + _max[3] + 1
+    height = abs(_max[0]) + _max[1] + 1
+
+    empty = '　'
+    block = '□'
+    origin = '■'
+
+    range_map = []
+    for h in range(height):
+        range_map.append([empty for w in range(width)])
+
+    for item in grids:
+        x = abs(_max[0]) + item['row']
+        y = abs(_max[2]) + item['col']
+        range_map[x][y] = block
+    range_map[abs(_max[0])][abs(_max[2])] = origin
+
+    return ''.join([''.join(item) + '\n' for item in range_map])

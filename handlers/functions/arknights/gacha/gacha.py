@@ -183,7 +183,7 @@ class GachaForUser:
         result = f'阿米娅给博士扔来了{times}张简历，博士细细地检阅着...\n\n【{self.pick_up_name}】\n\n'
         icons = []
 
-        icon_size = 36
+        icon_size = 32
         offset = int((line_height * 3 - icon_size) / 2)
         top = side_padding + line_height * 2 + offset + 5
 
