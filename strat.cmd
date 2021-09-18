@@ -11,6 +11,7 @@ w32tm /resync
 w32tm /resync
 ping -n 2 localhost >nul
 cls
+pip config set global.index-url https://mirrors.huaweicloud.com/repository/pypi/simple/
 pip install -r requirements.txt
 cls
 python amiya.py
