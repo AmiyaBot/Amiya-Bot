@@ -16,7 +16,8 @@ pip install -r requirements.txt
 ```
 
 > 注意：依赖中的 graiax-silkcoder 库，若在 Windows 下安装，可能会出现编译失败的问题。原因是该库需要操作系统拥有 VS 运行环境（可能）。可安装 `Visual Studio Build Tools` 解决<br>
-> 百度网盘下载：[Visual Studio Build Tools 离线镜像](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA) 提取码: `tdbp`
+> 百度网盘下载：[Visual Studio Build Tools 离线镜像](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA) 提取码: `tdbp`<br>
+> 或[阿里云盘](https://www.aliyundrive.com/s/1S13Tcvf1bp)（不限速，无提取码）
 
 2. 配置`config.yaml`
 
