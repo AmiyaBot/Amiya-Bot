@@ -10,13 +10,19 @@
 > 简单三步，启动你的 Amiya
 
 1. 安装 python 依赖
-
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
-
-> 注意：依赖中的 graiax-silkcoder 库，若在 Windows 下安装，可能会出现编译失败的问题。原因是该库需要操作系统拥有 VS 运行环境（可能）。可安装 `Visual Studio Build Tools` 解决<br>
-> 百度网盘下载：[Visual Studio Build Tools 离线镜像](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA) 提取码: `tdbp`
+> 依赖中的 graiax-silkcoder 库，若在 Windows 下安装，可能会出现编译失败的问题。原因是该库需要操作系统拥有 VS 运行环境（可能）。<br>
+> 安装`Visual Studio Build Tools`可解决此问题。<br>
+> 你可以选择在线安装方式或离线安装方式：<br>
+> 1.在线安装<br>
+> 通过Microsoft官网的Visual Studio安装程序安装`Visual Studio 生成工具`即可。<br>
+> 2.离线安装<br>
+> 在此下载镜像文件：<br>
+> [百度网盘](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA)提取码`tdbp`<br>
+> [阿里网盘](https://www.aliyundrive.com/s/1S13Tcvf1bp)（不限速）<br>
+> 挂载后安装即可。<br>
 
 2. 配置`config.yaml`
 
@@ -86,7 +92,8 @@ python amiya.py
 > ```bash
 > python3 amiya.py
 > ```
-> Windows系统可选择使用启动脚本`start.cmd`启动
+> Windows系统可选择使用启动脚本`start.cmd`启动<br>
+> 注：启动脚本需要管理员权限，将会更改NTP服务器至`ntp.ntsc.ac.cn`（中国科学院国家授时中心）并校时，且会在每次启动前更换pypi镜像至`华为云`并执行依赖检查。
 ## 功能测试方式
 
 - 离线测试
