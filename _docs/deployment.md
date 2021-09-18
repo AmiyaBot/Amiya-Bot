@@ -15,52 +15,65 @@
 pip install -r requirements.txt
 ```
 
-2. 配置`config.json`
+> 注意：依赖中的 graiax-silkcoder 库，若在 Windows 下安装，可能会出现编译失败的问题。原因是该库需要操作系统拥有 VS 运行环境（可能）。可安装 `Visual Studio Build Tools` 解决<br>
+> 百度网盘下载：[Visual Studio Build Tools 离线镜像](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA) 提取码: `tdbp`
 
-```json5
-{
-    // 机器人 QQ 号
-    "selfId": 1515361402,
-    // 管理员 QQ 号
-    "adminId": 826197021,
-    "server": {
-        // mirai-api-http 服务配置
-        "serverIp": "127.0.0.1",
-        "httpPort": 8080,
-        "websocketPort": 8060,
-        "authKey": "AmiyaBot"
-    },
-    "console": {
-        // console 管理员后台配置
-        "host": "0.0.0.0",
-        "port": 8000
-    },
-    "baiduCloud": {
-        // 百度智能云配置
-        "enable": false,
-        "appId": "",
-        "apiKey": "",
-        "secretKey": ""
-    },
-    "message": {
-        // 消息指令的频率限制
-        "limit": {
-            "seconds": 10,
-            "maxCount": 3
-        },
-        // 文字回复的最大字符长度，超出则会转为图片发送
-        "replyMaxLength": 100
-    },
-    "closeBeta": {
-        // 是否启用封闭测试
-        "enable": false,
-        "groupId": 653031149
-    },
-    "tempFolders": [],
-    "miraiFolder": "",
-    // 是否启用离线测试
-    "offline": false
-}
+2. 配置`config.yaml`
+
+```yaml
+# 账号设置
+account:
+    # bot 账号
+    bot: 1515361402
+    # 管理员账号
+    admin: 826197021
+    # 主群设置
+    group:
+        # 主群群号
+        groupId: 362165038
+        # 封闭测试开关
+        closeBeta: false
+
+# mirai-api-http 配置
+miraiApi:
+    # IP 地址
+    host: 127.0.0.1
+    # 端口
+    port:
+        # http 服务端口
+        http: 8080
+        # websocket 服务端口
+        ws: 8060
+    # authkey
+    authKey: AmiyaBot
+    # mirai-console 的根目录路径，可为空，用于通过 path 参数发送静态文件。不配置的情况下，默认通过上传的方式发送
+    folder:
+
+# Amiya-Bot console IP 和端口配置
+console:
+    host: 0.0.0.0
+    port: 80
+
+# 百度智能云配置
+baiduCloud:
+    enable: false
+    appId:
+    apiKey:
+    secretKey:
+
+# 消息设置
+message:
+    # 消息限制
+    limit:
+        seconds: 10
+        maxCount: 3
+    # 文字自动转化为图片的长度
+    transToImageLength: 100
+
+# 常规设置
+setting:
+    # 离线模式
+    offline: false
 ```
 
 3. 启动 Amiya 入口程序
@@ -84,12 +97,14 @@ python quickStart.py
     - 配置封闭测试相关项后启动 Amiya
     - 之后，Amiya 仅会回应封闭测试指定的群
 
-```json5
-{
-    "closeBeta": {
-        "enable": true,
-        "groupId": 653031149
-    },
-    "offline": false
-}
+```yaml
+account:
+    group:
+        # 封闭测试群号
+        groupId: 362165038
+        # 封闭测试：开
+        closeBeta: true
+setting:
+    # 离线模式：开
+    offline: true
 ```

@@ -70,31 +70,24 @@
 ## 使用注意
 
 - 自然语言处理方法和公招图像识别需要调用 [百度智能云](https://cloud.baidu.com/)
-  的接口，如需使用请自行申请并配置 `config.json`
+  的接口，如需使用请自行申请并配置
 
-```json5
-{
-    "baiduCloud": {
-        "enable": true,
-        "appId": "21*****7",
-        "apiKey": "MM************GnL5",
-        "secretKey": "XR*********************U7UM"
-    }
-}
+```yaml
+baiduCloud:
+    enable: true
+    appId: 21*****7
+    apiKey: MM************GnL5
+    secretKey: XR*********************U7UM
 ```
 
 - 为了防止某个指令会导致 Amiya 与其他机器人造成 `无限循环性回复`，造成不可控的刷屏局面，请务必设置消息限制，在与其他机器人触发循环时及时制止
 
-```json5
-{
-    "message": {
-        // 10 秒内最多响应 3 次指令
-        "limit": {
-            "seconds": 10,
-            "maxCount": 3
-        }
-    }
-}
+```yaml
+# 10 秒内最多响应 3 次指令
+message:
+    limit:
+        seconds: 10
+        maxCount: 3
 ```
 
 ## 贡献
