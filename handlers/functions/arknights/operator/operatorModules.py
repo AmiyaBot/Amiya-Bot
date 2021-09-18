@@ -3,7 +3,7 @@ import os
 from core.util.common import integer
 from core.util.imageCreator import TextParser, line_height, side_padding
 from dataSource import DataSource, Operator
-from dataSource.builder import parse_template, attr_dict
+from dataSource.builder import parse_template, attr_lower_dict
 
 from .initData import InfoInterface
 
@@ -47,8 +47,8 @@ class OperatorModules:
                 text += '\n'
                 attrs = item['detail']['phases'][-1]['attributeBlackboard']
                 for attr in attrs:
-                    if attr['key'] in attr_dict:
-                        text += ' -- %s：%s\n' % (attr_dict[attr['key']], integer(attr['value']))
+                    if attr['key'] in attr_lower_dict:
+                        text += ' -- %s：%s\n' % (attr_lower_dict[attr['key']], integer(attr['value']))
                 text += '\n'
             else:
                 text += '无\n'
