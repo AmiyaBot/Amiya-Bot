@@ -82,6 +82,11 @@ setting:
 python amiya.py
 ```
 
+> 在Linux下，最好使用<br>
+> ```bash
+> python3 amiya.py
+> ```
+> Windows系统可选择使用启动脚本`start.cmd`启动
 ## 功能测试方式
 
 - 离线测试
