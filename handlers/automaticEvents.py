@@ -37,26 +37,7 @@ class AutomaticEvents:
         mint = now.tm_min
         try:
             if hour == 4 and mint == 0:
-                record = maintain_record()
-                now_time = int('%s%s%s' % (now.tm_year,
-                                           insert_zero(now.tm_mon),
-                                           insert_zero(now.tm_mday)))
-                if record < now_time:
-                    # 重置签到和心情值
-                    User.update(sign_in=0, user_mood=15).execute()
-
-                    # 清空图片记录及一个月前的消息记录
-                    last_time = int(time.time()) - 30 * 86400
-                    Message.delete().where(Message.msg_time <= last_time).execute()
-                    Upload.truncate_table()
-
-                    # 清除缓存
-                    log.clean_log(3, extra=[temp_dir])
-
-                    # 记录维护时间
-                    maintain_record(str(now_time))
-
-                    self.bot.send_to_admin(f'维护结束，最后维护时间{now_time}')
+                bot_maintain(self.bot)
         except Exception as e:
             log.error(traceback.format_exc())
             self.bot.send_to_admin(f'维护发生错误：{repr(e)}')
@@ -121,6 +102,32 @@ class AutomaticEvents:
         except Exception as e:
             log.error(traceback.format_exc())
             self.bot.send_to_admin(f'理智提醒发生错误：{repr(e)}')
+
+
+def bot_maintain(bot: AmiyaBot, force=False):
+    now = time.localtime(time.time())
+    record = maintain_record()
+    now_time = int(f'{now.tm_year}{insert_zero(now.tm_mon)}{insert_zero(now.tm_mday)}')
+
+    if record < now_time or force:
+        # 重置签到和心情值
+        User.update(sign_in=0, user_mood=15).execute()
+
+        # 清空图片记录及一个月前的消息记录
+        last_time = int(time.time()) - 31 * 86400
+        Message.delete().where(Message.msg_time <= last_time).execute()
+        Upload.truncate_table()
+
+        # 清除缓存
+        log.clean_log(3, extra=[temp_dir])
+
+        # 记录维护时间
+        maintain_record(str(now_time))
+
+        msg = f'维护完成，最后维护时间：{now_time}'
+        bot.send_to_admin(msg)
+
+        return msg
 
 
 def maintain_record(date: str = None):

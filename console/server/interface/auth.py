@@ -7,6 +7,7 @@ from flask import Flask, session, request
 from core import AmiyaBot
 from core.util.config import config
 from core.database.models import Admin, AdminTraceLog
+from handlers.automaticEvents import bot_maintain
 
 from ..response import response
 
@@ -78,6 +79,11 @@ def auth_controller(app: Flask, bot: AmiyaBot):
 
         return response(message='登录成功')
 
+    @app.route('/logout', methods=['POST'])
+    def logout():
+        session.clear()
+        return response(message='退出登录成功')
+
     @app.route('/editPassword', methods=['POST'])
     def edit_password():
         user_id = session.get('user')
@@ -91,10 +97,13 @@ def auth_controller(app: Flask, bot: AmiyaBot):
         else:
             return response(message='密码错误', code=0)
 
-    @app.route('/logout', methods=['POST'])
-    def logout():
-        session.clear()
-        return response(message='退出登录成功')
+    @app.route('/maintain', methods=['POST'])
+    @super_user
+    def maintain():
+        res = bot_maintain(bot, force=True)
+        if res:
+            return response(message=res)
+        return response(message='维护失败')
 
     @app.route('/restart', methods=['POST'])
     def restart():

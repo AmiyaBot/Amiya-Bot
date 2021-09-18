@@ -8,6 +8,7 @@ from core.database.models import User, Admin, Message as MessageBase
 
 from handlers.functions import FunctionIndexes, manager_handler, random_reply, greeting
 from handlers.handleWaiting import waiting_event
+from handlers.automaticEvents import bot_maintain
 
 limit = config.message.limit
 account = config.account.bot
@@ -47,6 +48,10 @@ class Handlers(FunctionIndexes):
         if '关闭报错推送' in message:
             self.bot.send_err = False
             return reply.text('已关闭报错推送')
+
+        if '手动维护' in message:
+            bot_maintain(self.bot, force=True)
+            return False
 
         if '强制更新' in message:
             self.bot.send_to_admin('开始强制更新...')
