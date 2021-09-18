@@ -92,7 +92,11 @@ python amiya.py
 > ```bash
 > python3 amiya.py
 > ```
-> Windows系统可选择使用启动脚本`start.cmd`启动<br>
+> 或使用启动脚本（不同系统可能有些许不同，建议查阅[此处](https://www.baidu.com/)）<br>
+> ```bash
+> ./start.sh
+> ```
+> Windows系统可使用启动脚本`start.cmd`启动（也可使用控制台手动启动）<br>
 > 注：启动脚本需要管理员权限，将会更改NTP服务器至`ntp.ntsc.ac.cn`（中国科学院国家授时中心）并校时，且会在每次启动前更换pypi镜像至`华为云`并执行依赖检查。
 ## 功能测试方式
 
