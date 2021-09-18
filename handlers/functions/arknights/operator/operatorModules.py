@@ -42,7 +42,7 @@ class OperatorModules:
                     f'等级{item["unlockLevel"]} - ' \
                     f'信赖{int(item["unlockFavorPoint"] / 100)}%\n'
 
-            text += '[属性增加]'
+            text += '[基础属性增加]'
             if item['detail']:
                 text += '\n'
                 attrs = item['detail']['phases'][-1]['attributeBlackboard']
@@ -53,7 +53,7 @@ class OperatorModules:
             else:
                 text += '无\n'
 
-            text += '[天赋效果]'
+            text += '[分支特性更新]'
             if item['detail']:
                 text += '\n'
                 detail = item['detail']['phases'][-1]['parts']
@@ -90,6 +90,9 @@ class OperatorModules:
                 text += '\n'
             else:
                 text += '无\n'
+
+            text += '[模组故事]\n'
+            text += item['uniEquipDesc']
 
         for index, item in enumerate(material_images):
             if index and index % 3 == 0:
