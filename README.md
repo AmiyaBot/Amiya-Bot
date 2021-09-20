@@ -49,15 +49,15 @@
 
 ## 部署
 
-- 代码部署请查看[开发者文档](https://github.com/vivien8261/Amiya-Bot/blob/master/_docs/deployment.md)
+- 代码部署请查看[开发者文档](_docs/deployment.md)
 - 安装包式部署请等待发布...
 
-## [功能指引](https://github.com/vivien8261/Amiya-Bot/blob/master/_docs/function.md)
+## [功能指引](_docs/function.md)
 
 ## 如何维护
 
 > 推荐使用 [Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) 获得更好的可视化维护界面，否则部分数据维护需要到数据库修改<br>
-> 使用方法请阅读 [说明文档](https://github.com/vivien8261/Amiya-Bot/blob/master/_docs/console.md) <br>
+> 使用方法请阅读 [说明文档](_docs/console.md) <br>
 
 - Amiya 带有 `自动维护` 功能，会在每天凌晨4点执行以下操作：
     - 重置所有用户的签到状态和心情值
@@ -99,6 +99,6 @@ message:
 
 ## TODO
 
-- [ ] [更新计划](https://github.com/vivien8261/Amiya-Bot/projects/1)
+- [ ] [更新计划](projects/1)
 - [ ] <del>与明日方舟主题不相关的功能</del>
 
