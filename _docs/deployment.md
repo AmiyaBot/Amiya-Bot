@@ -20,8 +20,8 @@ pip3 install -r requirements.txt
 > 通过 Microsoft 官网的 Visual Studio 安装程序安装 `Visual Studio 生成工具` 即可。<br>
 > 2.离线安装<br>
 > 在此下载镜像文件：<br>
-> [百度网盘](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA)提取码`tdbp` <br>
-> [阿里网盘](https://www.aliyundrive.com/s/1S13Tcvf1bp)（不限速） <br>
+> [百度网盘](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA) 提取码 `tdbp` <br>
+> [阿里网盘](https://www.aliyundrive.com/s/1S13Tcvf1bp) （不限速） <br>
 > 挂载后安装即可。<br>
 
 2. 配置`config.yaml`
