@@ -42,4 +42,4 @@
     - 发送 `强制更新`，Amiya 将会重启并重新检查资源
 - 屏蔽用户
     - 发送 `屏蔽/解除 + QQ号`，Amiya 会屏蔽或解除屏蔽该用户，屏蔽后 Amiya 将不会再回应该用户的消息
-- [Amiya-Bot-console 说明](_docs/console.md)
+- [Amiya-Bot-console 说明](console.md)
