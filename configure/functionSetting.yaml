@@ -1,3 +1,4 @@
+# 功能开关与配置，此文件无需手动配置，可通过 console 端配置
 globalState:
   checkEnemy: true
   checkMaterial: true
