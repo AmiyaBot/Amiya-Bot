@@ -14,14 +14,14 @@
 pip3 install -r requirements.txt
 ```
 > 依赖中的 graiax-silkcoder 库，若在 Windows 下安装，可能会出现编译失败的问题。原因是该库需要操作系统拥有 VS 运行环境（可能）。<br>
-> 安装`Visual Studio Build Tools`可解决此问题。<br>
+> 安装 `Visual Studio Build Tools` 可解决此问题。<br>
 > 你可以选择在线安装方式或离线安装方式：<br>
 > 1.在线安装<br>
-> 通过Microsoft官网的Visual Studio安装程序安装`Visual Studio 生成工具`即可。<br>
+> 通过 Microsoft 官网的 Visual Studio 安装程序安装 `Visual Studio 生成工具` 即可。<br>
 > 2.离线安装<br>
 > 在此下载镜像文件：<br>
-> [百度网盘](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA)提取码`tdbp`<br>
-> [阿里网盘](https://www.aliyundrive.com/s/1S13Tcvf1bp)（不限速）<br>
+> [百度网盘](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA)提取码`tdbp` <br>
+> [阿里网盘](https://www.aliyundrive.com/s/1S13Tcvf1bp)（不限速） <br>
 > 挂载后安装即可。<br>
 
 2. 配置`config.yaml`
@@ -88,16 +88,16 @@ setting:
 python amiya.py
 ```
 
-> 在Linux下，最好使用<br>
+> 在 Linux 下，最好使用<br>
 > ```bash
 > python3 amiya.py
 > ```
-> 或使用启动脚本（不同系统可能有些许不同，建议查阅[此处](https://www.baidu.com/)）<br>
+> 或使用启动脚本（不同系统可能有些许不同，建议查阅 [此处](https://www.baidu.com/) ）<br>
 > ```bash
 > ./start.sh
 > ```
-> Windows系统可使用启动脚本`start.cmd`启动（也可使用控制台手动启动）<br>
-> 注：启动脚本需要管理员权限，将会自动删除另一系统的启动脚本，更改NTP服务器至`ntp.ntsc.ac.cn`（中国科学院国家授时中心）并校时（仅Windows），且会在每次启动前更换pypi镜像至`华为云`并执行依赖检查。
+> Windows 系统可使用启动脚本 `start.cmd` 启动（也可使用控制台手动启动）<br>
+> 注：启动脚本需要管理员权限，将会自动删除另一系统的启动脚本，更改NTP服务器至 `ntp.ntsc.ac.cn` （中国科学院国家授时中心）并校时（仅 Windows），且会在每次启动前更换pypi镜像至 `华为云` 并执行依赖检查。
 ## 功能测试方式
 
 - 离线测试
