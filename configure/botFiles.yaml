@@ -1,4 +1,6 @@
+# 资源文件配置
 files:
+    # 被呼叫/戳一戳时的表情包文件
     face:
         - Images/Face/face1.png
         - Images/Face/face2.png
@@ -17,11 +19,13 @@ files:
         - Images/Face/face15.png
         - Images/Face/face16.png
 
+    # 第一项为字体文件，支持ttf与otf，修改后上线前请务必先封闭测试，第二与第三项是生成图片时右上角的水印
     style:
         - Font/AdobeHeitiStd-Regular.otf
         - Font/rabbit.png
         - Font/rabbit-white.png
 
+    # 干员类型 logo，请不要修改此项（除非你真的清楚你在做什么！）
     class:
         - Images/Class/caster.png
         - Images/Class/medic.png
@@ -32,6 +36,7 @@ files:
         - Images/Class/tank.png
         - Images/Class/warrior.png
 
+   # 抽卡时的背景文件，请不要修改此项（除非你真的清楚你在做什么！）
     gacha:
         - Images/Gacha/1.png
         - Images/Gacha/2.png
@@ -41,6 +46,7 @@ files:
         - Images/Gacha/6.png
         - Images/Gacha/bg.png
 
+    # 数据库文件，请不要修改此项（除非你真的清楚你在做什么！）
     database:
         - Database/pool.sql
         - Database/gacha_config.sql

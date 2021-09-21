@@ -106,7 +106,7 @@ def create_image(text: str, folder, images=None, font_size=15):
 
     icon = Image.open(logo_file)
     icon = icon.resize(size=(30, 30))
-    image.paste(icon, box=(570, 0), mask=icon)
+    image.alpha_composite(icon, box=(570, 0))
 
     if images:
         for item in images:
@@ -114,7 +114,7 @@ def create_image(text: str, folder, images=None, font_size=15):
                 continue
             img = Image.open(item['path']).convert('RGBA')
             img = img.resize(size=item['size'])
-            image.paste(img, box=item['pos'], mask=img)
+            image.alpha_composite(img, box=item['pos'])
 
     path = '%s/%s' % (temp_dir, folder)
     make_folder(path)
