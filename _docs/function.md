@@ -35,7 +35,7 @@
 
 ## 管理员命令
 
-> Amiya 的命令管理功能仅限通过私聊且只有 `你` 能够使用，但命令管理只是为了便捷操作，更推荐你使用 Amiya-Bot-console 管理你的 Amiya
+> Amiya 的命令管理功能仅限通过私聊且只有 `你` 能够使用，但命令管理只是为了便捷操作，更推荐你使用 [Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console) 管理你的 Amiya
 
 - 发送 `手动维护`，Amiya 将会进行常规维护
 - 发送 `重启`，Amiya 将会重启
