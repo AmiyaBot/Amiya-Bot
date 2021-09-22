@@ -19,7 +19,7 @@ files:
         - Images/Face/face15.png
         - Images/Face/face16.png
 
-    # 第一项为字体文件，支持ttf与otf，修改后上线前请务必先封闭测试，第二与第三项是生成图片时右上角的水印
+    # 第一项为字体文件，支持 ttf 与 otf，修改后上线前请务必先封闭测试，第二与第三项是生成图片时右上角的水印
     style:
         - Font/AdobeHeitiStd-Regular.otf
         - Font/rabbit.png
