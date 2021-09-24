@@ -58,7 +58,7 @@ def download_src(data: Union[dict, list], title: str = 'data', _total=True, _rec
         print('\r', end='')
         print(
             f'[{date}][INFO] [{bar}] {curr}% {i}/{len(data)} '
-            f'({status.total} TOTAL, {success} OK, {fail} FAIL) for inspecting src <{title}>',
+            f'({status.total} TT, {success} OK, {fail} NG) <{title}>',
             end=''
         )
 
