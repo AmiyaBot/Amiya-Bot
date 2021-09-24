@@ -141,13 +141,13 @@ def create_gacha_image(result: list):
             img = Image.open(rarity).convert('RGBA')
             image.paste(img, box=(x, 0), mask=img)
 
-        if 'temp_photo' in item and item['temp_photo']:
-            photo = item['temp_photo']
+        if 'temp_portraits' in item and item['temp_portraits']:
+            portraits = item['temp_portraits']
         else:
-            photo = 'resource/images/photo/%s_1.png' % item['photo']
+            portraits = 'resource/images/portraits/%s_1.png' % item['portraits']
 
-        if os.path.exists(photo):
-            img = Image.open(photo).convert('RGBA')
+        if os.path.exists(portraits):
+            img = Image.open(portraits).convert('RGBA')
 
             radio = 252 / img.size[1]
 

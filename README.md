@@ -27,9 +27,8 @@
 - 协议支持
     - [mirai-console](https://github.com/mamoe/mirai-console)
     - [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
-- 数据及图片资源的下载
+- 数据及语音资源的下载
     - [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)
-    - [KokodaYo](https://www.kokodayo.fun/)
     - [PRTS](http://prts.wiki/)
 - 信息推送
     - [明日方舟官方微博](https://m.weibo.cn/u/6279793937)

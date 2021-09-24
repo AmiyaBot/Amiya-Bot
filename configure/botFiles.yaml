@@ -2,51 +2,51 @@
 files:
     # 被呼叫/戳一戳时的表情包文件
     face:
-        - Images/Face/face1.png
-        - Images/Face/face2.png
-        - Images/Face/face3.png
-        - Images/Face/face4.png
-        - Images/Face/face5.png
-        - Images/Face/face6.png
-        - Images/Face/face7.png
-        - Images/Face/face8.png
-        - Images/Face/face9.png
-        - Images/Face/face10.png
-        - Images/Face/face11.png
-        - Images/Face/face12.png
-        - Images/Face/face13.png
-        - Images/Face/face14.png
-        - Images/Face/face15.png
-        - Images/Face/face16.png
+        - images/face/face1.png
+        - images/face/face2.png
+        - images/face/face3.png
+        - images/face/face4.png
+        - images/face/face5.png
+        - images/face/face6.png
+        - images/face/face7.png
+        - images/face/face8.png
+        - images/face/face9.png
+        - images/face/face10.png
+        - images/face/face11.png
+        - images/face/face12.png
+        - images/face/face13.png
+        - images/face/face14.png
+        - images/face/face15.png
+        - images/face/face16.png
 
     # 第一项为字体文件，支持 ttf 与 otf，修改后上线前请务必先封闭测试，第二与第三项是生成图片时右上角的水印
     style:
-        - Font/AdobeHeitiStd-Regular.otf
-        - Font/rabbit.png
-        - Font/rabbit-white.png
+        - font/AdobeHeitiStd-Regular.otf
+        - font/rabbit.png
+        - font/rabbit-white.png
 
     # 干员类型 logo，请不要修改此项（除非你真的清楚你在做什么！）
     class:
-        - Images/Class/caster.png
-        - Images/Class/medic.png
-        - Images/Class/pioneer.png
-        - Images/Class/sniper.png
-        - Images/Class/special.png
-        - Images/Class/support.png
-        - Images/Class/tank.png
-        - Images/Class/warrior.png
+        - images/class/caster.png
+        - images/class/medic.png
+        - images/class/pioneer.png
+        - images/class/sniper.png
+        - images/class/special.png
+        - images/class/support.png
+        - images/class/tank.png
+        - images/class/warrior.png
 
-   # 抽卡时的背景文件，请不要修改此项（除非你真的清楚你在做什么！）
+    # 抽卡时的背景文件，请不要修改此项（除非你真的清楚你在做什么！）
     gacha:
-        - Images/Gacha/1.png
-        - Images/Gacha/2.png
-        - Images/Gacha/3.png
-        - Images/Gacha/4.png
-        - Images/Gacha/5.png
-        - Images/Gacha/6.png
-        - Images/Gacha/bg.png
+        - images/gacha/1.png
+        - images/gacha/2.png
+        - images/gacha/3.png
+        - images/gacha/4.png
+        - images/gacha/5.png
+        - images/gacha/6.png
+        - images/gacha/bg.png
 
     # 数据库文件，请不要修改此项（除非你真的清楚你在做什么！）
     database:
-        - Database/pool.sql
-        - Database/gacha_config.sql
+        - database/pool.sql
+        - database/gacha_config.sql

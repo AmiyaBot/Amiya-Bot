@@ -258,23 +258,28 @@ class Operator:
     def skins(self):
         skins = []
         for item in self.skins_list:
-            if '@' not in item['skinId']:
-                continue
-
-            skin_key = item['avatarId'].split('#')
             skin_data = item['displaySkin']
+            skin_id = item['skinId']
+            skin_name = ''
+            skin_lvl = {
+                '1': '无精英',
+                '1+': '精英一',
+                '2': '精英二',
+            }
 
-            skin_image = f'{skin_key[0]}%23{skin_key[1]}'
-            skin_type = 1
+            if '@' not in skin_id:
+                skin_info = skin_id.split('#')
+                lvl = skin_info[-1]
+                skin_id = f'{skin_info[0]}_{lvl}'
+                skin_name = skin_lvl[lvl]
 
             skins.append({
-                'skin_image': skin_image,
-                'skin_type': skin_type,
-                'skin_name': skin_data['skinName'] or self.name,
+                'skin_id': skin_id,
+                'skin_name': skin_data['skinName'] or skin_name,
                 'skin_drawer': skin_data['drawerName'] or '',
                 'skin_group': skin_data['skinGroupName'] or '',
                 'skin_content': skin_data['dialog'] or '',
-                'skin_usage': skin_data['usage'] or '',
+                'skin_usage': skin_data['usage'] or skin_name + '立绘',
                 'skin_desc': skin_data['description'] or '',
                 'skin_source': skin_data['obtainApproach'] or ''
             })

@@ -16,8 +16,8 @@ class DataSource(SourceBank):
             src.write('')
 
         self.download_resource(not auto_update)
-        self.download_bot_resource()
         self.download_bot_console()
+        self.download_bot_resource()
         self.wiki.download_amiya_voices()
 
         self.operators = self.init_operators()
@@ -27,9 +27,9 @@ class DataSource(SourceBank):
         self.materials, self.materials_map, self.materials_made, self.materials_source = self.init_materials()
 
         if check_assets:
-            self.download_operators_photo(self.operators)
+            self.download_operators_images(self.operators)
             self.download_materials_icon(self.materials)
-            self.download_enemies_photo(self.enemies)
+            self.download_enemies_images(self.enemies)
 
     def get_recruit_operators(self):
         recruit_detail = remove_xml_tag(self.get_json_data('gacha_table')['recruitDetail'])
@@ -167,36 +167,29 @@ class DataSource(SourceBank):
 
         return stage_list
 
-    def download_operators_photo(self, operators):
+    def download_operators_images(self, operators):
         rec = {
+            'portraits': [0, 0],
             'avatars': [0, 0],
-            'photo': [0, 0],
-            'skills': [0, 0],
-            'picture': [0, 0]
+            'skills': [0, 0]
         }
         for name, status in log.download_src(operators, 'operators', _total=False, _record=False):
             item = operators[name]
             skills_list = item.skills()[0]
-            skins_list = item.skins()
 
-            status.total += len(skills_list) + len(skins_list) + 2
+            status.total += len(skills_list) + 2
 
-            res = self.get_pic('char/profile/' + item.id, 'avatars')
+            res = self.get_pic(f'portraits/{item.id}_1', 'portraits')
+            rec['portraits'][int(res)] += 1
+            status.set_res(res)
+
+            res = self.get_pic('avatars/' + item.id, 'avatars')
             rec['avatars'][int(res)] += 1
             status.set_res(res)
 
-            res = self.get_pic('char/halfPic/%s_1' % item.id, 'photo', '?x-oss-process=style/small-test')
-            rec['photo'][int(res)] += 1
-            status.set_res(res)
-
             for skill in skills_list:
-                res = self.get_pic('skills/pics/' + skill['skill_icon'], 'skills')
+                res = self.get_pic('skills/' + skill['skill_icon'], 'skills')
                 rec['skills'][int(res)] += 1
-                status.set_res(res)
-
-            for skin in skins_list:
-                res = self.get_pic('char/set/' + skin['skin_image'], 'picture')
-                rec['picture'][int(res)] += 1
                 status.set_res(res)
 
         with open(f'resource/.src', mode='a+') as src:
@@ -207,18 +200,16 @@ class DataSource(SourceBank):
         for m_id, status in log.download_src(materials, 'materials'):
             item = materials[m_id]
             res = self.get_pic(
-                name='item/pic/' + item['material_icon'],
-                _wiki='道具_带框_' + item['material_name'],
+                name='items/' + item['material_icon'],
                 _type='materials'
             )
             status.set_res(res)
 
-    def download_enemies_photo(self, enemies):
+    def download_enemies_images(self, enemies):
         for name, status in log.download_src(enemies, 'enemies'):
             item = enemies[name]
             res = self.get_pic(
-                name='enemy/pic/' + item['info']['enemyId'],
-                _type='enemy',
-                _param='?x-oss-process=style/jpg-test'
+                name='enemies/' + item['info']['enemyId'],
+                _type='enemy'
             )
             status.set_res(res)

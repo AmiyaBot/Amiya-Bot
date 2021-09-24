@@ -1,3 +1,4 @@
+import os
 import re
 import copy
 import jieba
@@ -79,9 +80,6 @@ class Operator(FuncInterface):
         result = None
         reply = Chain(data)
 
-        if info.skin_key:
-            pass
-
         # 如果技能名不属于干员，则删除技能名，
         if self.__skill_match(info) is False:
             info.skill = ''
@@ -97,11 +95,36 @@ class Operator(FuncInterface):
         if not info.name and not info.skill and self.__skill_match(info_sup):
             info.skill = info_sup.skill
 
-        # 没有查找到技能等级但有技能信息时，修改到默认等级
-        # if info.name and (info.skill_index or info.skill) and not info.level:
-        #     info.level = 8 if '材料' in message else 7
+        # 查询立绘
+        if info.name and (info.skin_key or skin_word) and not (not skin_word and info.skin_key in ['精英一', '精英二']):
+            skin_item = None
+            r = re.search(re.compile(rf'第(\d+)个{skin_word}'), message)
+            if r:
+                skin_list = self.operator_info.skins_table[info.name]
+                index = abs(int(r.group(1))) - 1
 
-        if info.level != 0:
+                if index >= len(skin_list):
+                    index = len(skin_list) - 1
+
+                skin_item = skin_list[index]
+            else:
+                skin_map = self.operator_info.get_skins(info)
+                if info.skin_key:
+                    skin_item = skin_map[1][info.skin_key]
+                else:
+                    result = skin_map[0]
+
+            if skin_item:
+                result, pic = self.operator_info.build_skin_content(info, skin_item)
+                if not os.path.exists(pic):
+                    self.bot.send_message(Chain(data).text('正在下载立绘，博士请稍等...'))
+                    res = self.data_source.get_pic(skin_item['skin_id'], 'skins', 'cloud', False)
+                    if res:
+                        reply.image(pic)
+                    else:
+                        result += '\n\n立绘下载失败...>.<'
+
+        if info.level != 0 and result is None:
             if info.level < 0:
                 info.level = abs(info.level)
                 result = self.material_costs.check_evolve_costs(info)
@@ -132,25 +155,9 @@ class Operator(FuncInterface):
                         self.bot.send_message(Chain(data).text('正在下载语音文件，博士请稍等...'))
                         file = self.data_source.wiki.download_operator_voices(wiki_name, info.voice_key)
                         if not file:
-                            self.bot.send_message(Chain(data).text('博士，语音文件下载失败...>.<'))
+                            self.bot.send_message(Chain(data).text('语音文件下载失败...>.<'))
                     if file:
                         reply.voice(file)
-
-            # 皮肤
-            elif skin_word:
-                r = re.search(re.compile(rf'第(\d+)个{skin_word}'), message)
-                if r:
-                    skin_list = self.operator_info.skins_table[info.name]
-                    index = abs(int(r.group(1))) - 1
-
-                    if index >= len(skin_list):
-                        index = len(skin_list) - 1
-
-                    result, pic = self.operator_info.build_skin_content(info, skin_list[index])
-                    if pic:
-                        reply.image(pic)
-                else:
-                    result = self.operator_info.get_skins(info)
 
             # 模组
             elif word_in_sentence(message, ['模组']):

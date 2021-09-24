@@ -87,8 +87,8 @@ class GachaForUser:
         for item in sp:
             item: PoolSpOperator
             operators[item.operator_name] = {
-                'photo': '',
-                'temp_photo': f'resource/images/temp/{item.image}' if item.image else None,
+                'portraits': '',
+                'temp_portraits': f'resource/images/temp/{item.image}' if item.image else None,
                 'rarity': item.rarity,
                 'class': item.classes
             }
@@ -205,7 +205,7 @@ class GachaForUser:
                     })
 
                 operators_info[name] = {
-                    'photo': opt.id,
+                    'portraits': opt.id,
                     'rarity': opt.rarity,
                     'class': class_index[opt.classes_code].lower()
                 }

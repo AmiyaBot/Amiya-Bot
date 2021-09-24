@@ -93,18 +93,20 @@ class OperatorInfo:
 
     def get_skins(self, info: InfoInterface):
         skins = self.skins_table[info.name]
+        skins_map = {}
 
         if not skins:
-            return f'博士，干员{info.name}暂时还没有皮肤哦～'
+            return f'博士，干员{info.name}暂时还没有立绘哦～', skins_map
 
-        text = f'博士，为您找到干员{info.name}的皮肤列表\n\n'
+        text = f'博士，为您找到干员{info.name}的立绘列表\n\n'
 
         for index, item in enumerate(skins):
             text += f'{index + 1} [ {item["skin_name"]} ] {item["skin_usage"]}\n'
+            skins_map[item['skin_name']] = item
 
-        text += f'\n请和阿米娅说「阿米娅查看{info.name}第 N 个皮肤」查看详情吧'
+        text += f'\n请和阿米娅说「阿米娅查看{info.name}第 N 个立绘」查看详情吧'
 
-        return text
+        return text, skins_map
 
     def get_detail_info(self, info: InfoInterface):
         operator: Operator = self.data.operators[info.name]
@@ -233,7 +235,7 @@ class OperatorInfo:
 
     @staticmethod
     def build_skin_content(info: InfoInterface, skin):
-        text = f'博士，为您找到干员{info.name}的皮肤档案：\n\n'
+        text = f'博士，为您找到干员{info.name}的立绘档案：\n\n'
         text += '系列：' + skin['skin_group'] + '\n'
         text += '名称：' + skin['skin_name'] + '\n'
         text += '获得途径：' + skin['skin_source'] + '\n\n'
@@ -241,10 +243,7 @@ class OperatorInfo:
         text += skin['skin_content'] + '\n\n'
         text += ' -- ' + skin['skin_desc']
 
-        pic = 'resource/images/picture/%s.png' % skin['skin_image']
-        if os.path.exists(pic) is False:
-            text += '\n\n暂时无法获取到立绘图片～'
-            pic = None
+        pic = 'resource/images/skins/%s.png' % skin['skin_id']
 
         return text, pic
 

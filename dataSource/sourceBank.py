@@ -27,7 +27,10 @@ class SourceBank(DownloadTools):
         self.github_source = 'https://cdn.jsdelivr.net/gh/Kengxxiao/ArknightsGameData@master/zh_CN/gamedata'
         self.resource_path = 'resource/data'
 
-        self.pics_source = 'https://andata.somedata.top/dataX'
+        self.pics_source = {
+            'gitee': f'{self.bot_source}/images/game',
+            'cloud': f'http://49.232.166.115:18080/skins'
+        }
         self.pics_path = 'resource/images'
 
         self.resource = [
@@ -55,11 +58,11 @@ class SourceBank(DownloadTools):
         for item in [self.resource_path, self.pics_path]:
             make_folder(item)
 
-    def get_pic(self, name, _type, _param='', _wiki=''):
+    def get_pic(self, name, _type, _source='gitee', _save_ignore=True):
 
         ignore = self.get_ignore()
 
-        url = f'{self.pics_source}/{name}.png{_param}'
+        url = f'{self.pics_source[_source]}/{name}.png'
         save_path = f'{self.pics_path}/{_type}'
         image_path = f'{save_path}/{name.split("/")[-1]}.png'
 
@@ -69,22 +72,22 @@ class SourceBank(DownloadTools):
             return False
 
         if os.path.exists(image_path) is False:
-            pic = self.wiki.request_pic_from_wiki(_wiki) if _wiki else self.request_file(url, stringify=False)
+            pic = self.request_file(url, stringify=False)
             if pic:
                 with open(image_path, mode='wb+') as _pic:
                     _pic.write(pic)
                 return True
             else:
-                ignore['image_download'].append(image_path)
-                with open('ignore.json', mode='w+', encoding='utf-8') as file:
-                    file.write(json.dumps(ignore, ensure_ascii=False))
+                if _save_ignore:
+                    ignore['image_download'].append(image_path)
+                    self.save_ignore(ignore)
                 return False
         else:
             return True
 
     def get_json_data(self, name):
         if name not in self.source_bank:
-            with open('%s/%s.json' % (self.resource_path, name), mode='r', encoding='utf-8') as src:
+            with open(f'{self.resource_path}/{name}.json', mode='r', encoding='utf-8') as src:
                 self.source_bank[name] = json.load(src)
 
         return self.source_bank[name]
@@ -158,7 +161,7 @@ class SourceBank(DownloadTools):
                         with open(save, mode='wb+') as src:
                             src.write(data)
 
-                        if name == 'database':
+                        if name == 'database' and not refresh:
                             exec_sql_file(file=save)
                     else:
                         raise Exception(f'file [{item}] download failed')
