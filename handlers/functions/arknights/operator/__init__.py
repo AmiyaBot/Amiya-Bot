@@ -109,7 +109,7 @@ class Operator(FuncInterface):
                 skin_item = skin_list[index]
             else:
                 skin_map = self.operator_info.get_skins(info)
-                if info.skin_key:
+                if info.skin_key and info.skin_key in skin_map[1]:
                     skin_item = skin_map[1][info.skin_key]
                 else:
                     result = skin_map[0]
@@ -120,7 +120,7 @@ class Operator(FuncInterface):
                     self.bot.send_message(Chain(data).text('正在下载立绘，博士请稍等...'))
                     res = self.data_source.get_pic(skin_item['skin_id'], 'skins', 'cloud', False)
                     if res:
-                        reply.image(pic)
+                        reply.image(pic).text('\n')
                     else:
                         result += '\n\n立绘下载失败...>.<'
 
