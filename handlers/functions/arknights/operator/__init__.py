@@ -84,8 +84,8 @@ class Operator(FuncInterface):
         if self.__skill_match(info) is False:
             info.skill = ''
 
-        # 没有查找到名字和技能时，将名字改为自己或替换到模糊搜索里的名字
-        if not info.name and not info.skill:
+        # 没有查找到名字时，将名字改为自己或替换到模糊搜索里的名字
+        if not info.name and (not info.skill or (info.skin_key or skin_word)):
             if info_sup.name:
                 info.name = info_sup.name
             else:

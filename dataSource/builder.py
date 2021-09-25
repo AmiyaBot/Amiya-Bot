@@ -267,11 +267,16 @@ class Operator:
                 '2': '精英二',
             }
 
+            skin_info = skin_id.split('#')
+            skin_index = skin_info[1]
+
             if '@' not in skin_id:
-                skin_info = skin_id.split('#')
-                lvl = skin_info[-1]
-                skin_id = f'{skin_info[0]}_{lvl}'
-                skin_name = skin_lvl[lvl]
+                skin_id = skin_info[0]
+                skin_name = skin_lvl[skin_index]
+            else:
+                skin_id = skin_info[0].replace('@', '_')
+
+            skin_id = f'{skin_id}_{skin_index}'
 
             skins.append({
                 'skin_id': skin_id,

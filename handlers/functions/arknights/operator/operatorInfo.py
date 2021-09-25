@@ -58,7 +58,7 @@ class OperatorInfo:
     def init_skins_table(self):
         log.info('building operator\'s skins keywords dict...')
         skins_table = {}
-        skins_keywords = []
+        skins_keywords = [] + InitData.skins
 
         for name, item in self.data.operators.items():
             skins = item.skins()

@@ -40,7 +40,11 @@ class WebSocket(WebSocketClient):
             print(json.loads(data)['content']['messageChain'])
 
     @abc.abstractmethod
-    def handler(self, data):
+    def on_opened(self):
+        pass
+
+    @abc.abstractmethod
+    def on_received(self, data):
         pass
 
     def client_start(self):
@@ -70,11 +74,13 @@ class WebSocket(WebSocketClient):
 
         if 'session' in data:
             self.session = data['session']
+            self.on_opened()
+
             log.info('init websocket session: ' + self.session)
             log.info('websocket connect succeeded.')
             return False
 
-        self.executor.put(self.handler, data, self.traceback_error)
+        self.executor.put(self.on_received, data, self.traceback_error)
 
     def traceback_error(self, success, result):
         if success is False and self.send_err:
@@ -122,7 +128,8 @@ class WebSocket(WebSocketClient):
                     'target': reply.target,
                     'messageChain': chain or reply.chain
                 }
-            }
+            },
+            ensure_ascii=False
         )
 
     def update_record(self, reply: Chain):

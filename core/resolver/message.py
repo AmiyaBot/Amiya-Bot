@@ -18,6 +18,8 @@ class Message:
     group_active: GroupActive
 
     def __init__(self, message=None, _format=True):
+        self.message_id = None
+
         self.type = ''
         self.text = ''
         self.face = []
@@ -95,6 +97,9 @@ class Message:
     def __trans_text(self, text='', message_chain=None):
         if message_chain:
             for chain in message_chain:
+                if chain['type'] == 'Source':
+                    self.message_id = chain['id']
+
                 if chain['type'] == 'At':
                     self.at_target = chain['target']
                     if self.at_target == config.account.bot:

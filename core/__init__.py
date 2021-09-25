@@ -42,7 +42,7 @@ class AmiyaBot(WebSocket):
             t += 1
             time.sleep(30)
 
-    def opened(self):
+    def on_opened(self):
         threading.Thread(target=self.__save_message).start()
         threading.Thread(target=self.__loop_machine).start()
 
@@ -50,7 +50,7 @@ class AmiyaBot(WebSocket):
         with self.send_custom_message(group_id=config.account.group.groupId) as reply:
             reply.text('阿米娅已重新启动~~')
 
-    def handler(self, data):
+    def on_received(self, data):
         data = Message(data)
         reply = None
 

@@ -11,7 +11,7 @@ Voice = VoiceManager()
 
 
 class Chain:
-    def __init__(self, data: Message, feeling: int = reward.reply.feeling):
+    def __init__(self, data: Message, feeling: int = reward.reply.feeling, at: bool = True, quote: bool = False):
         self.data = data
         self.feeling = feeling
 
@@ -24,7 +24,10 @@ class Chain:
         if self.data.type == 'group':
             self.command = 'sendGroupMessage'
             self.target = data.group_id
-            if data.user_id:
+
+            if data.user_id and quote:
+                self.quote()
+            if data.user_id and at:
                 self.at()
 
     def rec(self, record):
@@ -40,12 +43,15 @@ class Chain:
             return self.text('\n')
         return self
 
-    def dont_at(self):
-        for index, item in enumerate(self.chain):
-            if item['type'] == 'At' and item['target'] == self.data.user_id:
-                self.chain.pop(index)
-                self.chain.pop(index)
-                break
+    def quote(self):
+        self.chain.append({
+            'type': 'Quote',
+            'id': self.data.message_id,
+            'senderId': self.data.user_id,
+            'targetId': self.data.group_id,
+            'groupId': self.data.group_id,
+            'origin': self.data.message['messageChain']
+        })
         return self
 
     def text(self, text, trans_image=True):
