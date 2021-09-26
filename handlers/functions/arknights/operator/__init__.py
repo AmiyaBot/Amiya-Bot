@@ -4,7 +4,7 @@ import copy
 import jieba
 
 from core import Message, Chain, AmiyaBot
-from core.util.common import find_similar_string, word_in_sentence, text_to_pinyin
+from core.util.common import find_similar_list, word_in_sentence, text_to_pinyin
 from dataSource import DataSource
 from handlers.constraint import FuncInterface
 
@@ -62,6 +62,7 @@ class Operator(FuncInterface):
     def action(self, data: Message):
         message = data.text_digits
         skin_word = word_in_sentence(message, InitData.skins)
+        info_word = word_in_sentence(message, ['资料', '简历'])
 
         info = self.__search_info(self.__words_list(data), {
             'name': [self.material_costs.operator_map, self.material_costs.operator_list],
@@ -85,7 +86,7 @@ class Operator(FuncInterface):
             info.skill = ''
 
         # 没有查找到名字时，将名字改为自己或替换到模糊搜索里的名字
-        if not info.name and (not info.skill or (info.skin_key or skin_word)):
+        if not info.name and (not info.skill or (info.skin_key or skin_word) or info_word):
             if info_sup.name:
                 info.name = info_sup.name
             else:
@@ -170,7 +171,7 @@ class Operator(FuncInterface):
                 result = '博士，要告诉阿米娅语音的详细标题哦'
 
             else:
-                if info.name == '阿米娅' and not word_in_sentence(message, ['资料', '简历']):
+                if info.name == '阿米娅' and not info_word:
                     return False
                 result = self.operator_info.get_detail_info(info)
 
@@ -215,7 +216,7 @@ class Operator(FuncInterface):
                         for source in info_source[name]:
 
                             if name == 'skill':
-                                res, rate = find_similar_string(item, source.keys(), hard=0.8, return_rate=True)
+                                res, rate = find_similar_list(item, source.keys(), _random=True)
                                 if res:
                                     setattr(info, name, source[res])
                                     raise LoopBreak(index, name)

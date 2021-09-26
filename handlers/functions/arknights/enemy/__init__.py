@@ -1,6 +1,5 @@
 import re
 import jieba
-import random
 
 from core import Message, Chain
 from core.util import log
@@ -55,9 +54,9 @@ class Enemy(FuncInterface):
             r = re.search(re.compile(reg), message)
             if r:
                 enemy_name = r.group(1)
-                names = find_similar_list(enemy_name, self.keywords)
-                if names:
-                    return reply.text_image(*self.find_enemy(random.choice(names)))
+                name, rate = find_similar_list(enemy_name, self.keywords, _random=True)
+                if name:
+                    return reply.text_image(*self.find_enemy(name))
                 else:
                     return reply.text('博士，没有找到敌人%s的资料呢 >.<' % enemy_name)
 

@@ -1,7 +1,7 @@
 import jieba
 
 from core import Message, Chain
-from core.util.common import find_similar_string
+from core.util.common import find_similar_list
 from handlers.constraint import FuncInterface
 from handlers.functions.user.intellectAlarm import IntellectAlarm
 
@@ -37,7 +37,7 @@ class Material(FuncInterface):
         name = ''
         rate = 0
         for item in words:
-            n, r = find_similar_string(item, self.material_data.material_list, return_rate=True)
+            n, r = find_similar_list(item, self.material_data.material_list, _random=True)
             if rate < r:
                 name = n
                 rate = r

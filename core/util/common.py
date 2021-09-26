@@ -64,28 +64,27 @@ def all_item_in_text(text: str, items: list):
     return True
 
 
-def find_similar_string(text: str, text_list: list, hard=0.4, return_rate=False):
-    r = 0
-    t = ''
+def find_similar_list(text: str, text_list: list, _random: bool = False):
+    result = {}
     for item in text_list:
-        rate = float(string_equal_rate(text, item))
-        if rate >= r and rate >= hard:
-            r = rate
-            t = item
-    return (t, r) if return_rate else t
+        rate = float(
+            difflib.SequenceMatcher(None, text, item).quick_ratio() * len([n for n in text if n in set(item)])
+        )
+        if rate > 0:
+            if rate not in result:
+                result[rate] = []
+            result[rate].append(item)
 
+    if not result:
+        return None, 0
 
-def find_similar_list(text: str, text_list: list, hard=0.4):
-    result = []
-    for item in text_list:
-        rate = float(string_equal_rate(text, item))
-        if rate >= hard:
-            result.append(item)
-    return result
+    high = sorted(result.keys())[-1]
+    result = result[high]
 
+    if _random:
+        return random.choice(result), high
 
-def string_equal_rate(str1: str, str2: str):
-    return difflib.SequenceMatcher(None, str1, str2).quick_ratio()
+    return result, high
 
 
 def text_to_pinyin(text: str):

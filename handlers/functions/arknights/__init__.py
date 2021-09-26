@@ -36,8 +36,8 @@ class Arknights(DataSource):
             self.Calculator,
             self.Operator,
             self.Material,
-            self.Recruit,
             self.Enemy,
+            self.Recruit,
         ]
 
     def find_results(self, data: Message):
