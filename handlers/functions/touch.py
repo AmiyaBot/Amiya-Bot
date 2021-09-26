@@ -27,7 +27,7 @@ def get_face(data: Message):
         for item in files:
             if item != '.gitkeep':
                 images.append(face_dir + item)
-    return Chain(data, quote=False).image(random.choice(images))
+    return Chain(data, at=False).image(random.choice(images))
 
 
 def get_voice(data: Message):
@@ -38,5 +38,5 @@ def get_voice(data: Message):
     if not file:
         file = wiki.download_operator_voices(name, voice)
         if not file:
-            return Chain(data, quote=False).text('博士？[face32]')
-    return Chain(data, quote=False).voice(file)
+            return Chain(data, at=False).text('博士？[face32]')
+    return Chain(data, at=False).voice(file)
