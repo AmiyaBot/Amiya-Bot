@@ -5,7 +5,7 @@ from core import Message
 from amiya import Main
 
 
-class QuickTest:
+class quickTest:
     def __init__(self):
         self.type = 'group'
 
