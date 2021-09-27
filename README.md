@@ -1,4 +1,4 @@
-# [Amiya-Bot 4.0 Beta]()
+# [Amiya-Bot 4.0 Beta](https://github.com/vivien8261/Amiya-Bot)
 
 > 基于 [mirai-console](https://github.com/mamoe/mirai-console) 和 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的QQ聊天机器人<br>
 > 项目名称源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也和游戏相关。
