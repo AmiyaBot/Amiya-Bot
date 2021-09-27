@@ -5,7 +5,7 @@ from core import Message
 from amiya import Main
 
 
-class quickTest:
+class QuickTest:
     def __init__(self):
         self.type = 'group'
 
@@ -63,7 +63,7 @@ class quickTest:
 
 
 if __name__ == '__main__':
-    s = QuickStart()
+    s = QuickTest()
 
     # console 测试
     # s.bot.console.start()

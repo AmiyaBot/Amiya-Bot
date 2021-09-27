@@ -10,19 +10,18 @@
 > 简单三步，启动你的 Amiya
 
 1. 安装 python 依赖
+
 ```bash
 pip3 install -r requirements.txt
 ```
-> 依赖中的 graiax-silkcoder 库，若在 Windows 下安装，可能会出现编译失败的问题。原因是该库需要操作系统拥有 VS 运行环境（可能）。<br>
-> 安装 `Visual Studio Build Tools` 可解决此问题。<br>
-> 你可以选择在线安装方式或离线安装方式：<br>
-> 1.在线安装<br>
-> 通过 Microsoft 官网的 Visual Studio 安装程序安装 `Visual Studio 生成工具` 即可。<br>
-> 2.离线安装<br>
-> 在此下载镜像文件：<br>
-> [百度网盘](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA) 提取码 `tdbp` <br>
-> [阿里网盘](https://www.aliyundrive.com/s/1S13Tcvf1bp) （不限速） <br>
-> 挂载后安装即可。<br>
+
+> 依赖中的 graiax-silkcoder 库，若在 Windows 下安装，可能会出现编译失败的问题。原因是该库需要操作系统特定编译环境<br>
+> 安装 `Visual Studio 生成工具` 可解决此问题。<br>
+> > 友情帮助，你可以选择以下任意方式安装：<br>
+> > 1. 通过 Microsoft 官网的 Visual Studio 安装程序安装 `Visual Studio 生成工具`<br>
+> > 2. 下载离线镜像文件安装：<br>
+       [百度网盘](https://pan.baidu.com/s/1zf2Zl8NRTW22eKJYFIfyvA) ，提取码 `tdbp` <br>
+       [阿里网盘](https://www.aliyundrive.com/s/1S13Tcvf1bp)
 
 2. 配置`config.yaml`
 
@@ -97,16 +96,31 @@ python amiya.py
 > ./start.sh
 > ```
 > Windows 系统可使用启动脚本 `start.cmd` 启动（也可使用控制台手动启动）<br>
-> 注：Windows 启动脚本**需要管理员权限**，将会自动删除另一系统的启动脚本，更改 NTP 服务器至 `ntp.ntsc.ac.cn` （中国科学院国家授时中心）并校时（仅 Windows），且会在每次启动前更换`pypi`镜像至 `华为云` 并执行依赖检查。
+> 注：Windows 启动脚本**需要管理员权限**，将会自动删除另一系统的启动脚本，更改 NTP 服务器至 `ntp.ntsc.ac.cn` （中国科学院国家授时中心）并校时（仅 Windows），且会在每次启动前更换 `pypi` 镜像至 `华为云` 并执行依赖检查。
+
 ## 功能测试方式
 
 - 离线测试
-    - 不需要启动 `mirai-console`
-    - 配置 `offline: true` 直接运行脚本 `QuickTest.py`
-    - 然后在控制台模拟交互
+    - 离线测试不需要启动 `mirai-console`
+    - 配置 `offline: true` 直接运行脚本 `quickTest.py`
+    - 可在脚本内选择测试方式。注意，测试方式只能使用一种
+
+```python
+if __name__ == '__main__':
+    s = QuickTest()
+
+    # console 测试
+    # s.bot.console.start()
+
+    # 对话式测试
+    s.start()
+
+    # 快速测试单句指令
+    # s.unit_test('兔兔语音阿米娅闲置')
+```
 
 ```bash
-python QuickTest.py
+python quickTest.py
 ```
 
 - 实际环境的封闭测试
@@ -124,5 +138,3 @@ setting:
     # 离线模式：开
     offline: true
 ```
-
-<br>注：在存在多个 Python 版本的环境中，请确保你使用的指令指向`Python 3.7 ~ 3.8`或使用虚拟环境如`venv`来保证其在正确的版本上运行（特别是 CentOS 等自带 Python 的系统）。推荐您无论何时均使用`python3`指令来确保版本正确。
