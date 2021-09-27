@@ -102,11 +102,11 @@ python amiya.py
 
 - 离线测试
     - 不需要启动 `mirai-console`
-    - 配置 `offline: true` 直接运行脚本 `quickStart.py`
+    - 配置 `offline: true` 直接运行脚本 `QuickTest.py`
     - 然后在控制台模拟交互
 
 ```bash
-python quickStart.py
+python QuickTest.py
 ```
 
 - 实际环境的封闭测试
@@ -124,3 +124,5 @@ setting:
     # 离线模式：开
     offline: true
 ```
+
+<br>注：在存在多个 Python 版本的环境中，请确保你使用的指令指向`Python 3.7 ~ 3.8`或使用虚拟环境如`venv`来保证其在正确的版本上运行（特别是 CentOS 等自带 Python 的系统）。推荐您无论何时均使用`python3`指令来确保版本正确。
