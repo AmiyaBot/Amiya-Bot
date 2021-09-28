@@ -1,5 +1,5 @@
 from core import AmiyaBot, Message, Chain
-from core.database.models import User
+from core.database.models import User, GroupActive
 from dataSource.wiki import Wiki
 from handlers.functions import random_reply
 
@@ -23,6 +23,10 @@ class EventHandlers:
 
             user: User = User.get_or_none(user_id=data.user_id)
             if user and user.black == 1:
+                return False
+
+            group: GroupActive = GroupActive.get_or_none(group_id=data.group_id)
+            if group and group.active == 0:
                 return False
 
             reply = random_reply(data, self.bot)
