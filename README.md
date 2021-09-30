@@ -48,7 +48,7 @@ Amiya-Bot 的所有说明均可查阅本项目的 wiki 文档
 #### 部署说明
 
 - 代码部署请查看 [通过代码部署 Amiya](https://github.com/vivien8261/Amiya-Bot/wiki/通过代码部署-Amiya)
-- 安装包式部署部署请查看 [通过安装包部署 Amiya](https://github.com/vivien8261/Amiya-Bot/wiki/通过安装包部署-Amiya)
+- 安装包部署请查看 [通过安装包部署 Amiya](https://github.com/vivien8261/Amiya-Bot/wiki/通过安装包部署-Amiya)
 
 ## 贡献
 
