@@ -140,7 +140,8 @@ class SourceBank(DownloadTools):
                     src.write(data)
                     status.success()
             else:
-                os.remove(self.local_version_file)
+                if os.path.exists(self.local_version_file):
+                    os.remove(self.local_version_file)
                 raise Exception(f'data [{name}] download failed')
 
     def download_bot_resource(self, refresh=False):

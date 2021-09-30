@@ -10,5 +10,6 @@
 *.pyc
 
 amiya.db
+amiya.spec
 session.txt
 ignore.json
