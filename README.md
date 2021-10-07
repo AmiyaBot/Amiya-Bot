@@ -49,7 +49,7 @@
 
 ## 文档
 
-Amiya-Bot 的所有说明均可查阅本项目的 wiki 文档
+Amiya-Bot 的所有说明均可查阅本项目的 [wiki 文档](https://github.com/vivien8261/Amiya-Bot/wiki)
 
 #### 使用说明
 
