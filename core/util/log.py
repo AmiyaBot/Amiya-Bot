@@ -43,6 +43,9 @@ def download_src(data: Union[dict, list], title: str = 'data', _total=True, _rec
     if _total:
         status.total = len(data)
 
+    if not len(data):
+        return None
+
     def print_bar(i):
         nonlocal success
 

@@ -172,8 +172,12 @@ class SourceBank(DownloadTools):
     def download_bot_console(self):
         log.info('checking Console update...')
 
-        file_list = self.request_file(f'{self.bot_console}/.version').strip('\n').split('\n')
+        version_file = self.request_file(f'{self.bot_console}/.version')
 
+        if not version_file:
+            return False
+
+        file_list = version_file.strip('\n').split('\n')
         version = file_list.pop(0)
 
         local_ver = None

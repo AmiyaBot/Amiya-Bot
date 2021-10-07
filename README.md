@@ -1,14 +1,26 @@
-# [Amiya-Bot 4.0 Beta](https://github.com/vivien8261/Amiya-Bot)
+# Amiya-Bot
+
+<div>
+    <img alt="Python" src="https://img.shields.io/badge/Python-3.8-%233776AB?logo=python&logoColor=white">
+    <img alt="SQLite" src="https://img.shields.io/badge/SQLite-3.0-%23003B57?logo=SQLite&logoColor=white">
+</div>
+<div>
+    <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blueviolet">
+</div>
+<div>
+    <img alt="license" src="https://img.shields.io/badge/license-GPL-green">
+    <img alt="version" src="https://img.shields.io/badge/version-4.0-orange">
+    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/vivien8261/Amiya-Bot?color=%23ff69b4">
+    <img alt="size" src="https://img.shields.io/github/repo-size/vivien8261/Amiya-Bot?color=%23ffeb3b">
+</div>
+<br>
 
 > 基于 [mirai-console](https://github.com/mamoe/mirai-console) 和 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的QQ聊天机器人<br>
-> 项目名称源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也和游戏相关。
-> <br><br>注意：该版本仍处于测试阶段，近期可能会进行大量修改，请注意定期查看项目进展。
+> 项目名称源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也与其相关。
 
     「博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！」 -- 阿米娅
 
 ## 共生项目
-
-共生项目为专门服务于 Amiya-Bot 的项目或资源
 
 - Amiya-Bot 的可视化后台管理：[Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console)
 - Amiya-Bot 的数据及资源文件：[Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource)
