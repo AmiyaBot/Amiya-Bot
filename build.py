@@ -1,28 +1,50 @@
 import os
 import shutil
+import zipfile
 
+folder = 'C:\\Users\\Administrator\\Desktop\\pack'
 venv = 'venv/Lib/site-packages'
-version = '4.0.1'
+version = '4.0.2'
 
 
 def build():
-    shutil.copy(f'{venv}/jieba/dict.txt', 'dist/dict.txt')
-    shutil.copy(f'{venv}/requests/cacert.pem', 'dist/cacert.pem')
+    dist = f'{folder}/dist'
 
-    shutil.copy('config.yaml', 'dist/config.yaml')
-    shutil.copytree('configure', 'dist/configure', dirs_exist_ok=True)
+    if os.path.exists(dist):
+        shutil.rmtree(dist)
 
-    for line in os.popen('pyinstaller -F -i amiya.ico amiya.py').readlines():
-        print(line)
+    os.makedirs(dist)
 
-    exe = f'dist/AmiyaBot-{version}.exe'
+    shutil.copy(f'{venv}/jieba/dict.txt', f'{dist}/dict.txt')
+    shutil.copy(f'{venv}/requests/cacert.pem', f'{dist}/cacert.pem')
+
+    shutil.copy('config.yaml', f'{dist}/config.yaml')
+    shutil.copytree('configure', f'{dist}/configure', dirs_exist_ok=True)
+
+    cmd = [f'cd {folder}']
+
+    disc = folder.split(':')
+    if len(disc) > 1:
+        cmd.append(disc[0] + ':')
+
+    cmd.append(f'pyinstaller -F -i {os.getcwd()}\\amiya.ico {os.getcwd()}\\amiya.py')
+    msg = os.popen('&'.join(cmd)).readlines()
+
+    for item in msg:
+        print(item)
+
+    exe = f'{dist}/AmiyaBot-{version}.exe'
 
     if os.path.exists(exe):
         os.remove(exe)
-    os.rename('dist/amiya.exe', exe)
+    os.rename(f'{dist}/amiya.exe', exe)
 
-    shutil.rmtree('build')
-    os.remove('amiya.spec')
+    with zipfile.ZipFile(f'{folder}/AmiyaBot-{version}.zip', 'w') as pack:
+        for root, dirs, files in os.walk(dist):
+            for index, filename in enumerate(files):
+                target = os.path.join(root, filename)
+                path = target.replace(dist + '\\', '')
+                pack.write(target, path)
 
 
 if __name__ == '__main__':
