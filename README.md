@@ -2,7 +2,7 @@
 
 <div>
     <img alt="Python" src="https://img.shields.io/badge/Python-3.8-%233776AB?logo=python&logoColor=white">
-    <img alt="SQLite" src="https://img.shields.io/badge/SQLite-3.0-%23003B57?logo=SQLite&logoColor=white">
+    <img alt="SQLite" src="https://img.shields.io/badge/SQLite-^3.24-%23003B57?logo=SQLite&logoColor=white">
 </div>
 <div>
     <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blueviolet">
