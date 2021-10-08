@@ -29,7 +29,7 @@ class SourceBank(DownloadTools):
 
         self.pics_source = {
             'gitee': f'{self.bot_source}/images/game',
-            'cloud': f'http://49.232.166.115:18080/skins'
+            'cloud': f'http://49.232.166.115:18080/resource/images/game/skins'
         }
         self.pics_path = 'resource/images'
 

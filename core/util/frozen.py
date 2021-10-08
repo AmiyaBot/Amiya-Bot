@@ -8,7 +8,7 @@ import subprocess
 from core.network.httpRequests import DownloadTools
 from core.util import log
 
-source = 'http://vivien8261.gitee.io/amiya-bot-resource'
+server = 'http://49.232.166.115:18080/resource/dist'
 
 
 def check_upgrade():
@@ -16,7 +16,7 @@ def check_upgrade():
 
     local_exe = sys.argv[0].replace('\\', '/').split('/')[-1]
 
-    new_version = DownloadTools.request_file(f'{source}/.version')
+    new_version = DownloadTools.request_file(f'{server}/.version')
     if not new_version:
         log.info('upgrade check fail.')
         return False
@@ -31,7 +31,7 @@ def check_upgrade():
 
     log.info(f'difference detected, downloading new version {new_version}')
 
-    pack = DownloadTools.request_file(f'{source}/dist/{new_pack}', stringify=False)
+    pack = DownloadTools.request_file(f'{server}/{new_pack}', stringify=False)
     if pack:
         with open(new_pack, mode='wb+') as f:
             f.write(pack)
