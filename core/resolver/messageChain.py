@@ -20,13 +20,14 @@ class Chain:
         self.command = 'sendFriendMessage'
         self.target = data.user_id
         self.record = ''
+        self.quote = False
 
         if self.data.type == 'group':
             self.command = 'sendGroupMessage'
             self.target = data.group_id
 
             if data.user_id and quote:
-                self.quote()
+                self.quote = True
             if data.user_id and at:
                 self.at()
 
@@ -41,17 +42,6 @@ class Chain:
         })
         if enter:
             return self.text('\n')
-        return self
-
-    def quote(self):
-        self.chain.append({
-            'type': 'Quote',
-            'id': self.data.message_id,
-            'senderId': self.data.user_id,
-            'targetId': self.data.group_id,
-            'groupId': self.data.group_id,
-            'origin': self.data.message['messageChain']
-        })
         return self
 
     def text(self, text, trans_image=True):

@@ -14,7 +14,7 @@ def manager_handler(data: Message):
             if data.group_active.active == 1:
                 GroupActive.update(active=0, sleep_time=int(time.time())).where(
                     GroupActive.group_id == data.group_id).execute()
-                return reply.text('阿米娅打卡下班啦，博士需要阿米娅的时候再让阿米娅工作吧。^_^')
+                return reply.text('打卡下班啦！博士需要阿米娅的时候再让阿米娅工作吧。^_^')
 
         if word_in_sentence(message, ['工作', '上班']):
             if data.group_active.active == 0:

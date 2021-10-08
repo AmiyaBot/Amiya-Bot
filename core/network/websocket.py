@@ -118,16 +118,21 @@ class WebSocket(WebSocketClient):
                 )
 
     def build_message(self, reply: Chain, chain: list = None, sync_id: int = 1):
+        content = {
+            'target': reply.target,
+            'sessionKey': self.session,
+            'messageChain': chain or reply.chain
+        }
+
+        if reply.quote:
+            content['quote'] = reply.data.message_id
+
         return json.dumps(
             {
                 'syncId': sync_id,
                 'command': reply.command,
                 'subCommand': None,
-                'content': {
-                    'sessionKey': self.session,
-                    'target': reply.target,
-                    'messageChain': chain or reply.chain
-                }
+                'content': content
             },
             ensure_ascii=False
         )
