@@ -9,7 +9,7 @@ from .initData import InfoInterface
 
 material_images_source = 'resource/images/materials/'
 
-icon_size = 36
+icon_size = 34
 
 
 class OperatorModules:
@@ -100,7 +100,7 @@ class OperatorModules:
             if os.path.exists(item):
                 icons.append({
                     'path': item,
-                    'size': (icon_size, icon_size),
+                    'size': icon_size,
                     'pos': (30, i)
                 })
             i += n

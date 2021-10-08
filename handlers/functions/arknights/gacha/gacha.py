@@ -200,7 +200,7 @@ class GachaForUser:
                 if os.path.exists(avatar_path):
                     icons.append({
                         'path': avatar_path,
-                        'size': (icon_size, icon_size),
+                        'size': icon_size,
                         'pos': (side_padding, top + offset + icon_size * index)
                     })
 

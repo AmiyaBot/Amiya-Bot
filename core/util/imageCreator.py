@@ -113,8 +113,16 @@ def create_image(text: str, folder, images=None, font_size=15):
             if os.path.exists(item['path']) is False:
                 continue
             img = Image.open(item['path']).convert('RGBA')
-            img = img.resize(size=item['size'])
-            image.paste(img, box=item['pos'], mask=img)
+
+            pos = list(item['pos'])
+            height = item['size']
+            width = int(height * (img.width / img.height))
+            offset = (height - width) / 2
+            if offset:
+                pos[0] += int(offset)
+
+            img = img.resize(size=(width, height))
+            image.paste(img, box=tuple(pos), mask=img)
 
     path = '%s/%s' % (temp_dir, folder)
     make_folder(path)

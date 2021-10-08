@@ -11,7 +11,7 @@ from .operatorInfo import OperatorInfo
 material_images_source = 'resource/images/materials/'
 skill_images_source = 'resource/images/skills/'
 
-icon_size = 36
+icon_size = 34
 
 
 class MaterialCosts:
@@ -145,7 +145,7 @@ class MaterialCosts:
                 if os.path.exists(item):
                     icons.append({
                         'path': item,
-                        'size': (icon_size, icon_size),
+                        'size': icon_size,
                         'pos': (5, 26 + index * 34)
                     })
         else:
@@ -183,7 +183,7 @@ class MaterialCosts:
                 if os.path.exists(item):
                     icons.append({
                         'path': item,
-                        'size': (icon_size, icon_size),
+                        'size': icon_size,
                         'pos': (side_padding, top + content_height * index)
                     })
 
@@ -195,7 +195,7 @@ class MaterialCosts:
                 if os.path.exists(item):
                     icons.append({
                         'path': item,
-                        'size': (icon_size, icon_size),
+                        'size': icon_size,
                         'pos': (30, top + i)
                     })
                 i += n

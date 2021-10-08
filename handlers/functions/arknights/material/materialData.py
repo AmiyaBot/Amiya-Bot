@@ -17,7 +17,7 @@ TY = {
 }
 material_images_source = 'resource/images/materials/'
 
-icon_size = 36
+icon_size = 34
 
 
 class MaterialData:
@@ -53,7 +53,7 @@ class MaterialData:
         icons = [
             {
                 'path': material_images_source + material['material_icon'] + '.png',
-                'size': (80, 80),
+                'size': 80,
                 'pos': (side_padding, side_padding + line_height + int((line_height * 6 - 80) / 2))
             }
         ]
@@ -98,7 +98,7 @@ class MaterialData:
             if os.path.exists(item):
                 icons.append({
                     'path': item,
-                    'size': (icon_size, icon_size),
+                    'size': icon_size,
                     'pos': (side_padding, line_height * 9 + index * line_height * 2)
                 })
 

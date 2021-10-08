@@ -13,7 +13,7 @@ from .initData import InfoInterface, InitData
 skill_images_source = 'resource/images/skills/'
 avatars_images_source = 'resource/images/avatars/'
 
-icon_size = 36
+icon_size = 34
 
 
 class OperatorInfo:
@@ -120,7 +120,7 @@ class OperatorInfo:
         icons = [
             {
                 'path': avatars_images_source + operator.id + '.png',
-                'size': (80, 80),
+                'size': 80,
                 'pos': (side_padding, 30)
             }
         ]
@@ -287,7 +287,7 @@ class OperatorInfo:
             if os.path.exists(item):
                 icons.append({
                     'path': item,
-                    'size': (icon_size, icon_size),
+                    'size': icon_size,
                     'pos': (side_padding, yl[index])
                 })
 

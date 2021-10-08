@@ -109,7 +109,7 @@ class Enemy(FuncInterface):
         icons = [
             {
                 'path': 'resource/images/enemy/%s.png' % data['enemyId'],
-                'size': (80, 80),
+                'size': 80,
                 'pos': (side_padding, side_padding + line_height + int((line_height * 6 - 80) / 2))
             }
         ]

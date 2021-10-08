@@ -46,6 +46,9 @@ def build():
                 path = target.replace(dist + '\\', '')
                 pack.write(target, path)
 
+    with open(f'{folder}.version', 'w+') as ver:
+        ver.write(version)
+
 
 if __name__ == '__main__':
     build()
