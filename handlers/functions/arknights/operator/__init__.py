@@ -36,7 +36,9 @@ class Operator(FuncInterface):
         self.data_source = data_source
         self.bot = bot
 
-        jieba.del_word('兔兔山')
+        for item in InitData.ignore_keywords:
+            jieba.del_word(item)
+
         jieba.load_userdict('resource/operators.txt')
         jieba.load_userdict('resource/stories.txt')
         jieba.load_userdict('resource/skins.txt')
@@ -118,12 +120,14 @@ class Operator(FuncInterface):
             if skin_item:
                 result, pic = self.operator_info.build_skin_content(info, skin_item)
                 if not os.path.exists(pic):
-                    self.bot.send_message(Chain(data).text('正在下载立绘，博士请稍等...'))
+                    self.bot.send_message(Chain(data, quote=False).text('正在下载立绘，博士请稍等...'))
                     res = self.data_source.get_pic(skin_item['skin_id'], 'skins', 'cloud', False)
                     if res:
                         reply.image(pic).text('\n')
                     else:
                         result += '\n\n立绘下载失败...>.<'
+                else:
+                    reply.image(pic).text('\n')
 
         if info.level != 0 and result is None:
             if info.level < 0:
@@ -153,7 +157,7 @@ class Operator(FuncInterface):
                     wiki_name = self.data_source.operators[info.name].wiki_name
                     file = self.data_source.wiki.voice_exists(wiki_name, info.voice_key)
                     if not file:
-                        self.bot.send_message(Chain(data).text('正在下载语音文件，博士请稍等...'))
+                        self.bot.send_message(Chain(data, quote=False).text('正在下载语音文件，博士请稍等...'))
                         file = self.data_source.wiki.download_operator_voices(wiki_name, info.voice_key)
                         if not file:
                             self.bot.send_message(Chain(data).text('语音文件下载失败...>.<'))

@@ -11,7 +11,7 @@ Voice = VoiceManager()
 
 
 class Chain:
-    def __init__(self, data: Message, feeling: int = reward.reply.feeling, at: bool = True, quote: bool = False):
+    def __init__(self, data: Message, feeling: int = reward.reply.feeling, at: bool = False, quote: bool = True):
         self.data = data
         self.feeling = feeling
 

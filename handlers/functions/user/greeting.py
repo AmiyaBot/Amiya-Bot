@@ -33,7 +33,7 @@ def greeting(data: Message):
 
             status = sign_in(data)
             if status['status']:
-                text += '\n' + status['text']
+                text += status['text']
 
             return Chain(data).text(text)
 
@@ -55,7 +55,7 @@ def sign_in(data: Message, sign_type=0):
             sign_times=User.sign_times + 1
         ).where(User.user_id == data.user_id).execute()
         return {
-            'text': f'签到成功，{coupon}张寻访凭证已经送到博士的办公室啦，请博士注意查收哦',
+            'text': f'{"签到成功，" if sign_type else ""}{coupon}张寻访凭证已经送到博士的办公室啦，请博士注意查收哦',
             'status': True
         }
 

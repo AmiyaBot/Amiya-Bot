@@ -56,7 +56,7 @@ class Recruit(FuncInterface):
         if data.image and data.image != 'RecruitORC' and self.ocr.enable:
             self.update_status(data, False)
 
-            self.bot.send_message(Chain(data).text('图片识别中，博士请稍等...'))
+            self.bot.send_message(Chain(data, quote=False).text('图片识别中，博士请稍等...'))
 
             # 优先尝试精准识别，若失败，则使用普通识别
             res = self.ocr.basic_accurate(data.image)
@@ -128,13 +128,13 @@ class Recruit(FuncInterface):
                 else:
                     text = '博士，没有找到可以锁定稀有干员的组合'
 
-                return Chain(data, quote=data.image == 'RecruitORC').text(text)
+                return Chain(data).text(text)
             else:
-                return Chain(data, quote=data.image == 'RecruitORC').text('博士，无法查询到标签所拥有的的干员')
+                return Chain(data).text('博士，无法查询到标签所拥有的稀有干员')
         else:
             # 如果无法匹配标签，但 image 为 RecruitORC，则代表这是图片识别后的结果
             if data.image == 'RecruitORC':
-                return Chain(data, quote=True).text('博士，没有在图片内找到标签信息')
+                return Chain(data).text('博士，没有在图片内找到标签信息')
 
             # 如果 image 为空，则可以等待发图后使用图像识别继续
             if data.image == '' and self.ocr.enable:

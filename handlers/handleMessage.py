@@ -119,6 +119,6 @@ class Handlers(FunctionIndexes):
             MessageBase.msg_time >= time.time() - limit.seconds
         )
         if speed.count() >= limit.maxCount:
-            return Chain(data, at=False).text('博士说话太快了，请慢一些吧～')
+            return Chain(data, quote=False).text('博士说话太快了，请慢一些吧～')
 
         return manager_handler(data) if data.type == 'group' else True
