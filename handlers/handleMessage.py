@@ -114,11 +114,11 @@ class Handlers(FunctionIndexes):
             return False
 
         speed = MessageBase.select().where(
-            MessageBase.user_id == data.user_id,
-            MessageBase.record == 'call',
+            MessageBase.user_id == account,
+            MessageBase.target_id == data.user_id,
             MessageBase.msg_time >= time.time() - limit.seconds
         )
-        if speed.count() >= limit.maxCount:
+        if speed.count() >= limit.maxCount and data.is_call:
             return Chain(data, quote=False).text('博士说话太快了，请慢一些吧～')
 
         return manager_handler(data) if data.type == 'group' else True
