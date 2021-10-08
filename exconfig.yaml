@@ -1,3 +1,4 @@
+# 配置好后请将该文件重命名为“config.yaml”
 account:
     bot: 1515361402
     admin: 826197021
