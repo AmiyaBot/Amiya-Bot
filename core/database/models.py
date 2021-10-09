@@ -1,6 +1,10 @@
 from peewee import *
 
-sqlite_db = SqliteDatabase('amiya.db')
+sqlite_db = SqliteDatabase('amiya.db',
+                           pragmas={
+                               'timeout': 30
+                           },
+                           check_same_thread=False)
 
 
 class BaseModel(Model):
