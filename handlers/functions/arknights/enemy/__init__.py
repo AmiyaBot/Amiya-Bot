@@ -3,8 +3,9 @@ import jieba
 
 from core import Message, Chain
 from core.util import log
-from core.util.common import find_similar_list, remove_xml_tag, integer
+from core.util.common import find_similar_list, remove_xml_tag, text_to_pinyin, integer
 from core.util.imageCreator import line_height, side_padding
+from core.database.manager import set_waiting
 from dataSource import DataSource
 from handlers.constraint import FuncInterface
 
@@ -15,6 +16,7 @@ class Enemy(FuncInterface):
 
         self.data = data_source
         self.keywords = list(data_source.enemies.keys())
+        self.keywords += [text_to_pinyin(item) for item in self.keywords]
 
         self.init_enemies()
 
@@ -25,19 +27,17 @@ class Enemy(FuncInterface):
         with open('resource/enemies.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([f'{name} 500 n' for name in self.keywords]))
 
-    @staticmethod
-    def priority(data: Message):
-        for item in ['敌人', '敌方']:
-            if item in data.text:
-                return True
-        return False
-
     @FuncInterface.is_disable
-    def check(self, data: Message):
-        for item in ['敌人', '敌方'] + self.keywords:
-            if item in data.text:
-                return True
-        return False
+    def verify(self, data: Message):
+
+        words = ['敌人', '敌方'] + self.keywords
+        hit = 0
+
+        for item in data.text_cut + data.text_cut_pinyin:
+            if item in words:
+                hit += 1
+
+        return hit
 
     @FuncInterface.is_used
     def action(self, data: Message):
@@ -54,11 +54,31 @@ class Enemy(FuncInterface):
             r = re.search(re.compile(reg), message)
             if r:
                 enemy_name = r.group(1)
-                name, rate = find_similar_list(enemy_name, self.keywords, _random=True)
-                if name:
-                    return reply.text_image(*self.find_enemy(name))
+                result, rate = find_similar_list(enemy_name, self.keywords, _random=False)
+                if result:
+                    text = '博士，为您搜索到以下敌方单位：\n\n'
+
+                    for index, item in enumerate(result):
+                        text += f'[{index + 1} {item}]\n'
+
+                    text += '\n回复序号查询对应的敌方单位资料'
+
+                    set_waiting(data, f'Enemy#{enemy_name}')
+
+                    return reply.text(text)
                 else:
-                    return reply.text('博士，没有找到敌人%s的资料呢 >.<' % enemy_name)
+                    return reply.text('博士，没有找到敌方单位%s的资料呢 >.<' % enemy_name)
+
+    def find_enemy_by_index(self, data: Message, index, enemy_name):
+        result, rate = find_similar_list(enemy_name, self.keywords, _random=False)
+
+        index -= 1
+        if index >= len(result):
+            index = len(result) - 1
+
+        set_waiting(data)
+
+        return Chain(data).text_image(*self.find_enemy(result[index]))
 
     def find_enemy(self, name):
         data = self.data.enemies[name]['info']

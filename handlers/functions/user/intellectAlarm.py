@@ -10,13 +10,10 @@ class IntellectAlarm(FuncInterface):
     def __init__(self):
         super().__init__(function_id='intellectAlarm')
 
-    @staticmethod
-    def priority(data: Message):
-        return '理智' in data.text and ('满' in data.text or '多少' in data.text)
-
     @FuncInterface.is_disable
-    def check(self, data: Message):
-        return '理智' in data.text
+    def verify(self, data: Message):
+        if '理智' in data.text and ('满' in data.text or '多少' in data.text):
+            return 2
 
     @FuncInterface.is_used
     def action(self, data: Message):

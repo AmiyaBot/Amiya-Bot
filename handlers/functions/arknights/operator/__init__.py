@@ -13,9 +13,6 @@ from .materialCosts import MaterialCosts
 from .operatorInfo import OperatorInfo
 from .initData import InfoInterface, InitData
 
-from ..enemy import Enemy
-from ...user.userInfo import UserInfo
-
 
 class LoopBreak(Exception):
     def __init__(self, index, name=''):
@@ -36,6 +33,8 @@ class Operator(FuncInterface):
         self.data_source = data_source
         self.bot = bot
 
+        self.keywords = self.keyword_list()
+
         for item in InitData.ignore_keywords:
             jieba.del_word(item)
 
@@ -43,22 +42,29 @@ class Operator(FuncInterface):
         jieba.load_userdict('resource/stories.txt')
         jieba.load_userdict('resource/skins.txt')
 
-    @FuncInterface.is_disable
-    def check(self, data: Message):
-        if UserInfo.priority(data) or Enemy.priority(data):
-            return False
-
+    def keyword_list(self):
         keyword = []
+        keyword += InitData.skill_index_list.keys()
+        keyword += InitData.skill_level_list.keys()
         keyword += InitData.keyword
         keyword += InitData.voices
         keyword += InitData.skins
         keyword += self.material_costs.keywords
         keyword += self.operator_info.skins_keywords
 
-        for item in self.__words_list(data):
-            if item in keyword:
-                return True
-        return False
+        return keyword
+
+    @FuncInterface.is_disable
+    def verify(self, data: Message):
+
+        words = self.__words_list(data)
+        hit = 0
+
+        for item in words:
+            if item in self.keywords:
+                hit += 1
+
+        return hit
 
     @FuncInterface.is_used
     def action(self, data: Message):
@@ -166,7 +172,7 @@ class Operator(FuncInterface):
 
             # 模组
             elif word_in_sentence(message, ['模组']):
-                result = self.operator_module.find_operator_module(info)
+                result = self.operator_module.find_operator_module(info, '故事' in message)
 
             elif word_in_sentence(message, ['精英', '专精']):
                 result = '博士，要告诉阿米娅精英或专精等级哦'

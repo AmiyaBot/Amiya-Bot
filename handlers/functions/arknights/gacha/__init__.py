@@ -27,11 +27,10 @@ class Gacha(FuncInterface):
         self.pool = GachaPool()
 
     @FuncInterface.is_disable
-    def check(self, data: Message):
+    def verify(self, data: Message):
         for item in ['抽', '连', '寻访', '保底', '卡池', '池子']:
             if item in data.text:
                 return True
-        return False
 
     @FuncInterface.is_used
     def action(self, data: Message):

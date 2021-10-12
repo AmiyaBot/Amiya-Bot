@@ -6,9 +6,9 @@ from itertools import combinations
 from core import Message, Chain, AmiyaBot
 from core.util import log
 from core.util.config import config
-from core.util.common import all_item_in_text, insert_empty
+from core.util.common import all_item_in_text, insert_empty, text_to_pinyin
 from core.util.baiduCloud import OpticalCharacterRecognition
-from core.database.models import User
+from core.database.manager import set_waiting
 from dataSource import DataSource, Operator
 
 from handlers.constraint import FuncInterface
@@ -36,6 +36,7 @@ class Recruit(FuncInterface):
             for tag in item.tags:
                 if tag not in tags:
                     tags.append(tag)
+                    tags.append(text_to_pinyin(tag))
 
         self.tags = tags
 
@@ -43,11 +44,14 @@ class Recruit(FuncInterface):
             file.write('\n'.join([item + ' 500 n' for item in tags]))
 
     @FuncInterface.is_disable
-    def check(self, data: Message):
+    def verify(self, data: Message):
+        hit = 0
+
         for item in ['公招', '公开招募'] + self.tags:
-            if item in data.text:
-                return True
-        return False
+            if item in data.text + text_to_pinyin(data.text):
+                hit += 1
+
+        return hit
 
     @FuncInterface.is_used
     def action(self, data: Message):
@@ -161,7 +165,7 @@ class Recruit(FuncInterface):
 
     @staticmethod
     def update_status(data: Message, status: bool):
-        User.update(waiting='Recruit' if status else '').where(User.user_id == data.user_id).execute()
+        set_waiting(data, 'Recruit' if status else '')
 
     @staticmethod
     def find_combinations(_list):

@@ -1,3 +1,8 @@
+from typing import List
+
+from core import Message
+from handlers.constraint import FuncInterface, sorted_candidate
+
 from .user.intellectAlarm import IntellectAlarm
 from .user.userInfo import UserInfo
 from .menu.menu import Menu
@@ -24,3 +29,16 @@ class FunctionIndexes:
             emotion,
             natural_language_processing
         ]
+
+    def find_functions_results(self, data: Message, extra_funcs: List[FuncInterface]):
+        if extra_funcs is None:
+            extra_funcs = []
+
+        candidate = sorted_candidate(data, [*self.functions, *extra_funcs])
+
+        for item in candidate:
+            item: FuncInterface
+
+            result = item.action(data)
+            if result:
+                return result.rec(item.function_id)

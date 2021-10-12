@@ -16,11 +16,13 @@ class OperatorModules:
     def __init__(self, data: DataSource):
         self.data = data
 
-    def find_operator_module(self, info: InfoInterface):
+    def find_operator_module(self, info: InfoInterface, story: bool):
         operator: Operator = self.data.operators[info.name]
         modules = operator.modules()
 
         if modules:
+            if story:
+                return self.build_module_story(info.name, modules)
             return self.build_module_content(info.name, modules)
         else:
             return f'博士，干员{info.name}尚未拥有模组哦~'
@@ -35,7 +37,7 @@ class OperatorModules:
         material_images = []
 
         for item in modules:
-            text += '\n\n【%s】\n\n' % (item['uniEquipName'])
+            text += '\n\n【%s】\n\n' % item['uniEquipName']
 
             text += f'[解锁条件] ' \
                     f'精英{item["unlockEvolvePhase"]} - ' \
@@ -91,9 +93,6 @@ class OperatorModules:
             else:
                 text += '无\n'
 
-            text += '[模组故事]\n'
-            text += item['uniEquipDesc']
-
         for index, item in enumerate(material_images):
             if index and index % 3 == 0:
                 i += n
@@ -104,5 +103,16 @@ class OperatorModules:
                     'pos': (30, i)
                 })
             i += n
+
+        return text, icons
+
+    @staticmethod
+    def build_module_story(name, modules):
+        text = f'博士，为您找到干员{name}的模组故事'
+        icons = []
+
+        for item in modules:
+            text += '\n\n【%s】\n\n' % item['uniEquipName']
+            text += item['uniEquipDesc']
 
         return text, icons
