@@ -28,11 +28,10 @@ class Weibo(FuncInterface):
         self.url = f'https://m.weibo.cn/api/container/getIndex?uid={weibo_id}&type=uid&value={weibo_id}'
 
     @FuncInterface.is_disable
-    def check(self, data: Message):
+    def verify(self, data: Message):
         for item in ['新公告', '新动态', '新消息', '微博']:
             if item in data.text:
                 return True
-        return False
 
     @FuncInterface.is_used
     def action(self, data: Message):

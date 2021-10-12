@@ -25,13 +25,9 @@ class Handlers(FunctionIndexes):
             return random_reply(data, self.bot)
 
         if data.is_call:
-            ark_result = self.arknights.find_results(data)
-            if ark_result:
-                return ark_result
-
-            for func in self.functions:
-                if func.check(data):
-                    return func.action(data)
+            func_result = self.find_functions_results(data, self.arknights.funcs)
+            if func_result:
+                return func_result
 
             for action in self.actions:
                 result = action(data)
@@ -49,7 +45,7 @@ class Handlers(FunctionIndexes):
             self.bot.send_err = False
             return reply.text('已关闭报错推送')
 
-        if '手动维护' in message:
+        if '维护' in message:
             bot_maintain(self.bot, force=True)
             return False
 

@@ -13,11 +13,10 @@ class Menu(FuncInterface):
     def __init__(self):
         super().__init__(function_id='functionQuery')
 
-    def check(self, data: Message):
+    def verify(self, data: Message):
         for item in Function.query_key + Function.source_code_key + Function.function_titles:
             if item in data.text:
                 return True
-        return False
 
     @FuncInterface.is_used
     def action(self, data: Message):

@@ -26,12 +26,11 @@ class Calculator(FuncInterface):
         self.data = data_source
 
     @FuncInterface.is_disable
-    def check(self, data: Message):
+    def verify(self, data: Message):
         for item in re_list:
             r = re.search(re.compile(item), data.text_digits)
             if r:
                 return True
-        return False
 
     @FuncInterface.is_used
     def action(self, data: Message):

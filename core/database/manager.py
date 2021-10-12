@@ -1,3 +1,4 @@
+from core import Message as MiraiMessage
 from core.util import log
 from playhouse.shortcuts import model_to_dict
 
@@ -26,6 +27,10 @@ class DataBase:
         )
         for item in tables:
             item.create_table()
+
+
+def set_waiting(data: MiraiMessage, infomation=''):
+    User.update(waiting=infomation).where(User.user_id == data.user_id).execute()
 
 
 def exec_sql_file(file):

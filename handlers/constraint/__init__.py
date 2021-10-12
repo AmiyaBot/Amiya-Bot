@@ -1,43 +1,32 @@
 import abc
 
+from typing import Union, List
+
 from functools import wraps
 from core import Message, Chain
 from core.util.config import func_setting
 from core.database.models import Disable, Function
 
 
-def check_global_state(function_id):
-    setting = func_setting().globalState
-    if hasattr(setting, function_id):
-        if not getattr(setting, function_id):
-            return False
-    return True
-
-
-def check_group_state(group_id, function_id):
-    disable = Disable.select().where(
-        Disable.group_id == group_id,
-        Disable.function_id == function_id
-    )
-    if disable.count():
-        return False
-    return True
-
-
 class FuncInterface:
     def __init__(self, function_id):
         self.function_id = function_id
 
-    @staticmethod
-    def priority(data: Message) -> bool:
-        pass
-
     @abc.abstractmethod
-    def check(self, data: Message) -> bool:
-        pass
+    def verify(self, data: Message) -> Union[int, float, bool]:
+        """
+        功能可行性校验，返回一个数值用于判断置信度，若直接返回布尔型，则会视作 0 或 1
+        """
+        return 0
 
     @abc.abstractmethod
     def action(self, data: Message) -> Chain:
+        """
+        功能的具体实现，返回 Chain 对象发送消息
+        """
+        pass
+
+    def confidence(self):
         pass
 
     @staticmethod
@@ -80,3 +69,37 @@ class FuncInterface:
             return action
 
         return decorator
+
+
+def check_global_state(function_id):
+    setting = func_setting().globalState
+    if hasattr(setting, function_id):
+        if not getattr(setting, function_id):
+            return False
+    return True
+
+
+def check_group_state(group_id, function_id):
+    disable = Disable.select().where(
+        Disable.group_id == group_id,
+        Disable.function_id == function_id
+    )
+    if disable.count():
+        return False
+    return True
+
+
+def sorted_candidate(data: Message, funcs: List[FuncInterface]):
+    candidate = {}
+
+    for item in funcs:
+        ratio = item.verify(data)
+        if ratio:
+            ratio = int(ratio) if type(ratio) is bool else ratio
+            ratio = 0 if not ratio else ratio
+
+            candidate[f'{ratio}-{item.function_id}'] = item
+
+    sort = sorted(candidate.items(), key=lambda n: n[0], reverse=True)
+
+    return [item[1] for item in sort]
