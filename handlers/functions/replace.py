@@ -102,7 +102,7 @@ class Replace(FuncInterface):
         ]
         if self.check_name(text):
             for file in files:
-                with open(f'resource/{file}', mode='r') as src:
+                with open(f'resource/{file}', mode='r', encoding='utf-8') as src:
                     content = src.read().strip('\n').split('\n')
                 for item in content:
                     item = item.replace(' 500 n', '')
