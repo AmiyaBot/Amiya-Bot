@@ -131,7 +131,7 @@ class Message:
             .orwhere(ReplaceText.is_global == 1)
 
         if replace:
-            for item in replace:
+            for item in reversed(list(replace)):
                 text = text.replace(item.target, item.origin)
 
         self.text = remove_punctuation(text)
