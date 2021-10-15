@@ -53,7 +53,7 @@ class Replace(FuncInterface):
 
             self.bot.send_message(Chain(data, quote=False).text('正在审核，博士请稍等...'))
 
-            if not self.check_buitin(target) and not self.check_name(origin):
+            if not self.check_buitin(target) or not self.check_name(origin):
                 return Chain(data).text(f'审核不通过！检测到存在破坏性规则')
 
             check = self.censor.text_censor(target)
