@@ -93,12 +93,12 @@ class SourceBank(DownloadTools):
         return self.source_bank[name]
 
     def check_update(self):
-        log.info('checking Github update...')
+        log.info('checking GameData update...')
 
         version = self.request_file(f'{self.github_source}/excel/data_version.txt')
 
         if version is False:
-            log.info(f'Github version file request failed.')
+            log.info(f'GameData version file request failed.')
             return False
 
         local_ver = 'None'
@@ -112,12 +112,12 @@ class SourceBank(DownloadTools):
             if latest_ver != local_ver:
                 with open(self.local_version_file, mode='w+') as v:
                     v.write(latest_ver)
-                log.info(f'new Github version detected: latest {latest_ver} --> local {local_ver}')
+                log.info(f'new GameData version detected: latest {latest_ver} --> local {local_ver}')
                 return True
 
-            log.info(f'Github version is up to date: {latest_ver}')
+            log.info(f'GameData version is up to date: {latest_ver}')
         else:
-            log.info(f'Github update check failed.')
+            log.info(f'GameData update check failed.')
 
         return False
 

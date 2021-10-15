@@ -23,7 +23,8 @@ class DataBase:
             Pool,
             PoolSpOperator,
             GachaConfig,
-            Intellect
+            Intellect,
+            ReplaceText
         )
         for item in tables:
             item.create_table()

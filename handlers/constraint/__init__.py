@@ -98,8 +98,14 @@ def sorted_candidate(data: Message, funcs: List[FuncInterface]):
             ratio = int(ratio) if type(ratio) is bool else ratio
             ratio = 0 if not ratio else ratio
 
-            candidate[f'{ratio}-{item.function_id}'] = item
+            if ratio not in candidate:
+                candidate[ratio] = []
 
-    sort = sorted(candidate.items(), key=lambda n: n[0], reverse=True)
+            candidate[ratio].append(item)
 
-    return [item[1] for item in sort]
+    sort: list = sorted(candidate.items(), key=lambda n: n[0], reverse=True)
+
+    if sort:
+        return sort[0][1]
+
+    return []

@@ -80,7 +80,7 @@ class Message(BaseModel):
     group_id = IntegerField(null=True)
     record = TextField(null=True)
     msg_type = TextField()
-    msg_time = IntegerField()
+    msg_time = BigIntegerField()
 
 
 class Function(BaseModel):
@@ -128,3 +128,14 @@ class Intellect(BaseModel):
     group_id = TextField()
     in_time = BigIntegerField()
     status = IntegerField()
+
+
+class ReplaceText(BaseModel):
+    replace_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
+    user_id = TextField()
+    group_id = TextField()
+    origin = TextField()
+    target = TextField()
+    in_time = BigIntegerField()
+    is_global = IntegerField(default=0)
+    is_active = IntegerField(default=1)

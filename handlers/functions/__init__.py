@@ -7,6 +7,7 @@ from .user.intellectAlarm import IntellectAlarm
 from .user.userInfo import UserInfo
 from .menu.menu import Menu
 from .weibo import Weibo
+from .replace import Replace
 from .arknights import Arknights
 
 from .nlp import natural_language_processing
@@ -22,6 +23,7 @@ class FunctionIndexes:
         self.functions = [
             Menu(),
             Weibo(),
+            Replace(bot),
             UserInfo(),
             IntellectAlarm()
         ]

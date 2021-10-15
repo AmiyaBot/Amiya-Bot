@@ -1,8 +1,7 @@
 import requests
-import traceback
 
 from core.util import log
-from aip import AipNlp, AipOcr
+from aip import AipNlp, AipOcr, AipContentCensor
 
 
 class Options:
@@ -24,16 +23,14 @@ class NaturalLanguage:
     def emotion(self, text):
         if self.enable is False:
             return False
-        try:
+
+        with log.except_error():
             result = self.client.emotion(text, {
                 'scene': 'talk'
             })
             if 'error_code' in result:
-                print(result['error_msg'])
                 return False
             return result
-        except UnicodeEncodeError:
-            return False
 
 
 class OpticalCharacterRecognition:
@@ -48,18 +45,19 @@ class OpticalCharacterRecognition:
     def basic_general(self, image):
         if self.enable is False:
             return False
-        options = {
-            'detect_direction': 'true'
-        }
-        result = self.client.basicGeneralUrl(image, options)
-        return result
+
+        with log.except_error():
+            options = {
+                'detect_direction': 'true'
+            }
+            result = self.client.basicGeneralUrl(image, options)
+            return result
 
     def basic_accurate(self, image):
         if self.enable is False:
             return False
 
-        # noinspection PyBroadException
-        try:
+        with log.except_error():
             stream = requests.get(image, stream=True)
             if stream.status_code == 200:
                 options = {
@@ -67,6 +65,23 @@ class OpticalCharacterRecognition:
                 }
                 result = self.client.basicAccurate(stream.content, options)
                 return result
-        except Exception:
-            log.error(traceback.format_exc())
+
+
+class ContentCensor:
+    def __init__(self, options: Options):
+        if options.enable:
+            self.client = AipContentCensor(str(options.appId), options.apiKey, options.secretKey)
+            self.enable = True
+        else:
+            self.client = None
+            self.enable = False
+
+    def text_censor(self, text):
+        if self.enable is False:
             return False
+
+        with log.except_error():
+            result = self.client.textCensorUserDefined(text)
+            if 'error_code' in result:
+                return False
+            return result

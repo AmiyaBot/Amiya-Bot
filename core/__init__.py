@@ -79,7 +79,7 @@ class AmiyaBot(WebSocket):
                 log.info(
                     f'{("[GID %s]" % data.group_id) if data.group_id else ""}'
                     f'[UID {data.user_id}][{data.nickname}] '
-                    f'{data.text_ori}',
+                    f'{data.text_origin}',
                     title='message'
                 )
 
