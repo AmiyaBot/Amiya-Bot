@@ -7,6 +7,7 @@ import datetime
 import traceback
 
 from typing import Union
+from contextlib import contextmanager
 
 from ..util.common import make_folder
 
@@ -99,6 +100,15 @@ def info(msg: str, title: str = 'info', alignment: bool = True, log: bool = True
 
 def error(msg: str, stdout=print):
     info(msg, title='error', alignment=False, stdout=stdout)
+
+
+@contextmanager
+def except_error():
+    # noinspection PyBroadException
+    try:
+        yield
+    except Exception:
+        error(traceback.format_exc())
 
 
 def capitalize(text: str):

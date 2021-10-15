@@ -3,11 +3,13 @@ import json
 import jieba
 import traceback
 
+from typing import List
+
 from core.util import log
 from core.util.config import config, keyword
 from core.util.common import text_to_pinyin, remove_punctuation, make_folder
 from core.util.numberTranslate import chinese_to_digits
-from core.database.models import User, GroupActive
+from core.database.models import User, GroupActive, ReplaceText
 
 
 class Message:
@@ -24,7 +26,7 @@ class Message:
         self.text = ''
         self.face = []
         self.image = ''
-        self.text_ori = ''
+        self.text_origin = ''
         self.text_digits = ''
         self.text_cut = ''
         self.text_cut_pinyin = ''
@@ -59,6 +61,13 @@ class Message:
         return jieba.lcut(
             text.lower().replace(' ', '')
         )
+
+    @staticmethod
+    def remove_name(text):
+        for item in keyword.name.good:
+            if text.startswith(item):
+                return text.replace(item, '', 1)
+        return text
 
     def __format_message(self):
         data = self.message
@@ -115,6 +124,16 @@ class Message:
                 if chain['type'] == 'Image':
                     self.image = chain['url'].strip()
 
+        self.text_origin = text
+
+        replace: List[ReplaceText] = ReplaceText.select() \
+            .where(ReplaceText.group_id == self.group_id, ReplaceText.is_active == 1) \
+            .orwhere(ReplaceText.is_global == 1)
+
+        if replace:
+            for item in replace:
+                text = text.replace(item.target, item.origin)
+
         self.text = remove_punctuation(text)
         self.text_digits = chinese_to_digits(self.text)
 
@@ -123,7 +142,6 @@ class Message:
         words = sorted(words, key=chars.index)
         # words = sorted(words, reverse=True, key=lambda i: len(i))
 
-        self.text_ori = text
         self.text_cut = words
         self.text_cut_pinyin = [text_to_pinyin(char) for char in words]
 

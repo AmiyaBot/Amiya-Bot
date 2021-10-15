@@ -13,7 +13,7 @@ def waiting_event(func):
                 return cls.arknights.Recruit.action(data)
 
             if 'Enemy' in wait:
-                r = re.search(r'(\d+)', data.text)
+                r = re.search(r'^(\d+)$', data.text)
                 if r:
                     index = int(r.group(1))
                     if index:

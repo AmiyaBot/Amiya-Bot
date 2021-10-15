@@ -46,6 +46,7 @@ class Chain:
 
     def text(self, text, trans_image=True):
         chain = []
+        text = text.strip('\n')
         r = re.findall(r'(\[face(\d+)])', text)
         if r:
             face = []

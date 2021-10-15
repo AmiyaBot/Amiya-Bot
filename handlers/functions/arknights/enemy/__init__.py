@@ -59,7 +59,7 @@ class Enemy(FuncInterface):
                     text = '博士，为您搜索到以下敌方单位：\n\n'
 
                     for index, item in enumerate(result):
-                        text += f'[{index + 1} {item}]\n'
+                        text += f'[{index + 1}] {item}\n'
 
                     text += '\n回复序号查询对应的敌方单位资料'
 
