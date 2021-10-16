@@ -24,7 +24,8 @@ class SourceBank(DownloadTools):
             'database': 'resource/database'
         }
 
-        self.github_source = 'https://cdn.jsdelivr.net/gh/Kengxxiao/ArknightsGameData@master/zh_CN/gamedata'
+        self.game_data_version_source = 'https://gitee.com/vivien8261/ArknightsGameData/raw/master/zh_CN/gamedata'
+        self.game_data_source = 'http://vivien8261.gitee.io/arknightsgamedata'
         self.resource_path = 'resource/data'
 
         self.pics_source = {
@@ -95,7 +96,7 @@ class SourceBank(DownloadTools):
     def check_update(self):
         log.info('checking GameData update...')
 
-        version = self.request_file(f'{self.github_source}/excel/data_version.txt')
+        version = self.request_file(f'{self.game_data_version_source}/excel/data_version.txt')
 
         if version is False:
             log.info(f'GameData version file request failed.')
@@ -127,7 +128,7 @@ class SourceBank(DownloadTools):
             use_cache = True
 
         for name, status in log.download_src(self.resource, 'gameData'):
-            url = '%s/%s.json' % (self.github_source, name)
+            url = '%s/%s.json' % (self.game_data_source, name)
             path = '%s/%s.json' % (self.resource_path, name.split('/')[-1])
 
             if use_cache and os.path.exists(path):

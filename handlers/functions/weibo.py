@@ -109,26 +109,30 @@ class Weibo(FuncInterface):
 
     def get_cards_list(self):
         session = requests.session()
-
-        # 获取微博 container id
-        result = session.get(self.url, headers=self.headers).json()
-
-        if 'tabsInfo' not in result['data']:
-            return []
-
-        tabs = result['data']['tabsInfo']['tabs']
-        container_id = ''
-        for tab in tabs:
-            if tab['tabKey'] == 'weibo':
-                container_id = tab['containerid']
-
-        # 获取正文列表
-        result = session.get(self.url + f'&containerid={container_id}', headers=self.headers).json()
-
         cards = []
-        for item in result['data']['cards']:
-            if item['card_type'] == 9 and 'isTop' not in item['mblog']:
-                cards.append(item)
+
+        try:
+            # 获取微博 container id
+            result = session.get(self.url, headers=self.headers).json()
+
+            if 'tabsInfo' not in result['data']:
+                return []
+
+            tabs = result['data']['tabsInfo']['tabs']
+            container_id = ''
+            for tab in tabs:
+                if tab['tabKey'] == 'weibo':
+                    container_id = tab['containerid']
+
+            # 获取正文列表
+            result = session.get(self.url + f'&containerid={container_id}', headers=self.headers).json()
+
+            for item in result['data']['cards']:
+                if item['card_type'] == 9 and 'isTop' not in item['mblog']:
+                    cards.append(item)
+
+        except requests.exceptions.SSLError:
+            pass
 
         return cards
 
