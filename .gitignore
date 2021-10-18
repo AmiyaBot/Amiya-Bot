@@ -5,6 +5,7 @@
 /view/
 /log/
 /resource/
+/configure/functionSetting.yaml
 
 .DS_Store
 *.pyc

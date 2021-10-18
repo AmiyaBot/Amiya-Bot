@@ -1,5 +1,3 @@
-import re
-
 from core import Message, Chain
 from core.database.models import Disable
 from core.util.common import word_in_sentence
@@ -72,12 +70,6 @@ class Menu(FuncInterface):
                     return text
                 else:
                     return '【%s】功能不可操作' % func['title']
-
-            if function_list[index]['desc'] == 'source_code':
-                return Function.source_code
-
-            for sub_item in function_list[index]['desc']:
-                text += '\n%s' % sub_item
 
             return text
 
