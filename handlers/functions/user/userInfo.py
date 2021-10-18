@@ -51,7 +51,7 @@ class UserInfo(FuncInterface):
     def verify(self, data: Message):
         for item in ['信赖', '关系', '好感', '我的信息', '个人信息']:
             if item in data.text:
-                return True
+                return 10
 
     @FuncInterface.is_used
     def action(self, data: Message):
