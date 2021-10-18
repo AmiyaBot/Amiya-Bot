@@ -99,7 +99,7 @@ class WebSocket(WebSocketClient):
         data.user_id = user_id
         data.group_id = group_id
 
-        reply = Chain(data)
+        reply = Chain(data, quote=False)
         yield reply
 
         self.send_message(reply, update=False)

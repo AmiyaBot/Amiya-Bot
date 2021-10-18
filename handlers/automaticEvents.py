@@ -98,7 +98,8 @@ class AutomaticEvents:
                     text = f'博士！博士！您的理智已经满{item.full_num}了，快点上线查看吧～'
                     with self.bot.send_custom_message(item.user_id, item.group_id, item.message_type) as reply:
                         reply: Chain
-                        reply.text(text)
+                        reply.at().text(text)
+
         except Exception as e:
             log.error(traceback.format_exc())
             self.bot.send_to_admin(f'理智提醒发生错误：{repr(e)}')

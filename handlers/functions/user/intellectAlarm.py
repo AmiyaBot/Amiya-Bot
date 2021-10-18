@@ -61,8 +61,6 @@ class IntellectAlarm(FuncInterface):
             '多少理智',
             '理智.*多少'
         ]
-        reply = Chain(data, quote=False, at=True)
-
         for item in r_list:
             r = re.search(re.compile(item), message)
             if r:
