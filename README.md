@@ -53,14 +53,14 @@ Amiya-Bot 的所有说明均可查阅本项目的 [wiki 文档](https://github.c
 
 #### 使用说明
 
-- [使用前说明](https://github.com/vivien8261/Amiya-Bot/wiki)
-- [功能菜单](https://github.com/vivien8261/Amiya-Bot/wiki/功能菜单)
+- [功能菜单](https://github.com/vivien8261/Amiya-Bot/blob/master/__doc__/doc/function.md)
 - [维护说明](https://github.com/vivien8261/Amiya-Bot/wiki/维护-Amiya-Bot)
 
 #### 部署说明
 
-- 代码部署请查看 [通过代码部署 Amiya](https://github.com/vivien8261/Amiya-Bot/wiki/通过代码部署-Amiya)
-- 安装包部署请查看 [通过安装包部署 Amiya](https://github.com/vivien8261/Amiya-Bot/wiki/通过安装包部署-Amiya)
+- [部署前说明](https://github.com/vivien8261/Amiya-Bot/wiki)
+- [通过代码部署 Amiya](https://github.com/vivien8261/Amiya-Bot/wiki/通过代码部署-Amiya)
+- [通过安装包部署 Amiya](https://github.com/vivien8261/Amiya-Bot/wiki/通过安装包部署-Amiya)
 
 ## 贡献
 
