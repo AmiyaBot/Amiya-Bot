@@ -4,7 +4,7 @@ import zipfile
 
 folder = 'C:\\Users\\Administrator\\Desktop\\pack'
 venv = 'venv/Lib/site-packages'
-version = '4.0.2'
+version = '4.0.4'
 
 
 def build():
@@ -46,7 +46,7 @@ def build():
                 path = target.replace(dist + '\\', '')
                 pack.write(target, path)
 
-    with open(f'{folder}.version', 'w+') as ver:
+    with open(f'{folder}/.version', 'w+') as ver:
         ver.write(version)
 
 
