@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Amiya-Bot</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/marked.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/markdown.css">
+</head>
+<body>
+<div id="app">
+    <div id="content" v-html="content"></div>
+</div>
+</body>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            content: ''
+        },
+        methods: {
+            getQueryVariable: function (variable) {
+                const query = window.location.search.substring(1)
+                const vars = query.split('&')
+
+                for (let item of vars) {
+                    const pair = item.split('=')
+                    if (pair[0] === variable) {
+                        return pair[1]
+                    }
+                }
+                return false
+            }
+        },
+        mounted() {
+            const file = this.getQueryVariable('file') || 'function'
+            $.get(`doc/${file}.md?cache=${new Date().getTime()}`, res => this.content = marked(res))
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,31 @@
+code {
+    padding: 0.1em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    color: #464646;
+    background-color: #e0f7fa;
+    border-radius: 3px;
+}
+
+blockquote {
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+    margin: 0;
+}
+
+a {
+    color: #3a8ee6;
+}
+
+h3 {
+    color: #ef6c00;
+}
+
+strong {
+    color: red;
+}
+
+ul {
+    padding-inline-start: 15px;
+}
