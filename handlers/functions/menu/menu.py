@@ -10,6 +10,7 @@ class Menu(FuncInterface):
     def __init__(self):
         super().__init__(function_id='functionQuery')
 
+    @FuncInterface.is_disable
     def verify(self, data: Message):
         for item in Function.query_key + Function.source_code_key + Function.function_titles:
             if item in data.text:
