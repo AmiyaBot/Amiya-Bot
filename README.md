@@ -6,12 +6,12 @@
 </div>
 <div>
     <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blueviolet">
+    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/vivien8261/Amiya-Bot?color=%23ff69b4">
+    <img alt="size" src="https://img.shields.io/github/repo-size/vivien8261/Amiya-Bot?color=%23ffeb3b">
 </div>
 <div>
     <img alt="license" src="https://img.shields.io/badge/license-GPL-green">
     <img alt="version" src="https://img.shields.io/badge/version-4.0-orange">
-    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/vivien8261/Amiya-Bot?color=%23ff69b4">
-    <img alt="size" src="https://img.shields.io/github/repo-size/vivien8261/Amiya-Bot?color=%23ffeb3b">
 </div>
 <br>
 

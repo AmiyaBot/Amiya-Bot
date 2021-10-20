@@ -146,7 +146,7 @@ class DataSource(SourceBank):
         for item in enemies_data:
             if item['Key'] in enemies_info:
                 info = enemies_info[item['Key']]
-                data[info['name']] = {
+                data[info['name'].lower()] = {
                     'info': info,
                     'data': item['Value']
                 }

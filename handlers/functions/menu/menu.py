@@ -13,7 +13,7 @@ class Menu(FuncInterface):
     def verify(self, data: Message):
         for item in Function.query_key + Function.source_code_key + Function.function_titles:
             if item in data.text:
-                return True
+                return 10
 
     @FuncInterface.is_used
     def action(self, data: Message):

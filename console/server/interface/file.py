@@ -34,14 +34,14 @@ def file_controller(app: Flask, bot: AmiyaBot, data: DataSource):
     @app.route('/getFunctionSetting', methods=['POST'])
     def get_function_setting():
         if os.path.exists(setting_path):
-            with open(setting_path, mode='r') as f:
+            with open(setting_path, mode='r', encoding='utf-8') as f:
                 return response(yaml.safe_load(f))
         return response(message='文件尚未创建')
 
     @app.route('/saveFunctionSetting', methods=['POST'])
     def save_function_setting():
         params = request.json
-        with open(setting_path, mode='w+') as f:
+        with open(setting_path, mode='w+', encoding='utf-8') as f:
             f.write(yaml.dump(params))
         return response(message='保存成功')
 

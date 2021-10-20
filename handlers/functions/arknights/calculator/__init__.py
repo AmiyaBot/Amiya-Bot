@@ -30,7 +30,7 @@ class Calculator(FuncInterface):
         for item in re_list:
             r = re.search(re.compile(item), data.text_digits)
             if r:
-                return True
+                return 10
 
     @FuncInterface.is_used
     def action(self, data: Message):
