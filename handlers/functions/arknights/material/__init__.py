@@ -19,7 +19,7 @@ class Material(FuncInterface):
     def verify(self, data: Message):
         for item in ['材料'] + self.material_data.material_list:
             if item in data.text:
-                return 10
+                return True
 
     @FuncInterface.is_used
     def action(self, data: Message):
