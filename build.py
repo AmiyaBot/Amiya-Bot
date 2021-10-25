@@ -4,7 +4,7 @@ import zipfile
 
 folder = 'C:\\Users\\Administrator\\Desktop\\pack'
 venv = 'venv/Lib/site-packages'
-version = '4.0.4'
+version = '4.0.7'
 
 
 def build():
