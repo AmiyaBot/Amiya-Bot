@@ -2,7 +2,7 @@ import re
 import time
 
 from core import AmiyaBot, Message, Chain
-from core.util.config import config
+from core.config import config
 from core.util.common import random_code, word_in_sentence
 from core.database.models import User, Admin, Message as MessageBase
 

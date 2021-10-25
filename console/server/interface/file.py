@@ -1,5 +1,4 @@
 import os
-import yaml
 import urllib.parse
 
 from flask import Flask, request, make_response
@@ -10,8 +9,6 @@ from core.util.common import make_folder
 from dataSource import DataSource
 
 from ..response import response
-
-setting_path = 'configure/functionSetting.yaml'
 
 
 def file_controller(app: Flask, bot: AmiyaBot, data: DataSource):
@@ -30,20 +27,6 @@ def file_controller(app: Flask, bot: AmiyaBot, data: DataSource):
         data.get_ignore(reset=True)
         bot.restart()
         return response(message='即将进入重启，重启需要一定时间，请耐心等待...')
-
-    @app.route('/getFunctionSetting', methods=['POST'])
-    def get_function_setting():
-        if os.path.exists(setting_path):
-            with open(setting_path, mode='r', encoding='utf-8') as f:
-                return response(yaml.safe_load(f))
-        return response(message='文件尚未创建')
-
-    @app.route('/saveFunctionSetting', methods=['POST'])
-    def save_function_setting():
-        params = request.json
-        with open(setting_path, mode='w+', encoding='utf-8') as f:
-            f.write(yaml.dump(params))
-        return response(message='保存成功')
 
     @app.route('/upload', methods=['POST'])
     def upload():

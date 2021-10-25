@@ -1,4 +1,4 @@
-from core.util.config import config
+from core.config import config
 from core.util import log
 from core import Message
 

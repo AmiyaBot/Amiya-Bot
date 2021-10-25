@@ -4,7 +4,7 @@ from typing import Union, List
 
 from functools import wraps
 from core import Message, Chain
-from core.util.config import func_setting
+from core.config import func_setting
 from core.database.models import Disable, Function
 
 

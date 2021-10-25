@@ -4,7 +4,7 @@ import urllib.parse
 
 from core.util import log
 from core.util.common import make_folder
-from core.util.config import nudge
+from core.config import nudge
 from core.network.httpRequests import DownloadTools
 from requests_html import HTMLSession, HTML
 

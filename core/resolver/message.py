@@ -6,7 +6,7 @@ import traceback
 from typing import List
 
 from core.util import log
-from core.util.config import config, keyword
+from core.config import config, keyword
 from core.util.common import text_to_pinyin, remove_punctuation, make_folder
 from core.util.numberTranslate import chinese_to_digits
 from core.database.models import User, GroupActive, ReplaceText

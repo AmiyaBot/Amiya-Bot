@@ -4,7 +4,7 @@ import json
 import shutil
 
 from core.util import log
-from core.util.config import files
+from core.config import files
 from core.util.common import make_folder
 from core.database.manager import exec_sql_file
 from core.network.httpRequests import DownloadTools

@@ -6,7 +6,7 @@ import traceback
 
 from core import Message, Chain
 from core.util import log
-from core.util.config import func_setting
+from core.config import func_setting
 from core.util.common import remove_xml_tag, make_folder
 from core.util.imageCreator import TextParser
 from handlers.constraint import FuncInterface

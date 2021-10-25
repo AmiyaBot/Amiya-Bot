@@ -1,6 +1,6 @@
 import time
 
-from core.util.config import func_setting
+from core.config import func_setting
 
 
 def calc_jade(end_date):

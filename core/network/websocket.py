@@ -8,7 +8,7 @@ from ws4py.client.threadedclient import WebSocketClient
 from core.resolver.messageChain import Chain, Message
 from core.asyncio.threadPool import ThreadPool
 from core.database.models import User, Message as MessageBase
-from core.util.config import config
+from core.config import config
 from core.util import log
 
 

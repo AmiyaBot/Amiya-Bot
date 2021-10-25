@@ -8,6 +8,7 @@ from .user import user_controller
 from .admin import admin_controller
 from .gacha import gacha_controller
 from .group import group_controller
+from .setting import setting_controller
 from .operator import operator_controller
 from .dashboard import dashboard_controller
 
@@ -26,5 +27,6 @@ class Intreface:
         admin_controller(app)
         gacha_controller(app)
         group_controller(app, bot)
+        setting_controller(app)
         operator_controller(app, data)
         dashboard_controller(app)

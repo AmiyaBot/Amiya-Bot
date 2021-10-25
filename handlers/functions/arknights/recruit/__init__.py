@@ -5,7 +5,7 @@ from itertools import combinations
 
 from core import Message, Chain, AmiyaBot
 from core.util import log
-from core.util.config import config
+from core.config import config
 from core.util.common import all_item_in_text, insert_empty, text_to_pinyin
 from core.util.baiduCloud import OpticalCharacterRecognition
 from core.database.manager import set_waiting

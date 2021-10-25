@@ -6,7 +6,7 @@ import traceback
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from core.database.models import Group, GroupActive, GroupSetting
-from core.util.config import config
+from core.config import config
 from core.util import log
 
 session_file = 'session.txt'

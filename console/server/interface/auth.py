@@ -5,7 +5,7 @@ from functools import wraps
 from flask import Flask, session, request
 
 from core import AmiyaBot
-from core.util.config import config
+from core.config import config
 from core.database.models import Admin, AdminTraceLog
 from handlers.automaticEvents import bot_maintain
 

@@ -9,7 +9,7 @@ from gevent import pywsgi
 
 from core import AmiyaBot
 from core.util import log
-from core.util.config import config
+from core.config import config
 
 from .interface import Intreface
 

@@ -11,8 +11,8 @@ from core.resolver.message import Message
 from core.resolver.messageChain import Chain
 from core.database.manager import DataBase, Group, GroupSetting, Message as MessageBase
 from core.util.common import TimeRecorder
-from core.util.config import config
 from core.util import log
+from core.config import config
 
 DataBase.create_base()
 
@@ -35,7 +35,6 @@ class AmiyaBot(WebSocket):
             if self.message_stack:
                 t = TimeRecorder()
                 MessageBase.insert_many(self.message_stack).execute()
-                log.info(f'messages saved, total {len(self.message_stack)}, used {t.rec(millisecond=True)}ms')
                 self.message_stack = []
             time.sleep(30)
 

@@ -3,7 +3,7 @@ import time
 from flask import Flask
 
 from core.database.models import Message, Function, User
-from core.util.config import config
+from core.config import config
 
 from ..response import response
 

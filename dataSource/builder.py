@@ -262,7 +262,7 @@ class Operator:
             skin_id = item['skinId']
             skin_name = ''
             skin_lvl = {
-                '1': '无精英',
+                '1': '初始',
                 '1+': '精英一',
                 '2': '精英二',
             }

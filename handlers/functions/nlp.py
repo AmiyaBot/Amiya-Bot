@@ -1,7 +1,7 @@
 import random
 
 from core import Message, Chain
-from core.util.config import config
+from core.config import config
 from core.util.baiduCloud import NaturalLanguage
 from handlers.constraint import FuncInterface
 

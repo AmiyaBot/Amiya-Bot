@@ -1,7 +1,7 @@
 import time
 
 from core import Message, Chain
-from core.util.config import reward
+from core.config import reward
 from core.database.models import User
 from handlers.constraint import FuncInterface
 

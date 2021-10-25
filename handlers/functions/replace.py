@@ -2,7 +2,7 @@ import re
 import time
 
 from core import Message, Chain, AmiyaBot
-from core.util.config import config, keyword
+from core.config import config, keyword
 from core.util.baiduCloud import ContentCensor
 from core.database.models import ReplaceText
 from handlers.constraint import FuncInterface

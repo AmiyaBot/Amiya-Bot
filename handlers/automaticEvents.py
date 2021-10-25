@@ -5,7 +5,7 @@ import traceback
 from core import AmiyaBot, Chain
 from core.util import log
 from core.util.common import insert_zero, TimeRecorder
-from core.util.config import func_setting
+from core.config import func_setting
 from core.util.imageCreator import temp_dir
 from core.database.models import User, Upload, Message, Intellect, GroupSetting
 

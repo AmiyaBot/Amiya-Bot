@@ -2,7 +2,7 @@ import os
 import random
 
 from core import Chain, Message, AmiyaBot
-from core.util.config import nudge
+from core.config import nudge
 from dataSource.wiki import Wiki
 from handlers.constraint import FuncInterface
 

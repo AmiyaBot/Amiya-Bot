@@ -2,7 +2,7 @@ import os
 import asyncio
 
 from graiax import silkcoder
-from core.util.config import config
+from core.config import config
 from core.util.common import make_folder, text_to_pinyin
 from core.network.httpRequests import MiraiHttp
 from core.database.models import Upload

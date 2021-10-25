@@ -3,7 +3,7 @@ import re
 from core.resolver.message import Message
 from core.resolver.lib.imageManager import ImageManager
 from core.resolver.lib.voiceManager import VoiceManager
-from core.util.config import reward, config
+from core.config import reward, config
 from core.util.imageCreator import create_image
 
 Image = ImageManager()
