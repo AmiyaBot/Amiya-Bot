@@ -42,13 +42,9 @@ class Enemy(FuncInterface):
     @FuncInterface.is_used
     def action(self, data: Message):
 
-        message = data.text
+        message = data.text_origin
         words = data.text_cut
         reply = Chain(data)
-
-        for item in words:
-            if item in self.keywords:
-                return reply.text_image(*self.find_enemy(item))
 
         for reg in ['敌人(.*)', '敌方(.*)', '(.*)敌人', '(.*)敌方']:
             r = re.search(re.compile(reg), message)
@@ -56,6 +52,9 @@ class Enemy(FuncInterface):
                 enemy_name = r.group(1)
                 result, rate = find_similar_list(enemy_name, self.keywords, _random=False)
                 if result:
+                    if len(result) == 1:
+                        return reply.text_image(*self.find_enemy(result[0]))
+
                     text = '博士，为您搜索到以下敌方单位：\n\n'
 
                     for index, item in enumerate(result):
@@ -68,6 +67,10 @@ class Enemy(FuncInterface):
                     return reply.text(text)
                 else:
                     return reply.text('博士，没有找到敌方单位%s的资料呢 >.<' % enemy_name)
+
+        for item in words:
+            if item in self.keywords:
+                return reply.text_image(*self.find_enemy(item))
 
     def find_enemy_by_index(self, data: Message, index, enemy_name):
         result, rate = find_similar_list(enemy_name, self.keywords, _random=False)
