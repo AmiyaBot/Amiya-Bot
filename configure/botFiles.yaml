@@ -1,6 +1,6 @@
 # 资源文件配置
 files:
-    # 被呼叫/戳一戳时的表情包文件
+    # 被呼叫/戳一戳时的表情包文件，如果你不清楚如何填写相对目录，请直接填写文件的绝对目录
     face:
         - images/face/face1.png
         - images/face/face2.png
