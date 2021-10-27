@@ -1,7 +1,7 @@
 from flask import Flask, request
 
 from core.database.models import Pool, PoolSpOperator
-from core.database.manager import select_for_paginate, model_to_dict
+from core.database.manager import select_for_paginate, model_to_dict, SearchParams
 
 from ..response import response
 
@@ -10,9 +10,13 @@ def gacha_controller(app: Flask):
     @app.route('/pool/getPoolsByPages', methods=['POST'])
     def get_pools_by_pages():
         params = request.json
+        search = SearchParams(
+            params['search'],
+            contains=params['search'].keys()
+        )
 
         data, count = select_for_paginate(Pool,
-                                          params['search'],
+                                          search,
                                           order_by=(Pool.pool_id.desc(),),
                                           page=params['page'],
                                           page_size=params['pageSize'])

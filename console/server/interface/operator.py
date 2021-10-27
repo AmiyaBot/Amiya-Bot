@@ -1,7 +1,7 @@
 from flask import Flask, request
 
 from core.database.models import GachaConfig
-from core.database.manager import select_for_paginate
+from core.database.manager import select_for_paginate, SearchParams
 from dataSource import DataSource, Operator
 
 from ..response import response
@@ -29,20 +29,14 @@ def operator_controller(app: Flask, data_source: DataSource):
     @app.route('/operator/getOperatorGachaConfig', methods=['POST'])
     def get_operator_gacha_config():
         params = request.json
-        equal = {}
-        contains = {}
-
-        if params['search']:
-            equal = {
-                'operator_type': params['search']['operator_type']
-            }
-            contains = {
-                'operator_name': params['search']['operator_name']
-            }
+        search = SearchParams(
+            params['search'],
+            equal=['operator_type'],
+            contains=['operator_name']
+        )
 
         data, count = select_for_paginate(GachaConfig,
-                                          equal,
-                                          contains,
+                                          search,
                                           order_by=(GachaConfig.conf_id.desc(),),
                                           page=params['page'],
                                           page_size=params['pageSize'])

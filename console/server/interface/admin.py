@@ -2,7 +2,7 @@ from flask import Flask, request
 
 from core.util.common import random_code
 from core.database.models import Admin, AdminTraceLog
-from core.database.manager import select_for_paginate
+from core.database.manager import select_for_paginate, SearchParams
 
 from ..response import response
 from .auth import super_user
@@ -12,20 +12,14 @@ def admin_controller(app: Flask):
     @app.route('/admin/getAdminsByPages', methods=['POST'])
     def get_admins_by_pages():
         params = request.json
-        equal = {}
-        contains = {}
-
-        if params['search']:
-            equal = {
-                'active': params['search']['active']
-            }
-            contains = {
-                'user_id': params['search']['user_id']
-            }
+        search = SearchParams(
+            params['search'],
+            equal=['active'],
+            contains=['user_id']
+        )
 
         data, count = select_for_paginate(Admin,
-                                          equal,
-                                          contains,
+                                          search,
                                           page=params['page'],
                                           page_size=params['pageSize'])
 
@@ -38,18 +32,13 @@ def admin_controller(app: Flask):
     @app.route('/admin/getAdminTraceByPages', methods=['POST'])
     def get_admin_trace_by_pages():
         params = request.json
-        equal = {}
-        contains = {}
-
-        if params['search']:
-            contains = {
-                'user_id': params['search']['user_id'],
-                'interface': params['search']['interface']
-            }
+        search = SearchParams(
+            params['search'],
+            contains=['user_id', 'interface']
+        )
 
         data, count = select_for_paginate(AdminTraceLog,
-                                          equal,
-                                          contains,
+                                          search,
                                           order_by=(AdminTraceLog.time.desc(),),
                                           page=params['page'],
                                           page_size=params['pageSize'])

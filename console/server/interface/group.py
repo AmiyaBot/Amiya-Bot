@@ -5,7 +5,7 @@ from flask import Flask, session, request
 
 from core import AmiyaBot
 from core.database.models import sqlite_db, Group, GroupActive, GroupSetting, GroupNotice
-from core.database.manager import select_for_paginate
+from core.database.manager import select_for_paginate, SearchParams
 
 from ..response import response
 from .auth import super_user
@@ -130,16 +130,13 @@ def group_controller(app: Flask, bot: AmiyaBot):
     @app.route('/group/getGroupNoticeByPages', methods=['POST'])
     def get_group_notice_by_pages():
         params = request.json
-        contains = {}
-
-        if params['search']:
-            contains = {
-                'content': params['search']['content'],
-                'send_user': params['search']['send_user']
-            }
+        search = SearchParams(
+            params['search'],
+            contains=['content', 'send_user']
+        )
 
         data, count = select_for_paginate(GroupNotice,
-                                          contains=contains,
+                                          search,
                                           page=params['page'],
                                           page_size=params['pageSize'])
 

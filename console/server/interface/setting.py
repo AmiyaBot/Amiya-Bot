@@ -4,7 +4,7 @@ import yaml
 from flask import Flask, request
 from core.config import func_setting_path
 from core.database.models import ReplaceText
-from core.database.manager import select_for_paginate
+from core.database.manager import select_for_paginate, SearchParams
 
 from ..response import response
 
@@ -28,16 +28,14 @@ def setting_controller(app: Flask):
     @app.route('/setting/getReplaceTextByPages', methods=['POST'])
     def get_replace_text_by_pages():
         params = request.json
-        equal = {}
-        contains = {}
-
-        if params['search']:
-            equal = {}
-            contains = {}
+        search = SearchParams(
+            params['search'],
+            equal=['is_global', 'is_active'],
+            contains=['user_id', 'group_id', 'origin', 'target']
+        )
 
         data, count = select_for_paginate(ReplaceText,
-                                          equal,
-                                          contains,
+                                          search,
                                           page=params['page'],
                                           page_size=params['pageSize'])
 
@@ -54,3 +52,18 @@ def setting_controller(app: Flask):
             .execute()
 
         return response(message='设置成功')
+
+    @app.route('/setting/deleteReplaceText', methods=['POST'])
+    def delete_replace_text():
+        params = request.json
+        replace_id = params['replace_id']
+
+        if 'group_all' in params:
+            ReplaceText.delete().where(ReplaceText.group_id == params['group_id'],
+                                       ReplaceText.origin == params['origin']).execute()
+        elif 'all' in params:
+            ReplaceText.delete().where(ReplaceText.origin == params['origin']).execute()
+        else:
+            ReplaceText.delete().where(ReplaceText.replace_id == replace_id).execute()
+
+        return response(message='删除成功')

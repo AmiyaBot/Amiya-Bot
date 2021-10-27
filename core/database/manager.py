@@ -30,6 +30,23 @@ class DataBase:
             item.create_table()
 
 
+class SearchParams:
+    def __init__(self, params: dict, equal: list = None, contains: list = None):
+        self.equal = {}
+        self.contains = {}
+
+        if params:
+            if equal:
+                for item in equal:
+                    if item in params:
+                        self.equal[item] = params[item]
+
+            if contains:
+                for item in contains:
+                    if item in params:
+                        self.contains[item] = params[item]
+
+
 def set_waiting(data: MiraiMessage, information=''):
     User.update(waiting=information).where(User.user_id == data.user_id).execute()
 
@@ -47,8 +64,7 @@ def exec_sql_file(file):
 
 
 def select_for_paginate(model,
-                        equal: dict = None,
-                        contains: dict = None,
+                        search: SearchParams = None,
                         join: dict = None,
                         order_by: tuple = None,
                         page: int = 1,
@@ -57,18 +73,20 @@ def select_for_paginate(model,
 
     data = model.select()
     where = []
-    if equal:
-        for name, value in equal.items():
-            if hasattr(model, name) and value != '':
-                where.append(
-                    getattr(model, name) == value
-                )
-    if contains:
-        for name, value in contains.items():
-            if hasattr(model, name) and value != '':
-                where.append(
-                    getattr(model, name).contains(value)
-                )
+
+    if search:
+        if search.equal:
+            for name, value in search.equal.items():
+                if hasattr(model, name) and value != '':
+                    where.append(
+                        getattr(model, name) == value
+                    )
+        if search.contains:
+            for name, value in search.contains.items():
+                if hasattr(model, name) and value != '':
+                    where.append(
+                        getattr(model, name).contains(value)
+                    )
 
     if where:
         data = data.where(*tuple(where))
