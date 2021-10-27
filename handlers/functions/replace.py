@@ -92,6 +92,10 @@ class Replace(FuncInterface):
                 return Chain(data).text(f'审核通过！别名识别 [{origin}] > [{target}] 已在本群生效')
 
     def check_buitin(self, text):
+
+        if text == '别名':
+            return False
+
         files = [
             'enemies.txt',
             'materials.txt',
