@@ -72,7 +72,7 @@ class Replace(FuncInterface):
                     for item in check['data']:
                         text += item['msg'] + '\n'
 
-                return Chain(data).text(f'审核未通过！请等待管理员确认批准\n{text}')
+                return Chain(data).text(f'别名已成功提交，请等待管理员确认批准！\n{text}')
 
             if check['conclusionType'] == 2:
                 text = '审核不通过！检测到以下违规内容：\n'
