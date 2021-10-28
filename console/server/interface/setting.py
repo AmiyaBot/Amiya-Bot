@@ -58,9 +58,14 @@ def setting_controller(app: Flask):
         params = request.json
         replace_id = params['replace_id']
 
-        if 'group_all' in params:
+        if 'group_origin_all' in params:
             ReplaceText.delete().where(ReplaceText.group_id == params['group_id'],
                                        ReplaceText.origin == params['origin']).execute()
+        elif 'user_all' in params:
+            ReplaceText.delete().where(ReplaceText.group_id == params['group_id'],
+                                       ReplaceText.user_id == params['user_id']).execute()
+        elif 'group_all' in params:
+            ReplaceText.delete().where(ReplaceText.group_id == params['group_id']).execute()
         elif 'all' in params:
             ReplaceText.delete().where(ReplaceText.origin == params['origin']).execute()
         else:

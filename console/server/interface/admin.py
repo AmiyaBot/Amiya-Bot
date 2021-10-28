@@ -30,6 +30,7 @@ def admin_controller(app: Flask):
         return response({'count': count, 'data': data})
 
     @app.route('/admin/getAdminTraceByPages', methods=['POST'])
+    @super_user
     def get_admin_trace_by_pages():
         params = request.json
         search = SearchParams(
@@ -44,6 +45,12 @@ def admin_controller(app: Flask):
                                           page_size=params['pageSize'])
 
         return response({'count': count, 'data': data})
+
+    @app.route('/admin/deleteAdminTrace', methods=['POST'])
+    @super_user
+    def delete_admin_trace():
+        AdminTraceLog.delete().execute()
+        return response(message='删除成功')
 
     @app.route('/admin/setActive', methods=['POST'])
     @super_user
