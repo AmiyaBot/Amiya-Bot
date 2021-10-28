@@ -8,7 +8,7 @@ import subprocess
 from core.network.httpRequests import DownloadTools
 from core.util import log
 
-server = 'http://49.232.166.115:18080/resource/dist'
+server = 'http://amiya.net.cn:18080/resource/dist'
 
 
 def check_upgrade():
@@ -36,7 +36,9 @@ def check_upgrade():
         with open(new_pack, mode='wb+') as f:
             f.write(pack)
         pack = zipfile.ZipFile(new_pack)
-        pack.extract(exe_name)
+        for pack_file in pack.namelist():
+            if os.path.exists(pack_file) is False:
+                pack.extract(pack_file)
     else:
         log.info(f'new version download fail.')
         return False
