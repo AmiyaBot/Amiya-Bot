@@ -30,7 +30,7 @@ def check_func_setting():
                 else:
                     if type(default[key]) is dict:
                         check_key(curr[key], default[key])
-                    elif isinstance(curr[key], type(default[key])):
+                    elif not isinstance(curr[key], type(default[key])):
                         curr[key] = default[key]
 
         check_key(curr_setting, func_setting_default)
@@ -44,4 +44,4 @@ config = read_yaml('config.yaml')
 keyword = read_yaml('configure/keyword.yaml')
 reward = read_yaml('configure/reward.yaml')
 nudge = read_yaml('configure/nudge.yaml').nudge
-files = read_yaml('configure/botFiles.yaml').files
+files = read_yaml('configure/downloadFiles.yaml').files

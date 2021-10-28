@@ -2,12 +2,11 @@ import os
 import shutil
 import zipfile
 
-folder = 'C:\\Users\\Administrator\\Desktop\\pack'
+folder = '../Amiya-Bot-resource/resource/dist'
 venv = 'venv/Lib/site-packages'
-version = '4.0.7'
 
 
-def build():
+def build(version):
     dist = f'{folder}/dist'
 
     if os.path.exists(dist):
@@ -51,4 +50,4 @@ def build():
 
 
 if __name__ == '__main__':
-    build()
+    build(input('version: '))

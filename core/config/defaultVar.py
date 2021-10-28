@@ -22,7 +22,7 @@ func_setting_default = {
     'weiboSetting': {
         'checkRate': 30,
         'weiboAutoPush': False,
-        'weiboSendGIF': True
+        'weiboSendGIF': False
     }
 }
 func_setting_path = 'configure/functionSetting.yaml'
