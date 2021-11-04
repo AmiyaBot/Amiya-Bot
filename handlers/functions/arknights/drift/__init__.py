@@ -43,6 +43,7 @@ class Drift(FuncInterface):
                     return reply.text('阿米娅搜索了半天，也没有找到更多的漂流瓶……')
 
                 bottle = bottle_list[0]
+                # msg是完整的消息原文，例如'阿米娅扔瓶子 陌生人你好'。输出的时候再处理下把内容头去掉
                 content = bottle.msg
                 for bottle_key in bottle_keywords:
                     bottle_pos = content.find(bottle_key)
@@ -54,7 +55,6 @@ class Drift(FuncInterface):
                     if throw_pos != -1:
                         throw_pos += len(throw_key)
                         break
-                print(content)
                 content = content[max(bottle_pos, throw_pos):]
                 if content and content[0] in [':', '：', ' ', ',', '，', '、', '.', '。']:
                     content = content[1:]
@@ -65,5 +65,4 @@ class Drift(FuncInterface):
                     get_time=time.time(),
                     is_picked=True).where(
                         DriftBottle.drift_id == bottle.drift_id).execute()
-                print(content)
                 return reply.text('阿米娅拾到了一只漂流瓶，里面写着：').text(content)
