@@ -32,7 +32,7 @@ class Drift(FuncInterface):
                                    group_id=data.group_id,
                                    msg=data.text_origin,
                                    msg_time=time.time()).execute()
-                return reply.text('阿米娅已经帮博士把漂流瓶已经寄出啦！期待有缘人能捡到它~')
+                return reply.text('阿米娅已经帮博士将漂流瓶寄出啦！期待有缘人能拾到它~')
 
         for item in get_keywords:
             if item in data.text:
@@ -40,7 +40,7 @@ class Drift(FuncInterface):
                     DriftBottle.is_picked == False,
                     DriftBottle.is_banned == False).order_by('RANDOM() limit 1')
                 if not bottle_list:
-                    return reply.text('阿米娅搜索了半天，也没有找到更多的漂流瓶……')
+                    return reply.text('阿米娅搜寻了半天，也没有找到更多的漂流瓶……')
 
                 bottle = bottle_list[0]
                 # msg是完整的消息原文，例如'阿米娅扔瓶子 陌生人你好'。输出的时候再处理下把内容头去掉
