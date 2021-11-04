@@ -56,7 +56,7 @@ class Drift(FuncInterface):
                         break
                 print(content)
                 content = content[max(bottle_pos, throw_pos):]
-                if content and content[0] in [':', '：', ' ']:
+                if content and content[0] in [':', '：', ' ', ',', '，', '、', '.', '。']:
                     content = content[1:]
 
                 DriftBottle.update(
