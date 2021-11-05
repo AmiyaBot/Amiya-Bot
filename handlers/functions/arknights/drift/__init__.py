@@ -5,6 +5,7 @@ from core.util.common import word_in_sentence
 from dataSource import DataSource
 from handlers.constraint import FuncInterface
 from core.database.models import DriftBottle
+from peewee import fn
 
 bottle_keywords = ['瓶子', '漂流瓶']
 throw_keywords = ['扔', '丢']
@@ -38,7 +39,7 @@ class Drift(FuncInterface):
             if item in data.text:
                 bottle_list = DriftBottle.select().where(
                     DriftBottle.is_picked == False,
-                    DriftBottle.is_banned == False).order_by('RANDOM() limit 1')
+                    DriftBottle.is_banned == False).order_by(fn.Random()).limit(1)
                 if not bottle_list:
                     return reply.text('阿米娅搜寻了半天，也没有找到更多的漂流瓶……')
 
