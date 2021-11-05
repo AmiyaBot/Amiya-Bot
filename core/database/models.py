@@ -139,3 +139,15 @@ class ReplaceText(BaseModel):
     in_time = BigIntegerField()
     is_global = IntegerField(default=0)
     is_active = IntegerField(default=1)
+
+class DriftBottle(BaseModel):
+    drift_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
+    user_id = IntegerField()
+    group_id = IntegerField()
+    msg = TextField()
+    msg_time = BigIntegerField()
+    is_picked = BooleanField(default=False)
+    is_banned = BooleanField(default=False)
+    get_user_id = IntegerField(default=0)
+    get_group_id = IntegerField(default=0)
+    get_time = BigIntegerField(default=0)

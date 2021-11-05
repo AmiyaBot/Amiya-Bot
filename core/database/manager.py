@@ -15,6 +15,7 @@ class DataBase:
             Group,
             GroupActive,
             GroupSetting,
+            DriftBottle,
             GroupNotice,
             Upload,
             Message,
