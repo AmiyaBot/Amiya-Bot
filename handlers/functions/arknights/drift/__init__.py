@@ -6,6 +6,7 @@ from dataSource import DataSource
 from handlers.constraint import FuncInterface
 from core.database.models import DriftBottle
 from peewee import fn
+import json
 
 bottle_keywords = ['瓶子', '漂流瓶']
 throw_keywords = ['扔', '丢']
@@ -31,7 +32,7 @@ class Drift(FuncInterface):
             if item in data.text:
                 DriftBottle.insert(user_id=data.user_id,
                                    group_id=data.group_id,
-                                   msg=data.text_origin,
+                                   msg=json.dumps(data.raw_chain),
                                    msg_time=time.time()).execute()
                 return reply.text('阿米娅已经帮博士将漂流瓶寄出啦！期待有缘人能拾到它~')
 
@@ -44,21 +45,30 @@ class Drift(FuncInterface):
                     return reply.text('阿米娅搜寻了半天，也没有找到更多的漂流瓶……')
 
                 bottle = bottle_list[0]
-                # msg是完整的消息原文，例如'阿米娅扔瓶子 陌生人你好'。输出的时候再处理下把内容头去掉
-                content = bottle.msg
-                for bottle_key in bottle_keywords:
-                    bottle_pos = content.find(bottle_key)
-                    if bottle_pos != -1:
-                        bottle_pos += len(bottle_key)
+                # msg是完整的消息原文，raw_chain
+                chain = json.loads(bottle.msg)
+                # 删掉'兔兔扔瓶子'的内容
+                start_index = 0
+                for item in chain:
+                    if item["type"] == 'Plain':
+                        content = item["text"]
+                        for bottle_key in bottle_keywords:
+                            bottle_pos = content.find(bottle_key)
+                            if bottle_pos != -1:
+                                bottle_pos += len(bottle_key)
+                                break
+                        for throw_key in throw_keywords:
+                            throw_pos = content.find(throw_key)
+                            if throw_pos != -1:
+                                throw_pos += len(throw_key)
+                                break
+                        content = content[max(bottle_pos, throw_pos):]
+                        if content and content[0] in [':', '：', ' ', ',', '，', '、', '.', '。']:
+                            content = content[1:]
+                        item["text"] = content
                         break
-                for throw_key in throw_keywords:
-                    throw_pos = content.find(throw_key)
-                    if throw_pos != -1:
-                        throw_pos += len(throw_key)
-                        break
-                content = content[max(bottle_pos, throw_pos):]
-                if content and content[0] in [':', '：', ' ', ',', '，', '、', '.', '。']:
-                    content = content[1:]
+                    start_index += 1
+                chain = chain[start_index:]
 
                 DriftBottle.update(
                     get_user_id=data.user_id,
@@ -66,4 +76,6 @@ class Drift(FuncInterface):
                     get_time=time.time(),
                     is_picked=True).where(
                         DriftBottle.drift_id == bottle.drift_id).execute()
-                return reply.text('阿米娅拾到了一只漂流瓶，里面写着：').text(content)
+                reply.text('阿米娅拾到了一只漂流瓶，里面写着：')
+                reply.chain += chain
+                return reply

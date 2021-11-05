@@ -50,6 +50,7 @@ class Message:
         self.group_id = ''
         self.nickname = ''
         self.event_name = ''
+        self.raw_chain = ''
 
         self.message = message
 
@@ -105,6 +106,7 @@ class Message:
 
     def __trans_text(self, text='', message_chain=None):
         if message_chain:
+            self.raw_chain = message_chain[1:]
             for chain in message_chain:
                 if chain['type'] == 'Source':
                     self.message_id = chain['id']
