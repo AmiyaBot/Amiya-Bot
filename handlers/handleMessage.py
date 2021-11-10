@@ -108,7 +108,7 @@ class Handlers(FunctionIndexes):
         if data.is_black:
             return False
 
-        if data.user_info.user_mood <= 0:
+        if data.user_info.user_mood <= 0 and not word_in_sentence(data.text_origin, ['我错了', '对不起', '抱歉']):
             return False
 
         speed = MessageBase.select().where(

@@ -138,7 +138,11 @@ class WebSocket(WebSocketClient):
         )
 
     def update_record(self, reply: Chain):
-        user_mood = reply.data.user_info.user_mood
+
+        user: User = reply.data.user_info if hasattr(reply.data, 'user_info') else User.get_or_none(
+            user_id=reply.data.user_id)
+
+        user_mood = user.user_mood
         user_mood += reply.feeling
         if user_mood <= 0:
             user_mood = 0
