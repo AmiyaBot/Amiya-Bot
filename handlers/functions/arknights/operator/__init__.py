@@ -181,8 +181,8 @@ class Operator(FuncInterface):
                 result = '博士，要告诉阿米娅语音的详细标题哦'
 
             else:
-                if info.name == '阿米娅' and not info_word:
-                    return False
+                # if info.name == '阿米娅' and not info_word:
+                #     return False
                 result = self.operator_info.get_detail_info(info)
 
         if result:
@@ -234,9 +234,9 @@ class Operator(FuncInterface):
                             elif item in source:
                                 value = source[item] if type(source) is dict else item
 
-                                # 这里要先忽略自己，否则所有搜索都可能变成自己……
-                                if value == '阿米娅':
-                                    continue
+                                # 这里要先忽略自己，否则所有搜索都可能变成自己
+                                # if value == '阿米娅':
+                                #     continue
 
                                 setattr(info, name, value)
                                 raise LoopBreak(index, name)

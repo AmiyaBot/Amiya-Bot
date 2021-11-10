@@ -102,11 +102,13 @@ class Handlers(FunctionIndexes):
             if str(data.group_id) != str(config.account.group.groupId):
                 return False
 
-        for item in ['Q群管家', '小冰']:
-            if item in data.text:
-                return False
+        if word_in_sentence(data.text, ['Q群管家', '小冰']):
+            return False
 
         if data.is_black:
+            return False
+
+        if data.user_info.user_mood <= 0:
             return False
 
         speed = MessageBase.select().where(

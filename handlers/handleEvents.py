@@ -22,7 +22,7 @@ class EventHandlers:
             data.group_id = message['subject']['id']
 
             user: User = User.get_or_none(user_id=data.user_id)
-            if user and user.black == 1:
+            if user and (user.black == 1 or user.user_mood <= 0):
                 return False
 
             group: GroupActive = GroupActive.get_or_none(group_id=data.group_id)

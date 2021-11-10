@@ -138,6 +138,13 @@ class WebSocket(WebSocketClient):
         )
 
     def update_record(self, reply: Chain):
+        user_mood = reply.data.user_info.user_mood
+        user_mood += reply.feeling
+        if user_mood <= 0:
+            user_mood = 0
+        if user_mood >= 15:
+            user_mood = 15
+
         MessageBase.create(
             user_id=self.account,
             target_id=reply.data.user_id,
@@ -147,6 +154,7 @@ class WebSocket(WebSocketClient):
             msg_time=int(time.time())
         )
         User.update(
+            user_mood=user_mood,
             user_feeling=User.user_feeling + reply.feeling,
             message_num=User.message_num + 1
         ).where(User.user_id == reply.data.user_id).execute()

@@ -139,6 +139,9 @@ class MiraiHttp:
         return []
 
     def send_nudge(self, user_id, group_id):
+        if config.setting.offline:
+            return False
+
         self.__post('sendNudge', {
             'sessionKey': self.session,
             'target': user_id,
