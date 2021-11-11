@@ -142,12 +142,19 @@ class WebSocket(WebSocketClient):
         user: User = reply.data.user_info if hasattr(reply.data, 'user_info') else User.get_or_none(
             user_id=reply.data.user_id)
 
-        user_mood = user.user_mood
-        user_mood += reply.feeling
-        if user_mood <= 0:
-            user_mood = 0
-        if user_mood >= 15:
-            user_mood = 15
+        if user is not None:
+            user_mood = user.user_mood
+            user_mood += reply.feeling
+            if user_mood <= 0:
+                user_mood = 0
+            if user_mood >= 15:
+                user_mood = 15
+
+            User.update(
+                user_mood=user_mood,
+                user_feeling=User.user_feeling + reply.feeling,
+                message_num=User.message_num + 1
+            ).where(User.user_id == reply.data.user_id).execute()
 
         MessageBase.create(
             user_id=self.account,
@@ -157,8 +164,3 @@ class WebSocket(WebSocketClient):
             msg_type=reply.data.type,
             msg_time=int(time.time())
         )
-        User.update(
-            user_mood=user_mood,
-            user_feeling=User.user_feeling + reply.feeling,
-            message_num=User.message_num + 1
-        ).where(User.user_id == reply.data.user_id).execute()
