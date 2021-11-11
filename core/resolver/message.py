@@ -157,10 +157,10 @@ class Message:
                 break
 
         for item in keyword.name.good:
-            if text.startswith(item):
+            if not self.is_call and text.startswith(item):
                 self.is_call = True
 
-            if item != '阿米娅':
+            if item != '阿米娅' or (item == '阿米娅' and text.startswith(item)):
                 text = text.replace(item, '')
 
         text = re.sub(r'\W', '', text).strip()
