@@ -102,8 +102,6 @@ class Message:
 
         self.__trans_text(message_chain=data['messageChain'])
 
-        self.__check_call()
-
     def __trans_text(self, text='', message_chain=None):
         if message_chain:
             self.raw_chain = message_chain[1:]
@@ -126,7 +124,7 @@ class Message:
                 if chain['type'] == 'Image':
                     self.image = chain['url'].strip()
 
-        self.text_origin = text
+        self.text_origin = text = self.__check_call(text)
 
         replace: List[ReplaceText] = ReplaceText.select() \
             .where(ReplaceText.group_id == self.group_id, ReplaceText.is_active == 1) \
@@ -147,9 +145,7 @@ class Message:
         self.text_cut = words
         self.text_cut_pinyin = [text_to_pinyin(char) for char in words]
 
-    def __check_call(self):
-        text = self.text
-
+    def __check_call(self, text):
         for item in keyword.name.bad:
             if text.startswith(item):
                 self.bad_name = item
@@ -161,12 +157,14 @@ class Message:
                 self.is_call = True
 
             if item != '阿米娅' or (item == '阿米娅' and text.startswith(item)):
-                text = text.replace(item, '')
+                text = text.replace(item, '', 1)
 
         text = re.sub(r'\W', '', text).strip()
 
         if text == '' and (self.is_at or self.is_call):
             self.is_only_call = True
+
+        return text
 
     def __save_events_file(self):
         # noinspection PyBroadException
