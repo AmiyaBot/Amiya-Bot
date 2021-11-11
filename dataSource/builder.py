@@ -14,14 +14,16 @@ attr_dict = {
     'cost': '部署费用',
     'blockCnt': '阻挡数',
     'baseAttackTime': '攻击间隔',
-    'respawnTime': '再部署时间'
+    'respawnTime': '再部署时间',
+    'attackSpeed': '攻击速度'
 }
 attr_lower_dict = {
     'max_hp': '最大生命值',
     'magic_resistance': '魔法抗性',
     'block_cnt': '阻挡数',
     'base_attack_time': '攻击间隔',
-    'respawn_time': '再部署时间'
+    'respawn_time': '再部署时间',
+    'attack_speed': '攻击速度'
 }
 attr_lower_dict.update(attr_dict)
 
