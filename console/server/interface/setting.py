@@ -134,8 +134,6 @@ def setting_controller(app: Flask):
                 'is_active': int(row[7].split('.')[0])
             })
 
-        print(data)
-
         ReplaceText.delete().execute()
         ReplaceText.insert_many(data).execute()
 
