@@ -4,7 +4,7 @@ import copy
 import jieba
 
 from core import Message, Chain, AmiyaBot
-from core.util.common import find_similar_list, word_in_sentence, text_to_pinyin
+from core.util.common import find_similar_list, word_in_sentence
 from dataSource import DataSource
 from handlers.constraint import FuncInterface
 
@@ -70,7 +70,6 @@ class Operator(FuncInterface):
     def action(self, data: Message):
         message = data.text_digits
         skin_word = word_in_sentence(message, InitData.skins)
-        info_word = word_in_sentence(message, ['资料', '简历'])
 
         info = self.__search_info(self.__words_list(data), {
             'name': [self.material_costs.operator_map, self.material_costs.operator_list],
@@ -81,10 +80,6 @@ class Operator(FuncInterface):
             'voice_key': [InitData.voices],
             'story_key': [self.operator_info.stories_title]
         })
-        info_sup = self.__search_info(self.__words_list(data, pinyin_only=True), {
-            'name': [self.material_costs.operator_map, self.material_costs.operator_list],
-            'skill': [self.material_costs.skill_map]
-        })
 
         result = None
         reply = Chain(data)
@@ -92,17 +87,6 @@ class Operator(FuncInterface):
         # 如果技能名不属于干员，则删除技能名，
         if self.__skill_match(info) is False:
             info.skill = ''
-
-        # 没有查找到名字时，将名字改为自己或替换到模糊搜索里的名字
-        if not info.name and (not info.skill or (info.skin_key or skin_word) or info_word):
-            if info_sup.name:
-                info.name = info_sup.name
-            else:
-                info.name = '阿米娅'
-
-        # 没有查找到名字和技能时，如果模糊搜索里有技能名且技能和干员匹配，则使用模糊搜索
-        if not info.name and not info.skill and self.__skill_match(info_sup):
-            info.skill = info_sup.skill
 
         # 查询立绘
         if info.name and (info.skin_key or skin_word) and not (not skin_word and info.skin_key in ['精英一', '精英二']):
@@ -181,8 +165,6 @@ class Operator(FuncInterface):
                 result = '博士，要告诉阿米娅语音的详细标题哦'
 
             else:
-                # if info.name == '阿米娅' and not info_word:
-                #     return False
                 result = self.operator_info.get_detail_info(info)
 
         if result:
@@ -199,18 +181,8 @@ class Operator(FuncInterface):
         return False
 
     @staticmethod
-    def __words_list(data: Message, pinyin_only=False):
-        if pinyin_only:
-            text = data.text
-            for item in InitData.keyword + InitData.skins + InitData.voices:
-                text = text.replace(item, '')
-            res = data.cut_words(text_to_pinyin(text))
-        else:
-            res = data.text_cut + data.text_cut_pinyin
-
-        res = list(filter(lambda x: x not in ['li', 'xi', 'a'], res))
-
-        return res
+    def __words_list(data: Message):
+        return data.text_cut
 
     @staticmethod
     def __search_info(words, info_source):
@@ -233,10 +205,6 @@ class Operator(FuncInterface):
 
                             elif item in source:
                                 value = source[item] if type(source) is dict else item
-
-                                # 这里要先忽略自己，否则所有搜索都可能变成自己
-                                # if value == '阿米娅':
-                                #     continue
 
                                 setattr(info, name, value)
                                 raise LoopBreak(index, name)
