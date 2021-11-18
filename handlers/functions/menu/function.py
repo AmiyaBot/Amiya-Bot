@@ -1,5 +1,5 @@
 class Function:
-    source_code = 'https://github.com/vivien8261/Amiya-Bot'
+    source_code = 'https://github.com/AmiyaBot/Amiya-Bot'
     source_code_key = ['代码', '源码']
     query_key = ['可以做什么', '能做什么', '会做什么', '会干什么', '会什么', '有什么功能', '功能', '菜单']
     function_list = [
