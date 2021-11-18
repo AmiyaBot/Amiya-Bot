@@ -25,6 +25,8 @@ class Wiki(DownloadTools):
         files = {}
         for item in html.find('a[download]'):
             url = urllib.parse.unquote(item.attrs['href'])
+            if not 'http:' in url:
+                url = 'http:' + url
             file_name = url.split('/')[-1]
             files[file_name] = url
         return files
