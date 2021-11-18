@@ -140,6 +140,7 @@ class ReplaceText(BaseModel):
     is_global = IntegerField(default=0)
     is_active = IntegerField(default=1)
 
+
 class DriftBottle(BaseModel):
     drift_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
     user_id = IntegerField()
