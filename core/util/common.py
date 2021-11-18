@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import xlrd
 import string
 import random
 import difflib
@@ -8,6 +9,7 @@ import datetime
 import pypinyin
 
 from string import punctuation
+from xlrd import xldate_as_tuple
 from zhon.hanzi import punctuation as punctuation_cn
 
 
@@ -40,6 +42,10 @@ def calc_time_total(seconds):
         total += '%d秒' % sec
 
     return total
+
+
+def time_string_to_stamp(time_str: str, formatter: str = '%Y-%m-%d %H:%M:%S'):
+    return int(time.mktime(time.strptime(time_str, formatter)))
 
 
 def word_in_sentence(sentence: str, words: list):
@@ -131,3 +137,28 @@ def make_folder(path):
             os.makedirs(path)
         except FileExistsError:
             pass
+
+
+def read_excel(excel_file):
+    data = xlrd.open_workbook(excel_file)
+
+    excel = []
+    for index in range(len(data.sheets())):
+
+        sheet = data.sheet_by_index(index)
+
+        workbook = []
+        for row in range(sheet.nrows):
+            line = []
+            for col in range(sheet.ncols):
+                cell = sheet.cell(row, col)
+                value = cell.value
+                if cell.ctype == 3:
+                    date = xldate_as_tuple(value, 0)
+                    value = datetime.datetime(*date)
+                line.append(str(value))
+            workbook.append(line)
+
+        excel.append(workbook)
+
+    return excel

@@ -1,10 +1,15 @@
 import os
 import yaml
+import time
+import xlwt
 
-from flask import Flask, request
+from io import BytesIO
+from werkzeug.utils import secure_filename
+from flask import Flask, session, request, make_response
+from core.util.common import make_folder, read_excel, time_string_to_stamp
 from core.config import func_setting_path
 from core.database.models import ReplaceText
-from core.database.manager import select_for_paginate, SearchParams
+from core.database.manager import model_to_dict, select_for_paginate, SearchParams
 
 from ..response import response
 
@@ -72,3 +77,66 @@ def setting_controller(app: Flask):
             ReplaceText.delete().where(ReplaceText.replace_id == replace_id).execute()
 
         return response(message='删除成功')
+
+    @app.route('/setting/exportReplaceText', methods=['GET'])
+    def export_replace_text():
+        data = ReplaceText.select()
+        book = xlwt.Workbook(encoding='utf-8')
+        sheet = book.add_sheet('REPLACE')
+
+        for col, field in enumerate(['ID', '提交用户', '用户所在群组', '原字符', '替换字符', '提交时间', '是否全局启用', '是否审核通过']):
+            sheet.write(0, col, field)
+
+        row = 1
+        for item in data:
+            for col, line in enumerate(model_to_dict(item).items()):
+                field = line[0]
+                value = line[1]
+
+                if field == 'in_time':
+                    value = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+
+                sheet.write(row, col, value)
+            row += 1
+
+        sio = BytesIO()
+        book.save(sio)
+        sio.seek(0)
+
+        res = make_response(sio.getvalue())
+        res.headers['Content-type'] = 'application/vnd.ms-excel'
+        res.headers['Content-Disposition'] = 'attachment;filename=data.xlsx'
+
+        return res
+
+    @app.route('/setting/importReplaceText', methods=['POST'])
+    def import_replace_text():
+        make_folder('resource/files')
+
+        file = request.files.get('file')
+        filename = request.values.get('filename')
+        if not filename:
+            filename = secure_filename(file.filename)
+        path = os.path.join('resource/files', filename)
+        file.save(path)
+
+        excel = read_excel(path)
+        data = []
+
+        for row in excel[0][1:]:
+            data.append({
+                'user_id': row[1] or int(session.get('user')),
+                'group_id': row[2] or int(session.get('user')),
+                'origin': row[3],
+                'target': row[4],
+                'in_time': time_string_to_stamp(row[5]) or int(time.time()),
+                'is_global': int(row[6].split('.')[0]),
+                'is_active': int(row[7].split('.')[0])
+            })
+
+        print(data)
+
+        ReplaceText.delete().execute()
+        ReplaceText.insert_many(data).execute()
+
+        return response(data={'filename': filename}, message='导入成功')

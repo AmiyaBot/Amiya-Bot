@@ -28,8 +28,8 @@ def file_controller(app: Flask, bot: AmiyaBot, data: DataSource):
         bot.restart()
         return response(message='即将进入重启，重启需要一定时间，请耐心等待...')
 
-    @app.route('/upload', methods=['POST'])
-    def upload():
+    @app.route('/upload/image', methods=['POST'])
+    def upload_image():
         make_folder('resource/images/temp')
 
         file = request.files.get('file')
