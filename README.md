@@ -1,4 +1,12 @@
-<div align=center><img src="https://cloud-1253237490.cos.ap-beijing.myqcloud.com/uploads/2021/11/20/swbK0Tjx_logo.png" width=350 height=350/><br/><br/></div><div><center><font size=7><b>Amiya-Bot</b></font></center></div><br/><div><center>
+<div align=center>
+    <img src="https://cloud-1253237490.cos.ap-beijing.myqcloud.com/uploads/2021/11/20/swbK0Tjx_logo.png" width=350 height=350/>
+    <br>
+    <br>
+</div>
+<div align=center>
+    <img src="https://cloud-1253237490.cos.ap-beijing.myqcloud.com/uploads/2021/11/20/uSZHfSHc_logo.gif"/>
+</div>
+<br>
 
 > 基于 [mirai-console](https://github.com/mamoe/mirai-console) 和 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 的QQ聊天机器人<br>
 > 项目名称源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也与其相关。<br>
