@@ -1,6 +1,6 @@
 <!-- projectInfo  -->
 <div align=center>
-    <img src="https://cloud-1253237490.cos.ap-beijing.myqcloud.com/uploads/2021/11/20/swbK0Tjx_logo.png" width=280 height=280/>
+    <img src="__doc__/img/logo.png" width=280 height=280/>
 
 # Amiya-bot
 基于 [mirai-console](../../../../mamoe/mirai-console) 和 [mirai-api-http](../../../../project-mirai/mirai-api-http) 的QQ聊天机器人<br>
