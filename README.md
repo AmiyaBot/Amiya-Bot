@@ -4,7 +4,8 @@
 
 # Amiya-bot
 基于 [mirai-console](../../../../mamoe/mirai-console) 和 [mirai-api-http](../../../../project-mirai/mirai-api-http) 的QQ聊天机器人<br>
-项目名称源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也与其相关。
+项目名称源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也与其相关。<br>
+Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/) . All rights reserved.
     
 </div>
 <!-- projectInfo end -->
@@ -20,8 +21,7 @@
 - Amiya-Bot 是在 [《明日方舟》](https://ak.hypergryph.com/) 爱好者群体中诞生的以便捷娱乐功能为主的聊天机器人，一切行为的目的旨在交流学习
 - 本项目拒绝加入与金钱相关的功能，并在遵守法律法规且符合社会主义核心价值观的前提下使用
 - 不鼓励，不支持利用本项目进行任何形式的盈利
-- 本项目 logo 由画师 [kerryst](space.bilibili.com/8368479) 绘制并授权给本项目使用，版权所有。不得在未经授权的情况下将其用于任何商业用途，不得在未经授权的情况下使用本项目仓库名称及 logo 进行宣传。<br>
-- 本项目 logo 并非使用 GPL 3.0 协议授权，画师保留所有权利。不得以 GPL 3.0 协议已授权为由在未经授权的情况下使用本项目 logo。
+- 本项目 logo 并非使用 GPL 3.0 协议授权，画师保留所有权利。不得以 GPL 3.0 协议已授权为由在未经授权的情况下使用本项目 logo,不得在未经授权的情况下将本项目 logo 用于任何商业用途，不得在未经授权的情况下使用本项目仓库名称及 logo 进行任何形式的宣传
 - 用户的个人行为与本项目无关，本项目不承担用户因侵权、违反该声明内容或其他在法律及道德上不被支持的行为所带来的一切后果
 
 ## 文档
