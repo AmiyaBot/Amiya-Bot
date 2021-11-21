@@ -3,9 +3,9 @@
     <img src="https://i0.hdslb.com/bfs/album/9dda3f738e0745014f2e878b8f0a4a21f341d877.png" width=280 height=280/>
 
 # Amiya-bot
-基于 [mirai-console](../../../../mamoe/mirai-console) 和 [mirai-api-http](../../../../project-mirai/mirai-api-http) 的QQ聊天机器人<br>
+基于 [mirai-console](../../../../mamoe/mirai-console) 和 [mirai-api-http](../../../../project-mirai/mirai-api-http) 的 QQ 聊天机器人<br>
 项目名称源于游戏 [《明日方舟》](https://ak.hypergryph.com/) 的女主角"阿米娅"，其主题与核心功能也与其相关。<br>
-Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/) . All rights reserved.
+Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
     
 </div>
 <!-- projectInfo end -->
