@@ -40,7 +40,7 @@ Amiya-Bot 的所有说明均可查阅本项目的 [wiki 文档](../../wiki)
 
 #### 使用说明
 
-- [功能菜单](/blob/master/__doc__/doc/function.md)
+- [功能菜单](https://amiyabot.github.io/Amiya-Bot/)
 - [维护说明](/wiki/维护-Amiya-Bot)
 
 #### 部署说明
@@ -52,7 +52,7 @@ Amiya-Bot 的所有说明均可查阅本项目的 [wiki 文档](../../wiki)
 ## 贡献
 
 - 本项目欢迎 dalao 加入，拯救萌新，刻不容缓！
-- 如果有更多的建议或 BUG 反馈，请提交到 [issues](../../issues) 或加入官方QQ群 [362165038](https://jq.qq.com/?_wv=1027&k=4HKMpUZL) 反馈
+- 如果有更多的建议或 BUG 反馈，请提交到 [issues](/issues) 或加入官方QQ群 [362165038](https://jq.qq.com/?_wv=1027&k=4HKMpUZL) 反馈
 - 如果你遇到项目部署问题，可以加入开发群 [852191455](https://jq.qq.com/?_wv=1027&k=YWVA0NFX) 反馈
 - 你的 `star` 将会成为 Amiya 成长的经验值
 
@@ -73,5 +73,5 @@ Amiya-Bot 的所有说明均可查阅本项目的 [wiki 文档](../../wiki)
 
 ## 共生项目
 
-- Amiya-Bot 的可视化后台管理：[Amiya-Bot-console](https://github.com/vivien8261/Amiya-Bot-console)
-- Amiya-Bot 的数据及资源文件：[Amiya-Bot-resource](https://github.com/vivien8261/Amiya-Bot-resource)
+- Amiya-Bot 的可视化后台管理：[Amiya-Bot-console](https://github.com/AmiyaBot/Amiya-Bot-console)
+- Amiya-Bot 的数据及资源文件：[Amiya-Bot-resource](https://github.com/AmiyaBot/Amiya-Bot-resource)
