@@ -41,18 +41,18 @@ Amiya-Bot 的所有说明均可查阅本项目的 [wiki 文档](../../wiki)
 #### 使用说明
 
 - [功能菜单](https://amiyabot.github.io/Amiya-Bot/)
-- [维护说明](/wiki/维护-Amiya-Bot)
+- [维护说明](../../维护-Amiya-Bot)
 
 #### 部署说明
 
-- [部署前说明](/wiki)
-- [通过代码部署 Amiya](/wiki/通过代码部署-Amiya)
-- [通过安装包部署 Amiya](/wiki/通过安装包部署-Amiya)
+- [部署前说明](../../wiki)
+- [通过代码部署 Amiya](../../wiki/通过代码部署-Amiya)
+- [通过安装包部署 Amiya](../../wiki/通过安装包部署-Amiya)
 
 ## 贡献
 
 - 本项目欢迎 dalao 加入，拯救萌新，刻不容缓！
-- 如果有更多的建议或 BUG 反馈，请提交到 [issues](/issues) 或加入官方QQ群 [362165038](https://jq.qq.com/?_wv=1027&k=4HKMpUZL) 反馈
+- 如果有更多的建议或 BUG 反馈，请提交到 [issues](../../issues) 或加入官方QQ群 [362165038](https://jq.qq.com/?_wv=1027&k=4HKMpUZL) 反馈
 - 如果你遇到项目部署问题，可以加入开发群 [852191455](https://jq.qq.com/?_wv=1027&k=YWVA0NFX) 反馈
 - 你的 `star` 将会成为 Amiya 成长的经验值
 
