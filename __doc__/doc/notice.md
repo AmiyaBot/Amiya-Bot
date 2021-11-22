@@ -26,7 +26,7 @@
 ### 想支持阿米娅的运营？
 
 阿米娅项目将一直坚持，且呼吁所有使用阿米娅源码搭建的作者们免费提供使用。<br>
-如果你想支持阿米娅项目，可以给各位作者打赏一点。不论多少，都能如同 [GitHub](https://github.com/vivien8261/Amiya-Bot) 上面的一颗小星星一样，带给阿米娅项目前行下去的动力。<br>
+如果你想支持阿米娅项目，可以给各位作者打赏一点。不论多少，都能如同 [GitHub](https://github.com/AmiyaBot/Amiya-Bot) 上面的一颗小星星一样，带给阿米娅项目前行下去的动力。<br>
 打赏请备注"阿米娅"
 <div>
     <img src="img/wechat.png" alt="wechat" height="300">
