@@ -9,11 +9,9 @@ from core.network.websocket import WebSocket
 from core.network.httpRequests import MiraiHttp
 from core.resolver.message import Message
 from core.resolver.messageChain import Chain
-from core.database.manager import DataBase, Group, GroupSetting, Message as MessageBase
+from core.database.models import Group, GroupSetting, Message as MessageBase
 from core.util import log
 from core.config import config
-
-DataBase.create_base()
 
 
 class AmiyaBot(WebSocket):

@@ -11,7 +11,7 @@ from core import AmiyaBot
 from core.util import log
 from core.config import config
 
-from .interface import Intreface
+from .interface import Interface
 
 logging.config.dictConfig({
     'version': 1,
@@ -35,7 +35,7 @@ logging.config.dictConfig({
 })
 
 
-class Console(Intreface):
+class Console(Interface):
     def __init__(self, bot: AmiyaBot):
         conf = config.console
         path = self.app_path()

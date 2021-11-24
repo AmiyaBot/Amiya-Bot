@@ -13,7 +13,7 @@ from .operator import operator_controller
 from .dashboard import dashboard_controller
 
 
-class Intreface:
+class Interface:
     def __init__(self, app: Flask, bot: AmiyaBot):
         @app.route('/', methods=['GET'])
         def home():

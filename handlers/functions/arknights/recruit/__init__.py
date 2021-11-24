@@ -45,13 +45,9 @@ class Recruit(FuncInterface):
 
     @FuncInterface.is_disable
     def verify(self, data: Message):
-        hit = 0
-
-        for item in ['公招', '公开招募'] + self.tags:
-            if item in data.text + text_to_pinyin(data.text):
-                hit += 1
-
-        return hit
+        for item in ['公招', '公开招募']:
+            if item in data.text:
+                return 10
 
     @FuncInterface.is_used
     def action(self, data: Message):
