@@ -33,7 +33,7 @@ class Enemy(FuncInterface):
         words = ['敌人', '敌方'] + self.keywords
         hit = 0
 
-        for item in data.text_cut + data.text_cut_pinyin:
+        for item in data.text_cut:
             if item in words:
                 hit += 1
 
