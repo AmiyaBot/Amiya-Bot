@@ -111,11 +111,11 @@
 
 > 若你有过使用 mirai-api-http 或其他类似框架的经验，你现在可以轻松搭建自己的 Amiya
 
-Github 地址：<br>[https://github.com/vivien8261/Amiya-Bot](https://github.com/vivien8261/Amiya-Bot)
+Github 地址：<br>[https://github.com/AmiyaBot/Amiya-Bot](https://github.com/AmiyaBot/Amiya-Bot)
 
 ### 帮助
 
-> 开发上的问题请前往 [issues](https://github.com/vivien8261/Amiya-Bot/issues)
+> 开发上的问题请前往 [issues](https://github.com/AmiyaBot/Amiya-Bot/issues)
 
 若对 Amiya 的使用有任何疑问、BUG 反馈、建议或申请 Amiya 加入自己的群，请前往【Amiya的测试工房】，点击群号加入 [362165038](https://jq.qq.com/?_wv=1027&k=4HKMpUZL)
 

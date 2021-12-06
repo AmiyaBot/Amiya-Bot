@@ -2,33 +2,7 @@ from core import Message as MiraiMessage
 from core.util import log
 from playhouse.shortcuts import model_to_dict
 
-from .models import *
-
-
-class DataBase:
-    @staticmethod
-    def create_base():
-        tables = (
-            User,
-            Admin,
-            AdminTraceLog,
-            Group,
-            GroupActive,
-            GroupSetting,
-            DriftBottle,
-            GroupNotice,
-            Upload,
-            Message,
-            Function,
-            Disable,
-            Pool,
-            PoolSpOperator,
-            GachaConfig,
-            Intellect,
-            ReplaceText
-        )
-        for item in tables:
-            item.create_table()
+from .models import sqlite_db, BaseModel, User
 
 
 class SearchParams:

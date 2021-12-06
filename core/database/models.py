@@ -11,7 +11,13 @@ class BaseModel(Model):
     class Meta:
         database = sqlite_db
 
+    @staticmethod
+    def auto_create(cls):
+        cls.create_table()
+        return cls
 
+
+@BaseModel.auto_create
 class User(BaseModel):
     user_id = TextField(primary_key=True)
     user_feeling = IntegerField(default=0)
@@ -26,6 +32,7 @@ class User(BaseModel):
     waiting = TextField(null=True)
 
 
+@BaseModel.auto_create
 class Admin(BaseModel):
     user_id = TextField(primary_key=True)
     password = TextField()
@@ -34,6 +41,7 @@ class Admin(BaseModel):
     active = IntegerField(default=1)
 
 
+@BaseModel.auto_create
 class AdminTraceLog(BaseModel):
     log_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
     user_id = TextField()
@@ -43,24 +51,28 @@ class AdminTraceLog(BaseModel):
     time = BigIntegerField()
 
 
+@BaseModel.auto_create
 class Group(BaseModel):
     group_id = TextField(primary_key=True)
     group_name = TextField()
     permission = TextField()
 
 
+@BaseModel.auto_create
 class GroupActive(BaseModel):
     group_id = TextField(primary_key=True)
     active = IntegerField(default=1)
     sleep_time = BigIntegerField(default=0)
 
 
+@BaseModel.auto_create
 class GroupSetting(BaseModel):
     group_id = TextField(primary_key=True)
     send_notice = IntegerField(default=0)
     send_weibo = IntegerField(default=0)
 
 
+@BaseModel.auto_create
 class GroupNotice(BaseModel):
     notice_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
     content = TextField()
@@ -68,12 +80,14 @@ class GroupNotice(BaseModel):
     send_user = TextField()
 
 
+@BaseModel.auto_create
 class Upload(BaseModel):
     path = TextField(primary_key=True)
     type = TextField()
     mirai_id = TextField()
 
 
+@BaseModel.auto_create
 class Message(BaseModel):
     user_id = IntegerField()
     target_id = IntegerField(null=True)
@@ -83,17 +97,20 @@ class Message(BaseModel):
     msg_time = BigIntegerField()
 
 
+@BaseModel.auto_create
 class Function(BaseModel):
     function_id = TextField(primary_key=True)
     use_num = IntegerField(default=1)
 
 
+@BaseModel.auto_create
 class Disable(BaseModel):
     group_id = TextField()
     function_id = TextField()
     status = IntegerField()
 
 
+@BaseModel.auto_create
 class Pool(BaseModel):
     pool_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
     pool_name = TextField(unique=True)
@@ -104,6 +121,7 @@ class Pool(BaseModel):
     limit_pool = IntegerField()
 
 
+@BaseModel.auto_create
 class PoolSpOperator(BaseModel):
     sp_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
     pool_id = IntegerField()
@@ -113,12 +131,14 @@ class PoolSpOperator(BaseModel):
     image = TextField()
 
 
+@BaseModel.auto_create
 class GachaConfig(BaseModel):
     conf_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
     operator_name = TextField()
     operator_type = IntegerField()
 
 
+@BaseModel.auto_create
 class Intellect(BaseModel):
     user_id = TextField(primary_key=True)
     cur_num = IntegerField()
@@ -130,6 +150,7 @@ class Intellect(BaseModel):
     status = IntegerField()
 
 
+@BaseModel.auto_create
 class ReplaceText(BaseModel):
     replace_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
     user_id = TextField()
@@ -141,6 +162,7 @@ class ReplaceText(BaseModel):
     is_active = IntegerField(default=1)
 
 
+@BaseModel.auto_create
 class DriftBottle(BaseModel):
     drift_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
     user_id = IntegerField()
