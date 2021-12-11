@@ -74,7 +74,7 @@ class Menu(FuncInterface):
 
             return text
 
-        text = '博士，这是阿米娅的功能指引\nhttps://vivien8261.gitee.io/amiya-bot/?file=function'
+        text = '博士，这是阿米娅的功能指引\nwww.amiya.cn/blog/function.html'
 
         return text
 
