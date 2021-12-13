@@ -1,5 +1,6 @@
 import re
 
+from typing import Union, Dict
 from core.util import log
 from core.util.common import remove_punctuation, remove_xml_tag
 
@@ -41,7 +42,7 @@ class DataSource(SourceBank):
 
         return recruit_operators
 
-    def init_operators(self):
+    def init_operators(self) -> Union[Dict[str, Operator], dict]:
         recruit_operators = self.get_recruit_operators()
         operators_list = self.get_json_data('character_table')
         operators_patch_list = self.get_json_data('char_patch_table')['patchChars']

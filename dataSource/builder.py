@@ -45,7 +45,7 @@ def parse_template(blackboard, description):
                 if len(key) >= 2 and key[1] in formatter:
                     value = formatter[key[1]](value)
 
-                desc = desc.replace(desc_item[0], f' [{value}@#174CC6] ')
+                desc = desc.replace(desc_item[0], f' [cl {value}@#174CC6 cle] ')
 
     return desc
 

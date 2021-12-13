@@ -135,12 +135,9 @@ class Operator(FuncInterface):
                     result = self.operator_info.get_skill_data(info)
 
         if info.name and result is None:
-            # 档案
-            if info.story_key:
-                result = self.operator_info.get_story(info)
 
             # 语音
-            elif info.voice_key:
+            if info.voice_key:
                 result, exists = self.operator_info.get_voice(info)
                 result = result.replace('{@nickname}', data.nickname)
                 if exists:
@@ -157,6 +154,9 @@ class Operator(FuncInterface):
             # 模组
             elif word_in_sentence(message, ['模组']):
                 result = self.operator_module.find_operator_module(info, '故事' in message)
+
+            elif word_in_sentence(message, ['档案', '资料']) or info.story_key:
+                result = self.operator_info.get_story(info, not info.story_key)
 
             elif word_in_sentence(message, ['精英', '专精']):
                 result = '博士，要告诉阿米娅精英或专精等级哦'

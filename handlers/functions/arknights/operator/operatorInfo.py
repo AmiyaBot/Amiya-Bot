@@ -71,15 +71,18 @@ class OperatorInfo:
         with open('resource/skins.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([n + ' 500 n' for n in skins_keywords]))
 
-    def get_story(self, info: InfoInterface):
+    def get_story(self, info: InfoInterface, full=False):
         operator: Operator = self.data.operators[info.name]
-
         stories = operator.stories()
-        for item in stories:
-            if item['story_title'] == info.story_key:
-                return f'博士，这是干员{info.name}《{info.story_key}》的档案\n\n{item["story_text"]}'
-            else:
-                return f'博士，没有找到干员{info.name}《{info.story_key}》的档案'
+
+        if full:
+            pass
+        else:
+            for item in stories:
+                if item['story_title'] == info.story_key:
+                    return f'博士，这是干员{info.name}《{info.story_key}》的档案\n\n{item["story_text"]}'
+                else:
+                    return f'博士，没有找到干员{info.name}《{info.story_key}》的档案'
 
     def get_voice(self, info: InfoInterface):
         operator: Operator = self.data.operators[info.name]
@@ -148,7 +151,7 @@ class OperatorInfo:
 
         talents_text = ''
         for item in talents:
-            talents_text += '<[%s@#174CC6]>\n　%s\n' % (item['talents_name'], item['talents_desc'])
+            talents_text += '<[cl %s@#174CC6 cle]>\n　%s\n' % (item['talents_name'], item['talents_desc'])
         text += ('\n【天赋】\n%s\n' % talents_text) if talents_text else ''
 
         potential_text = ''
@@ -158,7 +161,7 @@ class OperatorInfo:
 
         building_text = ''
         for item in building_skills:
-            building_text += '<[%s@#174CC6]>\n　[精英%s解锁@#D60008]\n　%s\n' % \
+            building_text += '<[cl %s@#174CC6 cle]>\n　[cl 精英%s解锁@#D60008 cle]\n　%s\n' % \
                              (item['bs_name'], item['bs_unlocked'], item['bs_desc'])
         text += ('【基建技能】\n%s\n' % building_text) if building_text else ''
 

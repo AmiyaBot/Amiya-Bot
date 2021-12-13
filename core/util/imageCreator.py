@@ -27,12 +27,12 @@ class TextParser:
 
     def __parse(self):
         text = self.text.strip('\n')
-        search = re.findall(r'\[(.*?)@#(.*?)]', text)
+        search = re.findall(r'\[cl\s(.*?)@#(.*?)\scle]', text)
 
         color_pos = {0: self.color}
 
         for item in search:
-            temp = f'[{item[0]}@#{item[1]}]'
+            temp = f'[cl {item[0]}@#{item[1]} cle]'
             index = text.index(temp)
             color_pos[index] = f'#{item[1]}'
             color_pos[index + len(item[0])] = self.color

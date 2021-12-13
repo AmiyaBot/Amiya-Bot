@@ -98,6 +98,12 @@ class Recruit(FuncInterface):
                         operators[name]['operator_tags'] += item['operator_tags']
 
                 text = ''
+                color = {
+                    6: 'FF4343',
+                    5: 'FEA63A',
+                    4: 'A288B5'
+                }
+
                 for comb in [tags] if len(tags) == 1 else self.find_combinations(tags):
                     lst = []
                     for name, item in operators.items():
@@ -111,17 +117,19 @@ class Recruit(FuncInterface):
                                 break
                     else:
                         if lst:
-                            text += '\n[%s]\n' % '，'.join(comb)
+                            text += '\n[cl [%s]@#174CC6 cle]\n' % '，'.join(comb)
                             if comb == ['高级资深干员']:
-                                text += '[★★★★★★] 六星 %d 选 1\n' % len(lst)
+                                text += f'[[cl ★★★★★★@#{color[6]} cle]] 六星 %d 选 1\n' % len(lst)
                                 continue
                             if comb == ['资深干员']:
-                                text += '[★★★★★　] 五星 %d 选 1\n' % len(lst)
+                                text += f'[[cl ★★★★★@#{color[5]} cle]] 五星 %d 选 1\n' % len(lst)
                                 continue
                             for item in lst:
                                 rarity = item['operator_rarity']
-                                star = '☆' if rarity < 5 else '★'
-                                text += '[%s] %s\n' % (insert_empty(star * rarity, 6, True), item['operator_name'])
+                                name = item["operator_name"]
+                                star = '★'
+                                c = color[4] if rarity < 5 else color[rarity]
+                                text += f'[[cl {insert_empty(star * rarity, 6, True)}@#{c} cle]] {name}\n'
 
                 if text:
                     text = '博士，根据标签已找到以下可以锁定稀有干员的组合\n' + text
