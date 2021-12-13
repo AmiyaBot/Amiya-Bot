@@ -3,6 +3,7 @@ import sys
 import abc
 import time
 import threading
+import core.util.frozen
 
 from core.network.websocket import WebSocket
 from core.network.httpRequests import MiraiHttp
