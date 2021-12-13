@@ -3,7 +3,6 @@ import sys
 import abc
 import time
 import threading
-import core.util.frozen
 
 from core.network.websocket import WebSocket
 from core.network.httpRequests import MiraiHttp
@@ -25,7 +24,7 @@ class AmiyaBot(WebSocket):
 
         init = self.http.init_session()
         if init is False:
-            raise Exception(f'cannot request http server from mirai-api-http.')
+            raise Exception('cannot request http server from mirai-api-http.')
 
     def __save_message(self):
         while True:
@@ -102,9 +101,12 @@ class AmiyaBot(WebSocket):
         self.send_to_admin(f'开始推送公告，目标群：{groups.count()}\n\n{text}')
         for item in groups:
             item: GroupSetting
-            with self.send_custom_message(group_id=item.group_id) as reply:
-                reply: Chain
-                reply.text(f'{group_name[item.group_id]}的博士们，有来自管理员{user}的公告：\n\n{text}')
+            try:
+                with self.send_custom_message(group_id=item.group_id) as reply:
+                    reply: Chain
+                    reply.text(f'{group_name[item.group_id]}的博士们，有来自管理员{user}的公告：\n\n{text}')
+            except Exception:
+                log.error(f'推送公告失败，群号：{item.group_id}')
             time.sleep(0.5)
 
     @staticmethod
