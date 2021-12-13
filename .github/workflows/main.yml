@@ -44,6 +44,6 @@ jobs:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: ${{steps.branch_name.outputs.SOURCE_TAG}}
         prerelease: false
-        title: "Latest Development Build"
+        title: ${{steps.branch_name.outputs.SOURCE_TAG}}
         files: |
           AmiyaBot-${{steps.branch_name.outputs.SOURCE_TAG}}.zip
