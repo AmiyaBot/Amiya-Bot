@@ -3,7 +3,7 @@ import sys
 import abc
 import time
 import threading
-import core.util.frozen
+import core.util.frozen # 这一行十分重要，一定不要删，只有在exe里才生效！
 
 from core.network.websocket import WebSocket
 from core.network.httpRequests import MiraiHttp
