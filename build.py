@@ -3,6 +3,7 @@ import shutil
 import zipfile
 import pathlib
 import sys
+
 folder = '.'
 venv = 'venv/Lib/site-packages'
 
@@ -39,7 +40,7 @@ def build(version):
         os.remove(exe)
         os.rename(f'{dist}/amiya.exe', exe)
 
-    path:pathlib.Path = pathlib.Path(f'{folder}/AmiyaBot-{version}.zip')
+    path: pathlib.Path = pathlib.Path(f'{folder}/AmiyaBot-{version}.zip')
     with zipfile.ZipFile(path, 'w') as pack:
         for root, dirs, files in os.walk(dist):
             for index, filename in enumerate(files):
