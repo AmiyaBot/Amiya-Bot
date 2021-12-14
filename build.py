@@ -1,8 +1,10 @@
 import os
 import shutil
 import zipfile
+import pathlib
+import sys
 
-folder = '../Amiya-Bot-resource/resource/dist'
+folder = '.'
 venv = 'venv/Lib/site-packages'
 
 
@@ -36,18 +38,19 @@ def build(version):
 
     if os.path.exists(exe):
         os.remove(exe)
-    os.rename(f'{dist}/amiya.exe', exe)
+        os.rename(f'{dist}/amiya.exe', exe)
 
-    with zipfile.ZipFile(f'{folder}/AmiyaBot-{version}.zip', 'w') as pack:
+    path: pathlib.Path = pathlib.Path(f'{folder}/AmiyaBot-{version}.zip')
+    with zipfile.ZipFile(path, 'w') as pack:
         for root, dirs, files in os.walk(dist):
             for index, filename in enumerate(files):
                 target = os.path.join(root, filename)
                 path = target.replace(dist + '\\', '')
                 pack.write(target, path)
-
     with open(f'{folder}/.version', 'w+') as ver:
         ver.write(version)
 
 
 if __name__ == '__main__':
-    build(input('version: '))
+    # 不知道为什么，action上用管道传入tag name文件名会有乱码，从sys.argv拿不会
+    build(sys.argv[1])
