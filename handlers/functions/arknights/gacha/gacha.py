@@ -206,6 +206,7 @@ class GachaForUser:
 
                 operators_info[name] = {
                     'portraits': opt.id,
+                    'temp_portraits': f'resource/images/temp/{opt.name}',
                     'rarity': opt.rarity,
                     'class': class_index[opt.classes_code].lower()
                 }
