@@ -10,8 +10,12 @@
 
 .DS_Store
 *.pyc
+*.spec
+*.db
+*.zip
 
-amiya.db
-amiya.spec
+.version
+
 session.txt
+version.txt
 ignore.json
