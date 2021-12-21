@@ -180,16 +180,16 @@ class DataSource(SourceBank):
 
             status.total += len(skills_list) + 2
 
-            res = self.get_pic(f'portraits/{item.id}_1', 'portraits')
+            res = self.get_pic(f'portrait/{item.id}_1', 'portraits')
             rec['portraits'][int(res)] += 1
             status.set_res(res)
 
-            res = self.get_pic('avatars/' + item.id, 'avatars')
+            res = self.get_pic('avatar/' + item.id, 'avatars')
             rec['avatars'][int(res)] += 1
             status.set_res(res)
 
             for skill in skills_list:
-                res = self.get_pic('skills/' + skill['skill_icon'], 'skills')
+                res = self.get_pic('skill/' + skill['skill_icon'], 'skills')
                 rec['skills'][int(res)] += 1
                 status.set_res(res)
 
@@ -201,7 +201,7 @@ class DataSource(SourceBank):
         for m_id, status in log.download_src(materials, 'materials'):
             item = materials[m_id]
             res = self.get_pic(
-                name='items/' + item['material_icon'],
+                name='item/' + item['material_icon'],
                 _type='materials'
             )
             status.set_res(res)
@@ -210,7 +210,7 @@ class DataSource(SourceBank):
         for name, status in log.download_src(enemies, 'enemies'):
             item = enemies[name]
             res = self.get_pic(
-                name='enemies/' + item['info']['enemyId'],
+                name='enemy/' + item['info']['enemyId'],
                 _type='enemy'
             )
             status.set_res(res)

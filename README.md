@@ -63,7 +63,7 @@ Amiya-Bot 的所有说明均可查阅本项目的 [官方网站](https://www.ami
     - [mirai-console](https://github.com/mamoe/mirai-console)
     - [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
 - 数据及语音资源
-    - [ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)
+    - [Arknights-Bot-Resource](https://github.com/yuanyan3060/Arknights-Bot-Resource)
     - [PRTS](http://prts.wiki/)
 - 信息推送
     - [明日方舟官方微博](https://m.weibo.cn/u/6279793937)

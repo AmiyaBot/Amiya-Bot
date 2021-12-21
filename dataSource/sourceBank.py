@@ -24,13 +24,13 @@ class SourceBank(DownloadTools):
             'database': 'resource/database'
         }
 
-        self.game_data_version_source = 'https://gitee.com/vivien8261/ArknightsGameData/raw/master/zh_CN/gamedata'
-        self.game_data_source = 'http://vivien8261.gitee.io/arknightsgamedata'
+        self.game_data_version_source = 'https://gitee.com/vivien8261/Arknights-Bot-Resource/raw/main/gamedata'
+        self.game_data_source = 'http://vivien8261.gitee.io/arknights-bot-resource/gamedata'
         self.resource_path = 'resource/data'
 
         self.pics_source = {
-            'gitee': f'{self.bot_source}/images/game',
-            'cloud': f'http://amiya.net.cn:18080/resource/images/game/skins'
+            'gitee': 'http://vivien8261.gitee.io/arknights-bot-resource',
+            'cloud': 'http://amiya.net.cn:18080/resource/images/game/skins'
         }
         self.pics_path = 'resource/images'
 
