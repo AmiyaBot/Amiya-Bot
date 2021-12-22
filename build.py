@@ -1,8 +1,9 @@
 import os
+import sys
 import shutil
 import zipfile
 import pathlib
-import sys
+import logging
 
 venv = 'venv/Lib/site-packages'
 
@@ -40,7 +41,37 @@ VSVersionInfo(
 '''
 
 
-def build(version, folder='.'):
+def upload_pack(folder, pack_name):
+    from qcloud_cos import CosConfig
+    from qcloud_cos import CosS3Client
+
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+
+    secret_id = ''
+    secret_key = ''
+
+    config = CosConfig(
+        Region='ap-guangzhou',
+        SecretId=secret_id,
+        SecretKey=secret_key
+    )
+    client = CosS3Client(config)
+
+    bucket = client.list_buckets()['Buckets']['Bucket'][0]['Name']
+
+    client.put_object_from_local_file(
+        Bucket=bucket,
+        LocalFilePath=f'{folder}/version.txt',
+        Key='package/version.txt',
+    )
+    client.put_object_from_local_file(
+        Bucket=bucket,
+        LocalFilePath=f'{folder}/{pack_name}',
+        Key=f'package/{pack_name}',
+    )
+
+
+def build(version, folder):
     dist = f'{folder}/dist'
     local = '/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1])
 
@@ -81,7 +112,8 @@ def build(version, folder='.'):
     for item in msg:
         print(item)
 
-    path: str = pathlib.Path(f'{folder}/AmiyaBot-{version}.zip')
+    pack_name = f'AmiyaBot-{version}.zip'
+    path: str = pathlib.Path(f'{folder}/{pack_name}')
 
     with zipfile.ZipFile(path, 'w') as pack:
         for root, dirs, files in os.walk(dist):
@@ -90,12 +122,17 @@ def build(version, folder='.'):
                 path = target.replace(dist + '\\', '')
                 pack.write(target, path)
 
-    with open(f'{folder}/.version', 'w+') as ver:
+    with open(f'{folder}/version.txt', 'w+') as ver:
         ver.write(version)
+
+    try:
+        upload_pack(folder, pack_name)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':
-    v = sys.argv[1] if len(sys.argv) > 1 else input('version: ')
-    f = sys.argv[2] if len(sys.argv) > 2 else input('folder: ')
+    v = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] != 'null' else input('version: ')
+    f = sys.argv[2] if len(sys.argv) > 2 else '.'
 
     build(v, f)
