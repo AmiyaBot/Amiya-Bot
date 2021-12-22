@@ -6,9 +6,10 @@ import zipfile
 import subprocess
 
 from core.network.httpRequests import DownloadTools
+from core.util.common import TimeRecorder
 from core.util import log
 
-server = 'http://amiya.net.cn:18080/resource/dist'
+bucket = 'https://cos.amiyabot.com/package'
 
 
 def check_upgrade():
@@ -16,7 +17,7 @@ def check_upgrade():
 
     local_exe = sys.argv[0].replace('\\', '/').split('/')[-1]
 
-    new_version = DownloadTools.request_file(f'{server}/.version')
+    new_version = DownloadTools.request_file(f'{bucket}/version.txt')
     if not new_version:
         log.info('upgrade check fail.')
         return False
@@ -29,9 +30,11 @@ def check_upgrade():
     if exe_name == local_exe:
         return False
 
-    log.info(f'difference detected, downloading new version {new_version}')
+    log.info(f'difference detected, downloading new pack {new_pack}')
 
-    pack = DownloadTools.request_file(f'{server}/{new_pack}', stringify=False)
+    rec = TimeRecorder()
+
+    pack = DownloadTools.request_file(f'{bucket}/{new_pack}', stringify=False)
     if pack:
         with open(new_pack, mode='wb+') as f:
             f.write(pack)
@@ -42,6 +45,9 @@ def check_upgrade():
     else:
         log.info(f'new version download fail.')
         return False
+
+    log.info(f'download success! cost {rec.rec(millisecond=True)} ms.')
+    log.info(f'restart new pack in 3 sec...')
 
     cmd = f'''
             @echo off
