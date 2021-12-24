@@ -36,17 +36,17 @@ Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
 
 ## 文档
 
-Amiya-Bot 的所有说明均可查阅本项目的 [官方网站](https://www.amiya.cn) (www.amiya.cn)
+Amiya-Bot 的所有说明均可查阅本项目的 [官方网站](http://www.amiyabot.com) (www.amiyabot.com)
 
 #### 使用说明
 
-- [功能菜单](https://www.amiya.cn/blog/function.html)
-- [维护说明](https://www.amiya.cn/docs/maintain.html)
+- [功能菜单](http://www.amiyabot.com/blog/function.html)
+- [维护说明](http://www.amiyabot.com/docs/maintain.html)
 
 #### 部署说明
 
-- [通过源码部署 Amiya](https://www.amiya.cn/docs/deployByCode.html)
-- [通过安装包部署 Amiya](https://www.amiya.cn/docs/deployByExe.html)
+- [通过源码部署 Amiya](http://www.amiyabot.com/docs/deployByCode.html)
+- [通过安装包部署 Amiya](http://www.amiyabot.com/docs/deployByExe.html)
 
 ## 贡献
 
