@@ -74,7 +74,7 @@ class Menu(FuncInterface):
 
             return text
 
-        text = '博士，这是阿米娅的功能指引\nhttp://www.amiyabot.com/blog/function.html'
+        text = '博士，这是阿米娅的功能指引\nhttps://www.amiyabot.com/blog/function.html'
 
         return text
 
