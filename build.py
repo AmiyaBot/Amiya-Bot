@@ -1,3 +1,4 @@
+import re
 import os
 import sys
 import shutil
@@ -89,7 +90,7 @@ def build(version, folder):
     with open(f'{folder}/version.txt', mode='w+', encoding='utf-8') as vf:
         vf.write(
             version_file.format(
-                file_ver=version[1:].replace('.', ', '),
+                file_ver=', '.join(re.findall(r'v(\d+).(\d+).(\d+)', version)[0]),
                 file_version=version
             )
         )
