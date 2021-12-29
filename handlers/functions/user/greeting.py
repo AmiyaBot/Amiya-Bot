@@ -71,13 +71,13 @@ def sign_in(data: Message, sign_type=0):
 def talk_time():
     localtime = time.localtime(time.time())
     hours = localtime.tm_hour
-    if 0 <= hours <= 5:
+    if 0 <= hours < 5:
         return ''
-    elif 5 < hours <= 11:
+    elif 5 <= hours < 11:
         return '早上'
-    elif 11 < hours <= 14:
+    elif 11 <= hours < 14:
         return '中午'
-    elif 14 < hours <= 18:
+    elif 14 <= hours < 18:
         return '下午'
-    elif 18 < hours <= 24:
+    elif 18 <= hours < 24:
         return '晚上'
