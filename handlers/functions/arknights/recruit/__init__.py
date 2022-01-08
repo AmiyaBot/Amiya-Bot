@@ -136,7 +136,7 @@ class Recruit(FuncInterface):
                 else:
                     text = '博士，没有找到可以锁定稀有干员的组合'
 
-                return Chain(data).text(text)
+                return Chain(data).text_image(text)
             else:
                 return Chain(data).text('博士，无法查询到标签所拥有的稀有干员')
         else:

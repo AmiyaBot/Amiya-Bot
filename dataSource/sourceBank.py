@@ -62,8 +62,9 @@ class SourceBank(DownloadTools):
     def get_pic(self, name, _type, _source='gitee', _save_ignore=True):
 
         ignore = self.get_ignore()
-
-        url = f'{self.pics_source[_source]}/{name}.png'
+        
+        escape_name = name.repalce("#", "%23")
+        url = f'{self.pics_source[_source]}/{escape_name}.png'
         save_path = f'{self.pics_path}/{_type}'
         image_path = f'{save_path}/{name.split("/")[-1]}.png'
 
