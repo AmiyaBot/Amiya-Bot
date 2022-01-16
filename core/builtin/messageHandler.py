@@ -1,13 +1,13 @@
 from typing import *
 
-from core import log
+from core.log import info
 from core.bot import BotHandlers, Handler
-from core.control import SpeedControl
 from core.network import WSOpration
 from core.builtin.message import Message, Event, Verify, wait_events
 from core.builtin.messageChain import Chain
 from core.database.messages import MessageStack
 from core.database.bot import FunctionUsed, DisabledFunction
+from core.control import SpeedControl
 from core.config import config
 
 speed = SpeedControl(config.speedSetting.maxsize,
@@ -41,7 +41,7 @@ async def choice_handlers(data: Message, handlers: List[Handler]) -> CHOICE:
 
 async def message_handler(data: Union[Message, Event], opration: WSOpration):
     if type(data) is Message:
-        log.info(str(data))
+        info(str(data))
 
         MessageStack.insert(data)
 
@@ -85,7 +85,7 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
                 wait_events[data.user_id].data = data
 
     elif issubclass(data.__class__, Event):
-        log.info(f'Event: {data}')
+        info(f'Event: {data}')
 
         if data.event_name in BotHandlers.event_handlers:
             for handler in BotHandlers.event_handlers[data.event_name]:

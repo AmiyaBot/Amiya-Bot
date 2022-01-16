@@ -22,6 +22,24 @@ class WSOpration:
         """
         pass
 
+    @abc.abstractmethod
+    async def handle_message(self, message: str):
+        """
+        处理消息
+        :param message:
+        :return:
+        """
+        pass
+
+    @abc.abstractmethod
+    async def handle_error(self, message: str):
+        """
+        处理异常
+        :param message:
+        :return:
+        """
+        pass
+
 
 def response(data: Union[str, int, float, bool, dict, list] = None,
              code: int = 200,

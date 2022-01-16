@@ -20,10 +20,12 @@ class BaseModel(Model):
 class MessageRecord(BaseModel):
     user_id = BigIntegerField()
     group_id = BigIntegerField()
+    msg_type = TextField()
     text = TextField()
     face = TextField()
     image = TextField()
     message = TextField()
+    classify = TextField()
     create_time = IntegerField()
 
 
@@ -31,7 +33,7 @@ class MessageStack:
     stack: List[dict] = []
 
     @classmethod
-    async def run(cls):
+    async def run_recording(cls):
         while StateControl.alive:
             await asyncio.sleep(10)
             if cls.stack:
@@ -45,9 +47,11 @@ class MessageStack:
         cls.stack.append({
             'user_id': item.user_id,
             'group_id': item.group_id,
+            'msg_type': item.type,
             'text': item.text_origin,
             'face': ''.join([f'[face:{n}]' for n in item.face]),
             'image': ','.join(item.image),
             'message': json.dumps(item.message, ensure_ascii=False) if item.message else '',
+            'classify': 'call' if item.is_call else '',
             'create_time': item.time
         })

@@ -2,16 +2,15 @@ import re
 
 from typing import *
 from core.builtin.message import Message, MessageMatch, Event, Verify, equal
+from core.builtin.timedTask import TasksControl
 from core.builtin.messageChain import Chain
 
-# 参数类型
 CORO = Coroutine[Any, Any, Optional[Chain]]
 PREFIX = Union[bool, List[str]]
 KEYWORDS = Union[str, equal, re.Pattern, List[Union[str, equal, re.Pattern]]]
 FUNC_CORO = Callable[[Message], CORO]
 EVENT_CORO = Callable[[Event], CORO]
-VERIFY_CORO = Callable[[Message],
-                       Coroutine[Any, Any, Union[bool, Tuple[bool, int], Tuple[bool, int, List[str]]]]]
+VERIFY_CORO = Callable[[Message], Coroutine[Any, Any, Union[bool, Tuple[bool, int], Tuple[bool, int, List[str]]]]]
 
 
 class Handler:
@@ -105,7 +104,23 @@ class BotHandlers:
     overspeed_handler: Optional[FUNC_CORO] = None
 
     @classmethod
+    def detail(cls):
+        return [
+            f'- private_message_handlers ({len(cls.private_message_handlers)})',
+            f'- group_message_handlers ({len(cls.group_message_handlers)})',
+            f'- temp_message_handlers ({len(cls.temp_message_handlers)})',
+            f'- event_handlers ({len(cls.event_handlers)})',
+            f'- timed_tasks ({len(TasksControl.timed_tasks)})'
+        ]
+
+    @classmethod
     def add_prefix(cls, words: Union[str, List[str]]):
+        """
+        添加前缀触发词，在存在前缀触发词的情况下，handlers 会默认检查前缀
+
+        :param words: 触发词，允许为一个触发词列表
+        :return:
+        """
         if type(words) is str:
             words = [words]
         cls.prefix_keywords += words
@@ -241,3 +256,4 @@ on_group_message = BotHandlers.on_group_message
 on_temp_message = BotHandlers.on_temp_message
 on_event = BotHandlers.on_event
 on_overspeed = BotHandlers.on_overspeed
+timed_task = TasksControl.timed_task

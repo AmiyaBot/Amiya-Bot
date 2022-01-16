@@ -7,3 +7,7 @@ PyYAML~=6.0
 attrdict~=2.0.1
 graiax-silkcoder~=0.0.16
 peewee~=3.14.8
+pydantic~=1.9.0
+uvicorn~=0.17.0
+fastapi~=0.71.0
+Pillow~=9.0.0

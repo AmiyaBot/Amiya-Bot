@@ -2,14 +2,14 @@ import json
 import asyncio
 import websockets
 
-from core import log
-from core.config import config
 from core.network import WSOpration
 from core.builtin.messageChain import Chain, custom_chain
 from core.builtin.message.mirai import Mirai
 from core.builtin.messageHandler import message_handler
-from core.util import singleton
 from core.control import StateControl
+from core.config import config
+from core.util import singleton
+from core import log
 
 host = config.miraiApiHttp.host
 port = config.miraiApiHttp.port.ws
@@ -37,7 +37,7 @@ class WebsocketClient(WSOpration):
                         return False
 
                     asyncio.create_task(
-                        self.__handle_message(str(message))
+                        self.handle_message(str(message))
                     )
 
                 await websocket.close()
@@ -60,8 +60,8 @@ class WebsocketClient(WSOpration):
                     await reply.build(self.session, chain=[voice])
                 )
 
-    async def __handle_message(self, message: str):
-        async with log.catch(handler=self.__handle_error, ignore=[KeyError, json.JSONDecodeError]):
+    async def handle_message(self, message: str):
+        async with log.catch(handler=self.handle_error, ignore=[KeyError, json.JSONDecodeError]):
 
             data = json.loads(message)
             data = data['data']
@@ -75,7 +75,7 @@ class WebsocketClient(WSOpration):
             if message_data:
                 await message_handler(message_data, self)
 
-    async def __handle_error(self, message: str):
+    async def handle_error(self, message: str):
         if not self.session:
             return
 
