@@ -1,0 +1,31 @@
+disable_existing_loggers: false
+formatters:
+    access:
+        (): uvicorn.logging.AccessFormatter
+        fmt: 'server.access - %(client_addr)s - %(request_line)s %(status_code)s'
+    default:
+        (): uvicorn.logging.DefaultFormatter
+        fmt: 'server.default - %(message)s'
+        use_colors:
+handlers:
+    access:
+        class: logging.StreamHandler
+        formatter: access
+        stream: ext://core.log.ServerLog
+    default:
+        class: logging.StreamHandler
+        formatter: default
+        stream: ext://core.log.ServerLog
+loggers:
+    uvicorn:
+        handlers:
+            - default
+        level: INFO
+    uvicorn.access:
+        handlers:
+            - access
+        level: INFO
+        propagate: false
+    uvicorn.error:
+        level: INFO
+version: 1

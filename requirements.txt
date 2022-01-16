@@ -1,0 +1,9 @@
+websockets~=10.1
+jieba~=0.42.1
+zhon~=1.1.5
+pypinyin~=0.44.0
+aiohttp~=3.8.1
+PyYAML~=6.0
+attrdict~=2.0.1
+graiax-silkcoder~=0.0.16
+peewee~=3.14.8
