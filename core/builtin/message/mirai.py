@@ -297,15 +297,19 @@ class Mirai:
                 if chain['type'] == 'Image':
                     msg.image.append(chain['url'].strip())
 
-        msg.text = remove_punctuation(text)
-        msg.text_digits = chinese_to_digits(msg.text)
-        msg.text_origin = text
+        return text_convert(msg, text)
 
-        chars = cut_by_jieba(msg.text) + cut_by_jieba(msg.text_digits)
-        words = list(set(chars))
-        words = sorted(words, key=chars.index)
 
-        msg.text_cut = words
-        msg.text_cut_pinyin = [text_to_pinyin(char) for char in words]
+def text_convert(msg: Message, text):
+    msg.text = remove_punctuation(text)
+    msg.text_digits = chinese_to_digits(msg.text)
+    msg.text_origin = text
 
-        return msg
+    chars = cut_by_jieba(msg.text) + cut_by_jieba(msg.text_digits)
+    words = list(set(chars))
+    words = sorted(words, key=chars.index)
+
+    msg.text_cut = words
+    msg.text_cut_pinyin = [text_to_pinyin(char) for char in words]
+
+    return msg

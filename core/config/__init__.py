@@ -6,6 +6,7 @@ from .adminConfig import Admin
 from .ImageConfig import ImageCreator
 from .databaseConfig import Databases
 from .speedConfig import SpeedSetting
+from .baiduConfig import BaiduCloud
 
 config_file = 'config/config.yaml'
 
@@ -16,6 +17,7 @@ class Config:
     imageCreator: ImageCreator
     databases: Databases
     speedSetting: SpeedSetting
+    baiduCloud: BaiduCloud
 
     @classmethod
     def desc(cls):
@@ -25,6 +27,7 @@ class Config:
             'imageCreator': ImageCreator.desc(),
             'databases': Databases.desc(),
             'speedSetting': SpeedSetting.desc(),
+            'baiduCloud': BaiduCloud.desc(),
         }
 
 

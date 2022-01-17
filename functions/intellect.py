@@ -22,7 +22,7 @@ async def verify(data: Message):
 
 
 @bot.on_group_message(function_id='intellectAlarm', verify=verify)
-async def action(data: Message):
+async def _(data: Message):
     message = data.text_digits
     reply = Chain(data)
 

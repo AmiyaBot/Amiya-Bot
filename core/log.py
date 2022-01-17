@@ -51,7 +51,7 @@ def error(message: ERROR_TYPE, desc: str = None) -> str:
     return info(text, level='error')
 
 
-def writer(text: str):
+def writer(text: str, out=True):
     now = time.localtime()
     path = f'fileStorage/log/{now.tm_year}{now.tm_mon}{now.tm_mday}'
     file = f'{path}/{now.tm_hour}.txt'
@@ -63,20 +63,25 @@ def writer(text: str):
         with open(file, mode='a+', encoding='utf-8') as f:
             f.write(text + '\r\n')
     finally:
-        print(text)
+        if out:
+            print(text)
 
 
 def progress_bar(data: Union[dict, list], desc: str = ''):
     data = data.keys() if type(data) is dict else data
+    msg = ''
 
     def print_bar(i):
+        nonlocal msg
+
         date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         curr = int(i / len(data) * 100)
         block = int(curr / 4)
         bar = '=' * block + ' ' * (25 - block)
+        msg = f'[{date}][INFO] {desc}[{bar}] {curr}% {i}/{len(data)}'
 
         print('\r', end='')
-        print(f'[{date}][INFO] {desc}[{bar}] {curr}% {i}/{len(data)}', end='')
+        print(msg, end='')
 
         sys.stdout.flush()
 
@@ -86,6 +91,7 @@ def progress_bar(data: Union[dict, list], desc: str = ''):
         print_bar(index + 1)
 
     print()
+    writer(msg, out=False)
 
 
 @asynccontextmanager

@@ -52,6 +52,9 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
         }
         choice: CHOICE = None
 
+        if BotHandlers.message_middleware:
+            data = await BotHandlers.message_middleware(data) or data
+
         if data.type in handlers.keys():
             choice = await choice_handlers(data, handlers[data.type])
 

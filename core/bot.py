@@ -11,6 +11,7 @@ KEYWORDS = Union[str, equal, re.Pattern, List[Union[str, equal, re.Pattern]]]
 FUNC_CORO = Callable[[Message], CORO]
 EVENT_CORO = Callable[[Event], CORO]
 VERIFY_CORO = Callable[[Message], Coroutine[Any, Any, Union[bool, Tuple[bool, int], Tuple[bool, int, List[str]]]]]
+MIDDLE_WARE = Callable[[Message], Coroutine[Any, Any, Optional[Message]]]
 
 
 class Handler:
@@ -97,11 +98,14 @@ class Handler:
 
 class BotHandlers:
     prefix_keywords: List[str] = list()
+
     private_message_handlers: List[Handler] = list()
     group_message_handlers: List[Handler] = list()
     temp_message_handlers: List[Handler] = list()
     event_handlers: Dict[str, List[EVENT_CORO]] = dict()
+
     overspeed_handler: Optional[FUNC_CORO] = None
+    message_middleware: Optional[MIDDLE_WARE] = None
 
     @classmethod
     def detail(cls):
@@ -250,10 +254,24 @@ class BotHandlers:
         else:
             raise Exception('Only one overspeed handler can exist.')
 
+    @classmethod
+    def handle_message(cls, hanlder: MIDDLE_WARE):
+        """
+        Message 对象与消息处理器的中间件，用于对 Message 作进一步的客制化处理，只允许存在一个
+
+        :param hanlder: 处理函数
+        :return:
+        """
+        if not cls.message_middleware:
+            cls.message_middleware = hanlder
+        else:
+            raise Exception('Only one message middleware can exist.')
+
 
 on_private_message = BotHandlers.on_private_message
 on_group_message = BotHandlers.on_group_message
 on_temp_message = BotHandlers.on_temp_message
 on_event = BotHandlers.on_event
 on_overspeed = BotHandlers.on_overspeed
+handle_message = BotHandlers.handle_message
 timed_task = TasksControl.timed_task
