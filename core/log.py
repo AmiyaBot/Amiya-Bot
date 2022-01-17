@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import traceback
 
@@ -63,6 +64,28 @@ def writer(text: str):
             f.write(text + '\r\n')
     finally:
         print(text)
+
+
+def progress_bar(data: Union[dict, list], desc: str = ''):
+    data = data.keys() if type(data) is dict else data
+
+    def print_bar(i):
+        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        curr = int(i / len(data) * 100)
+        block = int(curr / 4)
+        bar = '=' * block + ' ' * (25 - block)
+
+        print('\r', end='')
+        print(f'[{date}][INFO] {desc}[{bar}] {curr}% {i}/{len(data)}', end='')
+
+        sys.stdout.flush()
+
+    print_bar(0)
+    for index, item in enumerate(data):
+        yield item
+        print_bar(index + 1)
+
+    print()
 
 
 @asynccontextmanager

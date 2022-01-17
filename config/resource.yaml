@@ -1,0 +1,30 @@
+remote:
+    console: http://vivien8261.gitee.io/amiya-bot-console
+    resource: http://vivien8261.gitee.io/amiya-bot-resource
+    gameData:
+        version: https://gitee.com/vivien8261/Arknights-Bot-Resource/raw/main
+        source: http://vivien8261.gitee.io/arknights-bot-resource
+        files:
+            - levels/enemydata/enemy_database.json
+            - excel/enemy_handbook_table.json
+            - excel/handbook_info_table.json
+            - excel/battle_equip_table.json
+            - excel/char_patch_table.json
+            - excel/character_table.json
+            - excel/uniequip_table.json
+            - excel/charword_table.json
+            - excel/building_data.json
+            - excel/range_table.json
+            - excel/gacha_table.json
+            - excel/stage_table.json
+            - excel/skill_table.json
+            - excel/skin_table.json
+            - excel/item_table.json
+
+save:
+    data: resource/data
+    face: resource/images/face
+    style: resource/style
+    gacha: resource/images/gacha
+    classify: resource/images/classify
+    database: resource/database
