@@ -129,4 +129,3 @@ async def _(data: Message):
 @bot.on_group_message(function_id='normal', keywords=['晚安'])
 async def _(data: Message):
     return Chain(data).text(f'Dr.{data.nickname}，晚安～')
-
