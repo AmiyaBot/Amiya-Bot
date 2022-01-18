@@ -3,14 +3,14 @@ from typing import List
 from playhouse.shortcuts import model_to_dict
 from core.util import create_dir, pascal_case_to_snake_case
 
-collections: List[Model] = []
+table_list: List[Model] = []
 
 
 def table(cls: Model):
     cls._meta.table_name = pascal_case_to_snake_case(cls.__name__)
     cls.create_table()
 
-    collections.append(cls)
+    table_list.append(cls)
 
     return cls
 

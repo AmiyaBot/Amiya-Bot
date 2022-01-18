@@ -2,13 +2,18 @@ import os
 import re
 import time
 import random
+import collections
 
 from core import bot, Message, Chain
+from core.util import read_yaml
 from core.database.user import *
 
 images = []
 for root, dirs, files in os.walk('resource/images/face'):
     images += [os.path.join(root, file) for file in files if file != '.gitkeep']
+
+stage = collections.namedtuple('stage', ['feeling', 'text', 'voice'])
+touch: List[stage] = read_yaml('config/feeling.yaml').touch
 
 
 @table
@@ -93,24 +98,17 @@ async def check_only_name(data: Message):
     return False
 
 
-@bot.on_group_message(function_id='normal', verify=check_only_name)
+@bot.on_group_message(function_id='user', verify=check_only_name)
 async def _(data: Message):
     return Chain(data, quote=False).image(random.choice(images))
 
 
-@bot.on_group_message(function_id='normal', keywords=['阿米驴', '阿驴', '小驴子', '驴子', '驴驴'], check_prefix=False)
+@bot.on_group_message(function_id='user', keywords=['阿米驴', '阿驴', '小驴子', '驴子', '驴驴'], check_prefix=False)
 async def _(data: Message):
     return Chain(data).text(f'哼！Dr.{data.nickname}不许叫人家{random.choice(data.verify.keywords)}，不然人家要生气了！')
 
 
-@bot.on_group_message(function_id='normal', keywords='签到')
-async def _(data: Message):
-    status = sign_in(data, 1)
-    if status:
-        return Chain(data).text(status['text'])
-
-
-@bot.on_group_message(function_id='normal', keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'])
+@bot.on_group_message(function_id='user', keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'], check_prefix=False)
 async def _(data: Message):
     hour = talk_time()
     text = ''
@@ -126,6 +124,37 @@ async def _(data: Message):
     return Chain(data).text(text)
 
 
-@bot.on_group_message(function_id='normal', keywords=['晚安'])
+@bot.on_group_message(function_id='user', keywords=['晚安'], check_prefix=False)
 async def _(data: Message):
     return Chain(data).text(f'Dr.{data.nickname}，晚安～')
+
+
+@bot.on_group_message(function_id='user', keywords='签到')
+async def _(data: Message):
+    status = sign_in(data, 1)
+    if status:
+        return Chain(data).text(status['text'])
+
+
+@bot.on_group_message(function_id='user', keywords=['信赖', '关系', '好感', '我的信息', '个人信息'])
+async def _(data: Message):
+    user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+
+    feeling = user.user_feeling if user.user_feeling <= 4000 else 4000
+
+    text = '博士，这是您的个人信息\n\n'
+    text += f'今日{"已" if user.sign_in else "未"}签到\n'
+    text += f'累计签到：{user.sign_times}\n'
+    text += f'累计互动：{data.user.message_num}\n'
+    text += f'阿米娅的信赖：{int(feeling / 10)}%\n'
+    text += f'阿米娅的心情：{int(user.user_mood / 15 * 100)}%\n'
+
+    voice_list = []
+    for item in touch:
+        if feeling >= item.feeling:
+            voice_list.append(item.text)
+
+    if voice_list:
+        text += '\n\n' + random.choice(voice_list)
+
+    return Chain(data).text_image(text)

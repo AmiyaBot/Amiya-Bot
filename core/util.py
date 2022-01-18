@@ -69,7 +69,7 @@ def create_yaml(path: str, data: dict, overwrite: bool = False):
         return False
 
     with open(path, mode='w+') as file:
-        yaml.safe_dump(data, file, default_flow_style=False, indent=4)
+        yaml.safe_dump(data, file, indent=4, default_flow_style=False, allow_unicode=True)
 
     return True
 
