@@ -1,13 +1,13 @@
 import os
 import shutil
 
-from resourceCenter import resource_config
 from core.network.download import download_sync
+from core.resource import resource_config
 from core.util import create_dir
 from core import log
 
 
-class ResourceManager:
+class BotResource:
     @classmethod
     def download_amiya_bot_console(cls):
         log.info('checking Amiya-Bot Console update...')
@@ -43,7 +43,7 @@ class ResourceManager:
         with open(local_version_file, mode='w+') as lv:
             lv.write(version)
 
-        for file in log.progress_bar(file_list, 'Downloading Amiya-Bot Console: '):
+        for file in log.progress_bar(file_list, 'Amiya-Bot Console'):
             view_path = f'view/{file}'
             if not os.path.exists(view_path) or need_update:
                 folder = '/'.join(view_path.split('/')[0:-1])
@@ -62,3 +62,27 @@ class ResourceManager:
                         src.write(data)
                 else:
                     raise Exception(f'file [{file}] download failed.')
+
+    @classmethod
+    def download_bot_resource(cls, refresh=False):
+        for name, items in resource_config.files.items():
+            if not items:
+                continue
+
+            if type(items) is str:
+                items = [items]
+
+            for item in log.progress_bar(items, f'{name} resource'):
+                path = getattr(resource_config.save, name)
+                url = f'{resource_config.remote.resource}/{item}'
+                save = f'{path}/' + item.split('/')[-1]
+
+                if os.path.exists(save) is False or refresh:
+                    create_dir(path)
+
+                    data = download_sync(url, stringify=False)
+                    if data:
+                        with open(save, mode='wb+') as src:
+                            src.write(data)
+                    else:
+                        raise Exception(f'file [{item}] download failed')

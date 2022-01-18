@@ -29,9 +29,22 @@ class Save:
         pass
 
 
+class Files:
+    face: list
+    style: list
+    classify: list
+    gacha: list
+    database: list
+
+    @classmethod
+    def items(cls):
+        pass
+
+
 class ResourceConfig:
     remote: Remote
     save: Save
+    files: Files
 
 
 resource_config: ResourceConfig = read_yaml('config/resource.yaml')
