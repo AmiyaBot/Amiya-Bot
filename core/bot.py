@@ -75,8 +75,12 @@ class Handler:
                     flag = True
                     break
 
-        if self.check_prefix and not flag:
-            return Verify(False)
+        if self.check_prefix and not flag and not type(self.keywords) is equal:
+            equal_filter = [n for n in self.keywords if type(n) is equal] if type(self.keywords) is list else []
+            if equal_filter:
+                self.keywords = equal_filter
+            else:
+                return Verify(False)
 
         if self.custom_verify:
             result = await self.custom_verify(data)

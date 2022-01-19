@@ -130,7 +130,7 @@ async def _(data: Message):
     return Chain(data).text(f'Dr.{data.nickname}，晚安～')
 
 
-@bot.on_group_message(function_id='user', keywords='签到')
+@bot.on_group_message(function_id='user', keywords=['签到', bot.equal('签到')])
 async def _(data: Message):
     status = sign_in(data, 1)
     if status:
