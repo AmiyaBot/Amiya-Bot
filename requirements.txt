@@ -13,3 +13,4 @@ fastapi~=0.71.0
 Pillow~=9.0.0
 requests~=2.27.1
 baidu-aip~=2.2.18.0
+dhash~=1.3

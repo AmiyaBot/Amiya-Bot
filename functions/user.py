@@ -105,7 +105,8 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', keywords=['阿米驴', '阿驴', '小驴子', '驴子', '驴驴'], check_prefix=False)
 async def _(data: Message):
-    return Chain(data).text(f'哼！Dr.{data.nickname}不许叫人家{random.choice(data.verify.keywords)}，不然人家要生气了！')
+    text = f'哼！Dr.{data.nickname}不许叫人家{random.choice(data.verify.keywords)}，不然人家要生气了！'
+    return Chain(data, at=True, quote=False).text(text)
 
 
 @bot.on_group_message(function_id='user', keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'], check_prefix=False)
@@ -121,7 +122,7 @@ async def _(data: Message):
     if status['status']:
         text += status['text']
 
-    return Chain(data).text(text)
+    return Chain(data, at=True, quote=False).text(text)
 
 
 @bot.on_group_message(function_id='user', keywords=['晚安'], check_prefix=False)

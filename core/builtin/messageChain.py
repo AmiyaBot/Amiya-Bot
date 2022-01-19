@@ -5,12 +5,12 @@ from typing import Union, List
 from contextlib import asynccontextmanager
 from core.config import config
 from core.builtin.message import Message
-from core.builtin.imageCreator import create_image, IMAGES_TYPE
+from core.builtin.imageCreator import create_image, ImageElem, IMAGES_TYPE
 from core.builtin.resourceManager import ResourceManager
 
 
 class Chain:
-    def __init__(self, data: Message, at: bool = False, quote: bool = False):
+    def __init__(self, data: Message, at: bool = False, quote: bool = True):
         """
         创建 Mirai 消息链
 
@@ -83,8 +83,11 @@ class Chain:
         return self
 
     def text_image(self, text, title: str = '', images: IMAGES_TYPE = None):
+        logo = [
+            ImageElem('resource/style/rabbit.png', size=30, pos=(570, 0))
+        ]
         return self.image(
-            path=create_image(text, path=title, images=images)
+            path=create_image(text, path=title, width=600, images=(images or []) + logo, bgcolor='#F5F5F5')
         )
 
     def image(self, path: Union[str, List[str]]):

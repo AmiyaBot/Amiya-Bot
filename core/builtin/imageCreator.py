@@ -82,7 +82,7 @@ IMAGES_TYPE = List[Union[ImageElem, Dict[str, Any]]]
 
 def create_image(text: str,
                  path: str = '',
-                 width: int = 600,
+                 width: int = 0,
                  height: int = None,
                  padding: int = 10,
                  font_size: int = 15,
@@ -134,7 +134,7 @@ def create_image(text: str,
             img = Image.open(item.path).convert('RGBA')
 
             pos = list(item.pos)
-            width = int(height * (img.width / img.height))
+            width = int(item.size * (img.width / img.height))
             height = item.size
             offset = (height - width) / 2
             if offset:

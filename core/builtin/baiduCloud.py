@@ -1,3 +1,4 @@
+from typing import Union
 from aip import AipNlp, AipOcr, AipContentCensor
 from core.network.download import download_async
 from core.config import config
@@ -24,7 +25,7 @@ class BaiduCloud:
 
             self.enable = True
 
-    async def emotion(self, text):
+    async def emotion(self, text) -> Union[bool, dict]:
         """
         对话情绪识别接口
         """
@@ -40,7 +41,7 @@ class BaiduCloud:
                 return False
             return result
 
-    async def web_image_url(self, url):
+    async def web_image_url(self, url) -> Union[bool, dict]:
         """
         网络图片文字识别
         """
@@ -54,7 +55,7 @@ class BaiduCloud:
             result = await run_in_thread_pool(self.__ocr.webImageUrl, url, options)
             return result
 
-    async def basic_general(self, url):
+    async def basic_general(self, image: Union[str, bytes]) -> Union[bool, dict]:
         """
         通用文字识别
         """
@@ -65,10 +66,14 @@ class BaiduCloud:
             options = {
                 'detect_direction': 'true'
             }
-            result = await run_in_thread_pool(self.__ocr.basicGeneralUrl, url, options)
+            result = await run_in_thread_pool(
+                self.__ocr.basicGeneralUrl if type(image) is str else self.__ocr.basicGeneral,
+                image,
+                options
+            )
             return result
 
-    async def basic_accurate(self, url):
+    async def basic_accurate(self, image: Union[str, bytes]) -> Union[bool, dict]:
         """
         通用文字识别（高精度版）
         """
@@ -76,7 +81,7 @@ class BaiduCloud:
             return False
 
         async with log.catch():
-            stream = await download_async(url, stringify=False)
+            stream = await download_async(image, stringify=False) if type(image) is str else image
             if stream:
                 options = {
                     'detect_direction': 'true'
@@ -84,7 +89,7 @@ class BaiduCloud:
                 result = await run_in_thread_pool(self.__ocr.basicAccurate, stream, options)
                 return result
 
-    async def text_censor(self, text):
+    async def text_censor(self, text) -> Union[bool, dict]:
         """
         文本内容审核
         """

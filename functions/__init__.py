@@ -3,4 +3,5 @@ from . import (
     admin,
     replace,
     intellect,
+    arknights
 )

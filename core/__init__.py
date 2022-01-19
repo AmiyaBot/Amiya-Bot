@@ -11,13 +11,16 @@ from core.resource.arknightsGameData import ArknightsGameDataResource
 http = HttpSessionClient()
 websocket = WebsocketClient()
 
-BotResource.download_bot_resource()
-BotResource.download_amiya_bot_console()
-ArknightsGameDataResource.download_data_fiels()
+
+async def download_all():
+    BotResource.download_bot_resource()
+    BotResource.download_amiya_bot_console()
+    ArknightsGameDataResource.download_data_fiels()
 
 
 def network():
     return [
+        download_all(),
         http.init_session(),
-        websocket.connect_websocket(),
+        websocket.connect_websocket()
     ]

@@ -80,7 +80,7 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
                                  update={FunctionUsed.use_num: FunctionUsed.use_num + 1}) \
                     .execute()
 
-            reply: Chain = await handler.function(data)
+            reply: Chain = await handler.action(data)
             if reply:
                 await opration.send(reply)
         else:

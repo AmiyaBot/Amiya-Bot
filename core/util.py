@@ -48,6 +48,13 @@ def singleton(cls, *args, **kwargs):
     return _singleton
 
 
+def full_match(text: str, items: list):
+    for item in items:
+        if item not in text:
+            return False
+    return True
+
+
 def read_yaml(path: str, _dict: bool = False):
     with open(path, mode='r', encoding='utf-8') as f:
         content = yaml.safe_load(f)
@@ -131,6 +138,10 @@ def remove_punctuation(text: str):
 
 def remove_xml_tag(text: str):
     return re.compile(r'<[^>]+>', re.S).sub('', text)
+
+
+def insert_empty(text, max_num, half=False):
+    return '%s%s' % (text, ('　' if half else ' ') * (max_num - len(str(text))))
 
 
 def pascal_case_to_snake_case(camel_case: str):
