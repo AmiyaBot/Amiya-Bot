@@ -10,14 +10,14 @@ baidu = BaiduCloud()
 
 
 @table
-class TextReplace(BaseModel):
-    user_id = TextField()
-    group_id = TextField()
-    origin = TextField()
-    replace = TextField()
-    in_time = BigIntegerField()
-    is_global = IntegerField(default=0)
-    is_active = IntegerField(default=1)
+class TextReplace(GroupBaseModel):
+    user_id: str = TextField()
+    group_id: str = TextField()
+    origin: str = TextField()
+    replace: str = TextField()
+    in_time: int = BigIntegerField()
+    is_global: int = IntegerField(default=0)
+    is_active: int = IntegerField(default=1)
 
 
 @bot.handle_message

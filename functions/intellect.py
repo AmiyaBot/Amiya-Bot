@@ -6,15 +6,15 @@ from core.database.user import *
 
 
 @table
-class Intellect(BaseModel):
-    user_id = TextField(primary_key=True)
-    cur_num = IntegerField()
-    full_num = IntegerField()
-    full_time = IntegerField()
-    message_type = TextField()
-    group_id = TextField()
-    in_time = IntegerField()
-    status = IntegerField()
+class Intellect(UserBaseModel):
+    user_id: str = TextField(primary_key=True)
+    cur_num: int = IntegerField()
+    full_num: int = IntegerField()
+    full_time: int = IntegerField()
+    message_type: str = TextField()
+    group_id: str = TextField()
+    in_time: int = IntegerField()
+    status: int = IntegerField()
 
 
 async def verify(data: Message):

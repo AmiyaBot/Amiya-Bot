@@ -4,7 +4,7 @@ import re
 from typing import List, Dict, Tuple
 from core.network.download import download_sync
 from core.resource import resource_config
-from core.util import remove_xml_tag, remove_punctuation
+from core.util import remove_xml_tag, remove_punctuation, create_dir, singleton
 from core import log
 
 from .common import ArknightsConfig, JsonData
@@ -157,11 +157,15 @@ def init_stages() -> STAGES:
     return stage_list
 
 
+@singleton
 class ArknightsGameData:
-    operators = init_operators()
-    enemies = init_enemies()
-    stages = init_stages()
-    materials, materials_map, materials_made, materials_source = init_materials()
+    def __init__(self):
+        log.info('initialize ArknightsGameData...')
+
+        self.operators = init_operators()
+        self.enemies = init_enemies()
+        self.stages = init_stages()
+        self.materials, self.materials_map, self.materials_made, self.materials_source = init_materials()
 
 
 class ArknightsGameDataResource:
@@ -171,7 +175,8 @@ class ArknightsGameDataResource:
     def check_update(cls):
         log.info('checking ArknightsGameData update...')
 
-        version = download_sync(f'{resource_config.remote.gameData.version}/gamedata/excel/data_version.txt')
+        version = download_sync(f'{resource_config.remote.gameData.version}/gamedata/excel/data_version.txt',
+                                stringify=True)
 
         if version is False:
             log.info(f'ArknightsGameData version file request failed.')
@@ -209,7 +214,7 @@ class ArknightsGameDataResource:
             if use_cache and os.path.exists(path):
                 continue
 
-            data = download_sync(url)
+            data = download_sync(url, stringify=True)
             if data:
                 with open(path, mode='w+', encoding='utf-8') as src:
                     src.write(data)
@@ -217,3 +222,31 @@ class ArknightsGameDataResource:
                 if os.path.exists(cls.local_version_file):
                     os.remove(cls.local_version_file)
                 raise Exception(f'data [{name}] download failed')
+
+    @classmethod
+    def download_operators_resource(cls):
+        operators = ArknightsGameData().operators
+        remote = resource_config.remote.gameData.source
+
+        resource = []
+
+        for name, item in operators.items():
+            skills_list = item.skills()[0]
+
+            resource.append(f'{remote}/portrait/{item.id}_1.png')
+            resource.append(f'{remote}/avatar/{item.id}.png')
+
+            for skill in skills_list:
+                resource.append(f'{remote}/skill/{skill["skill_icon"]}.png')
+
+        for url in log.progress_bar(resource, 'operators resource'):
+            save_path = 'resource/images/' + '/'.join(url.split('/')[-2:])
+
+            if os.path.exists(save_path):
+                continue
+
+            data = download_sync(url)
+            if data:
+                create_dir(save_path, is_file=True)
+                with open(save_path, mode='wb+') as f:
+                    f.write(data)

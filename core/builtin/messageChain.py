@@ -82,7 +82,7 @@ class Chain:
         self.chain += chain
         return self
 
-    def text_image(self, text, title: str = '', images: IMAGES_TYPE = None):
+    def text_image(self, text, images: IMAGES_TYPE = None, title: str = ''):
         logo = [
             ImageElem('resource/style/rabbit.png', size=30, pos=(570, 0))
         ]

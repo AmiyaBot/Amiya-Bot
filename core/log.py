@@ -79,7 +79,7 @@ def progress_bar(data: Union[dict, list], desc: str = ''):
         curr = int(i / len(data) * 100)
         block = int(curr / 4)
         bar = '=' * block + ' ' * (25 - block)
-        msg = f'[{date}][INFO] {desc}[{bar}] {curr}% {i}/{len(data)}'
+        msg = f'[{date}][INFO] {desc} {i}/{len(data)} [{bar}] {curr}%'
 
         print('\r', end='')
         print(msg, end='')

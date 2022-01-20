@@ -1,7 +1,5 @@
-from . import (
-    user,
-    admin,
-    replace,
-    intellect,
-    arknights
-)
+from . import (user,
+               admin,
+               replace,
+               intellect,
+               arknights)

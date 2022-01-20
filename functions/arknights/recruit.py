@@ -5,7 +5,7 @@ from io import BytesIO
 from PIL import Image
 from jieba import posseg
 from itertools import combinations
-from core import log, bot, Message, Chain
+from core import add_init_task, log, bot, Message, Chain
 from core.util import insert_empty, full_match, read_yaml
 from core.builtin.baiduCloud import BaiduCloud
 from core.network.download import download_async
@@ -17,7 +17,7 @@ discern = read_yaml('config/recruit.yaml').autoDiscern
 
 def find_operator_tags_by_tags(tags, max_rarity):
     res = []
-    for name, item in ArknightsGameData.operators.items():
+    for name, item in ArknightsGameData().operators.items():
         if item.is_recruit is False or item.rarity > max_rarity:
             continue
         for tag in item.tags:
@@ -46,7 +46,7 @@ def find_combinations(_list):
 
 async def auto_discern(data: Message):
     for item in data.image:
-        img = await download_async(item, stringify=False)
+        img = await download_async(item)
         if img:
             hash_value = dhash.dhash_int(Image.open(BytesIO(img)))
             diff = dhash.get_num_bits_different(hash_value, discern.templateHash)
@@ -70,11 +70,11 @@ class Recruit:
     tags_list = []
 
     @classmethod
-    def init_tags_list(cls):
+    async def init_tags_list(cls):
         log.info('building operator tags keywords dict...')
 
         tags = ['资深', '高资', '高级资深']
-        for name, item in ArknightsGameData.operators.items():
+        for name, item in ArknightsGameData().operators.items():
             for tag in item.tags:
                 if tag not in tags:
                     tags.append(tag)
@@ -167,7 +167,7 @@ class Recruit:
             return '博士，没有在图片内找到标签信息'
 
 
-Recruit.init_tags_list()
+add_init_task(Recruit.init_tags_list)
 
 
 @bot.on_group_message(function_id='recruit', keywords=['公招', '公开招募'])

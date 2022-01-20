@@ -1,1 +1,2 @@
-from . import (recruit)
+from . import (recruit,
+               gacha)

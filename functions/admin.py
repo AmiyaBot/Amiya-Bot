@@ -1,3 +1,6 @@
+import os
+import psutil
+
 from core import bot, http, Message, Chain, Mirai
 from core.database.group import Group
 from core.control import StateControl
@@ -18,6 +21,14 @@ async def _(data: Message):
         Group.truncate_table()
         Group.insert_many(group_list).execute()
         await data.send(Chain(data).text(f'同步完成，共 {len(group_list)} 个群。'))
+
+
+@bot.on_group_message(keywords=bot.equal('占用'))
+async def _(data: Message):
+    self = psutil.Process(os.getpid())
+    info = self.memory_full_info()
+
+    return Chain(data).text(f'内存占用：{int(info.uss / 1024 / 1024)}mb')
 
 
 @bot.on_event(Mirai.BotInvitedJoinGroupRequestEvent)

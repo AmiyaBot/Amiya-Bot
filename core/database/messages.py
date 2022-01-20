@@ -11,22 +11,22 @@ from core import log
 db = sqlite(config.databases.message)
 
 
-class BaseModel(Model):
+class MessageBaseModel(Model):
     class Meta:
         database = db
 
 
 @table
-class MessageRecord(BaseModel):
-    user_id = BigIntegerField()
-    group_id = BigIntegerField()
-    msg_type = TextField()
-    text = TextField()
-    face = TextField()
-    image = TextField()
-    message = TextField()
-    classify = TextField()
-    create_time = IntegerField()
+class MessageRecord(MessageBaseModel):
+    user_id: int = BigIntegerField()
+    group_id: int = BigIntegerField()
+    msg_type: str = TextField()
+    text: str = TextField()
+    face: str = TextField()
+    image: str = TextField()
+    message: str = TextField()
+    classify: str = TextField()
+    create_time: int = IntegerField()
 
 
 class MessageStack:

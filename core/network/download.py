@@ -9,7 +9,7 @@ headers = {
 }
 
 
-def download_sync(url, stringify=True):
+def download_sync(url, stringify=False):
     try:
         stream = requests.get(url, headers=headers, stream=True)
         if stream.status_code == 200:
@@ -21,7 +21,7 @@ def download_sync(url, stringify=True):
         log.error(e, desc='download error:')
 
 
-async def download_async(url, stringify=True):
+async def download_async(url, stringify=False):
     async with log.catch('download error:'):
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as res:

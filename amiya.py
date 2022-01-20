@@ -1,15 +1,11 @@
 import asyncio
 import functions
 
-from core.database.messages import MessageStack
 from core.network.httpServer import server
-from core.builtin.messageHandler import speed
-from core.builtin.timedTask import TasksControl
 from core.control import StateControl
 from core.bot import BotHandlers
 from core import (log,
-                  websocket,
-                  network)
+                  init_core)
 
 BotHandlers.add_prefix(
     [
@@ -37,11 +33,7 @@ class AmiyaBot:
 
         super().__init__()
 
-        self.tasks = network() + [
-            speed.clean_container(),
-            MessageStack.run_recording(),
-            TasksControl.run_tasks(websocket)
-        ]
+        self.tasks = init_core()
 
     async def run(self):
         await asyncio.wait(self.tasks)

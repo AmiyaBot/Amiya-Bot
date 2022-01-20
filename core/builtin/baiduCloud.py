@@ -81,7 +81,7 @@ class BaiduCloud:
             return False
 
         async with log.catch():
-            stream = await download_async(image, stringify=False) if type(image) is str else image
+            stream = await download_async(image) if type(image) is str else image
             if stream:
                 options = {
                     'detect_direction': 'true'

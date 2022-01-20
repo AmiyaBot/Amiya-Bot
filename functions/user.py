@@ -8,6 +8,8 @@ from core import bot, Message, Chain
 from core.util import read_yaml
 from core.database.user import *
 
+from .arknights.gacha.gacha import UserGachaInfo
+
 images = []
 for root, dirs, files in os.walk('resource/images/face'):
     images += [os.path.join(root, file) for file in files if file != '.gitkeep']
@@ -17,20 +19,12 @@ touch: List[stage] = read_yaml('config/feeling.yaml').touch
 
 
 @table
-class UserInfo(BaseModel):
-    user_id = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
-    user_feeling = IntegerField(default=0)
-    user_mood = IntegerField(default=15)
-    sign_in = IntegerField(default=0)
-    sign_times = IntegerField(default=0)
-
-
-@table
-class UserGachaInfo(BaseModel):
-    user_id = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
-    coupon = IntegerField(default=50)
-    gacha_break_even = IntegerField(default=0)
-    gacha_pool = IntegerField(default=1)
+class UserInfo(UserBaseModel):
+    user_id: str = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
+    user_feeling: int = IntegerField(default=0)
+    user_mood: int = IntegerField(default=15)
+    sign_in: int = IntegerField(default=0)
+    sign_times: int = IntegerField(default=0)
 
 
 def sign_in(data: Message, sign_type=0):
