@@ -2,6 +2,7 @@ import json
 import asyncio
 import websockets
 
+from contextlib import asynccontextmanager
 from core.network import WSOpration
 from core.builtin.messageChain import Chain, custom_chain
 from core.builtin.message.mirai import Mirai
@@ -60,6 +61,17 @@ class WebsocketClient(WSOpration):
                     await reply.build(self.session, chain=[voice])
                 )
 
+    @asynccontextmanager
+    async def send_to_admin(self):
+        data = custom_chain(msg_type='friend')
+
+        yield data
+
+        for item in config.admin.accounts:
+            data.target = item
+
+            await self.send(data)
+
     async def handle_message(self, message: str):
         async with log.catch(handler=self.handle_error, ignore=[KeyError, json.JSONDecodeError]):
 
@@ -79,9 +91,5 @@ class WebsocketClient(WSOpration):
         if not self.session:
             return
 
-        for admin in config.admin.accounts:
-            notice = custom_chain(user_id=admin, msg_type='friend')
-            notice.text(message.replace('  ', '    '))
-            await self.connect.send(
-                await notice.build(self.session)
-            )
+        async with self.send_to_admin() as chain:
+            chain.text(message.replace('  ', '    '))

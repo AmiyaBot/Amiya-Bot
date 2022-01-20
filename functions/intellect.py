@@ -84,7 +84,7 @@ async def _(data: Message):
                 return reply.text('阿米娅还没有帮博士记录理智提醒哦')
 
 
-@bot.timed_task(each=30)
+@bot.timed_task(each=10)
 async def _(client: WebsocketClient):
     conditions = (Intellect.status == 0, Intellect.full_time <= int(time.time()))
     results: List[Intellect] = Intellect.select().where(*conditions)
@@ -93,7 +93,7 @@ async def _(client: WebsocketClient):
         for item in results:
             text = f'博士！博士！您的理智已经满 {item.full_num} 了，快点上线查看吧～'
 
-            data = custom_chain(item.user_id, item.group_id, item.message_type)
+            data = custom_chain(int(item.user_id), int(item.group_id), item.message_type)
             data.at().text(text)
 
             await client.send(data)

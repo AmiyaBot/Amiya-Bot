@@ -1,0 +1,9 @@
+setting:
+    checkRate: 30
+    autoPush: true
+    sendGIF: false
+    imagesCache: fileStorage/weibo
+
+listen:
+    - 6279793937
+    - 1652903644

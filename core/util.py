@@ -1,8 +1,10 @@
 import re
 import os
+import time
 import yaml
 import jieba
 import asyncio
+import datetime
 import pypinyin
 
 from yaml import SafeDumper
@@ -35,6 +37,37 @@ async def run_in_thread_pool(block_func, *args, **kwargs):
     """
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(executor, partial(block_func, *args, **kwargs))
+
+
+class TimeRecorder:
+    def __init__(self):
+        self.time = time.time()
+
+    def rec(self, millisecond=False):
+        mil = 1000 if millisecond else 1
+        return int(time.time() * mil - self.time * mil)
+
+    def total(self):
+        return self.calc_time_total(self.rec())
+
+    @staticmethod
+    def calc_time_total(seconds):
+        timedelta = datetime.timedelta(seconds=seconds)
+        day = timedelta.days
+        hour, mint, sec = tuple([
+            int(n) for n in str(timedelta).split(',')[-1].split(':')
+        ])
+        total = ''
+        if day:
+            total += '%d天' % day
+        if hour:
+            total += '%d小时' % hour
+        if mint:
+            total += '%d分钟' % mint
+        if sec and not (day or hour or mint):
+            total += '%d秒' % sec
+
+        return total
 
 
 def singleton(cls, *args, **kwargs):

@@ -21,3 +21,10 @@ class GroupActive(GroupBaseModel):
     group_id: str = TextField(primary_key=True)
     active: int = IntegerField(default=1)
     sleep_time: int = BigIntegerField(default=0)
+
+
+@table
+class GroupSetting(GroupBaseModel):
+    group_id: str = TextField(primary_key=True)
+    send_notice: int = IntegerField(default=0)
+    send_weibo: int = IntegerField(default=0)
