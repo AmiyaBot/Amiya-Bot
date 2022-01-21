@@ -88,6 +88,13 @@ def full_match(text: str, items: list):
     return True
 
 
+def any_match(text: str, items: list):
+    for item in items:
+        if item in text:
+            return item
+    return False
+
+
 def read_yaml(path: str, _dict: bool = False):
     with open(path, mode='r', encoding='utf-8') as f:
         content = yaml.safe_load(f)
