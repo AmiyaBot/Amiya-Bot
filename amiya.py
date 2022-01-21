@@ -25,7 +25,7 @@ class AmiyaBot:
         log.info(
             [
                 f'starting Amiya-Bot...',
-                f'%d function file(s) loaded.' % len([f for f in dir(functions) if f[:2] != '__'])
+                f'%d function module(s) loaded.' % len([f for f in dir(functions) if f[:2] != '__'])
             ] + BotHandlers.detail()
         )
 

@@ -171,6 +171,31 @@ class ArknightsGameData:
 class ArknightsGameDataResource:
     local_version_file = resource_config.save.data + '/version.txt'
 
+    download_ignore_file = 'fileStorage/downloadFail.txt'
+    download_ignore = []
+
+    if os.path.exists(download_ignore_file):
+        with open(download_ignore_file, mode='r', encoding='utf-8') as f:
+            download_ignore = f.read().strip('\n').split('\n')
+
+    @classmethod
+    def __save_file(cls, url, save_path):
+        if save_path in cls.download_ignore:
+            return
+
+        data = download_sync(url)
+        if data:
+            create_dir(save_path, is_file=True)
+            with open(save_path, mode='wb+') as f:
+                f.write(data)
+        else:
+            cls.download_ignore.append(save_path)
+
+    @classmethod
+    def refresh_download_ignore(cls):
+        with open(cls.download_ignore_file, mode='w', encoding='utf-8') as f:
+            f.write('\n'.join(cls.download_ignore))
+
     @classmethod
     def check_update(cls):
         log.info('checking ArknightsGameData update...')
@@ -224,25 +249,6 @@ class ArknightsGameDataResource:
                 raise Exception(f'data [{name}] download failed')
 
     @classmethod
-    def download_enemies_resource(cls):
-        enemies = ArknightsGameData().enemies
-
-        for name in log.progress_bar(enemies, 'enemies resource'):
-            item = enemies[name]
-
-            url = f'{resource_config.remote.gameData.source}/enemy/%s.png' % item['info']['enemyId']
-            save_path = f'resource/images/enemy/%s.png' % item['info']['enemyId']
-
-            if os.path.exists(save_path):
-                continue
-
-            data = download_sync(url)
-            if data:
-                create_dir(save_path, is_file=True)
-                with open(save_path, mode='wb+') as f:
-                    f.write(data)
-
-    @classmethod
     def download_operators_resource(cls):
         operators = ArknightsGameData().operators
         remote = resource_config.remote.gameData.source
@@ -264,8 +270,34 @@ class ArknightsGameDataResource:
             if os.path.exists(save_path):
                 continue
 
-            data = download_sync(url)
-            if data:
-                create_dir(save_path, is_file=True)
-                with open(save_path, mode='wb+') as f:
-                    f.write(data)
+            cls.__save_file(url, save_path)
+
+    @classmethod
+    def download_materials_resource(cls):
+        materials = ArknightsGameData().materials
+
+        for m_id in log.progress_bar(materials, 'materials resource'):
+            item = materials[m_id]
+
+            url = f'{resource_config.remote.gameData.source}/item/%s.png' % item['material_icon']
+            save_path = f'resource/images/item/%s.png' % item['material_icon']
+
+            if os.path.exists(save_path):
+                continue
+
+            cls.__save_file(url, save_path)
+
+    @classmethod
+    def download_enemies_resource(cls):
+        enemies = ArknightsGameData().enemies
+
+        for name in log.progress_bar(enemies, 'enemies resource'):
+            item = enemies[name]
+
+            url = f'{resource_config.remote.gameData.source}/enemy/%s.png' % item['info']['enemyId']
+            save_path = f'resource/images/enemy/%s.png' % item['info']['enemyId']
+
+            if os.path.exists(save_path):
+                continue
+
+            cls.__save_file(url, save_path)

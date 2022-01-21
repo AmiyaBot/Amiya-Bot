@@ -1,35 +1,48 @@
-attr_dict:
-    atk: 攻击力
-    attackSpeed: 攻击速度
-    baseAttackTime: 攻击间隔
-    blockCnt: 阻挡数
-    cost: 部署费用
-    def: 防御力
-    magicResistance: 魔法抗性
-    maxHp: 最大生命值
-    respawnTime: 再部署时间
-attr_lower_dict:
-    attack_speed: 攻击速度
-    base_attack_time: 攻击间隔
-    block_cnt: 阻挡数
-    magic_resistance: 魔法抗性
-    max_hp: 最大生命值
-    respawn_time: 再部署时间
-classes:
-    CASTER: 术师
-    MEDIC: 医疗
-    PIONEER: 先锋
-    SNIPER: 狙击
-    SPECIAL: 特种
-    SUPPORT: 辅助
-    TANK: 重装
-    WARRIOR: 近卫
-high_star:
-    '5': 资深干员
-    '6': 高级资深干员
-types:
-    MELEE: 近战
-    RANGED: 远程
+operatorSetting:
+    attr_dict:
+        atk: 攻击力
+        attackSpeed: 攻击速度
+        baseAttackTime: 攻击间隔
+        blockCnt: 阻挡数
+        cost: 部署费用
+        def: 防御力
+        magicResistance: 魔法抗性
+        maxHp: 最大生命值
+        respawnTime: 再部署时间
+    attr_lower_dict:
+        attack_speed: 攻击速度
+        base_attack_time: 攻击间隔
+        block_cnt: 阻挡数
+        magic_resistance: 魔法抗性
+        max_hp: 最大生命值
+        respawn_time: 再部署时间
+    classes:
+        CASTER: 术师
+        MEDIC: 医疗
+        PIONEER: 先锋
+        SNIPER: 狙击
+        SPECIAL: 特种
+        SUPPORT: 辅助
+        TANK: 重装
+        WARRIOR: 近卫
+    high_star:
+        '5': 资深干员
+        '6': 高级资深干员
+    types:
+        MELEE: 近战
+        RANGED: 远程
+
+materialSetting:
+    rate:
+        SOMETIMES: 罕见
+        OFTEN: 小概率
+        USUAL: 中概率
+        ALMOST: 大概率
+        ALWAYS: 固定
+    made:
+        WORKSHOP: [ '加工站', '合成' ]
+        MANUFACTURE: [ '制造站', '生产' ]
+
 jadeSetting:
     signIn: 200
     dailyTasks: 100

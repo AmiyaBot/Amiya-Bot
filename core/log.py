@@ -69,7 +69,7 @@ def writer(text: str, out=True):
 
 def progress_bar(data: Union[dict, list], desc: str = ''):
     data = data.keys() if type(data) is dict else data
-    desc = f'{desc}: ' if desc else ''
+    desc = f'{desc}:' if desc else ''
     msg = ''
 
     def print_bar(i):

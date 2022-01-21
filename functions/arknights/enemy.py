@@ -2,8 +2,8 @@ import re
 import jieba
 
 from typing import List
-from core import log, bot, Message, Chain
-from core.util import find_similar_list, remove_xml_tag, integer
+from core import log, bot, Message, Chain, add_init_task
+from core.util import find_similar_list, remove_xml_tag, integer, any_match
 from core.resource.arknightsGameData import ArknightsGameData
 
 line_height = 16
@@ -24,7 +24,7 @@ class Enemy:
     async def init_enemies(cls):
         log.info('building enemies names keywords dict...')
 
-        cls.enemies = ArknightsGameData().enemies.keys()
+        cls.enemies = list(ArknightsGameData().enemies.keys())
 
         with open('resource/enemies.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([f'{name} 500 n' for name in cls.enemies]))
@@ -91,7 +91,14 @@ class Enemy:
         return text, icons
 
 
-@bot.on_group_message(function_id='checkEnemy', keywords=['敌人', '敌方'] + Enemy.enemies)
+add_init_task(Enemy.init_enemies)
+
+
+async def verify(data: Message):
+    return any_match(data.text, ['敌人', '敌方'] + Enemy.enemies)
+
+
+@bot.on_group_message(function_id='checkEnemy', verify=verify)
 async def _(data: Message):
     message = data.text_origin
     words = data.text_cut

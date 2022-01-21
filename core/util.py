@@ -93,7 +93,7 @@ def full_match(text: str, items: list):
 def any_match(text: str, items: list):
     for item in items:
         if item in text:
-            return item
+            return True
     return False
 
 

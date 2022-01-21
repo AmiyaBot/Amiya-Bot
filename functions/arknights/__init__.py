@@ -1,4 +1,5 @@
-from . import (recruit,
-               enemy,
+from . import (enemy,
                gacha,
+               recruit,
+               material,
                calculator)
