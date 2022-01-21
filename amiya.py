@@ -3,21 +3,12 @@ import functions
 
 from core.network.httpServer import server
 from core.control import StateControl
+from core.util import read_yaml
 from core.bot import BotHandlers
 from core import (log,
                   init_core)
 
-BotHandlers.add_prefix(
-    [
-        '阿米娅',
-        '阿米兔',
-        '兔兔',
-        '兔子',
-        '小兔子',
-        'Amiya',
-        'amiya'
-    ]
-)
+BotHandlers.add_prefix(read_yaml('config/bot.yaml').prefixName)
 
 
 class AmiyaBot:

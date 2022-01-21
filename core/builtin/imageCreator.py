@@ -12,7 +12,7 @@ SAVEPATH = config.imageCreator.savePath
 
 
 class TextParser:
-    def __init__(self, text: str, color: str, font_size: int, max_seat: int):
+    def __init__(self, text: str, max_seat: int, color: str = '#000000', font_size: int = 15):
         self.font = ImageFont.truetype(FONTFILE, font_size)
         self.text = text
         self.color = color
@@ -112,7 +112,7 @@ def create_image(text: str,
     :param images:      插入的图片列表，内容为 ImageElem 对象
     :return:            图片路径
     """
-    text = TextParser(text, color, font_size, width - padding * 2)
+    text = TextParser(text, width - padding * 2, color, font_size)
     image = Image.new('RGB', (width, height or ((text.line + 2) * line_height)), bgcolor)
     draw = ImageDraw.Draw(image)
 

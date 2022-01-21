@@ -30,7 +30,11 @@ async def download_files():
 
 
 def add_init_task(coro):
-    init_task.append(coro)
+    if type(coro) is list:
+        for item in coro:
+            init_task.append(item)
+    else:
+        init_task.append(coro)
 
 
 def init_core():
