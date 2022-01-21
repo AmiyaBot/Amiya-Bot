@@ -1,2 +1,3 @@
 from . import (recruit,
-               gacha)
+               gacha,
+               calculator)

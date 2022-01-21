@@ -30,3 +30,8 @@ high_star:
 types:
     MELEE: 近战
     RANGED: 远程
+jadeSetting:
+    signIn: 200
+    dailyTasks: 100
+    weeklyTasks: 500
+    weeklyBattle: 1800
