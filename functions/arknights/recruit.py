@@ -4,6 +4,7 @@ import jieba
 from io import BytesIO
 from PIL import Image
 from jieba import posseg
+from typing import List
 from itertools import combinations
 from core import add_init_task, log, bot, Message, Chain
 from core.util import insert_empty, full_match, read_yaml
@@ -67,7 +68,7 @@ async def get_ocr_result(image):
 
 
 class Recruit:
-    tags_list = []
+    tags_list: List[str] = []
 
     @classmethod
     async def init_tags_list(cls):

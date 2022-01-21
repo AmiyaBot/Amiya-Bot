@@ -11,7 +11,7 @@ from .common import ArknightsConfig, JsonData
 from .operatorBuilder import Operator
 
 STAGES = Dict[str, Dict[str, str]]
-ENEMIES = Dict[str, Dict[str, List[dict]]]
+ENEMIES = Dict[str, Dict[str, dict]]
 OPERATORS = Dict[str, Operator]
 MATERIALS = Tuple[
     Dict[str, Dict[str, str]],
@@ -222,6 +222,25 @@ class ArknightsGameDataResource:
                 if os.path.exists(cls.local_version_file):
                     os.remove(cls.local_version_file)
                 raise Exception(f'data [{name}] download failed')
+
+    @classmethod
+    def download_enemies_resource(cls):
+        enemies = ArknightsGameData().enemies
+
+        for name in log.progress_bar(enemies, 'enemies resource'):
+            item = enemies[name]
+
+            url = f'{resource_config.remote.gameData.source}/enemy/%s.png' % item['info']['enemyId']
+            save_path = f'resource/images/enemy/%s.png' % item['info']['enemyId']
+
+            if os.path.exists(save_path):
+                continue
+
+            data = download_sync(url)
+            if data:
+                create_dir(save_path, is_file=True)
+                with open(save_path, mode='wb+') as f:
+                    f.write(data)
 
     @classmethod
     def download_operators_resource(cls):

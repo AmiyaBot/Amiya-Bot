@@ -21,7 +21,7 @@ async def download_files():
     BotResource.download_amiya_bot_console()
     ArknightsGameDataResource.download_data_fiels()
     ArknightsGameDataResource.download_operators_resource()
-    ArknightsGameData()
+    ArknightsGameDataResource.download_enemies_resource()
 
     for coro in init_task:
         await coro()

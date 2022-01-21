@@ -3,6 +3,8 @@ import os
 import time
 import yaml
 import jieba
+import random
+import difflib
 import asyncio
 import datetime
 import pypinyin
@@ -93,6 +95,29 @@ def any_match(text: str, items: list):
         if item in text:
             return item
     return False
+
+
+def find_similar_list(text: str, text_list: list, _random: bool = False):
+    result = {}
+    for item in text_list:
+        rate = float(
+            difflib.SequenceMatcher(None, text, item).quick_ratio() * len([n for n in text if n in set(item)])
+        )
+        if rate > 0:
+            if rate not in result:
+                result[rate] = []
+            result[rate].append(item)
+
+    if not result:
+        return None, 0
+
+    high = sorted(result.keys())[-1]
+    result = result[high]
+
+    if _random:
+        return random.choice(result), high
+
+    return result, high
 
 
 def read_yaml(path: str, _dict: bool = False):
