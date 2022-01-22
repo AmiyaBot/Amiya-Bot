@@ -3,31 +3,25 @@ from core.util import read_yaml, create_yaml, combine_dict
 
 from .mahConfig import MiraiApiHttp
 from .adminConfig import Admin
-from .ImageConfig import ImageCreator
-from .databaseConfig import Databases
-from .speedConfig import SpeedSetting
 from .baiduConfig import BaiduCloud
+from .serverConfig import ServerConfig
 
 config_file = 'config/config.yaml'
 
 
 class Config:
     admin: Admin
-    miraiApiHttp: MiraiApiHttp
-    imageCreator: ImageCreator
-    databases: Databases
-    speedSetting: SpeedSetting
     baiduCloud: BaiduCloud
+    httpServer: ServerConfig
+    miraiApiHttp: MiraiApiHttp
 
     @classmethod
     def desc(cls):
         return {
             'admin': Admin.desc(),
-            'miraiApiHttp': MiraiApiHttp.desc(),
-            'imageCreator': ImageCreator.desc(),
-            'databases': Databases.desc(),
-            'speedSetting': SpeedSetting.desc(),
             'baiduCloud': BaiduCloud.desc(),
+            'httpServer': ServerConfig.desc(),
+            'miraiApiHttp': MiraiApiHttp.desc(),
         }
 
 

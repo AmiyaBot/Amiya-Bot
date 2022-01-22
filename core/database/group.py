@@ -1,7 +1,6 @@
 from core.database import *
-from core.config import config
 
-db = sqlite(config.databases.group)
+db = sqlite(db_conf.group)
 
 
 class GroupBaseModel(Model):

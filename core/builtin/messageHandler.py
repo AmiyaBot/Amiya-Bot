@@ -8,8 +8,9 @@ from core.builtin.messageChain import Chain
 from core.database.messages import MessageStack
 from core.database.bot import FunctionUsed, DisabledFunction
 from core.control import SpeedControl
-from core.config import config
+from core.util import read_yaml
 
+config = read_yaml('config/private/bot.yaml')
 speed = SpeedControl(config.speedSetting.maxsize,
                      config.speedSetting.mintime)
 

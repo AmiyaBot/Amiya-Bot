@@ -4,8 +4,9 @@ import datetime
 
 from PIL import Image, ImageDraw, ImageFont
 from typing import *
-from core.util import create_dir
-from core.config import config
+from core.util import read_yaml, create_dir
+
+config = read_yaml('config/private/bot.yaml')
 
 FONTFILE = config.imageCreator.fontFile
 SAVEPATH = config.imageCreator.savePath

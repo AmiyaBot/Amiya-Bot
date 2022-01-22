@@ -5,8 +5,8 @@ import random
 import collections
 
 from core import bot, Message, Chain
-from core.util import read_yaml
 from core.database.user import *
+from core.util import read_yaml
 
 from .arknights.gacha.gacha import UserGachaInfo
 
@@ -15,7 +15,7 @@ for root, dirs, files in os.walk('resource/images/face'):
     images += [os.path.join(root, file) for file in files if file != '.gitkeep']
 
 stage = collections.namedtuple('stage', ['feeling', 'text', 'voice'])
-touch: List[stage] = read_yaml('config/feeling.yaml').touch
+touch: List[stage] = read_yaml('config/private/feeling.yaml').touch
 
 
 @table

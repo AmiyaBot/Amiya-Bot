@@ -1,7 +1,6 @@
 from core.database import *
-from core.config import config
 
-db = sqlite(config.databases.user)
+db = sqlite(db_conf.user)
 
 
 class UserBaseModel(Model):

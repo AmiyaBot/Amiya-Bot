@@ -1,7 +1,6 @@
 from core.database import *
-from core.config import config
 
-db = sqlite(config.databases.bot)
+db = sqlite(db_conf.bot)
 
 
 class BotBaseModel(Model):

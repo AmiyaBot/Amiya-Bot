@@ -74,7 +74,9 @@ async def _(data: Message):
         #     return self.save_replace(data, origin, replace)
 
         # 百度审核
-        check = await baidu.text_censor(replace)
+        check = None
+        if baidu.enable:
+            check = await baidu.text_censor(replace)
 
         if not check or check['conclusionType'] in [3, 4]:
             TextReplace.create(
@@ -91,16 +93,16 @@ async def _(data: Message):
                     text += item['msg'] + '\n'
 
             return Chain(data).text(f'已转由管理员审核，请等待管理员确认批准\n{text}')
+        else:
+            if check['conclusionType'] == 2:
+                text = '审核不通过！检测到以下违规内容：\n'
+                for item in check['data']:
+                    text += item['msg'] + '\n'
 
-        if check['conclusionType'] == 2:
-            text = '审核不通过！检测到以下违规内容：\n'
-            for item in check['data']:
-                text += item['msg'] + '\n'
+                return Chain(data).text(text)
 
-            return Chain(data).text(text)
-
-        if check['conclusionType'] == 1:
-            return save_replace(data, origin, replace)
+            if check['conclusionType'] == 1:
+                return save_replace(data, origin, replace)
 
 
 def show_replace_by_replace(data: Message, replace):

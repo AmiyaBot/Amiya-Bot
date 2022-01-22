@@ -3,7 +3,7 @@ import json
 from core.util import read_yaml
 from core.resource import resource_config
 
-config = read_yaml('config/arknights.yaml', _dict=True)['operatorSetting']
+config = read_yaml('config/private/arknights.yaml', _dict=True)['operatorSetting']
 
 
 class ArknightsConfig:

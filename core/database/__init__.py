@@ -1,8 +1,9 @@
 from peewee import *
 from typing import List
 from playhouse.shortcuts import model_to_dict
-from core.util import create_dir, pascal_case_to_snake_case
+from core.util import read_yaml, create_dir, pascal_case_to_snake_case
 
+db_conf = read_yaml('config/private/database.yaml')
 table_list: List[Model] = []
 
 

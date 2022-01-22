@@ -3,12 +3,11 @@ import json
 import asyncio
 
 from core.database import *
-from core.config import config
 from core.builtin.message import Message
 from core.control import StateControl
 from core import log
 
-db = sqlite(config.databases.message)
+db = sqlite(db_conf.message)
 
 
 class MessageBaseModel(Model):

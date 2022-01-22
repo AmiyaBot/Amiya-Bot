@@ -4,7 +4,7 @@ import time
 from core import bot, Message, Chain
 from core.util import read_yaml
 
-setting = read_yaml('config/arknights.yaml').jadeSetting
+setting = read_yaml('config/private/arknights.yaml').jadeSetting
 re_list = [
     r'(\d+)年(\d+)月(\d+)日.*玉',
     r'(\d+)年(\d+)月(\d+)号.*玉',

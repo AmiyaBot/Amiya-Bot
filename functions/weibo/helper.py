@@ -8,7 +8,7 @@ from core.util import remove_xml_tag, char_seat, read_yaml, create_dir
 from core.network.download import download_async
 from core import log
 
-weibo_conf = read_yaml('config/weibo.yaml')
+weibo_conf = read_yaml('config/private/weibo.yaml')
 
 
 async def get_result(url, headers):

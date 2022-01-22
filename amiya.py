@@ -1,14 +1,15 @@
 import asyncio
 import functions
 
-from core.network.httpServer import server
+from core.network.httpServer import HttpServer
 from core.control import StateControl
+from core.config import config
 from core.util import read_yaml
 from core.bot import BotHandlers
 from core import (log,
                   init_core)
 
-BotHandlers.add_prefix(read_yaml('config/bot.yaml').prefixName)
+BotHandlers.add_prefix(read_yaml('config/private/bot.yaml').prefixName)
 
 
 class AmiyaBot:
@@ -37,11 +38,13 @@ async def bot_run_forever():
 
 
 if __name__ == '__main__':
+    console_server = HttpServer(config.httpServer.host, config.httpServer.port)
+
     asyncio.run(
         asyncio.wait(
             [
                 bot_run_forever(),
-                server.serve()
+                console_server.serve()
             ]
         )
     )

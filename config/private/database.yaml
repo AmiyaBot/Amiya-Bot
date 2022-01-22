@@ -1,0 +1,4 @@
+bot: database/bot.db
+group: database/group.db
+message: database/message.db
+user: database/user.db

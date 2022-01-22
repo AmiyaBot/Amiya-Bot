@@ -47,7 +47,7 @@ class ResourceConfig:
     files: Files
 
 
-resource_config: ResourceConfig = read_yaml('config/resource.yaml')
+resource_config: ResourceConfig = read_yaml('config/private/resource.yaml')
 
 for item in resource_config.save.values():
     create_dir(item)

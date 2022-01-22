@@ -13,7 +13,7 @@ from core.network.download import download_async
 from core.resource.arknightsGameData import ArknightsGameData
 
 baidu = BaiduCloud()
-discern = read_yaml('config/recruit.yaml').autoDiscern
+discern = read_yaml('config/private/recruit.yaml').autoDiscern
 
 
 def find_operator_tags_by_tags(tags, max_rarity):
@@ -185,6 +185,9 @@ async def _(data: Message):
             return Chain(data).text(recruit)
         else:
             # 文本内容验证不出则询问截图
+            if not baidu.enable:
+                return None
+
             wait = await data.waiting(Chain(data, at=True, quote=False).text('博士，请发送您的公招界面截图~'))
 
             if wait and wait.image:
