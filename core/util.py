@@ -3,6 +3,7 @@ import os
 import time
 import yaml
 import jieba
+import jionlp
 import random
 import difflib
 import asyncio
@@ -18,6 +19,10 @@ from concurrent.futures import ThreadPoolExecutor
 
 jieba.setLogLevel(jieba.logging.INFO)
 
+yaml_cache = {
+    'attr': {},
+    'dict': {}
+}
 executor = ThreadPoolExecutor(min(32, (os.cpu_count() or 1) + 4))
 
 
@@ -83,6 +88,10 @@ def singleton(cls, *args, **kwargs):
     return _singleton
 
 
+def sorted_dict(data: dict, *args, **kwargs):
+    return {n: data[n] for n in sorted(data, *args, **kwargs)}
+
+
 def full_match(text: str, items: list):
     for item in items:
         if item not in text:
@@ -120,11 +129,19 @@ def find_similar_list(text: str, text_list: list, _random: bool = False):
     return result, high
 
 
-def read_yaml(path: str, _dict: bool = False):
+def read_yaml(path: str, _dict: bool = False, _refresh=True):
+    t = 'dict' if _dict else 'attr'
+
+    if path in yaml_cache[t] and not _refresh:
+        return yaml_cache[t][path]
+
     with open(path, mode='r', encoding='utf-8') as f:
         content = yaml.safe_load(f)
         if not _dict:
             content = AttrDict(content)
+
+        yaml_cache[t][path] = content
+
     return content
 
 
@@ -223,6 +240,33 @@ def integer(value):
     if type(value) is float and int(value) == value:
         value = int(value)
     return value
+
+
+def extract_time(text: str):
+    result = jionlp.ner.extract_time(text)
+    if result:
+        detail = result[0]['detail']
+
+        if detail['type'] in ['time_span', 'time_point']:
+            return [time.strptime(n, '%Y-%m-%d %H:%M:%S') for n in detail['time'] if n != 'inf']
+
+        elif detail['type'] == 'time_delta':
+            time_length = {
+                'year': 31536000,
+                'month': 2628000,
+                'day': 86400,
+                'hour': 3600,
+                'minute': 60,
+                'second': 1
+            }
+            for k, v in time_length.items():
+                if k in detail['time']:
+                    return [time.localtime(time.time() + detail['time'][k] * v)]
+
+        elif detail['type'] == 'time_period':
+            pass
+
+    return []
 
 
 def chinese_to_digits(text: str):

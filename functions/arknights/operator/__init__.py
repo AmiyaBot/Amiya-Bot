@@ -1,8 +1,9 @@
 import re
+import time
 import copy
 
 from core import bot, Message, Chain
-from core.util import find_similar_list, any_match
+from core.util import find_similar_list, any_match, extract_time, insert_empty
 from core.resource.arknightsGameData import ArknightsGameData
 from core.resource.arknightsGameData.wiki import Wiki
 
@@ -79,6 +80,11 @@ async def level(data: Message):
 async def operator(data: Message):
     info = search_info(data.text_cut, source_keys=['name'])
     return bool(info.name)
+
+
+@bot.on_group_message(function_id='checkOperator', keywords=['皮肤', '立绘'])
+async def _(data: Message):
+    return Chain(data).text('抱歉，博士，干员立绘功能维护中，暂时无法使用哦...')
 
 
 @bot.on_group_message(function_id='checkOperator', keywords=['模组'])
@@ -191,6 +197,46 @@ async def _(data: Message):
         return Chain(data).text(f'博士，这是干员{info.name}《{info.story_key}》的档案\n\n{stories_map[info.story_key]}')
     else:
         return Chain(data).text(f'博士，没有找到干员{info.name}《{info.story_key}》的档案')
+
+
+@bot.on_group_message(function_id='checkOperator', keywords=['生日'])
+async def _(data: Message):
+    date = extract_time(data.text_origin)
+    if date:
+        if len(date) == 1:
+            date.insert(time.localtime(), 0)
+
+        birthday = ArknightsGameData().birthday
+
+        date_str = f'%s到%s期间' % (time.strftime('%Y-%m-%d', date[0]), time.strftime('%Y-%m-%d', date[1]))
+        text = f'博士，在{date_str}生日的干员有：\n\n'
+        count = 0
+
+        now = time.localtime()
+
+        for month, days in birthday.items():
+            if date[0].tm_mon <= month <= date[1].tm_mon:
+                for day, items in days.items():
+                    if now.tm_mon == month and day < now.tm_mday:
+                        continue
+                    for item in items:
+                        count += 1
+                        birth = f'{item.birthday} {item.name}'
+                        text += (birth + '\n') if count % 2 == 0 else insert_empty(birth, 15, True)
+
+        return Chain(data).text(text) if count else Chain(data).text(f'博士，{date_str}没有干员生日')
+
+    info = search_info(data.text_cut, source_keys=['name'])
+
+    if not info.name:
+        wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
+        if not wait:
+            return None
+        info.name = wait.text
+
+    opt = ArknightsGameData().operators[info.name]
+
+    return Chain(data).text(f'博士，干员{opt.name}的生日是{opt.birthday}')
 
 
 @bot.on_group_message(function_id='checkOperator', verify=level)

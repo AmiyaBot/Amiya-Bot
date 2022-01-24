@@ -107,6 +107,9 @@ class OperatorData:
         text += '%s\n' % operator.range
 
         text += '【职业】%s - %s\n　%s\n\n' % (operator.classes, operator.classes_sub, detail['operator_trait'])
+
+        text += '【生日】%s\n\n' % operator.birthday
+
         text += '%s\n -- 「%s」\n\n' % (detail['operator_usage'], detail['operator_quote'])
 
         text += '【信物】\n　%s\n\n' % detail['operator_token'] if detail['operator_token'] else ''

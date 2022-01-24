@@ -4,7 +4,7 @@ import re
 from typing import List, Dict, Tuple
 from core.network.download import download_sync
 from core.resource import resource_config
-from core.util import remove_xml_tag, remove_punctuation, create_dir, singleton
+from core.util import remove_xml_tag, remove_punctuation, create_dir, singleton, sorted_dict
 from core import log
 
 from .common import ArknightsConfig, JsonData
@@ -12,7 +12,10 @@ from .operatorBuilder import Operator
 
 STAGES = Dict[str, Dict[str, str]]
 ENEMIES = Dict[str, Dict[str, dict]]
-OPERATORS = Dict[str, Operator]
+OPERATORS = Tuple[
+    Dict[str, Operator],
+    Dict[str, Dict[str, List[Operator]]]
+]
 MATERIALS = Tuple[
     Dict[str, Dict[str, str]],
     Dict[str, str],
@@ -56,6 +59,7 @@ def init_operators() -> OPERATORS:
             map_item[1][char_id].append(item)
 
     operators: List[Operator] = []
+    birth = {}
 
     for code, item in operators_list.items():
         if item['profession'] not in ArknightsConfig.classes:
@@ -71,7 +75,29 @@ def init_operators() -> OPERATORS:
             )
         )
 
-    return {remove_punctuation(item.name): item for item in operators}
+    for item in operators:
+        for story in item.stories():
+            if story['story_title'] == '基础档案':
+                r = re.search(r'\n【(生日|出厂日)】.*?(\d+)月(\d+)日\n', story['story_text'])
+                if r:
+                    month = int(r.group(2))
+                    day = int(r.group(3))
+
+                    if month not in birth:
+                        birth[month] = {}
+                    if day not in birth[month]:
+                        birth[month][day] = []
+
+                    item.birthday = f'{month}月{day}日'
+                    birth[month][day].append(item)
+                break
+
+    birthdays = {}
+    for month, days in birth.items():
+        birthdays[month] = sorted_dict(days)
+    birthdays = sorted_dict(birthdays)
+
+    return {remove_punctuation(item.name): item for item in operators}, birthdays
 
 
 def init_materials() -> MATERIALS:
@@ -162,9 +188,9 @@ class ArknightsGameData:
     def __init__(self):
         log.info('initialize ArknightsGameData...')
 
-        self.operators = init_operators()
-        self.enemies = init_enemies()
         self.stages = init_stages()
+        self.enemies = init_enemies()
+        self.operators, self.birthday = init_operators()
         self.materials, self.materials_map, self.materials_made, self.materials_source = init_materials()
 
 

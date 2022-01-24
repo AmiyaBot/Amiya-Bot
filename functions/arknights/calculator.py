@@ -2,23 +2,14 @@ import re
 import time
 
 from core import bot, Message, Chain
-from core.util import read_yaml
+from core.util import read_yaml, extract_time
 
 setting = read_yaml('config/private/arknights.yaml').jadeSetting
-re_list = [
-    r'(\d+)年(\d+)月(\d+)日.*玉',
-    r'(\d+)年(\d+)月(\d+)号.*玉',
-    r'(\d+)-(\d+)-(\d+).*玉',
-    r'(\d+)/(\d+)/(\d+).*玉',
-    r'(\d+)月(\d+)日.*玉',
-    r'(\d+)月(\d+)号.*玉',
-    r'(\d+)-(\d+).*玉',
-    r'(\d+)/(\d+).*玉'
-]
 
 
 def calc_jade(end_date):
     dates = calc_date(end_date)
+    end_date_str = stamp_to_date(end_date)
 
     sign_in = setting.signIn
     daily_tasks = setting.dailyTasks
@@ -38,7 +29,7 @@ def calc_jade(end_date):
     for i in types:
         jade += types[i]
 
-    result = '（阿米娅计算着罗德岛的物资流水...）\n\n博士，不含制造站，罗德岛可在 %s 前\n预计得到 %d 合成玉\n\n' % (end_date, jade)
+    result = f'（阿米娅计算着罗德岛的物资流水...）\n\n博士，不含制造站，罗德岛可在 {end_date_str} 前\n预计得到 {jade} 合成玉\n\n'
 
     result += '月卡签到共计：%d\n' % types['s']
     result += '每日任务共计：%d\n' % types['d']
@@ -51,14 +42,11 @@ def calc_jade(end_date):
 
 
 def calc_date(end_date):
-    time_str = stamp_to_date(int(time.time()))
-
-    now_time = date_to_stamp(time_str)
-    end_time = date_to_stamp(end_date)
+    now_time = date_to_stamp(stamp_to_date(int(time.time())))
 
     dates = []
 
-    while now_time < end_time:
+    while now_time < end_date:
         now_time += 86400
         time_array = time.localtime(now_time)
         dates.append({
@@ -79,38 +67,23 @@ def stamp_to_date(stamp):
     return time.strftime('%Y-%m-%d', time_array)
 
 
-async def verify(data: Message):
-    for item in re_list:
-        r = re.search(item, data.text_digits)
-        if r:
-            return True
-    return False
-
-
-@bot.on_group_message(function_id='jadeCalculator', verify=verify)
+@bot.on_group_message(function_id='jadeCalculator', keywords=re.compile('(多少)?玉'))
 async def action(data: Message):
     reply = Chain(data)
 
-    for item in re_list:
-        r = re.search(item, data.text_digits)
-        if r:
-            length = item.count('\\d+')
-            if length == 2:
-                date = [str(time.localtime().tm_year), r.group(1), r.group(2)]
-            else:
-                date = [r.group(1), r.group(2), r.group(3)]
-            date = '-'.join(date)
+    try:
+        time_array = extract_time(data.text_origin)[-1]
 
-            try:
-                time_array = time.strptime(date, '%Y-%m-%d')
-                time_stamp = time.mktime(time_array)
-            except ValueError:
-                return reply.text('博士，这个日期真的没问题吗？')
-            except OverflowError:
-                return reply.text('博士，阿米娅算不过来了… >.<')
-
+        if time_array:
+            time_stamp = time.mktime(time_array)
             if time.time() >= time_stamp:
                 return reply.text('博士，过去的只能成为了过去，我们只需要朝着我们的未来前进就好，可以的话，阿米娅会一直陪在博士身边的[face21]')
 
-            text = calc_jade(date)
+            text = calc_jade(time_stamp)
+
             return reply.text(text)
+
+    except ValueError:
+        return reply.text('博士，这个日期真的没问题吗？')
+    except OverflowError:
+        return reply.text('博士，阿米娅算不过来了… >.<')

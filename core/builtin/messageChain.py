@@ -3,10 +3,12 @@ import json
 
 from typing import Union, List
 from contextlib import asynccontextmanager
-from core.config import config
+from core.util import read_yaml
 from core.builtin.message import Message
 from core.builtin.imageCreator import create_image, ImageElem, IMAGES_TYPE
 from core.builtin.resourceManager import ResourceManager
+
+config = read_yaml('config/private/bot.yaml')
 
 
 class Chain:

@@ -81,6 +81,7 @@ class Operator:
         self.type = ArknightsConfig.types[data['position']]
         self.tags = data['tagList']
         self.range = range_map
+        self.birthday = ''
 
         self.limit = self.name in ArknightsConfig.limit
         self.unavailable = self.name in ArknightsConfig.unavailable
@@ -94,6 +95,12 @@ class Operator:
         self.__extra()
 
         self.data = data
+
+    def __str__(self):
+        return f'{self.id}_{self.name}'
+
+    def __repr__(self):
+        return f'{self.id}_{self.name}'
 
     def detail(self):
         items = JsonData.get_json_data('item_table')['items']

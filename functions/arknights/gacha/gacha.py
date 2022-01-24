@@ -22,6 +22,14 @@ class_index = {
     7: 'MEDIC',
     8: 'SPECIAL'
 }
+color = {
+    6: 'FF4343',
+    5: 'FEA63A',
+    4: 'A288B5',
+    3: '7F7F7F',
+    2: '7F7F7F',
+    1: '7F7F7F'
+}
 
 
 @table
@@ -139,7 +147,7 @@ class GachaForUser:
         purple_pack = 0
         multiple_rainbow = {}
 
-        result = '阿米娅给博士扔来了%d张简历，博士细细地检阅着...\n\n【%s】\n' % (times, self.pick_up_name)
+        result = f'阿米娅给博士扔来了{times}张简历，博士细细地检阅着...\n\n【{self.pick_up_name}】\n'
 
         for item in operators:
             rarity = item['rarity']
@@ -172,7 +180,7 @@ class GachaForUser:
         for r in high_star:
             sd = high_star[r]
             if sd:
-                result += '\n%s\n' % ('★' * r)
+                result += f'\n[cl %s@#{color[r]} cle]\n' % ('★' * r)
                 operator_num = {}
                 for i in sorted(sd, key=sd.__getitem__, reverse=True):
                     num = high_star[r][i]
@@ -195,12 +203,12 @@ class GachaForUser:
         if purple_pack > 0:
             result += '\n'
             enter = False
-            result += '出现了 %d 次十连紫气东来\n' % purple_pack
+            result += f'出现了 {purple_pack} 次十连紫气东来\n'
         for num in multiple_rainbow:
             if enter:
                 result += '\n'
                 enter = False
-            result += '出现了 %d 次十连内 %d 个六星\n' % (multiple_rainbow[num], num)
+            result += f'出现了 {multiple_rainbow[num]} 次十连内 {num} 个六星\n'
 
         result += '\n%s' % self.check_break_even()
 
@@ -223,8 +231,10 @@ class GachaForUser:
         for index, item in enumerate(operators):
             name = item['name']
             rarity = item['rarity']
-            star = '☆' if rarity < 5 else '★'
-            result += '%s%s%s\n\n' % (' ' * 15, insert_empty(name, 6, True), star * rarity)
+
+            star = f'[cl %s@#{color[rarity]} cle]' % ('★' * rarity)
+
+            result += '%s%s%s\n\n' % (' ' * 15, insert_empty(name, 6, True), star)
 
             if name in game_data.operators:
                 opt = game_data.operators[name]
