@@ -17,14 +17,14 @@ class MessageBaseModel(Model):
 
 @table
 class MessageRecord(MessageBaseModel):
-    user_id: int = BigIntegerField()
-    group_id: int = BigIntegerField()
     msg_type: str = TextField()
-    text: str = TextField()
-    face: str = TextField()
-    image: str = TextField()
-    message: str = TextField()
-    classify: str = TextField()
+    user_id: int = BigIntegerField()
+    group_id: int = BigIntegerField(null=True)
+    text: str = TextField(null=True)
+    face: str = TextField(null=True)
+    image: str = TextField(null=True)
+    message: str = TextField(null=True)
+    classify: str = TextField(null=True)
     create_time: int = IntegerField()
 
 
@@ -34,7 +34,7 @@ class MessageStack:
     @classmethod
     async def run_recording(cls):
         while StateControl.alive:
-            await asyncio.sleep(10)
+            await asyncio.sleep(5)
             if cls.stack:
                 async with log.catch('MessageStack Error:'):
                     MessageRecord.delete().where(MessageRecord.create_time <= int(time.time()) - 31 * 86400).execute()

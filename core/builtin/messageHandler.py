@@ -1,18 +1,19 @@
 from typing import *
 
-from core.log import info
-from core.bot import BotHandlers, Handler
 from core.network import WSOpration
 from core.builtin.message import Message, Event, Verify, wait_events
 from core.builtin.messageChain import Chain
 from core.database.messages import MessageStack
 from core.database.bot import FunctionUsed, DisabledFunction
 from core.control import SpeedControl
+from core.config import config
 from core.util import read_yaml
+from core.bot import BotHandlers, Handler
+from core.log import info
 
-config = read_yaml('config/private/bot.yaml')
-speed = SpeedControl(config.speedSetting.maxsize,
-                     config.speedSetting.mintime)
+bot_conf = read_yaml('config/private/bot.yaml')
+speed = SpeedControl(bot_conf.speedSetting.maxsize,
+                     bot_conf.speedSetting.mintime)
 
 CHOICE = Optional[Tuple[Verify, Handler]]
 
@@ -45,6 +46,9 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
         info(str(data))
 
         MessageStack.insert(data)
+
+        if config.test.enable and data.type == 'group' and data.group_id not in config.test.group:
+            return
 
         handlers = {
             'temp': BotHandlers.temp_message_handlers,

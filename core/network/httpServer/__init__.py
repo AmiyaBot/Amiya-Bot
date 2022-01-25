@@ -4,10 +4,12 @@ import uvicorn
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 from interfaces import controllers
 from core.util import snake_case_to_pascal_case
+from core.network.httpServer.auth import AuthManager
 from core import log
 
 
@@ -16,6 +18,14 @@ class HttpServer:
         self.app = FastAPI()
         self.server = self.load_server(host, port)
         self.load_controllers()
+
+        self.app.add_middleware(
+            CORSMiddleware,
+            allow_origins=['*'],
+            allow_methods=['*'],
+            allow_headers=['*'],
+            allow_credentials=True
+        )
 
     def load_controllers(self):
         """
@@ -28,8 +38,11 @@ class HttpServer:
             cname = cls.__name__[0].lower() + cls.__name__[1:]
 
             for name, func in methods.items():
-                router = self.app.post(path=f'/{cname}/{snake_case_to_pascal_case(name)}')
+                router = self.app.post(path=f'/{cname}/{snake_case_to_pascal_case(name)}', tags=[cname.title()])
                 router(func)
+
+        self.app.post(AuthManager.login_url, tags=['Auth'])(AuthManager.login)
+        self.app.post(AuthManager.token_url, tags=['Auth'])(AuthManager.token)
 
     def load_server(self, host, port):
         """
@@ -54,7 +67,7 @@ class HttpServer:
             # 加载模板
             templates = Jinja2Templates(directory='view')
 
-            @self.app.get('/', response_class=HTMLResponse)
+            @self.app.get('/', tags=['Index'], response_class=HTMLResponse)
             async def index(request: Request):
                 return templates.TemplateResponse('index.html', {'request': request})
 

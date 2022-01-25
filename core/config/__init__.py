@@ -5,6 +5,7 @@ from .mahConfig import MiraiApiHttp
 from .adminConfig import Admin
 from .baiduConfig import BaiduCloud
 from .serverConfig import ServerConfig
+from .testConfig import TestConfig
 
 config_file = 'config/config.yaml'
 
@@ -14,6 +15,7 @@ class Config:
     baiduCloud: BaiduCloud
     httpServer: ServerConfig
     miraiApiHttp: MiraiApiHttp
+    test: TestConfig
 
     @classmethod
     def desc(cls):
@@ -22,6 +24,7 @@ class Config:
             'baiduCloud': BaiduCloud.desc(),
             'httpServer': ServerConfig.desc(),
             'miraiApiHttp': MiraiApiHttp.desc(),
+            'test': TestConfig.desc(),
         }
 
 

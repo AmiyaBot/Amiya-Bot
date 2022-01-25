@@ -1,9 +1,11 @@
 import json
+import time
 import asyncio
 import websockets
 
 from contextlib import asynccontextmanager
 from core.network import WSOpration
+from core.database.messages import MessageRecord
 from core.builtin.messageChain import Chain, custom_chain
 from core.builtin.message.mirai import Mirai
 from core.builtin.messageHandler import message_handler
@@ -60,6 +62,15 @@ class WebsocketClient(WSOpration):
                 await self.connect.send(
                     await reply.build(self.session, chain=[voice])
                 )
+
+        MessageRecord.create(
+            user_id=account,
+            group_id=reply.data.group_id,
+            msg_type=reply.data.type,
+            message=json.dumps(reply.chain, ensure_ascii=False),
+            classify='reply',
+            create_time=int(time.time())
+        )
 
     @asynccontextmanager
     async def send_to_admin(self):

@@ -7,7 +7,7 @@ from jieba import posseg
 from typing import List
 from itertools import combinations
 from core import add_init_task, log, bot, Message, Chain
-from core.util import insert_empty, full_match, read_yaml
+from core.util import insert_empty, all_match, read_yaml
 from core.builtin.baiduCloud import BaiduCloud
 from core.network.download import download_async
 from core.resource.arknightsGameData import ArknightsGameData
@@ -132,7 +132,7 @@ class Recruit:
                     lst = []
                     for name, item in operators.items():
                         rarity = item['operator_rarity']
-                        if full_match(item['operator_tags'], comb):
+                        if all_match(item['operator_tags'], comb):
                             if rarity == 6 and '高级资深干员' not in comb:
                                 continue
                             if rarity >= 4 or rarity == 1:

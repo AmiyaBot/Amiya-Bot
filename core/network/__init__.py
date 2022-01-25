@@ -1,5 +1,4 @@
 import abc
-import json
 
 from typing import Union
 
@@ -52,8 +51,8 @@ def response(data: Union[str, int, float, bool, dict, list] = None,
     :param message: 响应消息
     :return:
     """
-    return json.dumps({
+    return {
         'data': data,
         'code': code,
         'message': message
-    }, ensure_ascii=False)
+    }

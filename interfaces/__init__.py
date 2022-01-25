@@ -1,5 +1,7 @@
 from .message import Message
+from .group import Group
 
 controllers = [
-    Message
+    Message,
+    Group
 ]

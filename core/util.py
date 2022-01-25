@@ -92,7 +92,7 @@ def sorted_dict(data: dict, *args, **kwargs):
     return {n: data[n] for n in sorted(data, *args, **kwargs)}
 
 
-def full_match(text: str, items: list):
+def all_match(text: str, items: list):
     for item in items:
         if item not in text:
             return False
