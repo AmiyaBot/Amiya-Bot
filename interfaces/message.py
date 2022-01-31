@@ -7,9 +7,12 @@ from interfaces.model.group import GroupInfo
 
 class Message:
     @classmethod
-    async def get_message_by_group_id(cls, item: GroupInfo, auth=AuthManager.depends()):
-        return response(
-            query_to_list(
-                MessageRecord.select().where(MessageRecord.group_id == item.group_id)
+    async def get_message_by_group_id(cls, items: GroupInfo, auth=AuthManager.depends()):
+        message = query_to_list(
+            sorted(
+                MessageRecord.select().where(MessageRecord.group_id == items.group_id),
+                key=lambda n: n.create_time
             )
         )
+
+        return response(message)

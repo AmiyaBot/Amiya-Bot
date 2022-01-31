@@ -1,4 +1,4 @@
-from core.network.websocketClient import WebsocketClient
+from core.network.websocketClient import WebsocketClient, account
 from core.network.httpSessionClient import HttpSessionClient
 from core.database.messages import MessageStack
 from core.builtin.timedTask import TasksControl
