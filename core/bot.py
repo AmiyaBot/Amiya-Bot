@@ -68,6 +68,7 @@ class Handler:
         return Verify(False)
 
     async def verify(self, data: Message):
+        # 检查是否包含前缀触发词
         flag = False
         if self.check_prefix:
             for word in (self.check_prefix if type(self.check_prefix) is list else BotHandlers.prefix_keywords):
@@ -75,13 +76,7 @@ class Handler:
                     flag = True
                     break
 
-        if self.check_prefix and not flag and not type(self.keywords) is equal:
-            equal_filter = [n for n in self.keywords if type(n) is equal] if type(self.keywords) is list else []
-            if equal_filter:
-                self.keywords = equal_filter
-            else:
-                return Verify(False)
-
+        # 执行自定义校验并修正其返回值
         if self.custom_verify:
             result = await self.custom_verify(data)
 
@@ -93,6 +88,15 @@ class Handler:
                 result = (result + contrast[len(result):])[:3]
 
             return Verify(*result)
+
+        # 若不包含前缀触发词，且关键字不为全等句式（equal）
+        # 则允许当关键字为列表时，筛选列表内的全等句式继续执行校验
+        if self.check_prefix and not flag and not type(self.keywords) is equal:
+            equal_filter = [n for n in self.keywords if type(n) is equal] if type(self.keywords) is list else []
+            if equal_filter:
+                self.keywords = equal_filter
+            else:
+                return Verify(False)
 
         return self.__check(data, self.keywords)
 

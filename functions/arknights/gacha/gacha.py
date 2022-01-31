@@ -123,9 +123,8 @@ class GachaForUser:
     @staticmethod
     def __get_temp_operator(pool_id):
         operators = {}
-        sp = PoolSpOperator.select().where(PoolSpOperator.pool_id == pool_id)
+        sp: List[PoolSpOperator] = PoolSpOperator.select().where(PoolSpOperator.pool_id == pool_id)
         for item in sp:
-            item: PoolSpOperator
             operators[item.operator_name] = {
                 'portraits': '',
                 'temp_portraits': f'resource/images/temp/{item.image}' if item.image else None,

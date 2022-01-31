@@ -18,7 +18,7 @@ class Intellect(UserBaseModel):
 
 
 async def verify(data: Message):
-    return '理智' in data.text and ('满' in data.text or '多少' in data.text)
+    return (True, 2) if '理智' in data.text and ('满' in data.text or '多少' in data.text) else False
 
 
 @bot.on_group_message(function_id='intellectAlarm', verify=verify)

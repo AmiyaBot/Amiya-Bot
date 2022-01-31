@@ -236,7 +236,7 @@ def transfer_pool():
 
 
 def transfer_pool_sp():
-    all_data: List[PoolSpOperatorData] = PoolSpOperatorData.select()
+    all_data: List[PoolSpOperator] = PoolSpOperator.select()
 
     data = []
 
