@@ -13,6 +13,4 @@
 *.spec
 *.zip
 
-fileStorage/session.txt
 config/config.yaml
-test.py

@@ -2,6 +2,7 @@ import re
 import time
 
 from core.database.group import *
+from core.database.bot import BotBaseModel
 from core.builtin.baiduCloud import BaiduCloud
 from core.builtin.message.mirai import text_convert
 from core import bot, Message, Chain
@@ -10,7 +11,7 @@ baidu = BaiduCloud()
 
 
 @table
-class TextReplace(GroupBaseModel):
+class TextReplace(BotBaseModel):
     user_id: str = TextField()
     group_id: str = TextField()
     origin: str = TextField()
