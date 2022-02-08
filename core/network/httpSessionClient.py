@@ -12,10 +12,9 @@ create_dir(session_file, is_file=True)
 
 @singleton
 class HttpSessionClient:
-    session: str
-
     def __init__(self):
         self.host = f'{config.miraiApiHttp.host}:{config.miraiApiHttp.port.http}'
+        self.session = None
 
     def __url(self, interface):
         return 'http://%s/%s' % (self.host, interface)

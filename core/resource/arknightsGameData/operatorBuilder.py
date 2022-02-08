@@ -77,7 +77,7 @@ class Operator:
         self.rarity = data['rarity'] + 1
         self.classes = ArknightsConfig.classes[data['profession']]
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']
-        self.classes_code = list(ArknightsConfig.classes.keys()).index(data['profession']) + 1
+        self.classes_code = data['profession']
         self.type = ArknightsConfig.types[data['position']]
         self.tags = data['tagList']
         self.range = range_map

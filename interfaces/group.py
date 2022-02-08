@@ -139,17 +139,16 @@ class Group:
 
     @classmethod
     async def push_notice(cls, items: Notice, auth=AuthManager.depends()):
-        groups: List[GroupSetting] = GroupSetting.select().where(GroupSetting.send_notice == 1)
-        group_name = {
-            item.group_id: item.group_name
-            for item in GroupData.select().where(GroupData.group_id.in_([item.group_id for item in groups]))
-        }
+        group_list = await http.get_group_list()
 
         success = 0
-        for item in groups:
+        for item in group_list:
+            group_id = item['group_id']
+            group_name = item['group_name']
+
             async with log.catch('push error:'):
-                data = custom_chain(group_id=int(item.group_id))
-                data.text(f'亲爱的{group_name[item.group_id]}的博士们，有来自管理员{auth.user_id}的公告：\n\n{items.content}')
+                data = custom_chain(group_id=int(group_id))
+                data.text(f'亲爱的{group_name}的博士们，有来自管理员{auth.user_id}的公告：\n\n{items.content}')
 
                 await websocket.send(data)
 
@@ -163,7 +162,7 @@ class Group:
             send_user=auth.user_id
         )
 
-        return response(message=f'公告推送完毕，成功：{success}/{len(groups)}')
+        return response(message=f'公告推送完毕，成功：{success}/{len(group_list)}')
 
     @classmethod
     async def del_notice(cls, items: Notice, auth=AuthManager.depends()):

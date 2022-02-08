@@ -12,16 +12,6 @@ from core.resource.arknightsGameData import ArknightsGameData
 line_height = 16
 side_padding = 10
 avatar_resource = 'resource/images/avatar'
-class_index = {
-    1: 'PIONEER',
-    2: 'WARRIOR',
-    3: 'TANK',
-    4: 'SNIPER',
-    5: 'CASTER',
-    6: 'SUPPORT',
-    7: 'MEDIC',
-    8: 'SPECIAL'
-}
 color = {
     6: 'FF4343',
     5: 'FEA63A',
@@ -250,7 +240,7 @@ class GachaForUser:
                     'portraits': opt.id,
                     'temp_portraits': f'resource/images/temp/{opt.name}',
                     'rarity': opt.rarity,
-                    'class': class_index[opt.classes_code].lower()
+                    'class': opt.classes_code.lower()
                 }
 
         result += '\n%s' % self.check_break_even()
