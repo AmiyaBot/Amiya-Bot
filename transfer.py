@@ -128,9 +128,9 @@ def transfer_user():
     UserInfo.delete().execute()
     UserData.delete().execute()
 
-    UserData.insert_many(user_data).execute()
-    UserInfo.insert_many(user_info_data).execute()
-    UserGachaInfo.insert_many(user_gacha_info_data).execute()
+    UserData.insert_data(user_data)
+    UserInfo.insert_data(user_info_data)
+    UserGachaInfo.insert_data(user_gacha_info_data)
 
 
 def transfer_admin():
@@ -148,7 +148,7 @@ def transfer_admin():
         })
 
     AdminData.delete().execute()
-    AdminData.insert_many(data).execute()
+    AdminData.insert_data(data)
 
 
 def transfer_replace():
@@ -168,7 +168,7 @@ def transfer_replace():
         })
 
     TextReplace.delete().execute()
-    TextReplace.insert_many(data).execute()
+    TextReplace.insert_data(data)
 
 
 def transfer_intellect():
@@ -189,7 +189,7 @@ def transfer_intellect():
         })
 
     IntellectData.delete().execute()
-    IntellectData.insert_many(data).execute()
+    IntellectData.insert_data(data)
 
 
 def transfer_function():
@@ -204,7 +204,7 @@ def transfer_function():
         })
 
     FunctionUsed.delete().execute()
-    FunctionUsed.insert_many(data).execute()
+    FunctionUsed.insert_data(data)
 
 
 def transfer_disable():
@@ -220,7 +220,7 @@ def transfer_disable():
         })
 
     DisabledFunction.delete().execute()
-    DisabledFunction.insert_many(data).execute()
+    DisabledFunction.insert_data(data)
 
 
 def transfer_pool():
@@ -239,7 +239,7 @@ def transfer_pool():
         })
 
     PoolData.delete().execute()
-    PoolData.insert_many(data).execute()
+    PoolData.insert_data(data)
 
 
 def transfer_pool_sp():
@@ -257,7 +257,7 @@ def transfer_pool_sp():
         })
 
     PoolSpOperatorData.delete().execute()
-    PoolSpOperatorData.insert_many(data).execute()
+    PoolSpOperatorData.insert_data(data)
 
 
 def transfer_gacha_config():
@@ -272,7 +272,7 @@ def transfer_gacha_config():
         })
 
     GachaConfigData.delete().execute()
-    GachaConfigData.insert_many(data).execute()
+    GachaConfigData.insert_data(data)
 
 
 if __name__ == '__main__':

@@ -88,7 +88,7 @@ class Group:
         group_list = await http.get_group_list()
 
         GroupData.truncate_table()
-        GroupData.insert_many(group_list).execute()
+        GroupData.insert_data(group_list)
 
         return response(message=f'同步完成，共 {len(group_list)} 个群。')
 

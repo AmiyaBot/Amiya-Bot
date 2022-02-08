@@ -38,7 +38,7 @@ class MessageStack:
             if cls.stack:
                 async with log.catch('MessageStack Error:'):
                     MessageRecord.delete().where(MessageRecord.create_time <= int(time.time()) - 31 * 86400).execute()
-                    MessageRecord.insert_many(cls.stack.copy()).execute()
+                    MessageRecord.insert_data(cls.stack.copy())
                 cls.stack = []
 
     @classmethod

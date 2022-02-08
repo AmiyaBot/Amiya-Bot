@@ -16,7 +16,7 @@ async def _(data: Message):
     if data.is_admin:
         group_list = await http.get_group_list()
         Group.truncate_table()
-        Group.insert_many(group_list).execute()
+        Group.insert_data(group_list)
         await data.send(Chain(data).text(f'同步完成，共 {len(group_list)} 个群。'))
 
 

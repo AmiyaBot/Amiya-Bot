@@ -8,6 +8,13 @@ db_conf = read_yaml('config/private/database.yaml')
 table_list: List[Model] = []
 
 
+class Model(Model):
+    @classmethod
+    def insert_data(cls, rows):
+        for batch in chunked(rows, 100):
+            cls.insert_many(batch).execute()
+
+
 class SearchParams:
     def __init__(self, params, equal: list = None, contains: list = None):
         self.equal = {}
