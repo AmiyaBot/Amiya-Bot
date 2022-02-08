@@ -1,9 +1,16 @@
 import json
 
-from core.util import read_yaml
+from core.database.bot import *
 from core.resource import resource_config
+from core.util import read_yaml
 
 config = read_yaml('config/private/arknights.yaml', _dict=True)['operatorSetting']
+
+
+@table
+class GachaConfig(BotBaseModel):
+    operator_name: str = TextField()
+    operator_type: int = IntegerField()
 
 
 class ArknightsConfig:
@@ -15,6 +22,13 @@ class ArknightsConfig:
 
     limit = []
     unavailable = []
+
+    for item in GachaConfig.select():
+        item: GachaConfig
+        if item.operator_type in [0, 1]:
+            limit.append(item.operator_name)
+        else:
+            unavailable.append(item.operator_name)
 
 
 class JsonData:

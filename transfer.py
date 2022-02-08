@@ -1,6 +1,7 @@
 from core.database import *
 from core.database.user import User as UserData, Admin as AdminData
 from core.database.bot import FunctionUsed, DisabledFunction
+from core.resource.arknightsGameData.common import GachaConfig as GachaConfigData
 from functions.user import UserInfo
 from functions.intellect import Intellect as IntellectData
 from functions.replace import TextReplace
@@ -87,6 +88,12 @@ class PoolSpOperator(AmiyaBaseModel):
     rarity = IntegerField()
     classes = TextField()
     image = TextField()
+
+
+class GachaConfig(AmiyaBaseModel):
+    conf_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
+    operator_name = TextField()
+    operator_type = IntegerField()
 
 
 def transfer_user():
@@ -253,6 +260,21 @@ def transfer_pool_sp():
     PoolSpOperatorData.insert_many(data).execute()
 
 
+def transfer_gacha_config():
+    all_data: List[GachaConfig] = GachaConfig.select()
+
+    data = []
+
+    for item in all_data:
+        data.append({
+            'operator_name': item.operator_name,
+            'operator_type': item.operator_type
+        })
+
+    GachaConfigData.delete().execute()
+    GachaConfigData.insert_many(data).execute()
+
+
 if __name__ == '__main__':
     transfer_user()
     transfer_admin()
@@ -262,3 +284,4 @@ if __name__ == '__main__':
     transfer_disable()
     transfer_pool()
     transfer_pool_sp()
+    transfer_gacha_config()
