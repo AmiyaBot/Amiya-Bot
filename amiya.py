@@ -23,8 +23,6 @@ class AmiyaBot:
 
         StateControl.start()
 
-        super().__init__()
-
         self.tasks = init_core()
 
     async def run(self):

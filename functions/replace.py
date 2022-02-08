@@ -21,6 +21,12 @@ class TextReplace(BotBaseModel):
     is_active: int = IntegerField(default=1)
 
 
+@table
+class TextReplaceSetting(BotBaseModel):
+    text: str = TextField()
+    status: int = IntegerField()
+
+
 @bot.handle_message
 async def _(data: Message):
     replace: List[TextReplace] = TextReplace.select() \
@@ -28,14 +34,16 @@ async def _(data: Message):
         .orwhere(TextReplace.is_global == 1)
 
     if replace:
+        text = data.text_origin
         for item in reversed(list(replace)):
-            text = data.text_origin.replace(item.replace, item.origin)
-            return text_convert(data, text)
+            text = text.replace(item.replace, item.origin)
+
+        return text_convert(data, text, data.text_origin)
 
 
 @bot.on_group_message(function_id='textReplace', keywords='别名')
 async def _(data: Message):
-    search_text = data.text_origin
+    search_text = data.text_initial
 
     for item in bot.BotHandlers.prefix_keywords:
         if search_text.startswith(item):
@@ -55,7 +63,15 @@ async def _(data: Message):
                                        TextReplace.replace == replace).execute()
             return Chain(data).text(f'已在本群删除别名 [{replace}]')
 
-        # 检查别名是否存在
+        # 检查全局别名是否存在
+        exist: TextReplace = TextReplace.get_or_none(replace=replace, is_global=1)
+        if exist:
+            text = f'[{origin}] 全局别名识别已存在 [{replace}] '
+            if exist.is_active == 0:
+                text += '（未审核通过）'
+            return Chain(data).text(text)
+
+        # 检查本群别名是否存在
         exist: TextReplace = TextReplace.get_or_none(group_id=data.group_id, replace=replace)
         if exist:
             text = f'本群 [{origin}] 别名识别已存在 [{replace}] '
@@ -67,12 +83,12 @@ async def _(data: Message):
         await data.send(Chain(data, quote=False).text('正在审核，博士请稍等...'))
 
         # 检查原生词语和设置禁止的词语
-        # if not self.check_forbidden(replace) or not self.check_name(origin):
-        #     return Chain(data).text(f'审核不通过！检测到存在禁止替换的内容')
+        if not check_forbidden(replace) or not check_name(origin):
+            return Chain(data).text(f'审核不通过！检测到存在禁止替换的内容')
 
         # 白名单可直接通过审核
-        # if self.check_permissible(replace):
-        #     return self.save_replace(data, origin, replace)
+        if check_permissible(replace):
+            return save_replace(data, origin, replace)
 
         # 百度审核
         check = None
@@ -117,6 +133,47 @@ def show_replace_by_replace(data: Message, replace):
         return Chain(data).text(text.strip('、'))
     else:
         return Chain(data).text(f'没有找到 [{replace}] 在本群生效的别名')
+
+
+def check_forbidden(text):
+    replace_setting: List[TextReplaceSetting] = TextReplaceSetting.select().where(TextReplaceSetting.status == 1)
+
+    if text in [item.text for item in replace_setting] + ['别名']:
+        return False
+
+    files = [
+        'enemies.txt',
+        'materials.txt',
+        'operators.txt',
+        'skins.txt',
+        'stories.txt',
+        'tags.txt'
+    ]
+
+    if check_name(text):
+        for file in files:
+            with open(f'resource/{file}', mode='r', encoding='utf-8') as src:
+                content = src.read().strip('\n').split('\n')
+            for item in content:
+                item = item.replace(' 500 n', '')
+                if item == text:
+                    return False
+    else:
+        return False
+
+    return True
+
+
+def check_name(text):
+    for item in bot.BotHandlers.prefix_keywords:
+        if item == text:
+            return False
+    return True
+
+
+def check_permissible(text):
+    replace_setting: List[TextReplaceSetting] = TextReplaceSetting.select().where(TextReplaceSetting.status == 0)
+    return text in [item.text for item in replace_setting]
 
 
 def save_replace(data: Message, origin, replace):

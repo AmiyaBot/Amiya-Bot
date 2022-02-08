@@ -138,7 +138,7 @@ async def _(data: Message):
     text += pools_table
 
     wait = await data.waiting(
-        Chain(data).text_image(text).text('要切换卡池，请回复或和阿米娅说「阿米娅切换卡池 "卡池名称" 」\n或「阿米娅切换第 N 个卡池」')
+        Chain(data).text_image(text).text('要切换卡池，请回复【序号】或和阿米娅说「阿米娅切换卡池 "卡池名称" 」\n或「阿米娅切换第 N 个卡池」')
     )
     if wait:
         r = re.search(r'(\d+)', wait.text_digits)

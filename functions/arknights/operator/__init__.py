@@ -13,8 +13,9 @@ from .initData import InfoInterface, InitData
 
 
 class LoopBreak(Exception):
-    def __init__(self, index, name=''):
+    def __init__(self, index, name='', value=''):
         self.index = index
+        self.value = value
         self.name = name
 
     def __str__(self):
@@ -49,22 +50,26 @@ def search_info(words: list, source_keys: list = None):
                             res, rate = find_similar_list(item, source.keys(), _random=True)
                             if res:
                                 setattr(info, name, source[res])
-                                raise LoopBreak(index, name)
+                                raise LoopBreak(index, name, source[res])
 
                         elif item in source:
                             value = source[item] if type(source) is dict else item
 
                             setattr(info, name, value)
-                            raise LoopBreak(index, name)
+                            raise LoopBreak(index, name, value)
 
                 if index == len(words) - 1:
                     raise LoopBreak('done')
         except LoopBreak as e:
             if e.index == 'done':
                 break
+
             words.pop(e.index)
-            info_key.remove(e.name)
-            continue
+
+            if e.name == 'name' and e.value == '阿米娅':
+                continue
+            else:
+                info_key.remove(e.name)
 
     if info.name and info.skill and OperatorInfo.skill_operator[info.skill] != info.name:
         info.skill = ''
@@ -79,7 +84,7 @@ async def level(data: Message):
 
 async def operator(data: Message):
     info = search_info(data.text_cut, source_keys=['name'])
-    return bool(info.name)
+    return bool(info.name), 0
 
 
 @bot.on_group_message(function_id='checkOperator', keywords=['皮肤', '立绘'])

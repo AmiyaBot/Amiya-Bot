@@ -6,7 +6,8 @@ import collections
 
 from core import bot, Message, Chain
 from core.database.user import *
-from core.util import read_yaml
+from core.database.group import GroupActive
+from core.util import read_yaml, TimeRecorder
 
 from .arknights.gacha.gacha import UserGachaInfo
 
@@ -78,6 +79,9 @@ def talk_time():
 
 
 async def check_only_name(data: Message):
+    if data.image:
+        return False
+
     text = data.text
 
     for item in bot.BotHandlers.prefix_keywords:
@@ -124,7 +128,7 @@ async def _(data: Message):
     return Chain(data).text(f'Dr.{data.nickname}，晚安～')
 
 
-@bot.on_group_message(function_id='user', keywords=['签到', bot.equal('签到')])
+@bot.on_group_message(function_id='user', keywords=['签到'])
 async def _(data: Message):
     status = sign_in(data, 1)
     if status:
@@ -153,3 +157,44 @@ async def _(data: Message):
         text += '\n\n' + random.choice(voice_list)
 
     return Chain(data).text_image(text)
+
+
+@bot.on_group_message(function_id='admin', keywords=['休息', '下班'])
+async def _(data: Message):
+    if not data.is_admin and not data.is_group_admin:
+        return None
+
+    group_active: GroupActive = GroupActive.get_or_create(group_id=data.group_id)[0]
+
+    if group_active.active == 1:
+        GroupActive.update(active=0,
+                           sleep_time=int(time.time())).where(GroupActive.group_id == data.group_id).execute()
+
+        return Chain(data).text('打卡下班啦！博士需要的时候再让阿米娅工作吧。^_^')
+    else:
+        seconds = int(time.time()) - int(group_active.sleep_time)
+        total = TimeRecorder.calc_time_total(seconds)
+
+        return Chain(data).text(f'阿米娅休息了{total}，博士需要的时候请让阿米娅工作吧。^_^')
+
+
+@bot.on_group_message(function_id='admin', keywords=['工作', '上班'])
+async def _(data: Message):
+    if not data.is_admin and not data.is_group_admin:
+        return None
+
+    group_active: GroupActive = GroupActive.get_or_create(group_id=data.group_id)[0]
+
+    if group_active.active == 0:
+        seconds = int(time.time()) - int(group_active.sleep_time)
+        total = TimeRecorder.calc_time_total(seconds)
+        text = '打卡上班啦~阿米娅%s休息了%s……' % ('才' if seconds < 600 else '一共', total)
+        if seconds < 600:
+            text += '\n博士真是太过分了！哼~ >.<'
+        else:
+            text += '\n充足的休息才能更好的工作，博士，不要忘记休息哦 ^_^'
+
+        GroupActive.update(active=1, sleep_time=0).where(GroupActive.group_id == data.group_id).execute()
+        return Chain(data).text(text)
+    else:
+        return Chain(data).text('阿米娅没有偷懒哦博士，请您也不要偷懒~')

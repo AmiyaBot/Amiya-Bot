@@ -55,6 +55,7 @@ class Message:
         self.text = ''
         self.text_origin = ''
         self.text_digits = ''
+        self.text_initial = ''
         self.text_cut = []
         self.text_cut_pinyin = []
 
