@@ -4,6 +4,7 @@ import aiohttp
 
 from core import log
 from core.util import singleton, create_dir
+from core.database.group import Group, GroupActive, GroupSetting
 from core.config import config
 
 session_file = 'fileStorage/session.txt'
@@ -116,3 +117,19 @@ class HttpSessionClient:
             group_list = [n for i, n in group_list.items()]
             return group_list
         return []
+
+    async def leave_group(self, group_id, flag=True):
+        if flag:
+            await self.post('quit', {'sessionKey': self.session, 'target': group_id})
+
+        Group.delete().where(Group.group_id == group_id).execute()
+        GroupActive.delete().where(GroupActive.group_id == group_id).execute()
+        GroupSetting.delete().where(GroupSetting.group_id == group_id).execute()
+
+    async def send_nudge(self, user_id, group_id):
+        await self.post('sendNudge', {
+            'sessionKey': self.session,
+            'target': user_id,
+            'subject': group_id,
+            'kind': 'Group'
+        })

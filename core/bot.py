@@ -225,30 +225,36 @@ class BotHandlers:
         return cls.handler_register(function_id, cls.temp_message_handlers, keywords, verify, check_prefix)
 
     @classmethod
-    def on_event(cls, event):
+    def on_event(cls, events: Union[List[Any], Any]):
         """
         事件处理注册器工厂函数
         处理函数接受一个 Event 参数，内含事件的内容，允许返回一个 Chain 对象进行消息发送
 
         注意：同一个事件名能拥有多个处理函数，这是出于灵活处理考虑，在注册时请避免冲突的操作
 
-        :param event: 监听的事件，可传入 MiraiEvents 的属性类或事件名的字符串
-        :return:      注册函数的装饰器
+        :param events: 监听的事件，可传入 MiraiEvents 的属性类或事件名的字符串，以及以上的列表
+        :return:       注册函数的装饰器
         """
 
         def handler(func: EVENT_CORO):
-            if issubclass(event, Event):
-                event_name = event.__name__
-            else:
-                if type(event) is str:
-                    event_name = event
+            nonlocal events
+
+            if type(events) is not list:
+                events = [events]
+
+            for event in events:
+                if issubclass(event, Event):
+                    event_name = event.__name__
                 else:
-                    raise TypeError('Event must be property of MiraiEvents or string of event name.')
+                    if type(event) is str:
+                        event_name = event
+                    else:
+                        raise TypeError('Event must be property of MiraiEvents or string of event name.')
 
-            if event_name not in cls.event_handlers:
-                cls.event_handlers[event_name] = []
+                if event_name not in cls.event_handlers:
+                    cls.event_handlers[event_name] = []
 
-            cls.event_handlers[event_name].append(func)
+                cls.event_handlers[event_name].append(func)
 
         return handler
 

@@ -49,8 +49,11 @@ async def auto_discern(data: Message):
     for item in data.image:
         img = await download_async(item)
         if img:
-            hash_value = dhash.dhash_int(Image.open(BytesIO(img)))
-            diff = dhash.get_num_bits_different(hash_value, discern.templateHash)
+            try:
+                hash_value = dhash.dhash_int(Image.open(BytesIO(img)))
+                diff = dhash.get_num_bits_different(hash_value, discern.templateHash)
+            except OSError:
+                return False
 
             if diff <= discern.maxDifferent:
                 data.image = [img]

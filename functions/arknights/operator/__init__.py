@@ -84,7 +84,7 @@ async def level(data: Message):
 
 async def operator(data: Message):
     info = search_info(data.text_cut, source_keys=['name'])
-    return bool(info.name), 0
+    return bool(info.name)
 
 
 @bot.on_group_message(function_id='checkOperator', keywords=['皮肤', '立绘'])

@@ -4,12 +4,15 @@ import time
 import random
 import collections
 
-from core import bot, Message, Chain
+from core import bot, websocket, http, account, custom_chain, Message, Chain, Mirai
 from core.database.user import *
 from core.database.group import GroupActive
-from core.util import read_yaml, TimeRecorder
+from core.builtin.baiduCloud import BaiduCloud
+from core.util import read_yaml
 
 from .arknights.gacha.gacha import UserGachaInfo
+
+baidu = BaiduCloud()
 
 images = []
 for root, dirs, files in os.walk('resource/images/face'):
@@ -78,7 +81,7 @@ def talk_time():
         return '晚上'
 
 
-async def check_only_name(data: Message):
+async def only_name(data: Message):
     if data.image:
         return False
 
@@ -90,12 +93,38 @@ async def check_only_name(data: Message):
 
     text = re.sub(r'\W', '', text).strip()
 
-    return text == ''
+    return text == '', 2
 
 
-@bot.on_group_message(function_id='user', verify=check_only_name)
+async def any_talk(data: Message):
+    return True, 0
+
+
+@bot.on_group_message(function_id='user', verify=only_name)
 async def _(data: Message):
     return Chain(data, quote=False).image(random.choice(images))
+
+
+@bot.on_group_message(function_id='user', verify=any_talk)
+async def _(data: Message):
+    result = await baidu.emotion(data.text)
+    if result and 'items' in result and result['items']:
+        item = result['items'][0]
+        label = item['label']
+        text = ''
+
+        if label == 'neutral':
+            pass
+        elif label == 'optimistic':
+            text = '虽然听不懂博士在说什么，但阿米娅能感受到博士现在高兴的心情，欸嘿嘿……'
+        elif label == 'pessimistic':
+            text = '博士心情不好吗？阿米娅不懂怎么安慰博士，但阿米娅会默默陪在博士身边的'
+
+        if 'replies' in item and item['replies']:
+            text = random.choice(item['replies'])
+
+        if text:
+            return Chain(data).text(text)
 
 
 @bot.on_group_message(function_id='user', keywords=['阿米驴', '阿驴', '小驴子', '驴子', '驴驴'], check_prefix=False)
@@ -123,6 +152,15 @@ async def _(data: Message):
 @bot.on_group_message(function_id='user', keywords=['晚安'], check_prefix=False)
 async def _(data: Message):
     return Chain(data).text(f'Dr.{data.nickname}，晚安～')
+
+
+@bot.on_group_message(function_id='user', keywords=['我错了', '对不起', '抱歉'])
+async def _(data: Message):
+    info: UserInfo = UserInfo.get_or_none(user_id=data.user_id)
+    if not info or info.user_mood >= 15:
+        return Chain(data).text('博士为什么要这么说呢，嗯……博士是不是偷偷做了对不起阿米娅的事[face181]')
+    else:
+        return Chain(data).text('好吧，阿米娅就当博士刚刚是在开玩笑吧，博士要好好对阿米娅哦[face21]')
 
 
 @bot.on_group_message(function_id='user', keywords=['签到'])
@@ -156,42 +194,35 @@ async def _(data: Message):
     return Chain(data).text_image(text)
 
 
-@bot.on_group_message(function_id='admin', keywords=['休息', '下班'])
-async def _(data: Message):
-    if not data.is_admin and not data.is_group_admin:
-        return None
-
-    group_active: GroupActive = GroupActive.get_or_create(group_id=data.group_id)[0]
-
-    if group_active.active == 1:
-        GroupActive.update(active=0,
-                           sleep_time=int(time.time())).where(GroupActive.group_id == data.group_id).execute()
-
-        return Chain(data).text('打卡下班啦！博士需要的时候再让阿米娅工作吧。^_^')
-    else:
-        seconds = int(time.time()) - int(group_active.sleep_time)
-        total = TimeRecorder.calc_time_total(seconds)
-
-        return Chain(data).text(f'阿米娅休息了{total}，博士需要的时候请让阿米娅工作吧。^_^')
+@bot.on_event(Mirai.GroupRecallEvent)
+async def _(data: Mirai.GroupRecallEvent):
+    chain = custom_chain(data.operator.id, data.operator.group.id)
+    await websocket.send(chain.at().text(f'哼~撤回也没用，阿米娅已经看见了！[face:269]'))
 
 
-@bot.on_group_message(function_id='admin', keywords=['工作', '上班'])
-async def _(data: Message):
-    if not data.is_admin and not data.is_group_admin:
-        return None
+@bot.on_event(Mirai.MemberJoinEvent)
+async def _(data: Mirai.MemberJoinEvent):
+    chain = custom_chain(data.member.id, data.member.group.id)
+    await websocket.send(chain.at().text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
 
-    group_active: GroupActive = GroupActive.get_or_create(group_id=data.group_id)[0]
 
-    if group_active.active == 0:
-        seconds = int(time.time()) - int(group_active.sleep_time)
-        total = TimeRecorder.calc_time_total(seconds)
-        text = '打卡上班啦~阿米娅%s休息了%s……' % ('才' if seconds < 600 else '一共', total)
-        if seconds < 600:
-            text += '\n博士真是太过分了！哼~ >.<'
-        else:
-            text += '\n充足的休息才能更好的工作，博士，不要忘记休息哦 ^_^'
+@bot.on_event(Mirai.BotJoinGroupEvent)
+async def _(data: Mirai.BotJoinGroupEvent):
+    chain = custom_chain(group_id=data.group.id)
+    await websocket.send(chain.text('博士，初次见面，这里是阿米娅2号，姐姐去了很远的地方，今后就由我来代替姐姐的工作吧，请多多指教哦'))
 
-        GroupActive.update(active=1, sleep_time=0).where(GroupActive.group_id == data.group_id).execute()
-        return Chain(data).text(text)
-    else:
-        return Chain(data).text('阿米娅没有偷懒哦博士，请您也不要偷懒~')
+
+@bot.on_event(Mirai.NudgeEvent)
+async def _(data: Mirai.NudgeEvent):
+    if data.fromId == account:
+        return False
+
+    user: User = User.get_or_none(user_id=data.fromId)
+    if user and user.black == 1:
+        return False
+
+    group: GroupActive = GroupActive.get_or_none(group_id=data.subject.id)
+    if group and group.active == 0:
+        return False
+
+    await http.send_nudge(data.fromId, data.subject.id)

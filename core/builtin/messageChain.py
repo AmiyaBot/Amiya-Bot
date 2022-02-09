@@ -54,7 +54,7 @@ class Chain:
         if text.strip('\n') != '':
             text = text.strip('\n')
 
-        r = re.findall(r'(\[face(\d+)])', text)
+        r = re.findall(r'(\[face:(\d+)])', text)
         if r:
             face = []
             for item in r:
