@@ -98,8 +98,8 @@ class Message:
     async def send(self, reply):
         await self.opration.send(reply)
 
-    async def waiting(self, reply=None, max_time: int = 30):
-        wid = await wait_events.set_wait(self.user_id)
+    async def waiting(self, reply=None, max_time: int = 30, force: bool = False):
+        wid = await wait_events.set_wait(self.user_id, force)
 
         if reply:
             await self.opration.send(reply)
@@ -109,7 +109,7 @@ class Message:
 
             if self.user_id in wait_events:
                 if wid != wait_events[self.user_id].wid:
-                    return None
+                    raise WaitEventCancel()
 
                 if wait_events[self.user_id].data:
                     return wait_events[self.user_id].data
@@ -169,10 +169,17 @@ class Event:
 
 
 class WaitEvent:
-    def __init__(self, wid: int, user_id: int):
+    def __init__(self, wid: int, user_id: int, force: bool):
         self.wid = wid
+        self.force = force
         self.user_id = user_id
         self.data: Optional[Message] = None
+
+    def set(self, data: Message):
+        self.data = data
+
+    def cancel(self):
+        self.wid = None
 
 
 class WaitEventsBucket:
@@ -201,12 +208,20 @@ class WaitEventsBucket:
             self.id += 1
             return self.id
 
-    async def set_wait(self, user_id: Union[int, str]):
+    async def set_wait(self, user_id: Union[int, str], force: bool):
         wid = await self.__get_id()
 
-        self.bucket[user_id] = WaitEvent(wid, user_id)
+        self.bucket[user_id] = WaitEvent(wid, user_id, force)
 
         return wid
+
+
+class WaitEventCancel(Exception):
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return f'WaitEventCancel'
 
 
 wait_events = WaitEventsBucket()

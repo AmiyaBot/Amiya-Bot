@@ -10,7 +10,6 @@ prefixName:
 imageCreator:
     convertLength: 100
     fontFile: resource/style/AdobeHeitiStd-Regular.otf
-    savePath: fileStorage/images
 
 speedSetting:
     maxsize: 3

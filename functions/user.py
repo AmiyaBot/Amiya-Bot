@@ -90,10 +90,7 @@ async def check_only_name(data: Message):
 
     text = re.sub(r'\W', '', text).strip()
 
-    if text == '' or data.is_at:
-        return True
-
-    return False
+    return text == ''
 
 
 @bot.on_group_message(function_id='user', verify=check_only_name)

@@ -68,13 +68,16 @@ class Handler:
         return Verify(False)
 
     async def verify(self, data: Message):
-        # 检查是否包含前缀触发词
+        # 检查是否包含前缀触发词，包括 @
         flag = False
         if self.check_prefix:
-            for word in (self.check_prefix if type(self.check_prefix) is list else BotHandlers.prefix_keywords):
-                if data.text_origin.startswith(word):
-                    flag = True
-                    break
+            if data.is_at:
+                flag = True
+            else:
+                for word in (self.check_prefix if type(self.check_prefix) is list else BotHandlers.prefix_keywords):
+                    if data.text_origin.startswith(word):
+                        flag = True
+                        break
 
         # 若不包含前缀触发词，且关键字不为全等句式（equal）
         # 则允许当关键字为列表时，筛选列表内的全等句式继续执行校验

@@ -1,7 +1,7 @@
 from typing import *
 
 from core.network import WSOpration
-from core.builtin.message import Message, Event, Verify, wait_events
+from core.builtin.message import Message, Event, Verify, WaitEvent, wait_events
 from core.builtin.messageChain import Chain
 from core.database.messages import MessageStack
 from core.database.group import GroupActive
@@ -56,6 +56,15 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
         if config.test.enable and data.type == 'group' and data.group_id not in config.test.group:
             return
 
+        waitting: Optional[WaitEvent] = None
+
+        if data.user_id in wait_events:
+            waitting = wait_events[data.user_id]
+
+        if waitting and waitting.force:
+            waitting.set(data)
+            return
+
         handlers = {
             'temp': BotHandlers.temp_message_handlers,
             'group': BotHandlers.group_message_handlers,
@@ -94,9 +103,11 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
             reply: Chain = await handler.action(data)
             if reply:
                 await opration.send(reply)
-        else:
-            if data.user_id in wait_events:
-                wait_events[data.user_id].data = data
+                if waitting:
+                    waitting.cancel()
+
+        if waitting:
+            waitting.set(data)
 
     elif issubclass(data.__class__, Event):
         info(f'Event: {data}')

@@ -84,16 +84,16 @@ class Chain:
         self.chain += chain
         return self
 
-    def text_image(self, text, images: IMAGES_TYPE = None, title: str = ''):
+    def text_image(self, text, images: IMAGES_TYPE = None):
         logo = [
             ImageElem('resource/style/rabbit.png', size=30, pos=(570, 0))
         ]
         return self.image(
-            path=create_image(text, path=title, width=600, images=(images or []) + logo, bgcolor='#F5F5F5')
+            path=create_image(text, width=600, images=(images or []) + logo, bgcolor='#F5F5F5')
         )
 
-    def image(self, path: Union[str, List[str]]):
-        if type(path) is str:
+    def image(self, path: Union[str, bytes, List[Union[str, bytes]]]):
+        if type(path) is not list:
             path = [path]
 
         for item in path:
@@ -123,8 +123,10 @@ class Chain:
             for item in chain:
                 if item['type'] == 'Image' and not item['imageId']:
                     item['imageId'] = await ResourceManager.get_image_id(item['path'], self.data.type)
+                    del item['path']
                 if item['type'] == 'Voice' and not item['voiceId']:
                     item['voiceId'] = await ResourceManager.get_voice_id(item['path'], self.data.type)
+                    del item['path']
 
         content = {
             'target': self.target,

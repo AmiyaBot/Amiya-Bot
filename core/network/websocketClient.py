@@ -6,6 +6,7 @@ import websockets
 from contextlib import asynccontextmanager
 from core.network import WSOpration
 from core.database.messages import MessageRecord
+from core.builtin.message import WaitEventCancel
 from core.builtin.messageChain import Chain, custom_chain
 from core.builtin.message.mirai import Mirai
 from core.builtin.messageHandler import message_handler
@@ -84,7 +85,7 @@ class WebsocketClient(WSOpration):
             await self.send(data)
 
     async def handle_message(self, message: str):
-        async with log.catch(handler=self.handle_error, ignore=[KeyError, json.JSONDecodeError]):
+        async with log.catch(handler=self.handle_error, ignore=[KeyError, WaitEventCancel, json.JSONDecodeError]):
 
             data = json.loads(message)
             data = data['data']

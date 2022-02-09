@@ -1,12 +1,12 @@
 import os
 import random
-import datetime
 
+from io import BytesIO
 from PIL import Image, ImageDraw
 from core import Message, Chain
 from core.database.user import *
 from core.database.bot import *
-from core.util import insert_empty, create_dir
+from core.util import insert_empty
 from core.resource.arknightsGameData import ArknightsGameData
 
 line_height = 16
@@ -446,14 +446,10 @@ def create_gacha_image(result: list):
     icon = icon.resize(size=(30, 30))
     image.paste(icon, box=(image.size[0] - 30, 0), mask=icon)
 
-    path = 'fileStorage/images/gacha'
-    create_dir(path)
-
-    name = '%s.png' % datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
-    path = '%s/%s' % (path, name)
-
     x, y = image.size
     image = image.resize((int(x * 0.8), int(y * 0.8)), Image.ANTIALIAS)
-    image.save(path, quality=80)
 
-    return path
+    container = BytesIO()
+    image.save(container, quality=80, format='PNG')
+
+    return container.getvalue()

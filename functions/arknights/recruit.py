@@ -188,7 +188,7 @@ async def _(data: Message):
             if not baidu.enable:
                 return None
 
-            wait = await data.waiting(Chain(data, at=True, quote=False).text('博士，请发送您的公招界面截图~'))
+            wait = await data.waiting(Chain(data, at=True, quote=False).text('博士，请发送您的公招界面截图~'), force=True)
 
             if wait and wait.image:
                 return Chain(wait).text(

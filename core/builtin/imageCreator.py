@@ -1,15 +1,14 @@
 import re
 import os
-import datetime
 
+from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 from typing import *
-from core.util import read_yaml, create_dir
+from core.util import read_yaml
 
 config = read_yaml('config/private/bot.yaml')
 
 FONTFILE = config.imageCreator.fontFile
-SAVEPATH = config.imageCreator.savePath
 
 
 class TextParser:
@@ -82,7 +81,6 @@ IMAGES_TYPE = List[Union[ImageElem, Dict[str, Any]]]
 
 
 def create_image(text: str,
-                 path: str = '',
                  width: int = 0,
                  height: int = None,
                  padding: int = 10,
@@ -102,7 +100,6 @@ def create_image(text: str,
 
 
     :param text:        主体文本
-    :param path:        创建的文件夹路径
     :param width:       图片宽度
     :param height:      图片高度（默认为文本的最大占位）
     :param padding:     图片内边距
@@ -144,10 +141,7 @@ def create_image(text: str,
             img = img.resize(size=(width, height))
             image.paste(img, box=tuple(pos), mask=img)
 
-    path = os.path.join(SAVEPATH, path)
-    create_dir(path)
+    container = BytesIO()
+    image.save(container, format='PNG')
 
-    path = os.path.join(path, '%s.png' % datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
-    image.save(path)
-
-    return path
+    return container.getvalue()
