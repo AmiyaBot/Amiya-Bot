@@ -6,7 +6,7 @@ from core.control import StateControl
 from core.builtin.messageChain import Chain
 from core import log
 
-TASK_CORO = Callable[[WSOpration], Coroutine[Any, Any, Optional[Chain]]]
+TASK_CORO = Callable[[], Coroutine[Any, Any, Optional[Chain]]]
 CUSTOM_CHECK = Callable[[int], Coroutine[Any, Any, bool]]
 
 
@@ -57,7 +57,7 @@ class TasksControl:
                 for task in cls.timed_tasks:
                     if await task.check(t):
                         async with log.catch('TimedTask Error:', handler=client.handle_error):
-                            chain = await task.task(client)
+                            chain = await task.task()
                             if chain:
                                 await client.send(chain)
 

@@ -1,4 +1,5 @@
 from core.database import *
+from typing import Union
 
 db = sqlite(db_conf.user)
 
@@ -10,7 +11,7 @@ class UserBaseModel(Model):
 
 @table
 class User(UserBaseModel):
-    user_id: str = TextField(primary_key=True)
+    user_id: Union[TextField, str] = TextField(primary_key=True)
     nickname: str = TextField(null=True)
     message_num: int = IntegerField(default=0)
     black: int = IntegerField(default=0)

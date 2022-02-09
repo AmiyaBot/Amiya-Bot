@@ -56,6 +56,9 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
         if config.test.enable and data.type == 'group' and data.group_id not in config.test.group:
             return
 
+        if data.user.black == 1:
+            return
+
         waitting: Optional[WaitEvent] = None
 
         if data.user_id in wait_events:

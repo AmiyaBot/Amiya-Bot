@@ -141,10 +141,16 @@ class Group:
     async def push_notice(cls, items: Notice, auth=AuthManager.depends()):
         group_list = await http.get_group_list()
 
+        disabled: List[GroupSetting] = GroupSetting.select().where(GroupSetting.send_notice == 0)
+        disabled: List[str] = [n.group_id for n in disabled]
+
         success = 0
         for item in group_list:
             group_id = item['group_id']
             group_name = item['group_name']
+
+            if str(group_id) in disabled:
+                continue
 
             async with log.catch('push error:'):
                 data = custom_chain(group_id=int(group_id))

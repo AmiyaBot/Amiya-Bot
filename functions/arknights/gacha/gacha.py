@@ -3,6 +3,7 @@ import random
 
 from io import BytesIO
 from PIL import Image, ImageDraw
+from typing import Union
 from core import Message, Chain
 from core.database.user import *
 from core.database.bot import *
@@ -34,7 +35,7 @@ class Pool(BotBaseModel):
 
 @table
 class PoolSpOperator(BotBaseModel):
-    pool_id: int = ForeignKeyField(Pool, db_column='pool_id', on_delete='CASCADE')
+    pool_id: Union[ForeignKeyField, int] = ForeignKeyField(Pool, db_column='pool_id', on_delete='CASCADE')
     operator_name: str = TextField()
     rarity: int = IntegerField()
     classes: str = TextField()
@@ -43,7 +44,7 @@ class PoolSpOperator(BotBaseModel):
 
 @table
 class UserGachaInfo(UserBaseModel):
-    user_id: int = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
+    user_id: Union[ForeignKeyField, str] = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
     coupon: int = IntegerField(default=50)
     gacha_break_even: int = IntegerField(default=0)
     gacha_pool: int = IntegerField(default=1)

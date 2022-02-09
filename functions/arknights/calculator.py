@@ -72,10 +72,9 @@ async def action(data: Message):
     reply = Chain(data)
 
     try:
-        time_array = extract_time(data.text_origin)[-1]
-
+        time_array = extract_time(data.text_origin)
         if time_array:
-            time_stamp = time.mktime(time_array)
+            time_stamp = time.mktime(time_array[-1])
             if time.time() >= time_stamp:
                 return reply.text('博士，过去的只能成为了过去，我们只需要朝着我们的未来前进就好，可以的话，阿米娅会一直陪在博士身边的[face21]')
 

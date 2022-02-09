@@ -67,13 +67,14 @@ def exec_sql_file(file, db):
 
 def select_for_paginate(model,
                         search: SearchParams = None,
+                        fields: tuple = (),
                         join: dict = None,
                         order_by: tuple = None,
                         page: int = 1,
                         page_size: int = 10):
     model: Model
 
-    data = model.select()
+    data = model.select(*fields)
     where = []
 
     if search:

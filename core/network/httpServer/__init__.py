@@ -3,7 +3,7 @@ import asyncio
 import uvicorn
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
@@ -18,14 +18,6 @@ class HttpServer:
         self.app = FastAPI()
         self.server = self.load_server(host, port)
         self.load_controllers()
-
-        self.app.add_middleware(
-            CORSMiddleware,
-            allow_origins=['*'],
-            allow_methods=['*'],
-            allow_headers=['*'],
-            allow_credentials=True
-        )
 
     def load_controllers(self):
         """
@@ -64,11 +56,24 @@ class HttpServer:
             # 加载静态文件
             self.app.mount('/static', StaticFiles(directory='view/static'), name='static')
 
+            # 设置跨域请求
+            self.app.add_middleware(
+                CORSMiddleware,
+                allow_origins=['*'],
+                allow_methods=['*'],
+                allow_headers=['*'],
+                allow_credentials=True
+            )
+
             # 加载模板
             templates = Jinja2Templates(directory='view')
 
             @self.app.get('/', tags=['Index'], response_class=HTMLResponse)
             async def index(request: Request):
                 return templates.TemplateResponse('index.html', {'request': request})
+
+            @self.app.get('/images', tags=['Image'], response_class=StreamingResponse)
+            async def index(filename: str):
+                return StreamingResponse(open(f'resource/images/temp/{filename}', mode='rb'), media_type='image/png')
 
             await self.server.serve()

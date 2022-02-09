@@ -6,7 +6,7 @@ from functions.user import UserInfo
 from functions.intellect import Intellect as IntellectData
 from functions.replace import TextReplace
 from functions.arknights.gacha import UserGachaInfo
-from functions.arknights.gacha.gacha import Pool as PoolData, PoolSpOperator as PoolSpOperatorData
+from functions.arknights.gacha.gacha import Pool as PoolData
 
 amiya = sqlite('database/amiya.db')
 
@@ -79,15 +79,6 @@ class Pool(AmiyaBaseModel):
     pickup_4 = TextField(null=True)
     pickup_s = TextField(null=True)
     limit_pool = IntegerField()
-
-
-class PoolSpOperator(AmiyaBaseModel):
-    sp_id = IntegerField(primary_key=True, constraints=[SQL('autoincrement')])
-    pool_id = IntegerField()
-    operator_name = TextField()
-    rarity = IntegerField()
-    classes = TextField()
-    image = TextField()
 
 
 class GachaConfig(AmiyaBaseModel):
@@ -242,24 +233,6 @@ def transfer_pool():
     PoolData.insert_data(data)
 
 
-def transfer_pool_sp():
-    all_data: List[PoolSpOperator] = PoolSpOperator.select()
-
-    data = []
-
-    for item in all_data:
-        data.append({
-            'pool_id': item.pool_id,
-            'operator_name': item.operator_name,
-            'rarity': item.rarity,
-            'classes': item.classes,
-            'image': item.image,
-        })
-
-    PoolSpOperatorData.delete().execute()
-    PoolSpOperatorData.insert_data(data)
-
-
 def transfer_gacha_config():
     all_data: List[GachaConfig] = GachaConfig.select()
 
@@ -283,5 +256,4 @@ if __name__ == '__main__':
     transfer_function()
     transfer_disable()
     transfer_pool()
-    transfer_pool_sp()
     transfer_gacha_config()

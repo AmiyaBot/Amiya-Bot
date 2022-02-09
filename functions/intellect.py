@@ -1,7 +1,7 @@
 import re
 import time
 
-from core import bot, WebsocketClient, Message, Chain, custom_chain
+from core import bot, websocket, Message, Chain, custom_chain
 from core.database.user import *
 
 
@@ -85,7 +85,7 @@ async def _(data: Message):
 
 
 @bot.timed_task(each=10)
-async def _(client: WebsocketClient):
+async def _():
     conditions = (Intellect.status == 0, Intellect.full_time <= int(time.time()))
     results: List[Intellect] = Intellect.select().where(*conditions)
     if results:
@@ -96,4 +96,4 @@ async def _(client: WebsocketClient):
             data = custom_chain(int(item.user_id), int(item.group_id), item.message_type)
             data.at().text(text)
 
-            await client.send(data)
+            await websocket.send(data)

@@ -3,7 +3,7 @@ import re
 from core.database.messages import *
 from core.database.group import GroupSetting
 from core.util import TimeRecorder
-from core import bot, http, custom_chain, Message, Chain, WebsocketClient
+from core import bot, websocket, http, custom_chain, Message, Chain
 
 from .helper import WeiboUser, WeiboContent, weibo_conf
 
@@ -56,7 +56,7 @@ async def _(data: Message):
 
 
 @bot.timed_task(each=30)
-async def _(client: WebsocketClient):
+async def _():
     for user in weibo_conf.listen:
         weibo = WeiboUser(user)
         new_id = await weibo.get_weibo_id(0)
@@ -81,7 +81,7 @@ async def _(client: WebsocketClient):
             record_time=int(time.time())
         )
 
-        async with client.send_to_admin() as chain:
+        async with websocket.send_to_admin() as chain:
             chain.text(f'开始推送微博:\n{new_id}\n目标群数: {len(target)}')
 
         time_rec = TimeRecorder()
@@ -95,8 +95,8 @@ async def _(client: WebsocketClient):
             data.text(result.detail_url)
             data.image(result.pics_list)
 
-            await client.send(data)
+            await websocket.send(data)
             await asyncio.sleep(0.5)
 
-        async with client.send_to_admin() as chain:
+        async with websocket.send_to_admin() as chain:
             chain.text(f'微博推送结束:\n{new_id}\n耗时{time_rec.total()}')

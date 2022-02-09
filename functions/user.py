@@ -7,6 +7,7 @@ import collections
 from core import bot, websocket, http, account, custom_chain, Message, Chain, Mirai
 from core.database.user import *
 from core.database.group import GroupActive
+from core.database.messages import MessageRecord
 from core.builtin.baiduCloud import BaiduCloud
 from core.util import read_yaml
 
@@ -24,7 +25,7 @@ touch: List[stage] = read_yaml('config/private/feeling.yaml').touch
 
 @table
 class UserInfo(UserBaseModel):
-    user_id: str = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
+    user_id: Union[ForeignKeyField, str] = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
     user_feeling: int = IntegerField(default=0)
     user_mood: int = IntegerField(default=15)
     sign_in: int = IntegerField(default=0)
@@ -226,3 +227,19 @@ async def _(data: Mirai.NudgeEvent):
         return False
 
     await http.send_nudge(data.fromId, data.subject.id)
+
+
+@bot.timed_task(each=60)
+async def _():
+    now = time.localtime(time.time())
+    hour = now.tm_hour
+    mint = now.tm_min
+
+    if hour == 4 and mint == 0:
+        UserInfo.update(sign_in=0, user_mood=15).execute()
+
+        last_time = int(time.time()) - 31 * 86400
+        MessageRecord.delete().where(MessageRecord.create_time <= last_time).execute()
+
+        async with websocket.send_to_admin() as chain:
+            chain.text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
