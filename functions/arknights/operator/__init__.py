@@ -113,6 +113,7 @@ async def _(data: Message):
 @bot.on_group_message(function_id='checkOperator', keywords=['语音'])
 async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['voice_key', 'name'])
+    cn = '中文' in data.text
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
@@ -148,12 +149,14 @@ async def _(data: Message):
         text = f'博士，为您找到干员{info.name}的语音档案：\n\n【{info.voice_key}】\n\n' + voices_map[info.voice_key]['voice_text']
         text = text.replace('{@nickname}', data.nickname)
 
-        file = await Wiki.check_exists(opt.wiki_name, info.voice_key)
+        file = await Wiki.check_exists(opt.wiki_name, info.voice_key, cn)
         if not file:
-            await data.send(Chain(data).text(f'正在下载{opt.wiki_name}《{info.voice_key}》语音文件，博士请稍等...'))
-            file = await Wiki.download_operator_voices(opt.wiki_name, info.voice_key)
+            await data.send(Chain(data, quote=False).text(
+                f'正在下载{opt.wiki_name}《{info.voice_key}》%s语音文件，博士请稍等...' % ('中文' if cn else '日文')))
+            file = await Wiki.download_operator_voices(opt.id, opt.wiki_name, info.voice_key, cn)
             if not file:
-                await data.send(Chain(data).text(f'{opt.wiki_name}《{info.voice_key}》语音文件下载失败...>.<'))
+                await data.send(Chain(data, quote=False).text(
+                    f'{opt.wiki_name}《{info.voice_key}》%s语音文件下载失败...>.<' % ('中文' if cn else '日文')))
 
         reply = Chain(data).text(text)
         if file:

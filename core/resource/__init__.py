@@ -11,6 +11,7 @@ class GameData:
 
 
 class Remote:
+    wiki: str
     console: str
     resource: str
     gameData: GameData
