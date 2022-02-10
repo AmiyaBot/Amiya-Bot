@@ -49,7 +49,7 @@ class MessageStack:
             'msg_type': item.type,
             'text': item.text_origin,
             'face': ''.join([f'[face:{n}]' for n in item.face]),
-            'image': ','.join(item.image),
+            'image': ','.join([n for n in item.image if type(n) is str]),
             'message': json.dumps(item.message, ensure_ascii=False) if item.message else '',
             'classify': 'call' if effective else '',
             'create_time': item.time
