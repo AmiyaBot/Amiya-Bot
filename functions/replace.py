@@ -27,7 +27,7 @@ class TextReplaceSetting(BotBaseModel):
     status: int = IntegerField()
 
 
-@bot.handle_message
+@bot.handler_middleware
 async def _(data: Message):
     replace: List[TextReplace] = TextReplace.select() \
         .where(TextReplace.group_id == data.group_id, TextReplace.is_active == 1) \

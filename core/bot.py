@@ -10,6 +10,8 @@ PREFIX = Union[bool, List[str]]
 KEYWORDS = Union[str, equal, re.Pattern, List[Union[str, equal, re.Pattern]]]
 FUNC_CORO = Callable[[Message], CORO]
 EVENT_CORO = Callable[[Event], CORO]
+AFTER_CORO = Callable[[Chain], Coroutine]
+BEFORE_CORO = Callable[[Message], Coroutine[Any, Any, bool]]
 VERIFY_CORO = Callable[[Message], Coroutine[Any, Any, Union[bool, Tuple[bool, int], Tuple[bool, int, List[str]]]]]
 MIDDLE_WARE = Callable[[Message], Coroutine[Any, Any, Optional[Message]]]
 
@@ -114,9 +116,11 @@ class BotHandlers:
     group_message_handlers: List[Handler] = list()
     temp_message_handlers: List[Handler] = list()
     event_handlers: Dict[str, List[EVENT_CORO]] = dict()
+    before_reply_handlers: List[BEFORE_CORO] = list()
+    after_reply_handlers: List[AFTER_CORO] = list()
 
     overspeed_handler: Optional[FUNC_CORO] = None
-    message_middleware: Optional[MIDDLE_WARE] = None
+    message_handler_middleware: Optional[MIDDLE_WARE] = None
 
     @classmethod
     def detail(cls):
@@ -272,15 +276,35 @@ class BotHandlers:
             raise Exception('Only one overspeed handler can exist.')
 
     @classmethod
-    def handle_message(cls, hanlder: MIDDLE_WARE):
+    def before_bot_reply(cls, hanlder: BEFORE_CORO):
+        """
+        Bot 回复前处理，用于定义当 Bot 即将回复消息时的操作，该操作会在处理消息前执行
+
+        :param hanlder: 处理函数
+        :return:
+        """
+        cls.before_reply_handlers.append(hanlder)
+
+    @classmethod
+    def after_bot_reply(cls, hanlder: AFTER_CORO):
+        """
+        Bot 回复后处理，用于定义当 Bot 回复消息后的操作，该操作会在发送消息后执行
+
+        :param hanlder: 处理函数
+        :return:
+        """
+        cls.after_reply_handlers.append(hanlder)
+
+    @classmethod
+    def handler_middleware(cls, hanlder: MIDDLE_WARE):
         """
         Message 对象与消息处理器的中间件，用于对 Message 作进一步的客制化处理，只允许存在一个
 
         :param hanlder: 处理函数
         :return:
         """
-        if not cls.message_middleware:
-            cls.message_middleware = hanlder
+        if not cls.message_handler_middleware:
+            cls.message_handler_middleware = hanlder
         else:
             raise Exception('Only one message middleware can exist.')
 
@@ -290,5 +314,7 @@ on_group_message = BotHandlers.on_group_message
 on_temp_message = BotHandlers.on_temp_message
 on_event = BotHandlers.on_event
 on_overspeed = BotHandlers.on_overspeed
-handle_message = BotHandlers.handle_message
+before_bot_reply = BotHandlers.before_bot_reply
+after_bot_reply = BotHandlers.after_bot_reply
+handler_middleware = BotHandlers.handler_middleware
 timed_task = TasksControl.timed_task

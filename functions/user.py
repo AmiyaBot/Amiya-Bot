@@ -2,14 +2,13 @@ import os
 import re
 import time
 import random
-import collections
 
 from core import bot, websocket, http, account, custom_chain, Message, Chain, Mirai
 from core.database.user import *
 from core.database.group import GroupActive
 from core.database.messages import MessageRecord
 from core.builtin.baiduCloud import BaiduCloud
-from core.util import read_yaml
+from core.util import read_yaml, check_sentence_by_re
 
 from .arknights.gacha.gacha import UserGachaInfo
 
@@ -19,8 +18,7 @@ images = []
 for root, dirs, files in os.walk('resource/images/face'):
     images += [os.path.join(root, file) for file in files if file != '.gitkeep']
 
-stage = collections.namedtuple('stage', ['feeling', 'text', 'voice'])
-touch: List[stage] = read_yaml('config/private/feeling.yaml').touch
+talking = read_yaml('config/private/talking.yaml')
 
 
 @table
@@ -82,6 +80,13 @@ def talk_time():
         return '晚上'
 
 
+def compose_talk_verify(words, names):
+    async def verify(data: Message):
+        return check_sentence_by_re(data.text, words, names)
+
+    return verify
+
+
 async def only_name(data: Message):
     if data.image:
         return False
@@ -128,13 +133,47 @@ async def _(data: Message):
             return Chain(data).text(text)
 
 
-@bot.on_group_message(function_id='user', keywords=['阿米驴', '阿驴', '小驴子', '驴子', '驴驴'], check_prefix=False)
+@bot.on_group_message(function_id='user', verify=compose_talk_verify(talking.talk.positive, talking.call.positive))
+async def _(data: Message):
+    user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+    reply = Chain(data)
+
+    if user.user_mood == 0:
+        text = '阿米娅这次就原谅博士吧，博士要好好对阿米娅哦[face:21]'
+    else:
+        text = random.choice(talking.touch)
+
+    setattr(reply, 'feeling', 5)
+    return reply.text(text, auto_convert=False)
+
+
+@bot.on_group_message(function_id='user', verify=compose_talk_verify(talking.talk.inactive, talking.call.positive))
+async def _(data: Message):
+    user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+    reply = Chain(data)
+    setattr(reply, 'feeling', -5)
+
+    if user.user_mood - 5 <= 0:
+        return reply.text('(阿米娅没有应答...似乎已经生气了...)')
+
+    anger = int((1 - (user.user_mood - 5 if user.user_mood - 5 >= 0 else 0) / 15) * 100)
+
+    return reply.text(f'博士为什么要说这种话，阿米娅要生气了！[face:67]（怒气值：{anger}%）')
+
+
+@bot.on_group_message(function_id='user', keywords=talking.call.inactive, check_prefix=False)
 async def _(data: Message):
     text = f'哼！Dr.{data.nickname}不许叫人家{random.choice(data.verify.keywords)}，不然人家要生气了！'
-    return Chain(data, at=True, quote=False).text(text)
+
+    reply = Chain(data, at=True, quote=False).text(text)
+    setattr(reply, 'feeling', -5)
+
+    return reply
 
 
-@bot.on_group_message(function_id='user', keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'], check_prefix=False)
+@bot.on_group_message(function_id='user',
+                      keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'],
+                      check_prefix=False)
 async def _(data: Message):
     hour = talk_time()
     text = ''
@@ -150,28 +189,37 @@ async def _(data: Message):
     return Chain(data, at=True, quote=False).text(text)
 
 
-@bot.on_group_message(function_id='user', keywords=['晚安'], check_prefix=False)
+@bot.on_group_message(function_id='user',
+                      keywords=['晚安'],
+                      check_prefix=False)
 async def _(data: Message):
     return Chain(data).text(f'Dr.{data.nickname}，晚安～')
 
 
-@bot.on_group_message(function_id='user', keywords=['我错了', '对不起', '抱歉'])
+@bot.on_group_message(function_id='user',
+                      keywords=['我错了', '对不起', '抱歉'])
 async def _(data: Message):
     info: UserInfo = UserInfo.get_or_none(user_id=data.user_id)
+
+    reply = Chain(data)
+    setattr(reply, 'feeling', 5)
+
     if not info or info.user_mood >= 15:
-        return Chain(data).text('博士为什么要这么说呢，嗯……博士是不是偷偷做了对不起阿米娅的事[face181]')
+        return reply.text('博士为什么要这么说呢，嗯……博士是不是偷偷做了对不起阿米娅的事[face:181]')
     else:
-        return Chain(data).text('好吧，阿米娅就当博士刚刚是在开玩笑吧，博士要好好对阿米娅哦[face21]')
+        return reply.text('好吧，阿米娅就当博士刚刚是在开玩笑吧，博士要好好对阿米娅哦[face:21]')
 
 
-@bot.on_group_message(function_id='user', keywords=['签到'])
+@bot.on_group_message(function_id='user',
+                      keywords=['签到'])
 async def _(data: Message):
     status = sign_in(data, 1)
     if status:
         return Chain(data).text(status['text'])
 
 
-@bot.on_group_message(function_id='user', keywords=['信赖', '关系', '好感', '我的信息', '个人信息'])
+@bot.on_group_message(function_id='user',
+                      keywords=['信赖', '关系', '好感', '我的信息', '个人信息'])
 async def _(data: Message):
     user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
 
@@ -185,7 +233,7 @@ async def _(data: Message):
     text += f'阿米娅的心情：{int(user.user_mood / 15 * 100)}%\n'
 
     voice_list = []
-    for item in touch:
+    for item in talking.stage:
         if feeling >= item.feeling:
             voice_list.append(item.text)
 
@@ -227,6 +275,43 @@ async def _(data: Mirai.NudgeEvent):
         return False
 
     await http.send_nudge(data.fromId, data.subject.id)
+
+
+@bot.before_bot_reply
+async def _(data: Message):
+    user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+    if user.user_mood <= 0:
+        await websocket.send(
+            custom_chain(data.user_id, data.group_id, data.type).at().text('哼~阿米娅生气了！不理博士！[face:38]')
+        )
+        return False
+    return True
+
+
+@bot.after_bot_reply
+async def _(data: Chain):
+    if data.command == 'sendGroupMessage':
+        user_id = data.data.user_id
+        feeling = 2
+
+        if hasattr(data, 'feeling'):
+            feeling = getattr(data, 'feeling')
+
+        user: UserInfo = UserInfo.get_or_create(user_id=user_id)[0]
+
+        user_mood = user.user_mood + feeling
+        if user_mood <= 0:
+            user_mood = 0
+        if user_mood >= 15:
+            user_mood = 15
+
+        User.update(
+            message_num=User.message_num + 1
+        ).where(User.user_id == user_id).execute()
+        UserInfo.update(
+            user_mood=user_mood,
+            user_feeling=UserInfo.user_feeling + feeling,
+        ).where(UserInfo.user_id == user_id).execute()
 
 
 @bot.timed_task(each=60)

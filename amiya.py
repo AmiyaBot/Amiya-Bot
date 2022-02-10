@@ -9,7 +9,9 @@ from core.bot import BotHandlers
 from core import (log,
                   init_core)
 
-BotHandlers.add_prefix(read_yaml('config/private/bot.yaml').prefixName)
+BotHandlers.add_prefix(
+    read_yaml('config/private/talking.yaml').call.positive
+)
 
 
 class AmiyaBot:

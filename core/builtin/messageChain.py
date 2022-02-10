@@ -36,6 +36,9 @@ class Chain:
             if data.user_id and at:
                 self.at()
 
+    def __str__(self):
+        return f'{self.command}: {self.target}'
+
     def at(self, user: int = None, enter: bool = True):
         self.chain.append({
             'type': 'At',

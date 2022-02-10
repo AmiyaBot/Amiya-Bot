@@ -13,6 +13,7 @@ from core.builtin.messageHandler import message_handler
 from core.control import StateControl
 from core.config import config
 from core.util import singleton
+from core.bot import BotHandlers
 from core import log
 
 host = config.miraiApiHttp.host
@@ -63,6 +64,10 @@ class WebsocketClient(WSOpration):
                 await self.connect.send(
                     await reply.build(self.session, chain=[voice])
                 )
+
+        if BotHandlers.after_reply_handlers:
+            for handler in BotHandlers.after_reply_handlers:
+                await handler(reply)
 
         MessageRecord.create(
             user_id=account,

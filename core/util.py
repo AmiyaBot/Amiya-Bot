@@ -106,6 +106,14 @@ def any_match(text: str, items: list):
     return False
 
 
+def check_sentence_by_re(sentence: str, words: list, names: list):
+    for item in words:
+        for n in names:
+            if re.search(re.compile(item % n if '%s' in item else item), sentence):
+                return True
+    return False
+
+
 def find_similar_list(text: str, text_list: list, _random: bool = False):
     result = {}
     for item in text_list:

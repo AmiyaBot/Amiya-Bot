@@ -75,8 +75,8 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
         }
         choice: CHOICE = None
 
-        if BotHandlers.message_middleware:
-            data = await BotHandlers.message_middleware(data) or data
+        if BotHandlers.message_handler_middleware:
+            data = await BotHandlers.message_handler_middleware(data) or data
 
         if data.type in handlers.keys():
             choice = await choice_handlers(data, handlers[data.type])
@@ -94,6 +94,15 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
                         await opration.send(reply)
                 return
             elif exceed == 2:
+                return
+
+            flag = True
+            if BotHandlers.before_reply_handlers:
+                for action in BotHandlers.before_reply_handlers:
+                    res = await action(data)
+                    if not res:
+                        flag = False
+            if not flag:
                 return
 
             if handler.function_id:
