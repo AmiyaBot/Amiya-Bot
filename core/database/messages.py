@@ -42,7 +42,7 @@ class MessageStack:
                 cls.stack = []
 
     @classmethod
-    def insert(cls, item: Message):
+    def insert(cls, item: Message, effective: bool = False):
         cls.stack.append({
             'user_id': item.user_id,
             'group_id': item.group_id,
@@ -51,6 +51,6 @@ class MessageStack:
             'face': ''.join([f'[face:{n}]' for n in item.face]),
             'image': ','.join(item.image),
             'message': json.dumps(item.message, ensure_ascii=False) if item.message else '',
-            'classify': 'call' if item.is_call else '',
+            'classify': 'call' if effective else '',
             'create_time': item.time
         })

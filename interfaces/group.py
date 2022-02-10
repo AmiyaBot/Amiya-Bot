@@ -3,7 +3,8 @@ import asyncio
 
 from typing import List
 from core.database import SearchParams, select_for_paginate
-from core.database.group import db, GroupActive, GroupSetting, GroupNotice, Group as GroupData
+from core.database.group import db as group, GroupActive, GroupSetting, GroupNotice, Group as GroupData
+from core.database.messages import db as messages
 from core.network import response
 from core.network.httpServer.auth import AuthManager
 from core import http, websocket, custom_chain, log
@@ -78,10 +79,22 @@ class Group:
         limit = (items.page - 1) * items.pageSize
         offset = items.page * items.pageSize
 
-        res = db.execute_sql(sql).fetchall()
+        res = group.execute_sql(sql).fetchall()
         res = [{fields[i]: n for i, n in enumerate(row)} for row in res]
+        page = res[limit:offset]
 
-        return response({'count': len(res), 'data': res[limit:offset]})
+        gid = ', '.join([n['group_id'] for n in page])
+        msg = messages.execute_sql(
+            f'select group_id, count(*) from message_record where group_id in ({gid}) group by group_id'
+        ).fetchall()
+        msg = {str(n[0]): n[1] for n in msg}
+
+        for item in page:
+            item['message_num'] = 0
+            if item['group_id'] in msg:
+                item['message_num'] = msg[item['group_id']]
+
+        return response({'count': len(res), 'data': page})
 
     @classmethod
     async def refresh_group_list(cls, auth=AuthManager.depends()):

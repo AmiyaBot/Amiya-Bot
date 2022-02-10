@@ -49,23 +49,27 @@ async def choice_handlers(data: Message, handlers: List[Handler]) -> CHOICE:
 
 async def message_handler(data: Union[Message, Event], opration: WSOpration):
     if type(data) is Message:
-        info(str(data))
 
-        MessageStack.insert(data)
+        info(str(data))  # 输出日志
 
-        if config.test.enable and data.type == 'group' and data.group_id not in config.test.group:
-            return
+        is_test = config.test.enable and data.type == 'group' and data.group_id not in config.test.group
+        is_black = data.user.black == 1
 
-        if data.user.black == 1:
+        # 检查封测和黑名单人员
+        if is_test or is_black:
+            MessageStack.insert(data)
             return
 
         waitting: Optional[WaitEvent] = None
 
+        # 寻找是否存在等待事件
         if data.user_id in wait_events:
             waitting = wait_events[data.user_id]
 
+        # 若存在等待事件并且等待事件设置了强制等待，则直接进入事件
         if waitting and waitting.force:
             waitting.set(data)
+            MessageStack.insert(data, True)
             return
 
         handlers = {
@@ -75,16 +79,22 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
         }
         choice: CHOICE = None
 
+        # 执行中间处理函数
         if BotHandlers.message_handler_middleware:
             data = await BotHandlers.message_handler_middleware(data) or data
 
+        # 选择功能
         if data.type in handlers.keys():
             choice = await choice_handlers(data, handlers[data.type])
 
+        MessageStack.insert(data, bool(choice))
+
+        # 执行选中的功能
         if choice:
             handler = choice[1]
             data.verify = choice[0]
 
+            # 检查超限
             exceed = speed.check_user(data.user_id)
 
             if exceed == 1:
@@ -96,6 +106,7 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
             elif exceed == 2:
                 return
 
+            # 执行前置处理函数
             flag = True
             if BotHandlers.before_reply_handlers:
                 for action in BotHandlers.before_reply_handlers:
@@ -105,6 +116,7 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
             if not flag:
                 return
 
+            # 记录使用数
             if handler.function_id:
                 FunctionUsed \
                     .insert(function_id=handler.function_id) \
@@ -112,12 +124,14 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
                                  update={FunctionUsed.use_num: FunctionUsed.use_num + 1}) \
                     .execute()
 
+            # 执行功能并取消等待
             reply: Chain = await handler.action(data)
             if reply:
                 await opration.send(reply)
                 if waitting:
                     waitting.cancel()
 
+        # 未选中任何功能或功能无法返回时，进入等待事件（若存在）
         if waitting:
             waitting.set(data)
 
