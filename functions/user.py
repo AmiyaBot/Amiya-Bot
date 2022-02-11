@@ -11,6 +11,7 @@ from core.builtin.baiduCloud import BaiduCloud
 from core.util import read_yaml, check_sentence_by_re
 
 from .arknights.gacha.gacha import UserGachaInfo
+from .arknights.gacha.box import get_user_gacha_detail
 
 baidu = BaiduCloud()
 
@@ -223,6 +224,8 @@ async def _(data: Message):
 async def _(data: Message):
     user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
 
+    gacha = get_user_gacha_detail(data.user_id)
+
     feeling = user.user_feeling if user.user_feeling <= 4000 else 4000
 
     text = '博士，这是您的个人信息\n\n'
@@ -230,7 +233,14 @@ async def _(data: Message):
     text += f'累计签到：{user.sign_times}\n'
     text += f'累计互动：{data.user.message_num}\n'
     text += f'阿米娅的信赖：{int(feeling / 10)}%\n'
-    text += f'阿米娅的心情：{int(user.user_mood / 15 * 100)}%\n'
+    text += f'阿米娅的心情：{int(user.user_mood / 15 * 100)}%\n\n'
+
+    text += f'干员数：%s\n' % gacha['box_num']
+    text += f'累计抽卡数：%s\n' % gacha['count']
+    text += f'6星获得数：%s (%s)\n' % gacha['raritys_6']
+    text += f'5星获得数：%s (%s)\n' % gacha['raritys_5']
+    text += f'4星获得数：%s (%s)\n' % gacha['raritys_4']
+    text += f'3星获得数：%s (%s)\n' % gacha['raritys_3']
 
     voice_list = []
     for item in talking.stage:

@@ -10,7 +10,7 @@ from core.database.bot import DisabledFunction
 func_titles = read_yaml('config/private/functions.yaml', _dict=True)
 
 
-@bot.on_group_message(keywords=['关闭功能', '开启功能'])
+@bot.on_group_message(keywords=['关闭功能', '开启功能', '打开功能'])
 async def _(data: Message):
     if not data.is_admin and not data.is_group_admin:
         return None
@@ -41,7 +41,7 @@ async def _(data: Message):
     func_list = sorted([item for _, item in func.items()], key=lambda n: n[1])
 
     for index, item in enumerate(func_list):
-        text += '[cl 【{index}】{title:<8}, 共 {count} 个相关功能 @#{color} cle]\n'.format(**{
+        text += '[cl 【{index}】{title}, 共 {count} 个相关功能 @#{color} cle]\n'.format(**{
             'index': index + 1,
             'title': item[1],
             'count': item[2],

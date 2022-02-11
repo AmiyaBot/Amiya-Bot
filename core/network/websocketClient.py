@@ -90,7 +90,7 @@ class WebsocketClient(WSOpration):
             await self.send(data)
 
     async def handle_message(self, message: str):
-        async with log.catch(handler=self.handle_error, ignore=[KeyError, WaitEventCancel, json.JSONDecodeError]):
+        async with log.catch(handler=self.handle_error, ignore=[WaitEventCancel, json.JSONDecodeError]):
 
             data = json.loads(message)
             data = data['data']

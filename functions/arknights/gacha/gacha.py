@@ -3,12 +3,13 @@ import random
 
 from io import BytesIO
 from PIL import Image, ImageDraw
-from typing import Union
 from core import Message, Chain
 from core.database.user import *
 from core.database.bot import *
 from core.util import insert_empty
 from core.resource.arknightsGameData import ArknightsGameData
+
+from .box import UserBox
 
 line_height = 16
 side_padding = 10
@@ -306,6 +307,8 @@ class GachaForUser:
             .where(UserGachaInfo.user_id == self.data.user_id) \
             .execute()
 
+        self.set_box(operators)
+
         return operators
 
     def get_operator(self, rarity):
@@ -340,6 +343,33 @@ class GachaForUser:
             return random.choice(choice)
 
         return random.choice(operator_list)
+
+    def set_box(self, result):
+        user_box: List[UserBox] = UserBox.select().where(UserBox.user_id == self.data.user_id)
+        box_map = {
+            n.operator_name: model_to_dict(n) for n in user_box
+        }
+
+        for item in result:
+            name = item['name']
+
+            if name in box_map:
+                box_map[name]['count'] += 1
+            else:
+                box_map[name] = {
+                    'user_id': self.data.user_id,
+                    'operator_name': name,
+                    'rarity': item['rarity'],
+                    'count': 1
+                }
+
+            if 'id' in box_map[name]:
+                del box_map[name]['id']
+
+        UserBox.delete().where(UserBox.user_id == self.data.user_id).execute()
+        UserBox.insert_data(
+            [item for name, item in box_map.items()]
+        )
 
 
 class GachaPool:
