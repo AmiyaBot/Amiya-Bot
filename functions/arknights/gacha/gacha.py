@@ -347,7 +347,12 @@ class GachaForUser:
     def set_box(self, result):
         user_box: List[UserBox] = UserBox.select().where(UserBox.user_id == self.data.user_id)
         box_map = {
-            n.operator_name: model_to_dict(n) for n in user_box
+            n.operator_name: {
+                'user_id': n.user_id,
+                'operator_name': n.operator_name,
+                'rarity': n.rarity,
+                'count': n.count
+            } for n in user_box
         }
 
         for item in result:
@@ -362,9 +367,6 @@ class GachaForUser:
                     'rarity': item['rarity'],
                     'count': 1
                 }
-
-            if 'id' in box_map[name]:
-                del box_map[name]['id']
 
         UserBox.delete().where(UserBox.user_id == self.data.user_id).execute()
         UserBox.insert_data(
