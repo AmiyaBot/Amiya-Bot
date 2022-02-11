@@ -47,7 +47,7 @@ class User:
         return response(message='设置成功')
 
     @classmethod
-    def send_coupon(cls, items: AddCoupon, auth=AuthManager.depends()):
+    async def send_coupon(cls, items: AddCoupon, auth=AuthManager.depends()):
         value = int(items.value)
 
         query = UserGachaInfo.update(coupon=UserGachaInfo.coupon + value)

@@ -36,7 +36,7 @@ def search_info(words: list, source_keys: list = None):
     info = InfoInterface()
     info_key = list(info_source.keys()) if not source_keys else source_keys
 
-    words = copy.deepcopy(words)
+    words = [n.lower() for n in copy.deepcopy(words)]
 
     while True:
         try:
@@ -78,7 +78,7 @@ def search_info(words: list, source_keys: list = None):
 
 
 async def level(data: Message):
-    info = search_info(data.text_cut, source_keys=['level'])
+    info = search_info(data.text_cut, source_keys=['level', 'skill_index'])
     return bool(info.level) or any_match(data.text, ['精英', '专精'])
 
 
@@ -249,7 +249,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='checkOperator', verify=level)
 async def _(data: Message):
-    info = search_info(data.text_cut, source_keys=['level', 'name'])
+    info = search_info(data.text_cut, source_keys=['level', 'skill_index', 'name'])
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))

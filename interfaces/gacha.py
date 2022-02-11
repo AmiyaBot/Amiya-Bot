@@ -123,7 +123,7 @@ class Pool:
 
 class Operator:
     @classmethod
-    def get_all_operator(cls, auth=AuthManager.depends()):
+    async def get_all_operator(cls, auth=AuthManager.depends()):
         operators = []
 
         for name, item in ArknightsGameData().operators.items():

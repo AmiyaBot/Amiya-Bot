@@ -27,6 +27,10 @@ class TextReplaceSetting(BotBaseModel):
     status: int = IntegerField()
 
 
+async def verify(data: Message):
+    return '别名' in data.text, 2
+
+
 @bot.handler_middleware
 async def _(data: Message):
     replace: List[TextReplace] = TextReplace.select() \
@@ -41,7 +45,7 @@ async def _(data: Message):
         return text_convert(data, text, data.text_origin)
 
 
-@bot.on_group_message(function_id='textReplace', keywords='别名')
+@bot.on_group_message(function_id='textReplace', verify=verify)
 async def _(data: Message):
     search_text = data.text_initial
 
@@ -82,9 +86,10 @@ async def _(data: Message):
         # 开始审核...
         await data.send(Chain(data, quote=False).text('正在审核，博士请稍等...'))
 
-        # 检查原生词语和设置禁止的词语
-        if not check_forbidden(replace) or not check_name(origin):
-            return Chain(data).text(f'审核不通过！检测到存在禁止替换的内容')
+        # 检查原生词语和设置禁止的词语，禁止使用数字替换词
+        forbidden = check_forbidden(replace, origin)
+        if forbidden:
+            return Chain(data).text(f'审核不通过！检测到存在禁止替换的内容：{forbidden}')
 
         # 白名单可直接通过审核
         if check_permissible(replace):
@@ -135,40 +140,33 @@ def show_replace_by_replace(data: Message, replace):
         return Chain(data).text(f'没有找到 [{replace}] 在本群生效的别名')
 
 
-def check_forbidden(text):
+def check_forbidden(replace, origin):
+    if replace.isdigit():
+        return replace
+
     replace_setting: List[TextReplaceSetting] = TextReplaceSetting.select().where(TextReplaceSetting.status == 1)
 
-    if text in [item.text for item in replace_setting] + ['别名']:
-        return False
+    if replace in [item.text for item in replace_setting] + ['别名']:
+        return replace
 
-    files = [
+    for item in bot.BotHandlers.prefix_keywords:
+        if item in [replace, origin]:
+            return item
+
+    for file in [
         'enemies.txt',
         'materials.txt',
         'operators.txt',
         'skins.txt',
         'stories.txt',
         'tags.txt'
-    ]
-
-    if check_name(text):
-        for file in files:
-            with open(f'resource/{file}', mode='r', encoding='utf-8') as src:
-                content = src.read().strip('\n').split('\n')
-            for item in content:
-                item = item.replace(' 500 n', '')
-                if item == text:
-                    return False
-    else:
-        return False
-
-    return True
-
-
-def check_name(text):
-    for item in bot.BotHandlers.prefix_keywords:
-        if item == text:
-            return False
-    return True
+    ]:
+        with open(f'resource/{file}', mode='r', encoding='utf-8') as src:
+            content = src.read().strip('\n').split('\n')
+        for item in content:
+            item = item.replace(' 500 n', '')
+            if item == replace:
+                return item
 
 
 def check_permissible(text):

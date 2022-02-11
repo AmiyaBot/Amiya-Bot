@@ -6,6 +6,8 @@ import aiohttp
 
 from core.util import remove_xml_tag, char_seat, read_yaml, create_dir
 from core.network.download import download_async
+from core.database.group import GroupSetting
+from core.database.messages import db
 from core import log
 
 weibo_conf = read_yaml('config/private/weibo.yaml')
@@ -17,6 +19,21 @@ async def get_result(url, headers):
             async with session.get(url, headers=headers) as res:
                 if res.status == 200:
                     return json.loads(await res.text())
+
+
+async def set_push_group():
+    async with log.catch('group setting error:'):
+        sql = 'select group_id, count(*) from message_record where msg_type = "group" group by group_id'
+        counts = db.execute_sql(sql).fetchall()
+
+        for item in counts:
+            if int(item[1]) >= weibo_conf.autoPush.groupActivity:
+                GroupSetting.insert(**{'send_weibo': 1, 'group_id': item[0]}).on_conflict(
+                    conflict_target=[GroupSetting.group_id],
+                    update={
+                        GroupSetting.send_weibo: 1
+                    }
+                ).execute()
 
 
 class WeiboContent:

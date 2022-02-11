@@ -40,7 +40,7 @@ class OperatorInfo:
             append_word(key)
 
         for name, item in ArknightsGameData().operators.items():
-            e_name = remove_punctuation(item.en_name)
+            e_name = remove_punctuation(item.en_name).lower()
             append_word(name)
             append_word(e_name)
 

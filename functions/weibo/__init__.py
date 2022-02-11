@@ -5,7 +5,7 @@ from core.database.group import GroupSetting
 from core.util import TimeRecorder
 from core import bot, websocket, http, custom_chain, Message, Chain
 
-from .helper import WeiboUser, WeiboContent, weibo_conf
+from .helper import WeiboUser, WeiboContent, weibo_conf, set_push_group
 
 
 @table
@@ -66,6 +66,8 @@ async def _():
         record = WaiboRecord.get_or_none(blog_id=new_id)
         if record:
             continue
+
+        await set_push_group()
 
         group_list = [item['group_id'] for item in await http.get_group_list()]
         enables_list = [int(item.group_id) for item in GroupSetting.select().where(GroupSetting.send_weibo == 1)]

@@ -102,6 +102,9 @@ async def _(data: Message):
     message = data.text
 
     if any_match(message, ['切换', '更换']):
+
+        all_people = data.is_admin and '所有人' in message
+
         r = re.search(r'(\d+)', data.text_digits)
         if r:
             index = int(r.group(1)) - 1
@@ -110,7 +113,7 @@ async def _(data: Message):
 
         for item in all_pools:
             if item.pool_name in message:
-                return Chain(data).text_image(change_pool(item, data.user_id))
+                return Chain(data).text_image(change_pool(item, data.user_id if not all_people else None))
 
     text = '博士，这是可更换的卡池列表：\n\n'
     pools = []

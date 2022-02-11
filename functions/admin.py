@@ -73,8 +73,8 @@ async def _(event: Mirai.BotInvitedJoinGroupRequestEvent):
         await event.handle(allow=False, message='仅允许管理员邀请')
 
 
-@bot.on_event([Mirai.BotMuteEvent, Mirai.BotLeaveEventKick, Mirai.BotLeaveEventActive])
-async def _(data: Union[Mirai.BotMuteEvent, Mirai.BotLeaveEventKick, Mirai.BotLeaveEventActive]):
+@bot.on_event([Mirai.BotMuteEvent, Mirai.BotLeaveEventKick])
+async def _(data: Union[Mirai.BotMuteEvent, Mirai.BotLeaveEventKick]):
     flag = False
     if type(data) is Mirai.BotMuteEvent:
         group_id = data.operator.group.id
