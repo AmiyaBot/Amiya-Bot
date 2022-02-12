@@ -121,7 +121,12 @@ async def _(data: Message):
             return None
         info.name = wait.text
 
-    opt = ArknightsGameData().operators[info.name]
+    operators = ArknightsGameData().operators
+
+    if info.name not in operators:
+        return Chain(data).text(f'博士，没有找到干员"{info.name}"')
+
+    opt = operators[info.name]
     voices = opt.voices()
     voices_map = {item['voice_title']: item for item in voices}
 
@@ -177,7 +182,12 @@ async def _(data: Message):
             return None
         info.name = wait.text
 
-    opt = ArknightsGameData().operators[info.name]
+    operators = ArknightsGameData().operators
+
+    if info.name not in operators:
+        return Chain(data).text(f'博士，没有找到干员"{info.name}"')
+
+    opt = operators[info.name]
     stories = opt.stories()
     stories_map = {item['story_title']: item['story_text'] for item in stories}
 
@@ -242,7 +252,12 @@ async def _(data: Message):
             return None
         info.name = wait.text
 
-    opt = ArknightsGameData().operators[info.name]
+    operators = ArknightsGameData().operators
+
+    if info.name not in operators:
+        return Chain(data).text(f'博士，没有找到干员"{info.name}"')
+
+    opt = operators[info.name]
 
     return Chain(data).text(f'博士，干员{opt.name}的生日是{opt.birthday}')
 

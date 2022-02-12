@@ -235,12 +235,12 @@ async def _(data: Message):
     text += f'阿米娅的信赖：{int(feeling / 10)}%\n'
     text += f'阿米娅的心情：{int(user.user_mood / 15 * 100)}%\n\n'
 
-    text += f'干员数：%s\n' % gacha['box_num']
     text += f'累计抽卡数：%s\n' % gacha['count']
-    text += f'6星获得数：%s (%s)\n' % gacha['raritys_6']
-    text += f'5星获得数：%s (%s)\n' % gacha['raritys_5']
-    text += f'4星获得数：%s (%s)\n' % gacha['raritys_4']
-    text += f'3星获得数：%s (%s)\n' % gacha['raritys_3']
+    text += f'BOX干员数：%s\n' % gacha['box_num']
+    text += f'  --  6星干员数：%s (%s)\n' % tuple(gacha['raritys_6'])
+    text += f'  --  5星干员数：%s (%s)\n' % tuple(gacha['raritys_5'])
+    text += f'  --  4星干员数：%s (%s)\n' % tuple(gacha['raritys_4'])
+    text += f'  --  3星干员数：%s (%s)\n' % tuple(gacha['raritys_3'])
 
     voice_list = []
     for item in talking.stage:
@@ -256,7 +256,7 @@ async def _(data: Message):
 @bot.on_event(Mirai.GroupRecallEvent)
 async def _(data: Mirai.GroupRecallEvent):
     chain = custom_chain(data.operator.id, data.operator.group.id)
-    await websocket.send(chain.at().text(f'哼~撤回也没用，阿米娅已经看见了！[face:269]'))
+    await websocket.send(chain.at(enter=False).text(f'哼~撤回也没用，阿米娅已经看见了！[face:269]'))
 
 
 @bot.on_event(Mirai.MemberJoinEvent)

@@ -108,11 +108,16 @@ class Message:
             await asyncio.sleep(0.5)
 
             if self.user_id in wait_events:
-                if wid != wait_events[self.user_id].wid:
-                    raise WaitEventCancel()
 
-                if wait_events[self.user_id].data:
-                    return wait_events[self.user_id].data
+                wait_object = wait_events[self.user_id]
+
+                if wid != wait_object.wid:
+                    raise WaitEventCancel(self.user_id)
+
+                if wait_object.data:
+                    data = wait_object.data
+                    del wait_events[self.user_id]
+                    return data
 
             else:
                 return None
@@ -186,7 +191,7 @@ class WaitEventsBucket:
     def __init__(self):
         self.id = 0
         self.lock = asyncio.Lock()
-        self.bucket: Dict[int, WaitEvent] = {}
+        self.bucket: Dict[Union[int, str], WaitEvent] = {}
 
     def __contains__(self, item):
         return item in self.bucket
@@ -217,11 +222,12 @@ class WaitEventsBucket:
 
 
 class WaitEventCancel(Exception):
-    def __init__(self):
-        pass
+    def __init__(self, key: Union[int, str]):
+        self.key = key
+        del wait_events[key]
 
     def __str__(self):
-        return f'WaitEventCancel'
+        return f'WaitEventCancel: {self.key}'
 
 
 wait_events = WaitEventsBucket()
