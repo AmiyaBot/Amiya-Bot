@@ -73,14 +73,17 @@ class TextParser:
 class ImageElem:
     def __init__(self, path: str, size: int, pos: Tuple[int, int]):
         self.path = path
-        self.pos = pos
         self.size = size
+        self.pos = pos
+
+    def __str__(self):
+        return f'size({self.size}) pos{self.pos} path={self.path}'
 
 
 IMAGES_TYPE = List[Union[ImageElem, Dict[str, Any]]]
 
 
-def create_image(text: str,
+def create_image(text: str = '',
                  width: int = 0,
                  height: int = None,
                  padding: int = 10,

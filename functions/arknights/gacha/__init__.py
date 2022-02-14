@@ -5,6 +5,7 @@ from core import log, bot, Message, Chain
 from core.util import any_match
 
 from .gacha import GachaForUser, UserGachaInfo, Pool
+from .box import get_user_box
 
 re_list = [
     r'抽卡\d+次',
@@ -151,3 +152,8 @@ async def _(data: Message):
                 return Chain(data).text_image(change_pool(all_pools[index], data.user_id))
             else:
                 return Chain(data).text('博士，要告诉阿米娅准确的卡池序号哦')
+
+
+@bot.on_group_message(function_id='gacha', keywords=['box'])
+async def _(data: Message):
+    return Chain(data).image(get_user_box(data.user_id))

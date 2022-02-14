@@ -301,19 +301,21 @@ class OperatorData:
 
     @staticmethod
     def check_skill_list(skill_operator, info: InfoInterface):
+        operators = ArknightsGameData().operators
+
         if not info.skill and not info.name:
             return '博士，请仔细描述想要查询的信息哦'
 
         if info.skill and any_match(info.skill, ['α', 'β', 'γ']):
             return f'博士，"{info.skill}"这类属于泛用技能名\n请用「干员一技能专三」这种方式向阿米娅描述吧'
 
-        if not info.name:
+        if not info.name or info.name not in operators:
             if info.skill in skill_operator:
                 info.name = skill_operator[info.skill]
             else:
                 return '博士，无法匹配到拥有这个技能的干员哦'
 
-        operator = ArknightsGameData().operators[info.name]
+        operator = operators[info.name]
 
         skills, skills_id, skills_cost, skills_desc = operator.skills()
 

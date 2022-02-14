@@ -135,7 +135,7 @@ class Message:
 class MessageMatch:
     @staticmethod
     def check_str(data: Message, text: str) -> Tuple[bool, int, List[str]]:
-        if text in data.text:
+        if text.lower() in data.text.lower():
             return True, 1, [str(text)]
         return False, 0, []
 

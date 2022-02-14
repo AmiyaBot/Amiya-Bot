@@ -25,6 +25,7 @@ remote:
 save:
     data: resource/data
     face: resource/images/face
+    rank: resource/images/rank
     style: resource/style
     gacha: resource/images/gacha
     classify: resource/images/classify
@@ -48,6 +49,14 @@ files:
         - images/face/face14.png
         - images/face/face15.png
         - images/face/face16.png
+
+    rank:
+        - images/rank/1.png
+        - images/rank/2.png
+        - images/rank/3.png
+        - images/rank/4.png
+        - images/rank/5.png
+        - images/rank/6.png
 
     style:
         - font/AdobeHeitiStd-Regular.otf

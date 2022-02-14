@@ -67,7 +67,11 @@ def stamp_to_date(stamp):
     return time.strftime('%Y-%m-%d', time_array)
 
 
-@bot.on_group_message(function_id='jadeCalculator', keywords=re.compile('(多少)?玉'))
+async def verify(data: Message):
+    return bool(re.search(r'多少(合成)?玉', data.text)), 2
+
+
+@bot.on_group_message(function_id='jadeCalculator', verify=verify)
 async def action(data: Message):
     reply = Chain(data)
 
