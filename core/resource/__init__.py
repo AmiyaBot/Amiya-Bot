@@ -11,15 +11,16 @@ class GameData:
 
 
 class Remote:
+    cos: str
     wiki: str
     console: str
-    resource: str
     gameData: GameData
 
 
 class Save:
     data: str
     face: str
+    rank: str
     style: str
     gacha: str
     classify: str
@@ -32,6 +33,7 @@ class Save:
 
 class Files:
     face: list
+    rank: list
     style: list
     classify: list
     gacha: list

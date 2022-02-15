@@ -74,7 +74,7 @@ class BotResource:
 
             for item in log.progress_bar(items, f'{name} resource'):
                 path = getattr(resource_config.save, name)
-                url = f'{resource_config.remote.resource}/{item}'
+                url = f'{resource_config.remote.cos}/resource/{item}'
                 save = f'{path}/' + item.split('/')[-1]
 
                 if os.path.exists(save) is False or refresh:

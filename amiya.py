@@ -7,7 +7,8 @@ from core.config import config
 from core.util import read_yaml
 from core.bot import BotHandlers
 from core import (log,
-                  init_core)
+                  init_core,
+                  frozen)
 
 BotHandlers.add_prefix(
     read_yaml('config/private/talking.yaml').call.positive

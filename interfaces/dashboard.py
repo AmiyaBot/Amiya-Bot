@@ -20,7 +20,7 @@ def get_active_users_count(hour):
     last_time = get_last_time(hour)
     return MessageRecord.select().where(MessageRecord.create_time >= last_time,
                                         MessageRecord.msg_type == 'group',
-                                        MessageRecord.user_id == account).group_by(MessageRecord.group_id).count()
+                                        MessageRecord.classify == 'call').group_by(MessageRecord.user_id).count()
 
 
 class Dashboard:
