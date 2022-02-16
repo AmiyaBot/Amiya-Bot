@@ -2,7 +2,7 @@ import collections
 
 from typing import *
 from core.util import remove_punctuation, chinese_to_digits, text_to_pinyin, cut_by_jieba
-from core.network import WSOpration
+from core.network import WSOperation
 from core.network.httpSessionClient import HttpSessionClient
 from core.builtin.message import Message, Event
 from core.database.user import User
@@ -234,7 +234,7 @@ class Mirai:
             self.subject = subject(**data['subject'])
 
     @classmethod
-    def mirai_message_formatter(cls, account: int, data: dict, opration: WSOpration) -> Union[Message, Event, None]:
+    def mirai_message_formatter(cls, account: int, data: dict, opration: WSOperation) -> Union[Message, Event, None]:
         """
         Mirai 消息解析函数
 

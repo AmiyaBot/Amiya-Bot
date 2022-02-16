@@ -4,7 +4,7 @@ import asyncio
 import websockets
 
 from contextlib import asynccontextmanager
-from core.network import WSOpration
+from core.network import WSOperation
 from core.database.messages import MessageRecord
 from core.builtin.message import WaitEventCancel
 from core.builtin.messageChain import Chain, custom_chain
@@ -23,7 +23,7 @@ account = config.miraiApiHttp.account
 
 
 @singleton
-class WebsocketClient(WSOpration):
+class WebsocketClient(WSOperation):
     def __init__(self):
         self.url = f'ws://{host}:{port}/all?verifyKey={auth_key}&&qq={account}'
         self.connect = None
