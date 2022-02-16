@@ -35,3 +35,9 @@ class GroupNotice(GroupBaseModel):
     content = TextField()
     send_time = BigIntegerField()
     send_user = TextField()
+
+
+def check_group_active(group_id):
+    group: GroupActive = GroupActive.get_or_none(group_id=group_id)
+    if group and group.active == 0:
+        return False

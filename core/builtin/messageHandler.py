@@ -4,7 +4,7 @@ from core.network import WSOpration
 from core.builtin.message import Message, Event, Verify, WaitEvent, wait_events
 from core.builtin.messageChain import Chain
 from core.database.messages import MessageStack
-from core.database.group import GroupActive
+from core.database.group import check_group_active
 from core.database.bot import FunctionUsed, DisabledFunction
 from core.control import SpeedControl
 from core.config import config
@@ -25,8 +25,7 @@ async def choice_handlers(data: Message, handlers: List[Handler]) -> CHOICE:
     active = True
 
     if data.group_id:
-        group_active: GroupActive = GroupActive.get_or_none(group_id=data.group_id)
-        if group_active and group_active.active == 0:
+        if not check_group_active(data.group_id):
             active = False
 
         query: List[DisabledFunction] = DisabledFunction.select().where(DisabledFunction.group_id == data.group_id,

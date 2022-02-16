@@ -11,8 +11,11 @@ table_list: List[Model] = []
 class Model(Model):
     @classmethod
     def insert_data(cls, rows):
-        for batch in chunked(rows, 100):
-            cls.insert_many(batch).execute()
+        if len(rows) > 100:
+            for batch in chunked(rows, 100):
+                cls.insert_many(batch).execute()
+        else:
+            cls.insert_many(rows).execute()
 
 
 class SearchParams:

@@ -5,7 +5,7 @@ import random
 
 from core import bot, websocket, http, account, custom_chain, Message, Chain, Mirai
 from core.database.user import *
-from core.database.group import GroupActive
+from core.database.group import check_group_active
 from core.database.messages import MessageRecord
 from core.builtin.baiduCloud import BaiduCloud
 from core.util import read_yaml, check_sentence_by_re
@@ -255,12 +255,21 @@ async def _(data: Message):
 
 @bot.on_event(Mirai.GroupRecallEvent)
 async def _(data: Mirai.GroupRecallEvent):
+    if random.randint(1, 10) <= 2:
+        return None
+
+    if not check_group_active(data.operator.group.id):
+        return False
+
     chain = custom_chain(data.operator.id, data.operator.group.id)
     await websocket.send(chain.at(enter=False).text(f'哼~撤回也没用，阿米娅已经看见了！[face:269]'))
 
 
 @bot.on_event(Mirai.MemberJoinEvent)
 async def _(data: Mirai.MemberJoinEvent):
+    if not check_group_active(data.member.group.id):
+        return False
+
     chain = custom_chain(data.member.id, data.member.group.id)
     await websocket.send(chain.at().text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
 
@@ -280,11 +289,13 @@ async def _(data: Mirai.NudgeEvent):
     if user and user.black == 1:
         return False
 
-    group: GroupActive = GroupActive.get_or_none(group_id=data.subject.id)
-    if group and group.active == 0:
+    if not check_group_active(data.subject.id):
         return False
 
-    await http.send_nudge(data.fromId, data.subject.id)
+    if random.randint(1, 10) > 5:
+        await http.send_nudge(data.fromId, data.subject.id)
+    else:
+        return custom_chain(data.fromId, data.subject.id).image(random.choice(images))
 
 
 @bot.before_bot_reply

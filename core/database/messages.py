@@ -37,7 +37,6 @@ class MessageStack:
             await asyncio.sleep(5)
             if cls.stack:
                 async with log.catch('MessageStack Error:'):
-                    MessageRecord.delete().where(MessageRecord.create_time <= int(time.time()) - 31 * 86400).execute()
                     MessageRecord.insert_data(cls.stack.copy())
                 cls.stack = []
 
