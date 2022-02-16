@@ -29,6 +29,7 @@ save:
     gacha: resource/images/gacha
     classify: resource/images/classify
     database: resource/database
+    certificate: resource/certificate
 
 files:
     face:
@@ -82,3 +83,7 @@ files:
         - images/gacha/bg.png
 
     database: [ ]
+
+    certificate:
+        - certificate/key.pem
+        - certificate/cert.pem

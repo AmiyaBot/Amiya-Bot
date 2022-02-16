@@ -1,7 +1,8 @@
 import collections
 
-from core.util import read_yaml
+from typing import Union
 from core.util import create_dir
+from core.util import read_yaml
 
 
 class GameData:
@@ -16,36 +17,28 @@ class Remote:
     gameData: GameData
 
 
-class Save:
-    data: str
-    face: str
-    rank: str
-    style: str
-    gacha: str
-    classify: str
-    database: str
+class Files:
+    data: Union[str, list]
+    face: Union[str, list]
+    rank: Union[str, list]
+    style: Union[str, list]
+    gacha: Union[str, list]
+    classify: Union[str, list]
+    database: Union[str, list]
+    certificate: Union[str, list]
+
+    @classmethod
+    def items(cls):
+        pass
 
     @classmethod
     def values(cls) -> collections.Iterable:
         pass
 
 
-class Files:
-    face: list
-    rank: list
-    style: list
-    classify: list
-    gacha: list
-    database: list
-
-    @classmethod
-    def items(cls):
-        pass
-
-
 class ResourceConfig:
     remote: Remote
-    save: Save
+    save: Files
     files: Files
 
 

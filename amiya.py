@@ -3,7 +3,6 @@ import functions
 
 from core.network.httpServer import HttpServer
 from core.control import StateControl
-from core.config import config
 from core.util import read_yaml
 from core.bot import BotHandlers
 from core import (log,
@@ -39,7 +38,7 @@ async def bot_run_forever():
 
 
 if __name__ == '__main__':
-    console_server = HttpServer(config.httpServer.host, config.httpServer.port)
+    console_server = HttpServer()
 
     asyncio.run(
         asyncio.wait(

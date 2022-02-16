@@ -10,13 +10,14 @@ from starlette.templating import Jinja2Templates
 from interfaces import controllers
 from core.util import snake_case_to_pascal_case
 from core.network.httpServer.auth import AuthManager
+from core.config import config
 from core import log
 
 
 class HttpServer:
-    def __init__(self, host: str = '127.0.0.1', port: int = 5000):
+    def __init__(self):
         self.app = FastAPI()
-        self.server = self.load_server(host, port)
+        self.server = self.load_server()
         self.load_controllers()
 
     def load_controllers(self):
@@ -36,17 +37,24 @@ class HttpServer:
         self.app.post(AuthManager.login_url, tags=['Auth'])(AuthManager.login)
         self.app.post(AuthManager.token_url, tags=['Auth'])(AuthManager.token)
 
-    def load_server(self, host, port):
+    def load_server(self):
         """
         初始化服务
         """
-        config = uvicorn.Config(self.app,
-                                host=host,
-                                port=port,
-                                loop='asyncio',
-                                log_config='config/private/server.yaml')
+        ssl_key_file = None
+        ssl_cert_file = None
 
-        return uvicorn.Server(config=config)
+        if config.httpServer.https:
+            ssl_key_file = 'resource/certificate/key.pem'
+            ssl_cert_file = 'resource/certificate/cert.pem'
+
+        return uvicorn.Server(config=uvicorn.Config(self.app,
+                                                    loop='asyncio',
+                                                    host=config.httpServer.host,
+                                                    port=config.httpServer.port,
+                                                    ssl_keyfile=ssl_key_file,
+                                                    ssl_certfile=ssl_cert_file,
+                                                    log_config='config/private/server.yaml'))
 
     async def serve(self):
         if not os.path.exists('view'):
