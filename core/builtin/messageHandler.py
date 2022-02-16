@@ -1,6 +1,6 @@
 from typing import *
 
-from core.network import WSOpration
+from core.network import WSOperation
 from core.builtin.message import Message, Event, Verify, WaitEvent, wait_events
 from core.builtin.messageChain import Chain
 from core.database.messages import MessageStack
@@ -46,7 +46,7 @@ async def choice_handlers(data: Message, handlers: List[Handler]) -> CHOICE:
     return sorted(candidate, key=lambda n: len(n[0]), reverse=True)[0]
 
 
-async def message_handler(data: Union[Message, Event], opration: WSOpration):
+async def message_handler(data: Union[Message, Event], opration: WSOperation):
     if type(data) is Message:
 
         info(str(data))  # 输出日志
@@ -59,15 +59,15 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
             MessageStack.insert(data)
             return
 
-        waitting: Optional[WaitEvent] = None
+        waiting: Optional[WaitEvent] = None
 
         # 寻找是否存在等待事件
         if data.user_id in wait_events:
-            waitting = wait_events[data.user_id]
+            waiting = wait_events[data.user_id]
 
         # 若存在等待事件并且等待事件设置了强制等待，则直接进入事件
-        if waitting and waitting.force:
-            waitting.set(data)
+        if waiting and waiting.force:
+            waiting.set(data)
             MessageStack.insert(data, True)
             return
 
@@ -127,12 +127,12 @@ async def message_handler(data: Union[Message, Event], opration: WSOpration):
             reply: Chain = await handler.action(data)
             if reply:
                 await opration.send(reply)
-                if waitting:
-                    waitting.cancel()
+                if waiting:
+                    waiting.cancel()
 
         # 未选中任何功能或功能无法返回时，进入等待事件（若存在）
-        if waitting:
-            waitting.set(data)
+        if waiting:
+            waiting.set(data)
 
     elif issubclass(data.__class__, Event):
         info(f'Event: {data}')

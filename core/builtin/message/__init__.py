@@ -4,7 +4,7 @@ import asyncio
 import collections
 
 from typing import *
-from core.network import WSOpration
+from core.network import WSOperation
 from core.database.user import User
 
 equal = collections.namedtuple('equal', ['content'])  # 全等对象，接受一个字符串，表示消息文本完全匹配该值
@@ -34,7 +34,7 @@ class Verify:
 
 
 class Message:
-    def __init__(self, message=None, opration: WSOpration = None):
+    def __init__(self, message=None, opration: WSOperation = None):
         """
         消息的处理接口类
 

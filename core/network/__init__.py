@@ -3,7 +3,7 @@ import abc
 from typing import Union
 
 
-class WSOpration:
+class WSOperation:
     @abc.abstractmethod
     async def connect_websocket(self):
         """

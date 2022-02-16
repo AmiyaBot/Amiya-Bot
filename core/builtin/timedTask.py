@@ -1,7 +1,7 @@
 import asyncio
 
 from typing import *
-from core.network import WSOpration
+from core.network import WSOperation
 from core.control import StateControl
 from core.builtin.messageChain import Chain
 from core import log
@@ -44,7 +44,7 @@ class TasksControl:
         return register
 
     @classmethod
-    async def run_tasks(cls, client: WSOpration, step: int = 1):
+    async def run_tasks(cls, client: WSOperation, step: int = 1):
         try:
             t = 0
             while StateControl.alive:
