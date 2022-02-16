@@ -2,14 +2,13 @@ from typing import Union
 from aip import AipNlp, AipOcr, AipContentCensor
 from core.network.download import download_async
 from core.config import config
-from core.util import run_in_thread_pool, singleton
+from core.util import run_in_thread_pool, Singleton
 from core import log
 
 conf = config.baiduCloud
 
 
-@singleton
-class BaiduCloud:
+class BaiduCloud(metaclass=Singleton):
     def __init__(self):
         self.enable = False
         self.__nlp = None

@@ -1,9 +1,12 @@
+import os
 import re
 import time
 import copy
 
 from core import bot, Message, Chain
-from core.util import find_similar_list, any_match, extract_time, insert_empty
+from core.util import find_similar_list, any_match, extract_time, insert_empty, create_dir
+from core.network.download import download_async
+from core.resource import resource_config
 from core.resource.arknightsGameData import ArknightsGameData
 from core.resource.arknightsGameData.wiki import Wiki
 
@@ -89,7 +92,67 @@ async def operator(data: Message):
 
 @bot.on_group_message(function_id='checkOperator', keywords=['皮肤', '立绘'])
 async def _(data: Message):
-    return Chain(data).text('抱歉，博士，干员立绘功能维护中，暂时无法使用哦...')
+    info = search_info(data.text_cut, source_keys=['skin_key', 'name'])
+
+    if not info.name:
+        wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
+        if not wait or not wait.text:
+            return None
+        info.name = wait.text
+
+    operators = ArknightsGameData().operators
+
+    if info.name not in operators:
+        return Chain(data).text(f'博士，没有找到干员"{info.name}"')
+
+    opt = operators[info.name]
+    skins = opt.skins()
+
+    text = f'博士，这是干员{info.name}的立绘列表\n\n'
+    for index, item in enumerate(skins):
+        text += f'[{index + 1}] %s\n' % item['skin_name']
+    text += '\n回复【序号】查询对应的档案资料'
+
+    wait = await data.waiting(Chain(data).text(text))
+    if wait:
+        r = re.search(r'(\d+)', wait.text_digits)
+        if r:
+            index = abs(int(r.group(1))) - 1
+            if index >= len(skins):
+                index = len(skins) - 1
+
+            skin_item = skins[index]
+            skin_file = f'{opt.id}_%s.png' % skin_item['skin_key']
+            skin_path = f'resource/skin/{opt.id}/{skin_file}'
+
+            text = f'博士，为您找到干员{info.name}的立绘档案：\n\n'
+            text += '系列：' + skin_item['skin_group'] + '\n'
+            text += '名称：' + skin_item['skin_name'] + '\n'
+            text += '获得途径：' + skin_item['skin_source'] + '\n\n'
+            text += skin_item['skin_usage'] + '\n'
+            text += skin_item['skin_content'] + '\n\n'
+            text += skin_item['skin_desc'] + '\n'
+
+            reply = Chain(data).text(text)
+
+            if not os.path.exists(skin_path):
+                create_dir(skin_path, is_file=True)
+
+                await data.send(Chain(data).text(f'正在下载{info.name}《%s》立绘' % skin_item['skin_name']))
+
+                cos_url = f'{resource_config.remote.cos}/resource/images/skins/{opt.id}/{skin_file}'
+                res = await download_async(cos_url)
+                if res:
+                    with open(skin_path, mode='wb+') as f:
+                        f.write(res)
+
+                    reply.image(skin_path)
+                else:
+                    reply.text('\n立绘下载失败……')
+            else:
+                reply.image(skin_path)
+
+            return reply
 
 
 @bot.on_group_message(function_id='checkOperator', keywords=['模组'])
@@ -98,7 +161,7 @@ async def _(data: Message):
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
-        if not wait:
+        if not wait or not wait.text:
             return None
         info.name = wait.text
 
@@ -117,7 +180,7 @@ async def _(data: Message):
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
-        if not wait:
+        if not wait or not wait.text:
             return None
         info.name = wait.text
 
@@ -178,7 +241,7 @@ async def _(data: Message):
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
-        if not wait:
+        if not wait or not wait.text:
             return None
         info.name = wait.text
 
@@ -248,7 +311,7 @@ async def _(data: Message):
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
-        if not wait:
+        if not wait or not wait.text:
             return None
         info.name = wait.text
 
@@ -268,7 +331,7 @@ async def _(data: Message):
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
-        if not wait:
+        if not wait or not wait.text:
             return None
         info.name = wait.text
 

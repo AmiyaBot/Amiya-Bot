@@ -89,7 +89,7 @@ class Operator:
         self.is_recruit = is_recruit
 
         self.voice_list = voice_list
-        self.skins_list = skins_list
+        self.skins_list = sorted(skins_list, key=lambda n: n['displaySkin']['getTime'])
 
         self.__tags()
         self.__extra()
@@ -275,29 +275,31 @@ class Operator:
 
     def skins(self):
         skins = []
+        skin_sort = 0
+
         for item in self.skins_list:
             skin_data = item['displaySkin']
             skin_id = item['skinId']
-            skin_name = ''
             skin_lvl = {
-                '1': '初始',
-                '1+': '精英一',
-                '2': '精英二',
+                '1': ('初始', 'stage0'),
+                '1+': ('精英一', 'stage1'),
+                '2': ('精英二', 'stage2'),
             }
 
             skin_info = skin_id.split('#')
             skin_index = skin_info[1]
 
-            if '@' not in skin_id:
-                skin_id = skin_info[0]
-                skin_name = skin_lvl[skin_index]
-            else:
-                skin_id = skin_info[0].replace('@', '_')
+            skin_name = ''
 
-            skin_id = f'{skin_id}_{skin_index}'
+            if '@' not in skin_id:
+                skin_name, skin_key = skin_lvl[skin_index]
+            else:
+                skin_sort += 1
+                skin_key = f'skin{skin_sort}'
 
             skins.append({
                 'skin_id': skin_id,
+                'skin_key': skin_key,
                 'skin_name': skin_data['skinName'] or skin_name,
                 'skin_drawer': skin_data['drawerName'] or '',
                 'skin_group': skin_data['skinGroupName'] or '',

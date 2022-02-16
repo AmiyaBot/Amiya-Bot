@@ -4,7 +4,7 @@ import re
 from typing import List, Dict, Tuple
 from core.network.download import download_sync
 from core.resource import resource_config
-from core.util import remove_xml_tag, remove_punctuation, create_dir, singleton, sorted_dict
+from core.util import Singleton, remove_xml_tag, remove_punctuation, create_dir, sorted_dict
 from core import log
 
 from .common import ArknightsConfig, JsonData
@@ -42,21 +42,25 @@ def init_operators() -> OPERATORS:
     voice_map = {}
     skins_map = {}
 
-    map_data = (
-        (voice_data, voice_map, 'wordKey'),
-        (skins_data, skins_map, 'charId')
-    )
+    for n, item in voice_data['charWords'].items():
+        char_id = item['wordKey']
 
-    for map_item in map_data:
-        data = map_item[0]
-        if 'charWords' in data:
-            data = data['charWords']
-        for n, item in data.items():
-            char_id = item[map_item[-1]]
-            if char_id not in map_item[1]:
-                map_item[1][char_id] = []
+        if char_id not in voice_map:
+            voice_map[char_id] = []
 
-            map_item[1][char_id].append(item)
+        voice_map[char_id].append(item)
+
+    for n, item in skins_data.items():
+        char_id = item['charId']
+        skin_id = item['skinId']
+
+        if 'char_1001_amiya2' in skin_id:
+            char_id = 'char_1001_amiya2'
+
+        if char_id not in skins_map:
+            skins_map[char_id] = []
+
+        skins_map[char_id].append(item)
 
     operators: List[Operator] = []
     birth = {}
@@ -183,8 +187,7 @@ def init_stages() -> STAGES:
     return stage_list
 
 
-@singleton
-class ArknightsGameData:
+class ArknightsGameData(metaclass=Singleton):
     def __init__(self):
         log.info('initialize ArknightsGameData...')
 

@@ -3,7 +3,7 @@ import json
 import aiohttp
 
 from core import log
-from core.util import singleton, create_dir
+from core.util import Singleton, create_dir
 from core.database.group import Group, GroupActive, GroupSetting
 from core.config import config
 
@@ -11,8 +11,7 @@ session_file = 'fileStorage/session.txt'
 create_dir(session_file, is_file=True)
 
 
-@singleton
-class HttpSessionClient:
+class HttpSessionClient(metaclass=Singleton):
     def __init__(self):
         self.host = f'{config.miraiApiHttp.host}:{config.miraiApiHttp.port.http}'
         self.session = None

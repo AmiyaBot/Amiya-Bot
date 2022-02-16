@@ -12,7 +12,7 @@ from core.builtin.message.mirai import Mirai
 from core.builtin.messageHandler import message_handler
 from core.control import StateControl
 from core.config import config
-from core.util import singleton
+from core.util import Singleton
 from core.bot import BotHandlers
 from core import log
 
@@ -22,8 +22,7 @@ auth_key = config.miraiApiHttp.authKey
 account = config.miraiApiHttp.account
 
 
-@singleton
-class WebsocketClient(WSOpration):
+class WebsocketClient(WSOpration, metaclass=Singleton):
     def __init__(self):
         self.url = f'ws://{host}:{port}/all?verifyKey={auth_key}&&qq={account}'
         self.connect = None
