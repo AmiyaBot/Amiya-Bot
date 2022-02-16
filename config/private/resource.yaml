@@ -1,7 +1,6 @@
 remote:
     cos: https://cos.amiyabot.com
     wiki: https://static.prts.wiki
-    console: http://vivien8261.gitee.io/amiya-bot-console
     gameData:
         version: https://gitee.com/vivien8261/Arknights-Bot-Resource/raw/main
         source: http://vivien8261.gitee.io/arknights-bot-resource

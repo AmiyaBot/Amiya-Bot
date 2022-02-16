@@ -12,7 +12,7 @@ class BotResource:
     def download_amiya_bot_console(cls):
         log.info('checking Amiya-Bot Console update...')
 
-        version_file = download_sync(f'{resource_config.remote.console}/.version', stringify=True)
+        version_file = download_sync(f'{resource_config.remote.cos}/console/.version', stringify=True)
 
         if not version_file:
             return False
@@ -52,7 +52,7 @@ class BotResource:
                 create_dir(folder)
 
                 text_file = suffix in ['html', 'css', 'js', 'map']
-                url = f'{resource_config.remote.console}/dist/{file}'
+                url = f'{resource_config.remote.cos}/console/{version}/{file}'
 
                 data = download_sync(url, stringify=text_file)
                 if data:

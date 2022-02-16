@@ -13,7 +13,6 @@ class GameData:
 class Remote:
     cos: str
     wiki: str
-    console: str
     gameData: GameData
 
 

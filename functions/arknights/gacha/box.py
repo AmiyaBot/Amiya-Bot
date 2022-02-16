@@ -42,7 +42,6 @@ def get_user_box(user_id):
     rank = 20
     padding = 10
 
-    x_pos = padding
     y_pos = 26 - size
     max_length = 10
     for rarity, items in collect.items():
