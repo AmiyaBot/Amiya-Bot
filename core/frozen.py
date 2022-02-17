@@ -18,7 +18,7 @@ def check_upgrade():
 
     local_exe = sys.argv[0].replace('\\', '/').split('/')[-1]
 
-    new_version = download_sync(f'{bucket}/package/version.txt', stringify=True)
+    new_version = download_sync(f'{bucket}/package/version5.txt', stringify=True)
     if not new_version:
         log.info('upgrade check fail.')
         return False
@@ -66,7 +66,10 @@ def check_upgrade():
     sys.exit()
 
 
-if hasattr(sys, 'frozen'):
-    jieba.set_dictionary('./dict.txt')
-    os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(os.path.dirname(sys.argv[0]), 'cacert.pem')
-    check_upgrade()
+def check_frozen():
+    if hasattr(sys, 'frozen'):
+        jieba.set_dictionary('./dict.txt')
+        check_upgrade()
+
+
+check_frozen()

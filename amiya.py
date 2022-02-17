@@ -1,3 +1,4 @@
+import core.frozen
 import asyncio
 import functions
 
@@ -5,9 +6,7 @@ from core.network.httpServer import HttpServer
 from core.control import StateControl
 from core.util import read_yaml
 from core.bot import BotHandlers
-from core import (log,
-                  init_core,
-                  frozen)
+from core import log, init_core
 
 BotHandlers.add_prefix(
     read_yaml('config/private/talking.yaml').call.positive

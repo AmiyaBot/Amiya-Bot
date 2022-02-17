@@ -157,9 +157,7 @@ def create_yaml(path: str, data: dict, overwrite: bool = False):
         type(None),
         lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:null', '')
     )
-    create_dir(
-        '/'.join(path.replace('\\', '/').split('/')[:-1])
-    )
+    create_dir(path, is_file=True)
 
     if os.path.exists(path) and not overwrite:
         return False

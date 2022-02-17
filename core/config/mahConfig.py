@@ -21,6 +21,6 @@ class MiraiApiHttp:
         return {
             'host': '127.0.0.1',
             'port': Port.desc(),
-            'authKey': None,
+            'authKey': 'AmiyaBot',
             'account': None,
         }
