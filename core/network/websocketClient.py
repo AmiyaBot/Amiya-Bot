@@ -97,6 +97,8 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
             if 'session' in data:
                 self.session = data['session']
                 log.info('websocket handshake successful. session: ' + self.session)
+                async with self.send_to_admin() as chain:
+                    chain.text('启动完毕')
                 return False
 
             message_data = Mirai.mirai_message_formatter(account, data, self)

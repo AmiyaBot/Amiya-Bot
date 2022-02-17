@@ -4,6 +4,7 @@ import time
 import yaml
 import jieba
 import jionlp
+import string
 import random
 import difflib
 import asyncio
@@ -84,17 +85,6 @@ class Singleton(type):
         if cls not in cls.instances:
             cls.instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.instances[cls]
-
-
-def singleton(cls, *args, **kwargs):
-    instances = {}
-
-    def _singleton():
-        if cls not in instances:
-            instances[cls] = cls(*args, **kwargs)
-        return instances[cls]
-
-    return _singleton
 
 
 def sorted_dict(data: dict, *args, **kwargs):
@@ -257,6 +247,14 @@ def integer(value):
     if type(value) is float and int(value) == value:
         value = int(value)
     return value
+
+
+def random_code(length):
+    pool = string.digits + string.ascii_letters
+    code = ''
+    for i in range(length):
+        code += random.choice(pool)
+    return code
 
 
 def extract_time(text: str):

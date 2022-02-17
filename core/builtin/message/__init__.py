@@ -59,7 +59,7 @@ class Message:
         self.text_cut = []
         self.text_cut_pinyin = []
 
-        self.at_target = ''
+        self.at_target = []
 
         self.is_at = False
         self.is_call = False

@@ -283,10 +283,11 @@ class Mirai:
                     msg.message_id = chain['id']
 
                 if chain['type'] == 'At':
-                    msg.at_target = chain['target']
-                    if msg.at_target == account:
+                    if chain['target'] == account:
                         msg.is_at = True
                         msg.is_call = True
+                    else:
+                        msg.at_target.append(chain['target'])
 
                 if chain['type'] == 'Plain':
                     text += chain['text'].strip()

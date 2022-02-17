@@ -107,6 +107,22 @@ async def any_talk(data: Message):
     return True, 0
 
 
+async def maintain():
+    UserInfo.update(sign_in=0, user_mood=15).execute()
+
+    last_time = int(time.time()) - 31 * 86400
+    MessageRecord.delete().where(MessageRecord.create_time <= last_time).execute()
+
+    async with websocket.send_to_admin() as chain:
+        chain.text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+
+
+@bot.on_private_message(keywords=bot.equal('维护'))
+async def _(data: Message):
+    if data.is_admin:
+        await maintain()
+
+
 @bot.on_group_message(function_id='user', verify=only_name)
 async def _(data: Message):
     return Chain(data, quote=False).image(random.choice(images))
@@ -342,10 +358,4 @@ async def _():
     mint = now.tm_min
 
     if hour == 4 and mint == 0:
-        UserInfo.update(sign_in=0, user_mood=15).execute()
-
-        last_time = int(time.time()) - 31 * 86400
-        MessageRecord.delete().where(MessageRecord.create_time <= last_time).execute()
-
-        async with websocket.send_to_admin() as chain:
-            chain.text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+        await maintain()

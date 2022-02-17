@@ -1,11 +1,32 @@
+import os
+import re
 import time
 
 from typing import Union
 from core import bot, websocket, http, Message, Chain, Mirai
-from core.util import TimeRecorder
+from core.util import TimeRecorder, random_code, any_match
 from core.database.group import Group, GroupActive
+from core.database.user import Admin, User
 from core.control import StateControl
 from core.config import config
+
+
+async def mute(data: Message):
+    message = data.text
+    target = data.at_target
+
+    status = 0 if '解除' in message else 1
+
+    r = re.search(r'(\d+)', message)
+    if r:
+        target.append(r.group(1))
+
+    reply = Chain(data)
+
+    mute_id = [item for item in target if item not in config.admin.accounts]
+
+    User.update(black=status).where(User.user_id.in_(mute_id)).execute()
+    return reply.text(f'已{"屏蔽" if status else "解除屏蔽"}用户{mute_id}')
 
 
 @bot.on_group_message(function_id='admin', keywords=['休息', '下班'])
@@ -49,10 +70,60 @@ async def _(data: Message):
         return Chain(data).text('阿米娅没有偷懒哦博士，请您也不要偷懒~')
 
 
+@bot.on_group_message(function_id='admin', keywords=['屏蔽'], check_prefix=False)
+async def _(data: Message):
+    if data.is_admin:
+        return await mute(data)
+
+
+@bot.on_private_message(keywords=['屏蔽'])
+async def _(data: Message):
+    if data.is_admin:
+        return await mute(data)
+
+
+@bot.on_private_message(keywords=['管理员'])
+async def _(data: Message):
+    if data.is_admin:
+        message = data.text
+
+        r = re.search(r'(\d+)', message)
+        if r:
+            user_id = int(r.group(1))
+            user = Admin.get_or_none(user_id=user_id)
+
+            reply = Chain(data)
+
+            if '注册' in message:
+                if user:
+                    return reply.text(f'已存在管理员{user_id}')
+                password = random_code(10)
+                Admin.create(user_id=user_id, password=password)
+                return reply.text(f'管理员{user_id}注册成功，初始密码：{password}')
+
+            if not user:
+                return reply.text(f'没有找到管理员【{user_id}】')
+
+            if any_match(message, ['禁用', '启用']):
+                status = int('启用' in message)
+                Admin.update(active=status).where(Admin.user_id == user_id).execute()
+                return reply.text(f'{"启用" if status else "禁用"}管理员【{user_id}】')
+
+
 @bot.on_private_message(keywords=bot.equal('重启'))
 async def _(data: Message):
     if data.is_admin:
         await data.send(Chain(data).text('准备重启...正在等待所有任务结束...'))
+        StateControl.shutdown()
+
+
+@bot.on_private_message(keywords=bot.equal('强制更新'))
+async def _(data: Message):
+    if data.is_admin:
+        if os.path.exists('fileStorage/downloadFail.txt'):
+            os.remove('fileStorage/downloadFail.txt')
+
+        await data.send(Chain(data).text('准备强制更新...正在等待所有任务结束...'))
         StateControl.shutdown()
 
 
