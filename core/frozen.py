@@ -29,6 +29,7 @@ def check_upgrade():
     new_pack = f'AmiyaBot-{new_version}.zip'
 
     if exe_name == local_exe:
+        log.info('exe version is up to date.')
         return False
 
     log.info(f'difference detected, downloading new pack {new_pack}')

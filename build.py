@@ -131,10 +131,10 @@ def build(version, folder):
     with open(f'{folder}/version.txt', 'w+') as ver:
         ver.write(version)
 
-    # try:
-    #     upload_pack(folder, pack_name)
-    # except Exception as e:
-    #     print(e)
+    try:
+        upload_pack(folder, pack_name)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':
