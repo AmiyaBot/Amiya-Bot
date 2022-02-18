@@ -27,3 +27,18 @@ class PoolInfo(BaseModel):
     pickup_s: str = None
     limit_pool: str = None
     sp_list: List[PoolSpItem] = []
+
+
+class GachaConfigItem(BaseModel):
+    id: str
+    operator_name: str
+    operator_type: str
+
+
+class GachaConfigSearch(SearchBase):
+    operator_name: str = None
+    operator_type: str = None
+
+
+class GachaConfigTable(Pagination):
+    search: GachaConfigSearch

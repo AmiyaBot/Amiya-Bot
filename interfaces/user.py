@@ -1,9 +1,9 @@
 from core.network import response
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate
-from core.database.user import User as UserBase, query_to_list
+from core.database.user import Admin, User as UserBase, query_to_list
 
-from .model.user import UserTable, UserState, AddCoupon
+from .model.user import UserTable, UserState, AddCoupon, EditPassword
 from functions.user import UserInfo
 from functions.arknights.gacha.gacha import UserGachaInfo
 
@@ -56,3 +56,16 @@ class User:
         query.execute()
 
         return response(message='发放成功')
+
+    @classmethod
+    async def edit_password(cls, items: EditPassword, auth=AuthManager.depends()):
+        user_id = auth.user_id
+        password = items.password
+        new_password = items.new_password
+
+        admin = Admin.get_or_none(user_id=user_id, password=password)
+        if admin:
+            Admin.update(password=new_password).where(Admin.user_id == user_id).execute()
+            return response(message='修改成功')
+        else:
+            return response(message='密码错误', code=0)
