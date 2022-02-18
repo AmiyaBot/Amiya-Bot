@@ -17,12 +17,14 @@ def download_sync(url, headers=None, stringify=False):
                 return str(stream.content, encoding='utf-8')
             else:
                 return stream.content
+    except requests.exceptions.ConnectionError:
+        pass
     except Exception as e:
         log.error(e, desc='download error:')
 
 
 async def download_async(url, headers=None, stringify=False):
-    async with log.catch('download error:'):
+    async with log.catch('download error:', ignore=[requests.exceptions.SSLError]):
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers or default_headers) as res:
                 if res.status == 200:

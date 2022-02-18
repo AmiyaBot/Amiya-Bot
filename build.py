@@ -6,6 +6,8 @@ import zipfile
 import pathlib
 import logging
 
+from jionlp.util.zip_file import UNZIP_FILE_LIST, ZIP_FILE_LIST
+
 venv = 'venv/Lib/site-packages'
 
 version_file = '''# UTF-8
@@ -31,7 +33,7 @@ VSVersionInfo(
                         StringStruct(u'FileDescription', u'《明日方舟》QQ机器人'),
                         StringStruct(u'FileVersion', u'{file_version}'),
                         StringStruct(u'OriginalFilename', u'AmiyaBot.exe'),
-                        StringStruct(u'LegalCopyright', u'Github Amiya 组织版权所有'),
+                        StringStruct(u'LegalCopyright', u'Github AmiyaBot 组织版权所有'),
                     ]
                 )
             ]
@@ -63,7 +65,7 @@ def upload_pack(folder, pack_name):
     client.put_object_from_local_file(
         Bucket=bucket,
         LocalFilePath=f'{folder}/version.txt',
-        Key='package/version.txt',
+        Key='package/version5.txt',
     )
     client.put_object_from_local_file(
         Bucket=bucket,
@@ -82,10 +84,13 @@ def build(version, folder):
     os.makedirs(dist)
 
     shutil.copy(f'{venv}/jieba/dict.txt', f'{dist}/dict.txt')
-    shutil.copy(f'{venv}/requests/cacert.pem', f'{dist}/cacert.pem')
+    shutil.copytree('config/private', f'{dist}/config/private', dirs_exist_ok=True)
 
-    shutil.copy('config.yaml', f'{dist}/config.yaml')
-    shutil.copytree('configure', f'{dist}/configure', dirs_exist_ok=True)
+    for item in UNZIP_FILE_LIST + ZIP_FILE_LIST:
+        if not os.path.exists(f'{dist}/dictionary'):
+            os.makedirs(f'{dist}/dictionary')
+        print(f'moving {venv}/jionlp/dictionary/{item}')
+        shutil.copy(f'{venv}/jionlp/dictionary/{item}', f'{dist}/dictionary/{item}')
 
     with open(f'{folder}/version.txt', mode='w+', encoding='utf-8') as vf:
         vf.write(
@@ -114,7 +119,7 @@ def build(version, folder):
         print(item)
 
     pack_name = f'AmiyaBot-{version}.zip'
-    path: str = pathlib.Path(f'{folder}/{pack_name}')
+    path = pathlib.Path(f'{folder}/{pack_name}')
 
     with zipfile.ZipFile(path, 'w') as pack:
         for root, dirs, files in os.walk(dist):
