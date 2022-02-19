@@ -20,3 +20,8 @@ class UserState(BaseModel):
 class AddCoupon(BaseModel):
     users: list
     value: str
+
+
+class EditPassword(BaseModel):
+    password: str
+    new_password: str

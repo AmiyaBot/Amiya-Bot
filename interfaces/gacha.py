@@ -5,8 +5,9 @@ from core.network import response
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate, model_to_dict
 from core.resource.arknightsGameData import ArknightsGameData
+from core.resource.arknightsGameData.common import GachaConfig
 
-from .model.pool import PoolTable, PoolInfo
+from .model.pool import PoolTable, PoolInfo, GachaConfigTable, GachaConfigItem
 from functions.arknights.gacha.gacha import Pool as PoolBase, PoolSpOperator
 
 
@@ -138,3 +139,51 @@ class Operator:
             )
 
         return response(operators)
+
+    @classmethod
+    async def get_operator_gacha_config(cls, items: GachaConfigTable, auth=AuthManager.depends()):
+        search = SearchParams(
+            items.search,
+            equal=['operator_type'],
+            contains=['operator_name']
+        )
+
+        data, count = select_for_paginate(GachaConfig,
+                                          search,
+                                          order_by=(GachaConfig.id.desc(),),
+                                          page=items.page,
+                                          page_size=items.pageSize)
+
+        return response({'count': count, 'data': data})
+
+    @classmethod
+    async def add_config(cls, items: GachaConfigItem, auth=AuthManager.depends()):
+        check = GachaConfig.get_or_none(operator_name=items.operator_name)
+        if check:
+            return response(message='干员已存在')
+
+        GachaConfig.create(
+            operator_name=items.operator_name,
+            operator_type=items.operator_type
+        )
+
+        return response(message='添加成功')
+
+    @classmethod
+    async def edit_config(cls, items: GachaConfigItem, auth=AuthManager.depends()):
+        GachaConfig.update(
+            operator_name=items.operator_name,
+            operator_type=items.operator_type
+        ).where(
+            GachaConfig.id == items.id
+        ).execute()
+
+        return response(message='修改成功')
+
+    @classmethod
+    async def del_config(cls, items: GachaConfigItem, auth=AuthManager.depends()):
+        GachaConfig.delete().where(
+            GachaConfig.id == items.id
+        ).execute()
+
+        return response(message='删除成功')
