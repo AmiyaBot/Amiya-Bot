@@ -234,13 +234,13 @@ class Mirai:
             self.subject = subject(**data['subject'])
 
     @classmethod
-    def mirai_message_formatter(cls, account: int, data: dict, opration: WSOperation) -> Union[Message, Event, None]:
+    def mirai_message_formatter(cls, account: int, data: dict, operation: WSOperation) -> Union[Message, Event, None]:
         """
         Mirai 消息解析函数
 
         :param account:  Bot 账号
         :param data:     Mirai 消息链
-        :param opration: Websocket 操作接口
+        :param operation: Websocket 操作接口
         :return:
         """
 
@@ -248,12 +248,12 @@ class Mirai:
             return None
 
         if data['type'] == 'FriendMessage':
-            msg = Message(data, opration)
+            msg = Message(data, operation)
             msg.type = 'friend'
             msg.nickname = data['sender']['nickname']
 
         elif data['type'] in ['GroupMessage', 'TempMessage']:
-            msg = Message(data, opration)
+            msg = Message(data, operation)
             msg.type = 'group' if data['type'] == 'GroupMessage' else 'temp'
             msg.group_id = data['sender']['group']['id']
             msg.nickname = data['sender']['memberName']

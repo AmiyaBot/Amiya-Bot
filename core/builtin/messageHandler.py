@@ -46,7 +46,7 @@ async def choice_handlers(data: Message, handlers: List[Handler]) -> CHOICE:
     return sorted(candidate, key=lambda n: len(n[0]), reverse=True)[0]
 
 
-async def message_handler(data: Union[Message, Event], opration: WSOperation):
+async def message_handler(data: Union[Message, Event], operation: WSOperation):
     if type(data) is Message:
 
         info(str(data))  # 输出日志
@@ -100,7 +100,7 @@ async def message_handler(data: Union[Message, Event], opration: WSOperation):
                 if BotHandlers.overspeed_handler:
                     reply: Chain = await BotHandlers.overspeed_handler(data)
                     if reply:
-                        await opration.send(reply)
+                        await operation.send(reply)
                 return
             elif exceed == 2:
                 return
@@ -126,7 +126,7 @@ async def message_handler(data: Union[Message, Event], opration: WSOperation):
             # 执行功能并取消等待
             reply: Chain = await handler.action(data)
             if reply:
-                await opration.send(reply)
+                await operation.send(reply)
                 if waiting:
                     waiting.cancel()
 
@@ -141,4 +141,4 @@ async def message_handler(data: Union[Message, Event], opration: WSOperation):
             for handler in BotHandlers.event_handlers[data.event_name]:
                 reply: Chain = await handler(data)
                 if reply:
-                    await opration.send(reply)
+                    await operation.send(reply)

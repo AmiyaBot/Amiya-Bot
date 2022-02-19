@@ -9,7 +9,7 @@ from .helper import WeiboUser, WeiboContent, weibo_conf, set_push_group
 
 
 @table
-class WaiboRecord(MessageBaseModel):
+class WeiboRecord(MessageBaseModel):
     user_id: int = IntegerField()
     blog_id: str = TextField()
     record_time: int = IntegerField()
@@ -63,7 +63,7 @@ async def _():
         if not new_id:
             continue
 
-        record = WaiboRecord.get_or_none(blog_id=new_id)
+        record = WeiboRecord.get_or_none(blog_id=new_id)
         if record:
             continue
 
@@ -77,7 +77,7 @@ async def _():
             )
         )
 
-        WaiboRecord.create(
+        WeiboRecord.create(
             user_id=user,
             blog_id=new_id,
             record_time=int(time.time())

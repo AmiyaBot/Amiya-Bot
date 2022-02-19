@@ -34,16 +34,16 @@ class Verify:
 
 
 class Message:
-    def __init__(self, message=None, opration: WSOperation = None):
+    def __init__(self, message=None, operation: WSOperation = None):
         """
         消息的处理接口类
 
         type 只允许赋值为 'friend'（好友消息）、'group'（群组消息）或 'temp'（临时聊天）
 
         :param message:  原消息对象
-        :param opration: Websocket 操作接口
+        :param operation: Websocket 操作接口
         """
-        self.opration = opration
+        self.operation = operation
         self.message = message
 
         self.type = None
@@ -96,27 +96,29 @@ class Message:
         return f'<Message, {self.message}>'
 
     async def send(self, reply):
-        await self.opration.send(reply)
+        await self.operation.send(reply)
 
-    async def waiting(self, reply=None, max_time: int = 30, force: bool = False):
-        wid = await wait_events.set_wait(self.user_id, force)
+    async def waiting(self, reply=None, max_time: int = 30, force: bool = False, target: str = 'user'):
+        target_id = self.group_id if target == 'group' else self.user_id
+
+        wid = await wait_events.set_wait(target_id, force, target)
 
         if reply:
-            await self.opration.send(reply)
+            await self.operation.send(reply)
 
         while max_time:
             await asyncio.sleep(0.5)
 
-            if self.user_id in wait_events:
+            if target_id in wait_events:
 
-                wait_object = wait_events[self.user_id]
+                wait_object = wait_events[target_id]
 
                 if wid != wait_object.wid:
-                    raise WaitEventCancel(self.user_id)
+                    raise WaitEventCancel(target_id)
 
                 if wait_object.data:
                     data = wait_object.data
-                    del wait_events[self.user_id]
+                    del wait_events[target_id]
                     return data
 
             else:
@@ -124,12 +126,8 @@ class Message:
 
             max_time -= 0.5
 
-        if wid == wait_events[self.user_id].wid:
-            del wait_events[self.user_id]
-
-    async def keep_waiting(self, max_time: int = 30):
-        # todo 保持等待，在发送结束指令前，将会无限返回等待消息
-        pass
+        if wid == wait_events[target_id].wid:
+            del wait_events[target_id]
 
 
 class MessageMatch:
@@ -174,10 +172,11 @@ class Event:
 
 
 class WaitEvent:
-    def __init__(self, wid: int, user_id: int, force: bool):
+    def __init__(self, wid: int, target_id: int, force: bool, target: str):
         self.wid = wid
         self.force = force
-        self.user_id = user_id
+        self.target = target
+        self.target_id = target_id
         self.data: Optional[Message] = None
 
     def set(self, data: Message):
@@ -213,10 +212,10 @@ class WaitEventsBucket:
             self.id += 1
             return self.id
 
-    async def set_wait(self, user_id: Union[int, str], force: bool):
+    async def set_wait(self, target_id: Union[int, str], force: bool, target: str):
         wid = await self.__get_id()
 
-        self.bucket[user_id] = WaitEvent(wid, user_id, force)
+        self.bucket[target_id] = WaitEvent(wid, target_id, force, target)
 
         return wid
 
