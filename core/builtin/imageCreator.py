@@ -88,6 +88,7 @@ def create_image(text: str = '',
                  height: int = None,
                  padding: int = 10,
                  font_size: int = 15,
+                 max_seat: int = None,
                  line_height: int = 16,
                  color: str = '#000000',
                  bgcolor: str = '#ffffff',
@@ -107,13 +108,14 @@ def create_image(text: str = '',
     :param height:      图片高度（默认为文本的最大占位）
     :param padding:     图片内边距
     :param font_size:   文字宽度
+    :param max_seat:    文字最大占位
     :param line_height: 行高
     :param color:       文字默认颜色
     :param bgcolor:     图片背景色
     :param images:      插入的图片列表，内容为 ImageElem 对象
     :return:            图片路径
     """
-    text = TextParser(text, width - padding * 2, color, font_size)
+    text = TextParser(text, (max_seat or width) - padding * 2, color, font_size)
     image = Image.new('RGB', (width, height or ((text.line + 2) * line_height)), bgcolor)
     draw = ImageDraw.Draw(image)
 

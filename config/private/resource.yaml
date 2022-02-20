@@ -84,6 +84,4 @@ files:
 
     database: [ ]
 
-    certificate:
-        - certificate/key.pem
-        - certificate/cert.pem
+    certificate: [ ]

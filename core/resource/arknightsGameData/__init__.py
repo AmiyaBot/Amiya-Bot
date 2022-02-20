@@ -2,13 +2,14 @@ import os
 import re
 
 from typing import List, Dict, Tuple
-from core.network.download import download_sync
+from core.network.download import download_sync, download_async
 from core.resource import resource_config
 from core.util import Singleton, remove_xml_tag, remove_punctuation, create_dir, sorted_dict
 from core import log
 
 from .common import ArknightsConfig, JsonData
 from .operatorBuilder import Operator
+from .wiki import Wiki
 
 STAGES = Dict[str, Dict[str, str]]
 ENEMIES = Dict[str, Dict[str, dict]]
@@ -330,3 +331,30 @@ class ArknightsGameDataResource:
                 continue
 
             cls.__save_file(url, save_path)
+
+    @classmethod
+    async def get_skin_file(cls, operator: Operator, skin_data: dict):
+        skin_file = f'{operator.id}_%s.png' % skin_data['skin_key']
+        skin_path = f'resource/skin/{operator.id}/{skin_file}'
+
+        if not os.path.exists(skin_path):
+            create_dir(skin_path, is_file=True)
+
+            cos_url = f'{resource_config.remote.cos}/resource/images/skins/{operator.id}/{skin_file}'
+
+            res = await download_async(cos_url)
+            if res:
+                with open(skin_path, mode='wb+') as f:
+                    f.write(res)
+            else:
+                return None
+        return skin_path
+
+    @classmethod
+    async def get_vioce_file(cls, operator: Operator, voice_key: str, cn: bool = False):
+        file = await Wiki.check_exists(operator.wiki_name, voice_key, cn)
+        if not file:
+            file = await Wiki.download_operator_voices(operator.id, operator.wiki_name, voice_key, cn)
+            if not file:
+                return None
+        return file

@@ -54,8 +54,8 @@ class Chain:
         if re.findall(r'\[cl\s(.*?)@#(.*?)\scle]', text):
             return self.text_image(text)
 
-        if text.strip('\n') != '':
-            text = text.strip('\n')
+        if text.rstrip('\n') != '':
+            text = text.rstrip('\n')
 
         r = re.findall(r'(\[face:(\d+)])', text)
         if r:
@@ -88,11 +88,12 @@ class Chain:
         return self
 
     def text_image(self, text, images: IMAGES_TYPE = None):
+        width = 700
         logo = [
-            ImageElem('resource/style/rabbit.png', size=30, pos=(570, 0))
+            ImageElem('resource/style/rabbit.png', size=30, pos=(width - 30, 0))
         ]
         return self.image(
-            path=create_image(text, width=600, images=(images or []) + logo, bgcolor='#F5F5F5')
+            path=create_image(text, width=width, max_seat=width - 50, images=(images or []) + logo, bgcolor='#F5F5F5')
         )
 
     def image(self, path: Union[str, bytes, List[Union[str, bytes]]]):

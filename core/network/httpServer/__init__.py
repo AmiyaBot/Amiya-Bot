@@ -44,9 +44,9 @@ class HttpServer:
         ssl_key_file = None
         ssl_cert_file = None
 
-        if config.httpServer.https:
-            ssl_key_file = 'resource/certificate/key.pem'
-            ssl_cert_file = 'resource/certificate/cert.pem'
+        # if config.httpServer.https:
+        #     ssl_key_file = 'resource/certificate/key.pem'
+        #     ssl_cert_file = 'resource/certificate/cert.pem'
 
         return uvicorn.Server(config=uvicorn.Config(self.app,
                                                     loop='asyncio',

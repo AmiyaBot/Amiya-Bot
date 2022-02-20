@@ -62,6 +62,8 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
         waiting: Optional[WaitEvent] = None
 
         # 寻找是否存在等待事件
+        if data.group_id in wait_events:
+            waiting = wait_events[data.group_id]
         if data.user_id in wait_events:
             waiting = wait_events[data.user_id]
 

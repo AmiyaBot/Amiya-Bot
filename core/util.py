@@ -105,6 +105,10 @@ def any_match(text: str, items: list):
     return False
 
 
+def random_pop(items: list):
+    return items.pop(random.randrange(0, len(items)))
+
+
 def check_sentence_by_re(sentence: str, words: list, names: list):
     for item in words:
         for n in names:

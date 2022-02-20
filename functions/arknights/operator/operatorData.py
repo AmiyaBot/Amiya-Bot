@@ -211,49 +211,6 @@ class OperatorData:
             return f'博士，没有找到干员{info.name}技能{InitData.skill_level[info.level]}的数据'
 
     @staticmethod
-    def get_voice(info: InfoInterface):
-        operator = ArknightsGameData().operators[info.name]
-
-        voices = operator.voices()
-        for item in voices:
-            if item['voice_title'] == info.voice_key:
-                return f'博士，为您找到干员{info.name}的语音档案：\n\n【{info.voice_key}】\n\n{item["voice_text"]}', True
-
-        return f'博士，没有找到干员{info.name}{info.voice_key}相关的语音档案', False
-
-    @staticmethod
-    def get_skins(info: InfoInterface):
-        skins = OperatorInfo.skins_table[info.name]
-        skins_map = {}
-
-        if not skins:
-            return f'博士，干员{info.name}暂时还没有立绘哦～', skins_map
-
-        text = f'博士，为您找到干员{info.name}的立绘列表\n\n'
-
-        for index, item in enumerate(skins):
-            text += f'{index + 1} [ {item["skin_name"]} ] {item["skin_usage"]}\n'
-            skins_map[item['skin_name']] = item
-
-        text += f'\n请和阿米娅说「阿米娅查看{info.name}第 N 个立绘」查看详情吧'
-
-        return text, skins_map
-
-    @staticmethod
-    def build_skin_content(info: InfoInterface, skin):
-        text = f'博士，为您找到干员{info.name}的立绘档案：\n\n'
-        text += '系列：' + skin['skin_group'] + '\n'
-        text += '名称：' + skin['skin_name'] + '\n'
-        text += '获得途径：' + skin['skin_source'] + '\n\n'
-        text += skin['skin_usage'] + '\n'
-        text += skin['skin_content'] + '\n\n'
-        text += ' -- ' + skin['skin_desc']
-
-        pic = 'resource/images/skins/%s.png' % skin['skin_id']
-
-        return text, pic
-
-    @staticmethod
     def build_skill_content(result, position):
         text = ''
         skills = {}

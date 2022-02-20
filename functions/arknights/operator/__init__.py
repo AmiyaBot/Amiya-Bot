@@ -1,14 +1,10 @@
-import os
 import re
 import time
 import copy
 
 from core import bot, Message, Chain
-from core.util import find_similar_list, any_match, extract_time, insert_empty, create_dir
-from core.network.download import download_async
-from core.resource import resource_config
-from core.resource.arknightsGameData import ArknightsGameData
-from core.resource.arknightsGameData.wiki import Wiki
+from core.util import find_similar_list, any_match, extract_time, insert_empty
+from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
 
 from .operatorInfo import OperatorInfo
 from .operatorData import OperatorData
@@ -122,8 +118,6 @@ async def _(data: Message):
                 index = len(skins) - 1
 
             skin_item = skins[index]
-            skin_file = f'{opt.id}_%s.png' % skin_item['skin_key']
-            skin_path = f'resource/skin/{opt.id}/{skin_file}'
 
             text = f'博士，为您找到干员{info.name}的立绘档案：\n\n'
             text += '系列：' + skin_item['skin_group'] + '\n'
@@ -135,20 +129,10 @@ async def _(data: Message):
 
             reply = Chain(data).text(text)
 
-            if not os.path.exists(skin_path):
-                create_dir(skin_path, is_file=True)
+            skin_path = await ArknightsGameDataResource.get_skin_file(opt, skin_item)
 
-                await data.send(Chain(data).text(f'正在下载{info.name}《%s》立绘' % skin_item['skin_name']))
-
-                cos_url = f'{resource_config.remote.cos}/resource/images/skins/{opt.id}/{skin_file}'
-                res = await download_async(cos_url)
-                if res:
-                    with open(skin_path, mode='wb+') as f:
-                        f.write(res)
-
-                    reply.image(skin_path)
-                else:
-                    reply.text('\n立绘下载失败……')
+            if not skin_path:
+                reply.text('\n立绘下载失败……')
             else:
                 reply.image(skin_path)
 
@@ -217,18 +201,13 @@ async def _(data: Message):
         text = f'博士，为您找到干员{info.name}的语音档案：\n\n【{info.voice_key}】\n\n' + voices_map[info.voice_key]['voice_text']
         text = text.replace('{@nickname}', data.nickname)
 
-        file = await Wiki.check_exists(opt.wiki_name, info.voice_key, cn)
-        if not file:
-            await data.send(Chain(data, quote=False).text(
-                f'正在下载{opt.wiki_name}《{info.voice_key}》%s语音文件，博士请稍等...' % ('中文' if cn else '日文')))
-            file = await Wiki.download_operator_voices(opt.id, opt.wiki_name, info.voice_key, cn)
-            if not file:
-                await data.send(Chain(data, quote=False).text(
-                    f'{opt.wiki_name}《{info.voice_key}》%s语音文件下载失败...>.<' % ('中文' if cn else '日文')))
-
         reply = Chain(data).text(text)
+
+        file = await ArknightsGameDataResource.get_vioce_file(opt, info.voice_key, cn)
         if file:
             reply.voice(file)
+        else:
+            reply.text(f'{opt.wiki_name}《{info.voice_key}》%s语音文件下载失败...>.<' % ('中文' if cn else '日文'))
 
         return reply
     else:

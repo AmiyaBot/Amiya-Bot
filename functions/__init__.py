@@ -1,4 +1,5 @@
 from . import (user,
+               game,
                admin,
                about,
                weibo,
