@@ -1,4 +1,5 @@
 import random
+import asyncio
 
 from core import bot, Message, Chain
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
@@ -125,3 +126,5 @@ async def _(data: Message):
     keep_gaming = True
     while keep_gaming:
         keep_gaming = await guess_start(data, choice.text)
+        await data.send(Chain(data, quote=False).text('准备下一题...'))
+        await asyncio.sleep(2)
