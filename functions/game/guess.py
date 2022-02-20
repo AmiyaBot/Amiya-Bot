@@ -22,7 +22,11 @@ async def guess_start(data: Message, level: str):
             question.image(skin_path)
 
     if level == '中级':
-        voice = random.choice(operator.voices())
+        voices = operator.voices()
+        if not voices:
+            return None
+
+        voice = random.choice(voices)
         voice_path = await ArknightsGameDataResource.get_vioce_file(operator, voice['voice_title'])
 
         question.text('\n\n语音：').text(voice['voice_text'])
@@ -111,6 +115,9 @@ async def _(data: Message):
                    '请回复【难度等级】开始游戏。\n所有群员均可参与竞猜，游戏一旦开始，将暂停其他功能的使用哦。如果取消请无视本条消息。'
 
     choice = await data.waiting(Chain(data).text(select_level))
+
+    if not choice:
+        return None
 
     if choice.text not in ['初级', '中级', '高级']:
         return Chain(choice).text('博士，您没有选择难度哦。游戏取消。')
