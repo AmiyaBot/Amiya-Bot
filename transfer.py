@@ -8,7 +8,7 @@ from functions.replace import TextReplace
 from functions.arknights.gacha import UserGachaInfo
 from functions.arknights.gacha.gacha import Pool as PoolData
 
-amiya = sqlite('database/amiya.db')
+amiya = sqlite('amiya.db')
 
 
 class AmiyaBaseModel(Model):

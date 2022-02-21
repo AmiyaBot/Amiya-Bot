@@ -59,6 +59,10 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
             MessageStack.insert(data)
             return
 
+        # 执行中间处理函数
+        if BotHandlers.message_handler_middleware:
+            data = await BotHandlers.message_handler_middleware(data) or data
+
         waiting: Optional[WaitEvent] = None
 
         # 寻找是否存在等待事件
@@ -79,10 +83,6 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
             'friend': BotHandlers.private_message_handlers,
         }
         choice: CHOICE = None
-
-        # 执行中间处理函数
-        if BotHandlers.message_handler_middleware:
-            data = await BotHandlers.message_handler_middleware(data) or data
 
         # 选择功能
         if data.type in handlers.keys():
