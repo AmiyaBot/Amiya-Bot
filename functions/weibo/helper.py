@@ -116,6 +116,9 @@ class WeiboUser:
     async def get_weibo_content(self, index: int):
         cards = await self.get_cards_list()
 
+        if index >= len(cards):
+            index = len(cards) - 1
+
         target_blog = cards[index]
         blog = target_blog['mblog']
         detail_url = target_blog['scheme']

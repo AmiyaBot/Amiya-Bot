@@ -125,6 +125,6 @@ async def _(data: Message):
 
     keep_gaming = True
     while keep_gaming:
-        keep_gaming = await guess_start(data, choice.text)
-        await data.send(Chain(data, quote=False).text('准备下一题...'))
+        await data.send(Chain(data, quote=False).text('题目准备中...'))
         await asyncio.sleep(2)
+        keep_gaming = await guess_start(data, choice.text)

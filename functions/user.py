@@ -298,7 +298,7 @@ async def _(data: Mirai.BotJoinGroupEvent):
 
 @bot.on_event(Mirai.NudgeEvent)
 async def _(data: Mirai.NudgeEvent):
-    if data.fromId == account:
+    if data.fromId == account and data.target != account:
         return False
 
     user: User = User.get_or_none(user_id=data.fromId)
