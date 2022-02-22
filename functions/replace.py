@@ -27,10 +27,6 @@ class TextReplaceSetting(BotBaseModel):
     status: int = IntegerField()
 
 
-async def verify(data: Message):
-    return '别名' in data.text, 2
-
-
 @bot.handler_middleware
 async def _(data: Message):
     replace: List[TextReplace] = TextReplace.select() \
@@ -45,7 +41,7 @@ async def _(data: Message):
         return text_convert(data, text, data.text_origin)
 
 
-@bot.on_group_message(function_id='textReplace', verify=verify)
+@bot.on_group_message(function_id='textReplace', keywords=['别名'], level=5)
 async def _(data: Message):
     search_text = data.text_initial
 

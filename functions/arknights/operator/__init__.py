@@ -76,17 +76,17 @@ def search_info(words: list, source_keys: list = None):
     return info
 
 
-async def level(data: Message):
+async def level_up(data: Message):
     info = search_info(data.text_cut, source_keys=['level', 'skill_index'])
-    return bool(info.level) or any_match(data.text, ['精英', '专精'])
+    return bool(info.level) or any_match(data.text, ['精英', '专精']), 2
 
 
 async def operator(data: Message):
     info = search_info(data.text_cut, source_keys=['name'])
-    return bool(info.name)
+    return bool(info.name), 2 if info.name != '阿米娅' else 0
 
 
-@bot.on_group_message(function_id='checkOperator', keywords=['皮肤', '立绘'])
+@bot.on_group_message(function_id='checkOperator', keywords=['皮肤', '立绘'], level=2)
 async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['skin_key', 'name'])
 
@@ -139,7 +139,7 @@ async def _(data: Message):
             return reply
 
 
-@bot.on_group_message(function_id='checkOperator', keywords=['模组'])
+@bot.on_group_message(function_id='checkOperator', keywords=['模组'], level=2)
 async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['name'])
 
@@ -157,7 +157,7 @@ async def _(data: Message):
         return Chain(data).text(result)
 
 
-@bot.on_group_message(function_id='checkOperator', keywords=['语音'])
+@bot.on_group_message(function_id='checkOperator', keywords=['语音'], level=2)
 async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['voice_key', 'name'])
     cn = '中文' in data.text
@@ -214,7 +214,7 @@ async def _(data: Message):
         return Chain(data).text(f'博士，没有找到干员{info.name}《{info.voice_key}》的语音')
 
 
-@bot.on_group_message(function_id='checkOperator', keywords=['档案', '资料'])
+@bot.on_group_message(function_id='checkOperator', keywords=['档案', '资料'], level=2)
 async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['story_key', 'name'])
 
@@ -259,7 +259,7 @@ async def _(data: Message):
         return Chain(data).text(f'博士，没有找到干员{info.name}《{info.story_key}》的档案')
 
 
-@bot.on_group_message(function_id='checkOperator', keywords=['生日'])
+@bot.on_group_message(function_id='checkOperator', keywords=['生日'], level=2)
 async def _(data: Message):
     date = extract_time(data.text_origin)
     if date:
@@ -304,7 +304,7 @@ async def _(data: Message):
     return Chain(data).text(f'博士，干员{opt.name}的生日是{opt.birthday}')
 
 
-@bot.on_group_message(function_id='checkOperator', verify=level)
+@bot.on_group_message(function_id='checkOperator', verify=level_up)
 async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['level', 'skill_index', 'name'])
 

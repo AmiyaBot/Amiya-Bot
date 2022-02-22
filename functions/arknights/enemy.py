@@ -95,7 +95,10 @@ add_init_task(Enemy.init_enemies)
 
 
 async def verify(data: Message):
-    return any_match(data.text, ['敌人', '敌方'] + Enemy.enemies)
+    match = any_match(data.text, Enemy.enemies)
+    if match:
+        return True, (3 if any_match(data.text, ['敌人', '敌方']) else 1)
+    return False
 
 
 @bot.on_group_message(function_id='checkEnemy', verify=verify)

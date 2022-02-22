@@ -22,7 +22,8 @@ class Handler:
                  function: FUNC_CORO,
                  keywords: KEYWORDS = None,
                  custom_verify: VERIFY_CORO = None,
-                 check_prefix: PREFIX = True):
+                 check_prefix: PREFIX = True,
+                 level: int = 0):
         """
         处理器对象
         将注册到功能候选列表的功能处理器，提供给消息处理器（message_handler）筛选出功能轮候列表。
@@ -37,12 +38,14 @@ class Handler:
         :param keywords:      内置校验方法的关键字，支持字符串、正则、全等句（equal）或由它们构成的列表
         :param custom_verify: 自定义校验方法
         :param check_prefix:  是否校验前缀或指定需要校验的前缀
+        :param level:         关键字校验成功后函数的候选默认等级
         """
         self.function_id = function_id
         self.function = function
         self.keywords = keywords
         self.custom_verify = custom_verify
         self.check_prefix = check_prefix
+        self.level = level
 
     def __repr__(self):
         return f'<Handler, {self.function_id}, {self.keywords}>'
@@ -57,7 +60,7 @@ class Handler:
 
         if t in methods.keys():
             method = methods[t]
-            check = Verify(*method(data, obj))
+            check = Verify(*method(data, obj, self.level))
             if check:
                 return check
 
@@ -94,8 +97,8 @@ class Handler:
         if self.custom_verify:
             result = await self.custom_verify(data)
 
-            if type(result) is bool:
-                result = result, int(result), []
+            if type(result) is bool or result is None:
+                result = result, int(bool(result)), []
 
             elif type(result) is tuple:
                 contrast = result[0], int(result[0]), []
@@ -146,11 +149,12 @@ class BotHandlers:
 
     @classmethod
     def handler_register(cls,
-                         function_id: str,
                          handlers: List[Handler],
+                         function_id: str,
                          keywords: KEYWORDS = None,
                          verify: VERIFY_CORO = None,
-                         check_prefix: PREFIX = True):
+                         check_prefix: PREFIX = True,
+                         level: int = 0):
         """
         功能注册器工厂函数
 
@@ -159,11 +163,15 @@ class BotHandlers:
         :param keywords:      触发关键字
         :param verify:        自定义校验方法
         :param check_prefix:  是否校验前缀或指定需要校验的前缀
+        :param level:         关键字校验成功后函数的候选默认等级
         :return:              注册函数的装饰器
         """
 
         def register(func: FUNC_CORO):
-            _handler = Handler(function_id, func, check_prefix=check_prefix)
+            _handler = Handler(function_id,
+                               func,
+                               level=level,
+                               check_prefix=check_prefix)
 
             if verify:
                 _handler.custom_verify = verify
@@ -179,7 +187,8 @@ class BotHandlers:
                            function_id: str = None,
                            keywords: KEYWORDS = None,
                            verify: VERIFY_CORO = None,
-                           check_prefix: PREFIX = False):
+                           check_prefix: PREFIX = False,
+                           level: int = 0):
         """
         注册一个私聊消息的功能
         功能函数接受一个 Message 参数，内含消息的内容以及回复等操作，允许返回一个 Chain 对象进行回复
@@ -188,16 +197,23 @@ class BotHandlers:
         :param keywords:      触发关键字，支持字符串、正则、全等句（equal）或由它们构成的列表
         :param verify:        自定义校验方法，当该参数被赋值时，keywords 将会失效
         :param check_prefix:  是否校验前缀或指定需要校验的前缀
+        :param level:         关键字校验成功后函数的候选默认等级
         :return:              功能注册器工厂函数
         """
-        return cls.handler_register(function_id, cls.private_message_handlers, keywords, verify, check_prefix)
+        return cls.handler_register(cls.private_message_handlers,
+                                    function_id,
+                                    keywords,
+                                    verify,
+                                    check_prefix,
+                                    level)
 
     @classmethod
     def on_group_message(cls,
                          function_id: str = None,
                          keywords: KEYWORDS = None,
                          verify: VERIFY_CORO = None,
-                         check_prefix: PREFIX = True):
+                         check_prefix: PREFIX = True,
+                         level: int = 0):
         """
         注册一个群组消息的功能
         功能函数接受一个 Message 参数，内含消息的内容以及回复等操作，允许返回一个 Chain 对象进行回复
@@ -206,16 +222,23 @@ class BotHandlers:
         :param keywords:      触发关键字，支持字符串、正则、全等句（equal）或由它们构成的列表
         :param verify:        自定义校验方法，当该参数被赋值时，keywords 将会失效
         :param check_prefix:  是否校验前缀或指定需要校验的前缀
+        :param level:         关键字校验成功后函数的候选默认等级
         :return:              功能注册器工厂函数
         """
-        return cls.handler_register(function_id, cls.group_message_handlers, keywords, verify, check_prefix)
+        return cls.handler_register(cls.group_message_handlers,
+                                    function_id,
+                                    keywords,
+                                    verify,
+                                    check_prefix,
+                                    level)
 
     @classmethod
     def on_temp_message(cls,
                         function_id: str = None,
                         keywords: KEYWORDS = None,
                         verify: VERIFY_CORO = None,
-                        check_prefix: PREFIX = True):
+                        check_prefix: PREFIX = True,
+                        level: int = 0):
         """
         注册一个临时聊天的功能
         功能函数接受一个 Message 参数，内含消息的内容以及回复等操作，允许返回一个 Chain 对象进行回复
@@ -224,9 +247,15 @@ class BotHandlers:
         :param keywords:      触发关键字，支持字符串、正则、全等句（equal）或由它们构成的列表
         :param verify:        自定义校验方法，当该参数被赋值时，keywords 将会失效
         :param check_prefix:  是否校验前缀或指定需要校验的前缀
+        :param level:         关键字校验成功后函数的候选默认等级
         :return:              功能注册器工厂函数
         """
-        return cls.handler_register(function_id, cls.temp_message_handlers, keywords, verify, check_prefix)
+        return cls.handler_register(cls.temp_message_handlers,
+                                    function_id,
+                                    keywords,
+                                    verify,
+                                    check_prefix,
+                                    level)
 
     @classmethod
     def on_event(cls, events: Union[List[Any], Any]):
@@ -263,48 +292,48 @@ class BotHandlers:
         return handler
 
     @classmethod
-    def on_overspeed(cls, hanlder: FUNC_CORO):
+    def on_overspeed(cls, handler: FUNC_CORO):
         """
         处理触发消息速度限制的事件，只允许存在一个
 
-        :param hanlder: 处理函数
+        :param handler: 处理函数
         :return:
         """
         if not cls.overspeed_handler:
-            cls.overspeed_handler = hanlder
+            cls.overspeed_handler = handler
         else:
             raise Exception('Only one overspeed handler can exist.')
 
     @classmethod
-    def before_bot_reply(cls, hanlder: BEFORE_CORO):
+    def before_bot_reply(cls, handler: BEFORE_CORO):
         """
         Bot 回复前处理，用于定义当 Bot 即将回复消息时的操作，该操作会在处理消息前执行
 
-        :param hanlder: 处理函数
+        :param handler: 处理函数
         :return:
         """
-        cls.before_reply_handlers.append(hanlder)
+        cls.before_reply_handlers.append(handler)
 
     @classmethod
-    def after_bot_reply(cls, hanlder: AFTER_CORO):
+    def after_bot_reply(cls, handler: AFTER_CORO):
         """
         Bot 回复后处理，用于定义当 Bot 回复消息后的操作，该操作会在发送消息后执行
 
-        :param hanlder: 处理函数
+        :param handler: 处理函数
         :return:
         """
-        cls.after_reply_handlers.append(hanlder)
+        cls.after_reply_handlers.append(handler)
 
     @classmethod
-    def handler_middleware(cls, hanlder: MIDDLE_WARE):
+    def handler_middleware(cls, handler: MIDDLE_WARE):
         """
         Message 对象与消息处理器的中间件，用于对 Message 作进一步的客制化处理，只允许存在一个
 
-        :param hanlder: 处理函数
+        :param handler: 处理函数
         :return:
         """
         if not cls.message_handler_middleware:
-            cls.message_handler_middleware = hanlder
+            cls.message_handler_middleware = handler
         else:
             raise Exception('Only one message middleware can exist.')
 

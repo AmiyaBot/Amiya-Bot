@@ -178,7 +178,7 @@ async def _(data: Message):
     return reply.text(f'博士为什么要说这种话，阿米娅要生气了！[face:67]（怒气值：{anger}%）')
 
 
-@bot.on_group_message(function_id='user', keywords=talking.call.inactive, check_prefix=False)
+@bot.on_group_message(function_id='user', keywords=list(talking.call.inactive), check_prefix=False)
 async def _(data: Message):
     text = f'哼！Dr.{data.nickname}不许叫人家{random.choice(data.verify.keywords)}，不然人家要生气了！'
 
