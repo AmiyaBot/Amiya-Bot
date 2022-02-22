@@ -6,7 +6,7 @@ import zipfile
 import pathlib
 import logging
 
-from jionlp.util.zip_file import UNZIP_FILE_LIST, ZIP_FILE_LIST
+from jionlp.util.zip_file import ZIP_FILE_LIST
 
 venv = 'venv/Lib/site-packages'
 
@@ -86,7 +86,7 @@ def build(version, folder):
     shutil.copy(f'{venv}/jieba/dict.txt', f'{dist}/dict.txt')
     shutil.copytree('config/private', f'{dist}/config/private', dirs_exist_ok=True)
 
-    for item in UNZIP_FILE_LIST + ZIP_FILE_LIST:
+    for item in ZIP_FILE_LIST:
         if not os.path.exists(f'{dist}/dictionary'):
             os.makedirs(f'{dist}/dictionary')
         print(f'moving {venv}/jionlp/dictionary/{item}')
