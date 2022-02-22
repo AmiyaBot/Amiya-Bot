@@ -43,6 +43,7 @@ async def guess_start(data: Message, level: str):
         if not stories:
             return None
 
+        stories = [n for n in stories if n['story_title'] not in ['基础档案', '综合体检测试']]
         story = random.choice(stories)['story_text'].replace(operator.name, 'XXX')
         section = story.split('。')
 

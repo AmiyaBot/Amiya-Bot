@@ -271,7 +271,7 @@ async def _(data: Message):
 
 @bot.on_event(Mirai.GroupRecallEvent)
 async def _(data: Mirai.GroupRecallEvent):
-    if random.randint(1, 10) > 2:
+    if random.randint(1, 10) == 1:
         return None
 
     if not check_group_active(data.operator.group.id):
