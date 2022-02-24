@@ -2,7 +2,7 @@ import re
 import jieba
 
 from typing import List
-from core import log, bot, Message, Chain, add_init_task
+from core import log, bot, Message, Chain, exec_before_init
 from core.util import find_similar_list, remove_xml_tag, integer, any_match
 from core.resource.arknightsGameData import ArknightsGameData
 
@@ -20,14 +20,15 @@ def get_value(key, source):
 class Enemy:
     enemies: List[str] = []
 
-    @classmethod
-    async def init_enemies(cls):
+    @staticmethod
+    @exec_before_init
+    async def init_enemies():
         log.info('building enemies names keywords dict...')
 
-        cls.enemies = list(ArknightsGameData().enemies.keys())
+        Enemy.enemies = list(ArknightsGameData().enemies.keys())
 
         with open('resource/enemies.txt', mode='w', encoding='utf-8') as file:
-            file.write('\n'.join([f'{name} 500 n' for name in cls.enemies]))
+            file.write('\n'.join([f'{name} 500 n' for name in Enemy.enemies]))
 
         jieba.load_userdict('resource/enemies.txt')
 
@@ -89,9 +90,6 @@ class Enemy:
         ]
 
         return text, icons
-
-
-add_init_task(Enemy.init_enemies)
 
 
 async def verify(data: Message):

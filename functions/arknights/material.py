@@ -2,7 +2,7 @@ import os
 import jieba
 
 from typing import List
-from core import log, bot, Message, Chain, add_init_task
+from core import log, bot, Message, Chain, exec_before_init
 from core.util import read_yaml, any_match, find_similar_list
 from core.resource.arknightsGameData import ArknightsGameData
 
@@ -16,15 +16,16 @@ side_padding = 10
 class MaterialData:
     materials: List[str] = []
 
-    @classmethod
-    async def init_materials(cls):
+    @staticmethod
+    @exec_before_init
+    async def init_materials():
         log.info('building materials names keywords dict...')
 
         for name in ArknightsGameData().materials_map.keys():
-            cls.materials.append(name)
+            MaterialData.materials.append(name)
 
         with open('resource/materials.txt', mode='w', encoding='utf-8') as file:
-            file.write('\n'.join([f'{name} 500 n' for name in cls.materials]))
+            file.write('\n'.join([f'{name} 500 n' for name in MaterialData.materials]))
 
         jieba.load_userdict('resource/materials.txt')
 
@@ -97,9 +98,6 @@ class MaterialData:
         text += '\n' + material['material_desc']
 
         return text, icons
-
-
-add_init_task(MaterialData.init_materials)
 
 
 async def verify(data: Message):

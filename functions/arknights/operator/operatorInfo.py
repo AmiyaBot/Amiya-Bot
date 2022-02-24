@@ -1,7 +1,7 @@
 import re
 import jieba
 
-from core import log, add_init_task
+from core import log, exec_before_init
 from core.util import chinese_to_digits, remove_punctuation
 from core.resource.arknightsGameData import ArknightsGameData
 
@@ -21,14 +21,15 @@ class OperatorInfo:
     operator_list = []
     operator_map = {}
 
-    @classmethod
-    async def init_operator(cls):
+    @staticmethod
+    @exec_before_init
+    async def init_operator():
         log.info('building operator info and skills keywords dict...')
 
         keywords = ['%s 500 n' % key for key in InitData.voices]
 
         def append_word(text):
-            cls.operator_keywords.append(text)
+            OperatorInfo.operator_keywords.append(text)
             dict_word = '%s 500 n' % text
             if dict_word not in keywords:
                 keywords.append(dict_word)
@@ -44,8 +45,8 @@ class OperatorInfo:
             append_word(name)
             append_word(e_name)
 
-            cls.operator_list.append(name)
-            cls.operator_map[e_name] = name
+            OperatorInfo.operator_list.append(name)
+            OperatorInfo.operator_map[e_name] = name
 
             skills = item.skills()[0]
 
@@ -53,15 +54,16 @@ class OperatorInfo:
                 skl_name = remove_punctuation(skl['skill_name'])
                 append_word(skl_name)
 
-                cls.skill_map[skl_name] = skl['skill_name']
-                cls.skill_operator[skl['skill_name']] = name
+                OperatorInfo.skill_map[skl_name] = skl['skill_name']
+                OperatorInfo.skill_operator[skl['skill_name']] = name
 
         with open('resource/operators.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join(keywords))
         jieba.load_userdict('resource/operators.txt')
 
-    @classmethod
-    async def init_stories_titles(cls):
+    @staticmethod
+    @exec_before_init
+    async def init_stories_titles():
         log.info('building operator stories keywords dict...')
         stories_title = {}
         stories_keyword = []
@@ -77,14 +79,15 @@ class OperatorInfo:
             if item:
                 stories_keyword.append(item + ' 500 n')
 
-        cls.stories_title = list(stories_title.keys()) + [i for k, i in stories_title.items()]
+        OperatorInfo.stories_title = list(stories_title.keys()) + [i for k, i in stories_title.items()]
 
         with open('resource/stories.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join(stories_keyword))
         jieba.load_userdict('resource/stories.txt')
 
-    @classmethod
-    async def init_skins_table(cls):
+    @staticmethod
+    @exec_before_init
+    async def init_skins_table():
         log.info('building operator skins keywords dict...')
         skins_table = {}
         skins_keywords = [] + InitData.skins
@@ -94,18 +97,9 @@ class OperatorInfo:
             skins_table[item.name] = skins
             skins_keywords += [n['skin_name'] for n in skins]
 
-        cls.skins_table = skins_table
-        cls.skins_keywords = skins_keywords
+        OperatorInfo.skins_table = skins_table
+        OperatorInfo.skins_keywords = skins_keywords
 
         with open('resource/skins.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([n + ' 500 n' for n in skins_keywords]))
         jieba.load_userdict('resource/skins.txt')
-
-
-add_init_task(
-    [
-        OperatorInfo.init_operator,
-        OperatorInfo.init_stories_titles,
-        OperatorInfo.init_skins_table,
-    ]
-)

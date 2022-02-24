@@ -6,7 +6,7 @@ from PIL import Image
 from jieba import posseg
 from typing import List
 from itertools import combinations
-from core import add_init_task, log, bot, Message, Chain
+from core import exec_before_init, log, bot, Message, Chain
 from core.util import insert_empty, all_match, read_yaml
 from core.builtin.baiduCloud import BaiduCloud
 from core.network.download import download_async
@@ -73,8 +73,9 @@ async def get_ocr_result(image):
 class Recruit:
     tags_list: List[str] = []
 
-    @classmethod
-    async def init_tags_list(cls):
+    @staticmethod
+    @exec_before_init
+    async def init_tags_list():
         log.info('building operator tags keywords dict...')
 
         tags = ['资深', '高资', '高级资深']
@@ -88,7 +89,7 @@ class Recruit:
 
         jieba.load_userdict('resource/tags.txt')
 
-        cls.tags_list = tags
+        Recruit.tags_list = tags
 
     @classmethod
     async def action(cls, text: str, ocr: bool = False):
@@ -169,9 +170,6 @@ class Recruit:
 
         if ocr:
             return '博士，没有在图片内找到标签信息'
-
-
-add_init_task(Recruit.init_tags_list)
 
 
 @bot.on_group_message(function_id='recruit', keywords=['公招', '公开招募'])

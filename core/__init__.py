@@ -29,12 +29,9 @@ async def download_files():
         await coro()
 
 
-def add_init_task(coro):
-    if type(coro) is list:
-        for item in coro:
-            init_task.append(item)
-    else:
-        init_task.append(coro)
+def exec_before_init(coro):
+    init_task.append(coro)
+    return coro
 
 
 def init_core():
