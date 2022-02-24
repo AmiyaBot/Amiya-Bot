@@ -271,14 +271,17 @@ async def _(data: Message):
 
 @bot.on_event(Mirai.GroupRecallEvent)
 async def _(data: Mirai.GroupRecallEvent):
-    if random.randint(1, 10) == 1:
-        return None
-
-    if not check_group_active(data.operator.group.id):
-        return False
-
-    chain = custom_chain(data.operator.id, data.operator.group.id)
-    await websocket.send(chain.at(enter=False).text(f'哼~撤回也没用，阿米娅已经看见了！[face:269]'))
+    # todo 暂停撤回响应功能
+    #
+    # if random.randint(1, 10) == 1:
+    #     return False
+    #
+    # if not check_group_active(data.operator.group.id):
+    #     return False
+    #
+    # chain = custom_chain(data.operator.id, data.operator.group.id)
+    # await websocket.send(chain.at(enter=False).text(f'哼~撤回也没用，阿米娅已经看见了！[face:269]'))
+    pass
 
 
 @bot.on_event(Mirai.MemberJoinEvent)
