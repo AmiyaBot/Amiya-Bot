@@ -89,10 +89,10 @@ async def guess_start(data: Message, level: str):
             await data.send(Chain(answer).text(f'答案是{operator.name}，游戏结束~'))
             return False
 
-        if answer.text not in operators.keys():
+        if answer.text_origin not in operators.keys():
             continue
 
-        if answer.text == operator.name:
+        if answer.text_origin == operator.name:
             await data.send(Chain(answer).text('恭喜博士答对啦！'))
             break
         else:

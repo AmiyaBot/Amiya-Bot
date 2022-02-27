@@ -302,6 +302,14 @@ class Mirai:
 
 
 def text_convert(msg: Message, origin, initial):
+    """
+    消息文本的最终处理
+
+    :param msg:     Message 对象
+    :param origin:  预处理消息文本
+    :param initial: 未经预处理的原始消息文本
+    :return:        Message 对象
+    """
     msg.text = remove_punctuation(origin)
     msg.text_digits = chinese_to_digits(msg.text)
     msg.text_origin = origin
