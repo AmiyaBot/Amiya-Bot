@@ -262,27 +262,29 @@ def random_code(length):
 def extract_time(text: str):
     result = jionlp.ner.extract_time(text)
     if result:
-        detail = result[0]['detail']
+        try:
+            detail = result[0]['detail']
 
-        if detail['type'] in ['time_span', 'time_point']:
-            return [time.strptime(n, '%Y-%m-%d %H:%M:%S') for n in detail['time'] if n != 'inf']
+            if detail['type'] in ['time_span', 'time_point']:
+                return [time.strptime(n, '%Y-%m-%d %H:%M:%S') for n in detail['time'] if n != 'inf']
 
-        elif detail['type'] == 'time_delta':
-            time_length = {
-                'year': 31536000,
-                'month': 2628000,
-                'day': 86400,
-                'hour': 3600,
-                'minute': 60,
-                'second': 1
-            }
-            for k, v in time_length.items():
-                if k in detail['time']:
-                    return [time.localtime(time.time() + detail['time'][k] * v)]
+            elif detail['type'] == 'time_delta':
+                time_length = {
+                    'year': 31536000,
+                    'month': 2628000,
+                    'day': 86400,
+                    'hour': 3600,
+                    'minute': 60,
+                    'second': 1
+                }
+                for k, v in time_length.items():
+                    if k in detail['time']:
+                        return [time.localtime(time.time() + detail['time'][k] * v)]
 
-        elif detail['type'] == 'time_period':
+            elif detail['type'] == 'time_period':
+                pass
+        except OSError:
             pass
-
     return []
 
 
