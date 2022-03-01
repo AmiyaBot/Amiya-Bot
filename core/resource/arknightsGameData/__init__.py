@@ -351,7 +351,7 @@ class ArknightsGameDataResource:
         return skin_path
 
     @classmethod
-    async def get_vioce_file(cls, operator: Operator, voice_key: str, cn: bool = False):
+    async def get_voice_file(cls, operator: Operator, voice_key: str, cn: bool = False):
         file = await Wiki.check_exists(operator.wiki_name, voice_key, cn)
         if not file:
             file = await Wiki.download_operator_voices(operator.id, operator.wiki_name, voice_key, cn)

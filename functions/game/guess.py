@@ -28,7 +28,7 @@ async def guess_start(data: Message, level: str):
             return None
 
         voice = random.choice(voices)
-        voice_path = await ArknightsGameDataResource.get_vioce_file(operator, voice['voice_title'])
+        voice_path = await ArknightsGameDataResource.get_voice_file(operator, voice['voice_title'])
 
         question.text('\n\n语音：').text(voice['voice_text'])
 
@@ -74,7 +74,7 @@ async def guess_start(data: Message, level: str):
             await data.send(Chain(data, quote=False).text(f'答案是{operator.name}，没有博士回答吗？那游戏结束咯~'))
             return False
 
-        if any_match(answer.text, ['下一题', '放弃']):
+        if any_match(answer.text, ['下一题', '放弃', '跳过']):
             await data.send(Chain(data, quote=False).text(f'答案是{operator.name}'))
             break
 
@@ -89,10 +89,10 @@ async def guess_start(data: Message, level: str):
             await data.send(Chain(answer).text(f'答案是{operator.name}，游戏结束~'))
             return False
 
-        if answer.text_origin not in operators.keys():
+        if answer.text not in operators.keys():
             continue
 
-        if answer.text_origin == operator.name:
+        if answer.text == operator.index_name:
             await data.send(Chain(answer).text('恭喜博士答对啦！'))
             break
         else:

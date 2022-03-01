@@ -1,5 +1,5 @@
 from peewee import *
-from typing import List
+from typing import List, Any
 from playhouse.shortcuts import model_to_dict
 from core.util import read_yaml, create_dir, pascal_case_to_snake_case
 from core import log
@@ -36,7 +36,7 @@ class SearchParams:
                     self.contains[item] = value
 
 
-def table(cls: Model):
+def table(cls: Model) -> Any:
     cls._meta.table_name = pascal_case_to_snake_case(cls.__name__)
     cls.create_table()
 

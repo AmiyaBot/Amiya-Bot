@@ -203,7 +203,7 @@ async def _(data: Message):
 
         reply = Chain(data).text(text)
 
-        file = await ArknightsGameDataResource.get_vioce_file(opt, info.voice_key, cn)
+        file = await ArknightsGameDataResource.get_voice_file(opt, info.voice_key, cn)
         if file:
             reply.voice(file)
         else:

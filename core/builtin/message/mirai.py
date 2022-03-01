@@ -238,8 +238,8 @@ class Mirai:
         """
         Mirai 消息解析函数
 
-        :param account:  Bot 账号
-        :param data:     Mirai 消息链
+        :param account:   Bot 账号
+        :param data:      Mirai 消息链
         :param operation: Websocket 操作接口
         :return:
         """

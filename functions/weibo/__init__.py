@@ -2,6 +2,7 @@ import re
 
 from core.database.messages import *
 from core.database.group import GroupSetting
+from core.config import config
 from core.util import TimeRecorder
 from core import bot, websocket, http, custom_chain, Message, Chain
 
@@ -69,13 +70,16 @@ async def _():
 
         await set_push_group()
 
-        group_list = [item['group_id'] for item in await http.get_group_list()]
-        enables_list = [int(item.group_id) for item in GroupSetting.select().where(GroupSetting.send_weibo == 1)]
-        target = list(
-            set(group_list).intersection(
-                set(enables_list)
+        if config.test:
+            target = config.test.group
+        else:
+            group_list = [item['group_id'] for item in await http.get_group_list()]
+            enables_list = [int(item.group_id) for item in GroupSetting.select().where(GroupSetting.send_weibo == 1)]
+            target = list(
+                set(group_list).intersection(
+                    set(enables_list)
+                )
             )
-        )
 
         WeiboRecord.create(
             user_id=user,

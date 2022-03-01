@@ -1,6 +1,6 @@
 import re
 
-from core.util import remove_xml_tag, integer
+from core.util import remove_xml_tag, remove_punctuation, integer
 
 from .common import ArknightsConfig, JsonData
 
@@ -74,6 +74,7 @@ class Operator:
         self.name = data['name']
         self.en_name = data['appellation']
         self.wiki_name = data['name']
+        self.index_name = remove_punctuation(data['name'])
         self.rarity = data['rarity'] + 1
         self.classes = ArknightsConfig.classes[data['profession']]
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']

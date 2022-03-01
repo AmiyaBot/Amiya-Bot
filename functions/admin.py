@@ -160,4 +160,4 @@ async def _(data: Union[Mirai.BotMuteEvent, Mirai.BotLeaveEventKick]):
 
 @bot.on_overspeed
 async def _(data: Message):
-    return Chain(data).text('博士说话太快了，请再慢一些吧~')
+    return Chain(data, quote=False).text('博士说话太快了，请再慢一些吧~')
