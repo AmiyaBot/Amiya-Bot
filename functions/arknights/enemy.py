@@ -93,9 +93,11 @@ class Enemy:
 
 
 async def verify(data: Message):
-    match = any_match(data.text, Enemy.enemies)
-    if match:
-        return True, (3 if any_match(data.text, ['敌人', '敌方']) else 1)
+    name = any_match(data.text, Enemy.enemies)
+    keyword = any_match(data.text, ['敌人', '敌方'])
+
+    if name or keyword:
+        return True, (3 if keyword else 1)
     return False
 
 
