@@ -1,5 +1,3 @@
-import time
-import json
 import asyncio
 
 from core.database import *
@@ -43,13 +41,13 @@ class MessageStack:
     @classmethod
     def insert(cls, item: Message, effective: bool = False):
         cls.stack.append({
+            'msg_type': item.type,
             'user_id': item.user_id,
             'group_id': item.group_id,
-            'msg_type': item.type,
-            'text': item.text_origin,
-            'face': ''.join([f'[face:{n}]' for n in item.face]),
-            'image': ','.join([n for n in item.image if type(n) is str]),
-            'message': json.dumps(item.message, ensure_ascii=False) if item.message else '',
+            # 'text': item.text_origin,
+            # 'face': ''.join([f'[face:{n}]' for n in item.face]),
+            # 'image': ','.join([n for n in item.image if type(n) is str]),
+            # 'message': json.dumps(item.message, ensure_ascii=False) if item.message else '',
             'classify': 'call' if effective else '',
             'create_time': item.time
         })

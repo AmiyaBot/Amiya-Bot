@@ -110,7 +110,7 @@ async def any_talk(data: Message):
 async def maintain():
     UserInfo.update(sign_in=0, user_mood=15).execute()
 
-    last_time = int(time.time()) - 31 * 86400
+    last_time = int(time.time()) - 7 * 86400
     MessageRecord.delete().where(MessageRecord.create_time <= last_time).execute()
 
     async with websocket.send_to_admin() as chain:

@@ -72,7 +72,7 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
             user_id=account,
             group_id=reply.data.group_id,
             msg_type=reply.data.type,
-            message=json.dumps(reply.chain, ensure_ascii=False),
+            # message=json.dumps(reply.chain, ensure_ascii=False),
             classify='reply',
             create_time=int(time.time())
         )
