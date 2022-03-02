@@ -4,6 +4,7 @@ import time
 import json
 import aiohttp
 
+from dataclasses import dataclass
 from core.util import remove_xml_tag, char_seat, read_yaml, create_dir
 from core.network.download import download_async
 from core.database.group import GroupSetting
@@ -27,23 +28,22 @@ async def set_push_group():
         counts = db.execute_sql(sql).fetchall()
 
         for item in counts:
-            if int(item[1]) >= weibo_conf.autoPush.groupActivity:
-                GroupSetting.insert(**{'send_weibo': 1, 'group_id': item[0]}).on_conflict(
-                    conflict_target=[GroupSetting.group_id],
-                    update={
-                        GroupSetting.send_weibo: 1
-                    }
-                ).execute()
+            active = 1 if int(item[1]) >= weibo_conf.autoPush.groupActivity else 0
+
+            GroupSetting.insert(**{'send_weibo': active, 'group_id': item[0]}).on_conflict(
+                conflict_target=[GroupSetting.group_id],
+                update={
+                    GroupSetting.send_weibo: active
+                }
+            ).execute()
 
 
+@dataclass
 class WeiboContent:
-    def __init__(self, html_text, detail_url, pics_list):
-        self.html_text = html_text
-        self.detail_url = detail_url
-        self.pics_list = pics_list
-
-    def __str__(self):
-        return self.detail_url
+    user_name: str
+    html_text: str
+    pics_list: list
+    detail_url: str
 
 
 class WeiboUser:
@@ -55,18 +55,42 @@ class WeiboUser:
             'Referer': f'https://m.weibo.cn/u/{weibo_id}',
             'Accept-Language': 'zh-CN,zh;q=0.9'
         }
-        self.url = f'https://m.weibo.cn/api/container/getIndex?uid={weibo_id}&type=uid&value={weibo_id}'
+        self.url = 'https://m.weibo.cn/api/container/getIndex'
+        self.weibo_id = weibo_id
+        self.user_name = ''
+
+    def __url(self, container_id=None):
+        c_id = f'&containerid={container_id}' if container_id else ''
+        return f'{self.url}?type=uid&uid={self.weibo_id}&value={self.weibo_id}{c_id}'
+
+    async def get_user_name(self, result=None):
+        if self.user_name:
+            return self.user_name
+
+        if not result:
+            result = await get_result(self.__url(), self.headers)
+            if not result:
+                return self.user_name
+
+        if 'userInfo' not in result['data']:
+            return self.user_name
+
+        self.user_name = result['data']['userInfo']['screen_name']
+
+        return self.user_name
 
     async def get_cards_list(self):
         cards = []
 
         # 获取微博 container id
-        result = await get_result(self.url, self.headers)
+        result = await get_result(self.__url(), self.headers)
         if not result:
             return cards
 
         if 'tabsInfo' not in result['data']:
             return cards
+
+        await self.get_user_name(result)
 
         tabs = result['data']['tabsInfo']['tabs']
         container_id = ''
@@ -75,7 +99,7 @@ class WeiboUser:
                 container_id = tab['containerid']
 
         # 获取正文列表
-        result = await get_result(self.url + f'&containerid={container_id}', self.headers)
+        result = await get_result(self.__url(container_id), self.headers)
         if not result:
             return cards
 
@@ -154,4 +178,4 @@ class WeiboUser:
 
             pics_list.append(path)
 
-        return WeiboContent(html_text, detail_url, pics_list)
+        return WeiboContent(self.user_name, html_text, pics_list, detail_url)

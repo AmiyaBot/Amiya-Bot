@@ -48,7 +48,7 @@ class Chain:
             return self.text('\n')
         return self
 
-    def text(self, text, auto_convert=True):
+    def text(self, text, enter: bool = False, auto_convert: bool = True):
         chain = []
 
         if re.findall(r'\[cl\s(.*?)@#(.*?)\scle]', text):
@@ -85,6 +85,9 @@ class Chain:
                 })
 
         self.chain += chain
+
+        if enter:
+            return self.text('\n')
         return self
 
     def text_image(self, text, images: IMAGES_TYPE = None):
