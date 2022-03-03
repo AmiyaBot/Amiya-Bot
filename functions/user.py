@@ -188,9 +188,7 @@ async def _(data: Message):
     return reply
 
 
-@bot.on_group_message(function_id='user',
-                      keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'],
-                      check_prefix=False)
+@bot.on_group_message(function_id='user', keywords=['早上好', '早安', '中午好', '午安', '下午好', '晚上好'], check_prefix=False)
 async def _(data: Message):
     hour = talk_time()
     text = ''
@@ -206,15 +204,12 @@ async def _(data: Message):
     return Chain(data, at=True, quote=False).text(text)
 
 
-@bot.on_group_message(function_id='user',
-                      keywords=['晚安'],
-                      check_prefix=False)
+@bot.on_group_message(function_id='user', keywords=['晚安'], check_prefix=False)
 async def _(data: Message):
     return Chain(data).text(f'Dr.{data.nickname}，晚安～')
 
 
-@bot.on_group_message(function_id='user',
-                      keywords=['我错了', '对不起', '抱歉'])
+@bot.on_group_message(function_id='user', keywords=['我错了', '对不起', '抱歉'])
 async def _(data: Message):
     info: UserInfo = UserInfo.get_or_none(user_id=data.user_id)
 
@@ -227,16 +222,14 @@ async def _(data: Message):
         return reply.text('好吧，阿米娅就当博士刚刚是在开玩笑吧，博士要好好对阿米娅哦[face:21]')
 
 
-@bot.on_group_message(function_id='user',
-                      keywords=['签到'])
+@bot.on_group_message(function_id='user', keywords=['签到'])
 async def _(data: Message):
     status = sign_in(data, 1)
     if status:
         return Chain(data).text(status['text'])
 
 
-@bot.on_group_message(function_id='user',
-                      keywords=['信赖', '关系', '好感', '我的信息', '个人信息'])
+@bot.on_group_message(function_id='user', keywords=['信赖', '关系', '好感', '我的信息', '个人信息'])
 async def _(data: Message):
     user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
 

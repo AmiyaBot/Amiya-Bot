@@ -4,6 +4,7 @@ from typing import *
 from core.network import WSOperation
 from core.control import StateControl
 from core.builtin.messageChain import Chain
+from core.help import Helper
 from core import log
 
 TASK_CORO = Callable[[], Coroutine[Any, Any, Optional[Chain]]]
@@ -28,6 +29,7 @@ class TasksControl:
     timed_tasks: List[TimedTask] = list()
 
     @classmethod
+    @Helper.record
     def timed_task(cls, each: int = None, custom: CUSTOM_CHECK = None):
         """
         注册定时任务

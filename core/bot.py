@@ -4,6 +4,7 @@ from typing import *
 from core.builtin.message import Message, MessageMatch, Event, Verify, equal
 from core.builtin.timedTask import TasksControl
 from core.builtin.messageChain import Chain
+from core.help import Helper
 
 CORO = Coroutine[Any, Any, Optional[Chain]]
 PREFIX = Union[bool, List[str]]
@@ -183,6 +184,7 @@ class BotHandlers:
         return register
 
     @classmethod
+    @Helper.record
     def on_private_message(cls,
                            function_id: str = None,
                            keywords: KEYWORDS = None,
@@ -208,6 +210,7 @@ class BotHandlers:
                                     level)
 
     @classmethod
+    @Helper.record
     def on_group_message(cls,
                          function_id: str = None,
                          keywords: KEYWORDS = None,
@@ -233,6 +236,7 @@ class BotHandlers:
                                     level)
 
     @classmethod
+    @Helper.record
     def on_temp_message(cls,
                         function_id: str = None,
                         keywords: KEYWORDS = None,
@@ -258,6 +262,7 @@ class BotHandlers:
                                     level)
 
     @classmethod
+    @Helper.record
     def on_event(cls, events: Union[List[Any], Any]):
         """
         事件处理注册器工厂函数
