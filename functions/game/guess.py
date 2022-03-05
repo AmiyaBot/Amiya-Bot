@@ -1,3 +1,4 @@
+import os
 import random
 import asyncio
 
@@ -6,11 +7,11 @@ from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameData
 from core.util import any_match, random_pop
 
 
-async def guess_start(data: Message, level: str):
+async def guess_start(data: Message, level: str, title: str):
     operators = ArknightsGameData().operators
     operator = operators[random.choice(list(operators.keys()))]
 
-    question = Chain(data, quote=False).text('博士，这是哪位干员的资料呢，请发送干员名猜一猜吧！（回答时间60秒）')
+    question = Chain(data, quote=False).text(f'博士，这是哪位干员的{title}呢，请发送干员名猜一猜吧！').text('\n')
 
     if level == '初级':
         skin = random.choice(operator.skins())
@@ -23,9 +24,22 @@ async def guess_start(data: Message, level: str):
             question.image(skin_path)
 
     if level == '中级':
+        skill = random.choice(operator.skills()[0])
+
+        if any_match(skill['skill_name'], ['α', 'β', 'γ']):
+            return True
+
+        skill_icon = 'resource/images/skill/%s.png' % skill['skill_icon']
+
+        if not os.path.exists(skill_icon):
+            return True
+
+        question.image(skill_icon)
+
+    if level == '高级':
         voices = operator.voices()
         if not voices:
-            return None
+            return True
 
         voice = random.choice(voices)
         voice_path = await ArknightsGameDataResource.get_voice_file(operator, voice['voice_title'])
@@ -38,10 +52,10 @@ async def guess_start(data: Message, level: str):
         else:
             question.voice(voice_path)
 
-    if level == '高级':
+    if level == '资深':
         stories = operator.stories()
         if not stories:
-            return None
+            return True
 
         stories = [n for n in stories if n['story_title'] not in ['基础档案', '综合体检测试']]
         story = random.choice(stories)['story_text'].replace(operator.name, 'XXX')
@@ -108,24 +122,27 @@ async def _(data: Message):
 
     level = {
         '初级': '立绘',
-        '中级': '语音',
-        '高级': '档案'
+        '中级': '技能图标',
+        '高级': '语音',
+        '资深': '档案'
     }
     level_text = '\n'.join([f'【{lv}】{ct}猜干员' for lv, ct in level.items()])
 
     select_level = f'博士，请选择难度：\n\n{level_text}\n\n' \
-                   '请回复【难度等级】开始游戏。\n所有群员均可参与竞猜，游戏一旦开始，将暂停其他功能的使用哦。如果取消请无视本条消息。'
+                   '请回复【难度等级】开始游戏。\n' \
+                   '所有群员均可参与竞猜，游戏一旦开始，将暂停其他功能的使用哦。如果取消请无视本条消息。\n' \
+                   '详细说明请查看功能菜单'
 
     choice = await data.waiting(Chain(data).text(select_level))
 
     if not choice:
         return None
 
-    if choice.text not in ['初级', '中级', '高级']:
+    if choice.text not in level.keys():
         return Chain(choice).text('博士，您没有选择难度哦。游戏取消。')
 
-    keep_gaming = True
-    while keep_gaming:
+    while True:
         await data.send(Chain(data, quote=False).text('题目准备中...'))
         await asyncio.sleep(2)
-        keep_gaming = await guess_start(data, choice.text)
+        if not await guess_start(data, choice.text, level[choice.text]):
+            break
