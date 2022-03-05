@@ -1,5 +1,6 @@
-from core.database import *
 from typing import Union
+from core.database import *
+from core.config import config
 
 db = sqlite(db_conf.group)
 
@@ -38,6 +39,10 @@ class GroupNotice(GroupBaseModel):
 
 
 def check_group_active(group_id):
+    if config.test.enable:
+        if int(group_id) not in config.test.group:
+            return False
+
     group: GroupActive = GroupActive.get_or_none(group_id=group_id)
     if group and group.active == 0:
         return False

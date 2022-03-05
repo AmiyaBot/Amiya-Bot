@@ -1,12 +1,15 @@
-class InfoInterface:
-    def __init__(self):
-        self.name = ''
-        self.level = 0
-        self.skill = ''
-        self.skin_key = ''
-        self.voice_key = ''
-        self.story_key = ''
-        self.skill_index = 0
+from dataclasses import dataclass
+
+
+@dataclass
+class OperatorSearchInfo:
+    name: str = ''
+    level: int = 0
+    skill: str = ''
+    skin_key: str = ''
+    voice_key: str = ''
+    story_key: str = ''
+    skill_index: int = 0
 
 
 class InitData:

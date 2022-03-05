@@ -8,7 +8,7 @@ from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameData
 
 from .operatorInfo import OperatorInfo
 from .operatorData import OperatorData
-from .initData import InfoInterface, InitData
+from .initData import OperatorSearchInfo, InitData
 
 
 class LoopBreak(Exception):
@@ -32,7 +32,7 @@ def search_info(words: list, source_keys: list = None):
         'story_key': [OperatorInfo.stories_title]
     }
 
-    info = InfoInterface()
+    info = OperatorSearchInfo()
     info_key = list(info_source.keys()) if not source_keys else source_keys
 
     words = [n.lower() for n in copy.deepcopy(words)]

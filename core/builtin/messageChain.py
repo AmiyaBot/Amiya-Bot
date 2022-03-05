@@ -10,6 +10,9 @@ from core.builtin.resourceManager import ResourceManager
 
 config = read_yaml('config/private/bot.yaml')
 
+IMAGE_WIDTH = 700
+MAX_SEAT = IMAGE_WIDTH - 50
+
 
 class Chain:
     def __init__(self, data: Message, at: bool = False, quote: bool = True):
@@ -91,12 +94,15 @@ class Chain:
         return self
 
     def text_image(self, text, images: IMAGES_TYPE = None):
-        width = 700
         logo = [
-            ImageElem('resource/style/rabbit.png', size=30, pos=(width - 30, 0))
+            ImageElem('resource/style/rabbit.png', size=30, pos=(IMAGE_WIDTH - 30, 0))
         ]
         return self.image(
-            path=create_image(text, width=width, max_seat=width - 50, images=(images or []) + logo, bgcolor='#F5F5F5')
+            path=create_image(text,
+                              width=IMAGE_WIDTH,
+                              max_seat=MAX_SEAT,
+                              images=(images or []) + logo,
+                              bgcolor='#F5F5F5')
         )
 
     def image(self, path: Union[str, bytes, List[Union[str, bytes]]]):

@@ -3,9 +3,10 @@ import os
 from core.resource.arknightsGameData import ArknightsGameData
 from core.resource.arknightsGameData.operatorBuilder import ArknightsConfig, parse_template
 from core.builtin.imageCreator import TextParser
+from core.builtin.messageChain import MAX_SEAT
 from core.util import integer, any_match
 
-from .initData import InfoInterface, InitData
+from .initData import OperatorSearchInfo, InitData
 from .operatorInfo import OperatorInfo
 
 material_images_source = 'resource/images/item/'
@@ -15,11 +16,12 @@ skill_images_source = 'resource/images/skill/'
 side_padding = 10
 line_height = 16
 icon_size = 34
+max_seat = MAX_SEAT - 20
 
 
 class OperatorData:
     @classmethod
-    def check_evolve_costs(cls, info: InfoInterface):
+    def check_evolve_costs(cls, info: OperatorSearchInfo):
 
         if not info.name:
             return '博士，请仔细描述想要查询的信息哦'
@@ -40,7 +42,7 @@ class OperatorData:
         return cls.__build_evolve_costs(result, info.name, info.level)
 
     @classmethod
-    def check_mastery_costs(cls, info: InfoInterface):
+    def check_mastery_costs(cls, info: OperatorSearchInfo):
 
         check_res = cls.check_skill_list(
             OperatorInfo.skill_operator,
@@ -71,7 +73,7 @@ class OperatorData:
         return cls.__build_mastery_costs(result, info.name, info.level)
 
     @classmethod
-    def find_operator_module(cls, info: InfoInterface, story: bool):
+    def find_operator_module(cls, info: OperatorSearchInfo, story: bool):
         operator = ArknightsGameData().operators[info.name]
         modules = operator.modules()
 
@@ -83,7 +85,7 @@ class OperatorData:
             return f'博士，干员{info.name}尚未拥有模组哦~'
 
     @classmethod
-    def get_detail_info(cls, info: InfoInterface):
+    def get_detail_info(cls, info: OperatorSearchInfo):
         operator = ArknightsGameData().operators[info.name]
 
         detail, trust = operator.detail()
@@ -162,7 +164,7 @@ class OperatorData:
 
         if result:
             text += '【7级技能】\n\n'
-            top = TextParser(text, 560).line * line_height + int(line_height / 2) + side_padding
+            top = TextParser(text, max_seat).line * line_height + int(line_height / 2) + side_padding
             content, skill_icons = cls.build_skill_content(result, top)
 
             text += content
@@ -171,7 +173,7 @@ class OperatorData:
         return text, icons
 
     @classmethod
-    def get_skill_data(cls, info: InfoInterface):
+    def get_skill_data(cls, info: OperatorSearchInfo):
 
         check_res = cls.check_skill_list(
             OperatorInfo.skill_operator,
@@ -244,7 +246,7 @@ class OperatorData:
                 content += '%s\n\n' % item['description'].replace('\\\\n', '\n')
                 text += content
 
-                y += TextParser(content, 560).line * line_height
+                y += TextParser(content, max_seat).line * line_height
 
         for index, item in enumerate(skill_images):
             if os.path.exists(item):
@@ -257,7 +259,7 @@ class OperatorData:
         return text, icons
 
     @staticmethod
-    def check_skill_list(skill_operator, info: InfoInterface):
+    def check_skill_list(skill_operator, info: OperatorSearchInfo):
         operators = ArknightsGameData().operators
 
         if not info.skill and not info.name:
@@ -348,7 +350,8 @@ class OperatorData:
             text += '[解锁材料]'
             if item['itemCost']:
                 text += '\n\n'
-                i = TextParser(text, 560).line * line_height + side_padding + int((line_height * 3 - icon_size) / 2)
+                i = TextParser(text, max_seat).line * line_height + side_padding + int(
+                    (line_height * 3 - icon_size) / 2)
                 for cost in item['itemCost']:
                     material = materials[cost['id']]
                     text += ' -- %s%s * %s\n\n' % (' ' * 15, material['material_name'], cost['count'])

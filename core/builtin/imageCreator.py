@@ -3,22 +3,40 @@ import os
 
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
-from typing import *
+from typing import List, Dict, Tuple, Union, Any
+from dataclasses import dataclass
 from core.util import read_yaml
 
 config = read_yaml('config/private/bot.yaml')
 
-FONTFILE = config.imageCreator.fontFile
+FONT_FILE = config.imageCreator.fontFile
+
+
+@dataclass
+class ImageElem:
+    path: str
+    size: int
+    pos: Tuple[int, int]
+
+
+@dataclass
+class CharElem:
+    enter: bool
+    color: str
+    text: str
+    width: int
+    height: int
 
 
 class TextParser:
     def __init__(self, text: str, max_seat: int, color: str = '#000000', font_size: int = 15):
-        self.font = ImageFont.truetype(FONTFILE, font_size)
+        self.font = ImageFont.truetype(FONT_FILE, font_size)
         self.text = text
         self.color = color
         self.max_seat = max_seat
-        self.char_list = []
         self.line = 0
+
+        self.char_list: List[CharElem] = []
 
         self.__parse()
 
@@ -38,6 +56,7 @@ class TextParser:
         length = 0
         sub_text = ''
         cur_color = self.color
+
         for idx, char in enumerate(text):
             if idx in color_pos:
                 if cur_color != color_pos[idx] and sub_text:
@@ -52,7 +71,7 @@ class TextParser:
             if length >= self.max_seat or char == '\n' or is_end:
                 enter = True
                 if not is_end:
-                    if text[idx + 1] == '\n' and sub_text != '\n' and sub_text[-1] != '\n':
+                    if text[idx + 1] == '\n' and char != '\n':
                         enter = False
 
                 self.__append_row(cur_color, sub_text, enter=enter)
@@ -63,21 +82,11 @@ class TextParser:
         if enter:
             self.line += 1
         self.char_list.append(
-            (enter, color, text, *self.__font_seat(text))
+            CharElem(enter, color, text, *self.__font_seat(text))
         )
 
     def __font_seat(self, char):
         return self.font.getsize_multiline(char)
-
-
-class ImageElem:
-    def __init__(self, path: str, size: int, pos: Tuple[int, int]):
-        self.path = path
-        self.size = size
-        self.pos = pos
-
-    def __str__(self):
-        return f'size({self.size}) pos{self.pos} path={self.path}'
 
 
 IMAGES_TYPE = List[Union[ImageElem, Dict[str, Any]]]
@@ -122,9 +131,9 @@ def create_image(text: str = '',
     row = 0
     col = padding
     for line, item in enumerate(text.char_list):
-        draw.text((col, padding + row * line_height), item[2], font=text.font, fill=item[1])
-        col += item[3]
-        if item[0]:
+        draw.text((col, padding + row * line_height), item.text, font=text.font, fill=item.color)
+        col += item.width
+        if item.enter:
             row += 1
             col = padding
 
