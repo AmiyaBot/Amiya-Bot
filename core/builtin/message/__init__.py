@@ -133,19 +133,19 @@ class Message:
 class MessageMatch:
     @staticmethod
     def check_str(data: Message, text: str, level: int) -> Tuple[bool, int, List[str]]:
-        if text.lower() in data.text.lower():
+        if text.lower() in data.text_origin.lower():
             return True, level or 1, [str(text)]
         return False, 0, []
 
     @staticmethod
     def check_equal(data: Message, text: equal, level: int) -> Tuple[bool, int, List[str]]:
-        if text.content == data.text:
+        if text.content == data.text_origin:
             return True, level or 10000, [str(text)]
         return False, 0, []
 
     @staticmethod
     def check_reg(data: Message, reg: re.Pattern, level: int) -> Tuple[bool, int, List[str]]:
-        r = re.search(reg, data.text)
+        r = re.search(reg, data.text_origin)
         if r:
             return True, level or (r.re.groups or 1), [str(item) for item in r.groups()]
         return False, 0, []

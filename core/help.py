@@ -2,6 +2,7 @@ import os
 import sys
 import traceback
 
+from typing import Any
 from functools import wraps
 from core.util import create_dir
 
@@ -10,7 +11,7 @@ class Helper:
     trace_files = {}
 
     @classmethod
-    def record(cls, func):
+    def record(cls, func) -> Any:
         @wraps(func)
         def decorated(*args, **kwargs):
             if not hasattr(sys, 'frozen'):
