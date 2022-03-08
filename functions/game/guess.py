@@ -24,7 +24,12 @@ async def guess_start(data: Message, level: str, title: str):
             question.image(skin_path)
 
     if level == '中级':
-        skill = random.choice(operator.skills()[0])
+        skills = operator.skills()[0]
+
+        if not skills:
+            return True
+
+        skill = random.choice(skills)
 
         if any_match(skill['skill_name'], ['α', 'β', 'γ']):
             return True
