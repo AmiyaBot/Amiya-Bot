@@ -19,7 +19,7 @@ init_task = []
 async def download_files():
     BotResource.download_bot_resource()
     BotResource.download_amiya_bot_console()
-    ArknightsGameDataResource.download_data_fiels()
+    ArknightsGameDataResource.download_data_files()
     ArknightsGameDataResource.download_operators_resource()
     ArknightsGameDataResource.download_materials_resource()
     ArknightsGameDataResource.download_enemies_resource()

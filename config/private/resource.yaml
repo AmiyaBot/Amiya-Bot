@@ -59,9 +59,9 @@ files:
         - images/rank/6.png
 
     style:
-        - font/AdobeHeitiStd-Regular.otf
-        - font/rabbit.png
-        - font/rabbit-white.png
+        - style/AdobeHeitiStd-Regular.otf
+        - style/rabbit.png
+        - style/rabbit-white.png
 
     classify:
         - images/class/caster.png
@@ -84,4 +84,3 @@ files:
 
     database: [ ]
 
-    certificate: [ ]

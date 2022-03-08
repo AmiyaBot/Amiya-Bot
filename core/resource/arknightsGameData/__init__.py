@@ -258,7 +258,7 @@ class ArknightsGameDataResource:
         return False
 
     @classmethod
-    def download_data_fiels(cls, use_cache=False):
+    def download_data_files(cls, use_cache=False):
         if cls.check_update() is False:
             use_cache = True
 
