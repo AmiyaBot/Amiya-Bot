@@ -149,6 +149,9 @@ async def _(data: Message):
             return None
         info.name = wait.text
 
+    if info.name not in ArknightsGameData().operators:
+        return Chain(data).text(f'博士，没有找到干员"{info.name}"')
+
     result = OperatorData.find_operator_module(info, '故事' in data.text)
 
     if type(result) is tuple:

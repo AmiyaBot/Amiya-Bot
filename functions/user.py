@@ -14,11 +14,6 @@ from .arknights.gacha.gacha import UserGachaInfo
 from .arknights.gacha.box import get_user_gacha_detail
 
 baidu = BaiduCloud()
-
-images = []
-for root, dirs, files in os.walk('resource/images/face'):
-    images += [os.path.join(root, file) for file in files if file != '.gitkeep']
-
 talking = read_yaml('config/private/talking.yaml')
 
 
@@ -29,6 +24,14 @@ class UserInfo(UserBaseModel):
     user_mood: int = IntegerField(default=15)
     sign_in: int = IntegerField(default=0)
     sign_times: int = IntegerField(default=0)
+
+
+def get_face():
+    images = []
+    for root, dirs, files in os.walk('resource/images/face'):
+        images += [os.path.join(root, file) for file in files if file != '.gitkeep']
+
+    return images
 
 
 def sign_in(data: Message, sign_type=0):
@@ -125,7 +128,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', verify=only_name)
 async def _(data: Message):
-    return Chain(data, quote=False).image(random.choice(images))
+    return Chain(data, quote=False).image(random.choice(get_face()))
 
 
 @bot.on_group_message(function_id='user', verify=any_talk)
@@ -307,7 +310,7 @@ async def _(data: Mirai.NudgeEvent):
     if random.randint(1, 10) > 5:
         await http.send_nudge(data.fromId, data.subject.id)
     else:
-        return custom_chain(data.fromId, data.subject.id).image(random.choice(images))
+        return custom_chain(data.fromId, data.subject.id).image(random.choice(get_face()))
 
 
 @bot.before_bot_reply
