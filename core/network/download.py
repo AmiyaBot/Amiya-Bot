@@ -1,6 +1,7 @@
 import aiohttp
 import requests
 
+from io import BytesIO
 from core import log
 
 default_headers = {
@@ -9,14 +10,30 @@ default_headers = {
 }
 
 
-def download_sync(url, headers=None, stringify=False):
+def download_sync(url: str, headers=None, stringify=False, progress=False):
     try:
         stream = requests.get(url, headers=headers or default_headers, stream=True)
+        file_size = int(stream.headers['content-length'])
+
+        container = BytesIO()
+
         if stream.status_code == 200:
+            iter_content = stream.iter_content(chunk_size=1024)
+            if progress:
+                iter_content = log.download_progress(url.split('/')[-1],
+                                                     max_size=file_size,
+                                                     chunk_size=1024,
+                                                     iter_content=iter_content)
+            for chunk in iter_content:
+                if chunk:
+                    container.write(chunk)
+
+            content = container.getvalue()
+
             if stringify:
-                return str(stream.content, encoding='utf-8')
+                return str(content, encoding='utf-8')
             else:
-                return stream.content
+                return content
     except requests.exceptions.ConnectionError:
         pass
     except Exception as e:

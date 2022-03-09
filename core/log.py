@@ -3,7 +3,7 @@ import sys
 import time
 import traceback
 
-from typing import Union, List, Any, Callable, Coroutine
+from typing import Union, List, Any, Callable, Coroutine, Iterator
 from contextlib import asynccontextmanager
 
 INFO_TYPE = Union[str, int, float, bool]
@@ -67,32 +67,38 @@ def writer(text: str, out=True):
             print(text)
 
 
-def progress_bar(data: Union[dict, list], desc: str = ''):
-    data = data.keys() if type(data) is dict else data
-    desc = f'{desc}:' if desc else ''
-    msg = ''
-
-    def print_bar(i):
-        nonlocal msg
-
+def download_progress(title: str, max_size: int, chunk_size: int, iter_content: Iterator):
+    def print_bar():
         date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-        curr = int(i / len(data) * 100)
+        curr = int(curr_size / max_size * 100)
+
+        used = time.time() - start_time
+        average = (curr_size / 1024 / 1024 / used) if used and curr_size else 0
+
+        average_text = f'{int(average)}mb/s'
+        if average < 1:
+            average_text = f'{int(average * 1024)}kb/s'
+
         block = int(curr / 4)
         bar = '=' * block + ' ' * (25 - block)
-        msg = f'[{date}][INFO] {desc} {i}/{len(data)} [{bar}] {curr}%'
+
+        msg = f'[{date}][INFO] Download {title} [{bar}] {curr}% {average_text}'
 
         print('\r', end='')
         print(msg, end='')
 
         sys.stdout.flush()
 
-    print_bar(0)
-    for index, item in enumerate(data):
-        yield item
-        print_bar(index + 1)
+    curr_size = 0
+    start_time = time.time()
+
+    print_bar()
+    for chunk in iter_content:
+        yield chunk
+        curr_size += chunk_size
+        print_bar()
 
     print()
-    writer(msg, out=False)
 
 
 @asynccontextmanager

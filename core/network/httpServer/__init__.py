@@ -44,10 +44,6 @@ class HttpServer:
         ssl_key_file = None
         ssl_cert_file = None
 
-        # if config.httpServer.https:
-        #     ssl_key_file = 'resource/certificate/key.pem'
-        #     ssl_cert_file = 'resource/certificate/cert.pem'
-
         return uvicorn.Server(config=uvicorn.Config(self.app,
                                                     loop='asyncio',
                                                     host=config.httpServer.host,
@@ -62,7 +58,7 @@ class HttpServer:
 
         async with log.catch('Http server Error:'):
             # 加载静态文件
-            self.app.mount('/static', StaticFiles(directory='view/static'), name='static')
+            self.app.mount('/static', StaticFiles(directory='view/dist/static'), name='static')
 
             # 设置跨域请求
             self.app.add_middleware(
@@ -74,7 +70,7 @@ class HttpServer:
             )
 
             # 加载模板
-            templates = Jinja2Templates(directory='view')
+            templates = Jinja2Templates(directory='view/dist')
 
             @self.app.get('/', tags=['Index'], response_class=HTMLResponse)
             async def index(request: Request):

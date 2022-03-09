@@ -1,7 +1,6 @@
 import json
 
 from core.database.bot import *
-from core.resource import resource_config
 from core.util import read_yaml
 
 config = read_yaml('config/private/arknights.yaml', _dict=True)['operatorSetting']
@@ -35,8 +34,10 @@ class JsonData:
     cache = {}
 
     @classmethod
-    def get_json_data(cls, name):
+    def get_json_data(cls, name, folder='excel'):
         if name not in cls.cache:
-            with open(f'{resource_config.save.data}/{name}.json', mode='r', encoding='utf-8') as src:
+            with open(f'resource/gamedata/gamedata/{folder}/{name}.json',
+                      mode='r',
+                      encoding='utf-8') as src:
                 cls.cache[name] = json.load(src)
         return cls.cache[name]

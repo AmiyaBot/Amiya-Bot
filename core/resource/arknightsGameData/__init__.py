@@ -1,5 +1,6 @@
 import os
 import re
+import zipfile
 
 from typing import List, Dict, Tuple
 from core.network.download import download_sync, download_async
@@ -23,6 +24,8 @@ MATERIALS = Tuple[
     Dict[str, List[Dict[str, str]]],
     Dict[str, Dict[str, str]]
 ]
+
+gamedata_path = 'resource/gamedata'
 
 
 def init_operators() -> OPERATORS:
@@ -159,7 +162,7 @@ def init_materials() -> MATERIALS:
 
 def init_enemies() -> ENEMIES:
     enemies_info = JsonData.get_json_data('enemy_handbook_table')
-    enemies_data = JsonData.get_json_data('enemy_database')['enemies']
+    enemies_data = JsonData.get_json_data('enemy_database', folder='levels/enemydata')['enemies']
 
     data = {}
     for item in enemies_data:
@@ -199,138 +202,66 @@ class ArknightsGameData(metaclass=Singleton):
 
 
 class ArknightsGameDataResource:
-    local_version_file = resource_config.save.data + '/version.txt'
+    create_dir(gamedata_path)
 
-    download_ignore_file = 'fileStorage/downloadFail.txt'
-    download_ignore = []
-
-    if os.path.exists(download_ignore_file):
-        with open(download_ignore_file, mode='r', encoding='utf-8') as f:
-            download_ignore = f.read().strip('\n').split('\n')
+    local_version_file = gamedata_path + '/version.txt'
 
     @classmethod
-    def __save_file(cls, url, save_path):
-        if save_path in cls.download_ignore:
-            return
-
-        data = download_sync(url)
-        if data:
-            create_dir(save_path, is_file=True)
-            with open(save_path, mode='wb+') as f:
-                f.write(data)
-        else:
-            cls.download_ignore.append(save_path)
-
-    @classmethod
-    def refresh_download_ignore(cls):
-        with open(cls.download_ignore_file, mode='w', encoding='utf-8') as f:
-            f.write('\n'.join(cls.download_ignore))
-
-    @classmethod
-    def check_update(cls):
+    def check_gamedata_update(cls):
         log.info('checking ArknightsGameData update...')
 
-        version = download_sync(f'{resource_config.remote.gameData.version}/gamedata/excel/data_version.txt',
-                                stringify=True)
+        latest_ver: str = download_sync(f'{resource_config.remote.cos}/resource/gamedata/version.txt',
+                                        stringify=True)
 
-        if version is False:
+        if not latest_ver:
             log.info(f'ArknightsGameData version file request failed.')
-            return False
+            return None
 
         local_ver = 'None'
         if os.path.exists(cls.local_version_file):
             with open(cls.local_version_file, mode='r') as v:
                 local_ver = v.read().strip('\n')
 
-        r = re.search(r'VersionControl:(.*)\n', version)
-        if r:
-            latest_ver = r.group(1)
-            if latest_ver != local_ver:
-                with open(cls.local_version_file, mode='w+') as v:
-                    v.write(latest_ver)
-                log.info(f'new ArknightsGameData version detected: latest {latest_ver} --> local {local_ver}')
-                return True
+        if latest_ver != local_ver:
+            log.info(f'new ArknightsGameData version detected: latest {latest_ver} --> local {local_ver}')
+            return latest_ver
 
-            log.info(f'ArknightsGameData is up to date: {latest_ver}')
         else:
-            log.info(f'ArknightsGameData update check failed.')
+            log.info(f'ArknightsGameData is up to date: {latest_ver}')
 
-        return False
+        return None
 
     @classmethod
-    def download_data_files(cls, use_cache=False):
-        if cls.check_update() is False:
-            use_cache = True
+    def download_gamedata_files(cls):
+        latest_ver = cls.check_gamedata_update()
+        if not latest_ver:
+            return None
 
-        for name in log.progress_bar(resource_config.remote.gameData.files, 'ArknightsGameData'):
-            url = f'{resource_config.remote.gameData.source}/gamedata/{name}'
-            path = f'{resource_config.save.data}/' + name.split('/')[-1]
+        url = f'{resource_config.remote.cos}/resource/gamedata/Arknights-Bot-Resource-{latest_ver}.zip'
+        path = f'{gamedata_path}/Arknights-Bot-Resource-{latest_ver}.zip'
 
-            if use_cache and os.path.exists(path):
-                continue
-
-            data = download_sync(url, stringify=True)
+        if not os.path.exists(path):
+            data = download_sync(url, progress=True)
             if data:
-                with open(path, mode='w+', encoding='utf-8') as src:
+                with open(path, mode='wb+') as src:
                     src.write(data)
+                cls.unpack_gamedata_files(path)
             else:
                 if os.path.exists(cls.local_version_file):
                     os.remove(cls.local_version_file)
-                raise Exception(f'data [{name}] download failed')
+                raise Exception(f'gamedata download failed')
+        else:
+            cls.unpack_gamedata_files(path)
+
+        with open(cls.local_version_file, mode='w+') as v:
+            v.write(latest_ver)
 
     @classmethod
-    def download_operators_resource(cls):
-        operators = ArknightsGameData().operators
-        remote = resource_config.remote.gameData.source
-
-        resource = []
-
-        for name, item in operators.items():
-            skills_list = item.skills()[0]
-
-            resource.append(f'{remote}/portrait/{item.id}_1.png')
-            resource.append(f'{remote}/avatar/{item.id}.png')
-
-            for skill in skills_list:
-                resource.append(f'{remote}/skill/{skill["skill_icon"]}.png')
-
-        for url in log.progress_bar(resource, 'operators resource'):
-            save_path = 'resource/images/' + '/'.join(url.split('/')[-2:])
-
-            if os.path.exists(save_path):
-                continue
-
-            cls.__save_file(url, save_path)
-
-    @classmethod
-    def download_materials_resource(cls):
-        materials = ArknightsGameData().materials
-
-        for m_id in log.progress_bar(materials, 'materials resource'):
-            item = materials[m_id]
-
-            url = f'{resource_config.remote.gameData.source}/item/%s.png' % item['material_icon']
-            save_path = f'resource/images/item/%s.png' % item['material_icon']
-
-            if os.path.exists(save_path):
-                continue
-
-            cls.__save_file(url, save_path)
-
-    @classmethod
-    def download_enemies_resource(cls):
-        enemies = ArknightsGameData().enemies
-
-        for name in log.progress_bar(enemies, 'enemies resource'):
-            item = enemies[name]
-
-            url = f'{resource_config.remote.gameData.source}/enemy/%s.png' % item['info']['enemyId']
-            save_path = f'resource/images/enemy/%s.png' % item['info']['enemyId']
-
-            if os.path.exists(save_path):
-                continue
-
-            cls.__save_file(url, save_path)
+    def unpack_gamedata_files(cls, path):
+        log.info(f'unpacking {path}...')
+        pack = zipfile.ZipFile(path)
+        for pack_file in pack.namelist():
+            pack.extract(pack_file, gamedata_path)
 
     @classmethod
     async def get_skin_file(cls, operator: Operator, skin_data: dict):

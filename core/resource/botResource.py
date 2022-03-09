@@ -1,5 +1,6 @@
 import os
 import shutil
+import zipfile
 
 from core.network.download import download_sync
 from core.resource import resource_config
@@ -12,13 +13,12 @@ class BotResource:
     def download_amiya_bot_console(cls):
         log.info('checking Amiya-Bot Console update...')
 
-        version_file = download_sync(f'{resource_config.remote.cos}/console/.version', stringify=True)
+        version_file = download_sync(f'{resource_config.remote.cos}/console/version.txt', stringify=True)
 
         if not version_file:
             return False
 
-        file_list = version_file.strip('\n').split('\n')
-        version = file_list.pop(0)
+        version = version_file.strip('\n').split('\n').pop(0)
 
         local_ver = None
         local_version_file = 'view/version.txt'
@@ -37,52 +37,61 @@ class BotResource:
                 shutil.rmtree('view')
         else:
             log.info(f'Amiya-Bot Console is up to date: {version}')
+            return False
 
         create_dir('view')
+
+        url = f'{resource_config.remote.cos}/console/{version}.zip'
+        pack_zip = 'view/Amiya-Bot-console.zip'
+
+        data = download_sync(url, progress=True)
+        if data:
+            with open(pack_zip, mode='wb+') as src:
+                src.write(data)
+
+            pack = zipfile.ZipFile(pack_zip)
+            for pack_file in pack.namelist():
+                pack.extract(pack_file, 'view')
+        else:
+            if os.path.exists(local_version_file):
+                os.remove(local_version_file)
+            raise Exception(f'console download failed')
 
         with open(local_version_file, mode='w+') as lv:
             lv.write(version)
 
-        for file in log.progress_bar(file_list, 'Amiya-Bot Console'):
-            view_path = f'view/{file}'
-            if not os.path.exists(view_path) or need_update:
-                folder = '/'.join(view_path.split('/')[0:-1])
-                suffix = view_path.split('.')[-1]
-
-                create_dir(folder)
-
-                text_file = suffix in ['html', 'css', 'js', 'map']
-                url = f'{resource_config.remote.cos}/console/{version}/{file}'
-
-                data = download_sync(url, stringify=text_file)
-                if data:
-                    with open(view_path,
-                              mode='w+' if text_file else 'wb+',
-                              encoding='utf-8' if text_file else None) as src:
-                        src.write(data)
-                else:
-                    raise Exception(f'file [{file}] download failed.')
-
     @classmethod
-    def download_bot_resource(cls, refresh=False):
-        for name, items in resource_config.files.items():
-            if not items:
-                continue
+    def download_bot_resource(cls):
+        create_dir('resource')
 
-            if type(items) is str:
-                items = [items]
+        url = f'{resource_config.remote.cos}/resource/assets/Amiya-Bot-assets.zip'
+        version = f'{resource_config.remote.cos}/resource/assets/version.txt'
+        lock_file = 'resource/assets-lock.txt'
+        pack_zip = 'resource/Amiya-Bot-assets.zip'
 
-            for item in log.progress_bar(items, f'{name} resource'):
-                path = getattr(resource_config.save, name)
-                url = f'{resource_config.remote.cos}/resource/{item}'
-                save = f'{path}/' + item.split('/')[-1]
+        flag = False
+        latest_ver = download_sync(version, stringify=True)
+        if os.path.exists(lock_file):
+            with open(lock_file, mode='r') as lf:
+                if lf.read() != latest_ver:
+                    flag = True
+        else:
+            flag = True
 
-                if os.path.exists(save) is False or refresh:
-                    create_dir(path)
+        if flag:
+            data = download_sync(url, progress=True)
+            if data:
+                with open(pack_zip, mode='wb+') as src:
+                    src.write(data)
 
-                    data = download_sync(url)
-                    if data:
-                        with open(save, mode='wb+') as src:
-                            src.write(data)
-                    else:
-                        raise Exception(f'file [{item}] download failed')
+                pack = zipfile.ZipFile(pack_zip)
+                for pack_file in pack.namelist():
+                    pack.extract(pack_file, 'resource')
+            else:
+                if os.path.exists(lock_file):
+                    os.remove(lock_file)
+                raise Exception(f'assets download failed')
+
+        if latest_ver:
+            with open(lock_file, mode='w+') as v:
+                v.write(latest_ver)
