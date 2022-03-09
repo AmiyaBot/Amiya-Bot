@@ -13,7 +13,7 @@ from .box import UserBox
 
 line_height = 16
 side_padding = 10
-avatar_resource = 'resource/images/avatar'
+avatar_resource = 'resource/gamedata/avatar'
 color = {
     6: 'FF4343',
     5: 'FEA63A',
@@ -229,7 +229,7 @@ class GachaForUser:
 
             if name in game_data.operators:
                 opt = game_data.operators[name]
-                avatar_path = f'resource/images/avatar/{opt.id}.png'
+                avatar_path = f'resource/gamedata/avatar/{opt.id}.png'
 
                 if os.path.exists(avatar_path):
                     icons.append({
@@ -446,7 +446,7 @@ def create_gacha_image(result: list):
             img = Image.open(rarity).convert('RGBA')
             image.paste(img, box=(x, 0), mask=img)
 
-        portraits = 'resource/images/portrait/%s_1.png' % item['portraits']
+        portraits = 'resource/gamedata/portrait/%s_1.png' % item['portraits']
         if not os.path.exists(portraits):
             if 'temp_portraits' in item and item['temp_portraits']:
                 portraits = item['temp_portraits']

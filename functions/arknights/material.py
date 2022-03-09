@@ -7,7 +7,7 @@ from core.util import read_yaml, any_match, find_similar_list
 from core.resource.arknightsGameData import ArknightsGameData
 
 setting = read_yaml('config/private/arknights.yaml').materialSetting
-material_images_source = 'resource/images/item/'
+material_images_source = 'resource/gamedata/item/'
 icon_size = 34
 line_height = 16
 side_padding = 10

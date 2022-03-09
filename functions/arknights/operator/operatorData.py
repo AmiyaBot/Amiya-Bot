@@ -9,9 +9,9 @@ from core.util import integer, any_match
 from .initData import OperatorSearchInfo, InitData
 from .operatorInfo import OperatorInfo
 
-material_images_source = 'resource/images/item/'
-avatars_images_source = 'resource/images/avatar/'
-skill_images_source = 'resource/images/skill/'
+material_images_source = 'resource/gamedata/item/'
+avatars_images_source = 'resource/gamedata/avatar/'
+skill_images_source = 'resource/gamedata/skill/'
 
 side_padding = 10
 line_height = 16

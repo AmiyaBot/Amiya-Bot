@@ -33,7 +33,7 @@ def get_user_box(user_id):
             if operator.rarity in collect:
                 collect[operator.rarity].append(
                     {
-                        'avatar': f'resource/images/avatar/{operator.id}.png',
+                        'avatar': f'resource/gamedata/avatar/{operator.id}.png',
                         'rank': f'resource/images/rank/{item.count if item.count <= 6 else 6}.png'
                     }
                 )
@@ -79,7 +79,7 @@ def get_user_gacha_detail(user_id):
     box: List[UserBox] = UserBox.select().where(UserBox.user_id == user_id)
 
     count = 0
-    raritys = {
+    rarity = {
         3: [0, 0],
         4: [0, 0],
         5: [0, 0],
@@ -88,19 +88,19 @@ def get_user_gacha_detail(user_id):
     box_num = len(box)
 
     for item in box:
-        raritys[item.rarity][0] += 1
-        raritys[item.rarity][1] += item.count
+        rarity[item.rarity][0] += 1
+        rarity[item.rarity][1] += item.count
 
         count += item.count
 
     def rate(n):
-        return f'{round(raritys[n][1] / count * 100, 2) if raritys[n][1] else 0}%'
+        return f'{round(rarity[n][1] / count * 100, 2) if rarity[n][1] else 0}%'
 
     return {
         'box_num': box_num,
         'count': count,
-        'raritys_6': (raritys[6][0], rate(6)),
-        'raritys_5': (raritys[5][0], rate(5)),
-        'raritys_4': (raritys[4][0], rate(4)),
-        'raritys_3': (raritys[3][0], rate(3))
+        'rarity_6': (rarity[6][0], rate(6)),
+        'rarity_5': (rarity[5][0], rate(5)),
+        'rarity_4': (rarity[4][0], rate(4)),
+        'rarity_3': (rarity[3][0], rate(3))
     }

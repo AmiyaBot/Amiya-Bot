@@ -34,7 +34,7 @@ async def guess_start(data: Message, level: str, title: str):
         if any_match(skill['skill_name'], ['α', 'β', 'γ']):
             return True
 
-        skill_icon = 'resource/images/skill/%s.png' % skill['skill_icon']
+        skill_icon = 'resource/gamedata/skill/%s.png' % skill['skill_icon']
 
         if not os.path.exists(skill_icon):
             return True

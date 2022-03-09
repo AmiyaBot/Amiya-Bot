@@ -117,16 +117,6 @@ async def _(data: Message):
         StateControl.shutdown()
 
 
-@bot.on_private_message(keywords=bot.equal('强制更新'))
-async def _(data: Message):
-    if data.is_admin:
-        if os.path.exists('fileStorage/downloadFail.txt'):
-            os.remove('fileStorage/downloadFail.txt')
-
-        await data.send(Chain(data).text('准备强制更新...正在等待所有任务结束...'))
-        StateControl.shutdown()
-
-
 @bot.on_private_message(keywords=bot.equal('同步群'))
 async def _(data: Message):
     if data.is_admin:

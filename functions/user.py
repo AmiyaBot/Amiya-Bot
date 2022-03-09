@@ -246,10 +246,10 @@ async def _(data: Message):
 
     text += f'累计抽卡数：%s\n' % gacha['count']
     text += f'BOX干员数：%s\n' % gacha['box_num']
-    text += f'  --  6星干员数：%s (%s)\n' % tuple(gacha['raritys_6'])
-    text += f'  --  5星干员数：%s (%s)\n' % tuple(gacha['raritys_5'])
-    text += f'  --  4星干员数：%s (%s)\n' % tuple(gacha['raritys_4'])
-    text += f'  --  3星干员数：%s (%s)\n' % tuple(gacha['raritys_3'])
+    text += f'  --  6星干员数：%s (%s)\n' % tuple(gacha['rarity_6'])
+    text += f'  --  5星干员数：%s (%s)\n' % tuple(gacha['rarity_5'])
+    text += f'  --  4星干员数：%s (%s)\n' % tuple(gacha['rarity_4'])
+    text += f'  --  3星干员数：%s (%s)\n' % tuple(gacha['rarity_3'])
 
     voice_list = []
     for item in talking.stage:

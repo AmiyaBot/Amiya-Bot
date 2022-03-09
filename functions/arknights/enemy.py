@@ -83,7 +83,7 @@ class Enemy:
 
         icons = [
             {
-                'path': 'resource/images/enemy/%s.png' % data['enemyId'],
+                'path': 'resource/gamedata/enemy/%s.png' % data['enemyId'],
                 'size': 80,
                 'pos': (side_padding, side_padding + line_height + int((line_height * 6 - 80) / 2))
             }
