@@ -1,4 +1,6 @@
-from peewee import *
+import peewee
+
+from playhouse.migrate import *
 from typing import List, Any
 from playhouse.shortcuts import model_to_dict
 from core.util import read_yaml, create_dir, pascal_case_to_snake_case
@@ -37,8 +39,27 @@ class SearchParams:
 
 
 def table(cls: Model) -> Any:
-    cls._meta.table_name = pascal_case_to_snake_case(cls.__name__)
+    table_name = pascal_case_to_snake_case(cls.__name__)
+
+    cls._meta.table_name = table_name
     cls.create_table()
+
+    fields = [f for f, n in cls.__dict__.items() if type(n) is peewee.FieldAccessor]
+
+    database: SqliteDatabase = cls._meta.database
+    migrator = SqliteMigrator(cls._meta.database)
+    description = database.execute_sql(f'select * from "{table_name}" limit 1').description
+
+    columns = [n[0] for n in description]
+    migrate_list = []
+
+    for f in set(fields) - set(columns):
+        migrate_list.append(
+            migrator.add_column(table_name, f, getattr(cls, f))
+        )
+
+    if migrate_list:
+        migrate(*tuple(migrate_list))
 
     table_list.append(cls)
 
