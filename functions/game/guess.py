@@ -1,29 +1,19 @@
 import os
+import copy
 import random
 import asyncio
 
+from io import BytesIO
+from PIL import Image
 from core import bot, Message, Chain
-from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
+from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource, Operator
 from core.util import any_match, random_pop
 
 
-async def guess_start(data: Message, level: str, title: str):
-    operators = ArknightsGameData().operators
-    operator = operators[random.choice(list(operators.keys()))]
-
-    question = Chain(data, quote=False).text(f'博士，这是哪位干员的{title}呢，请发送干员名猜一猜吧！').text('\n')
+async def guess_start(data: Message, operator: Operator, level: str, title: str):
+    ask = Chain(data, quote=False).text(f'博士，这是哪位干员的{title}呢，请发送干员名猜一猜吧！').text('\n')
 
     if level == '初级':
-        skin = random.choice(operator.skins())
-        skin_path = await ArknightsGameDataResource.get_skin_file(operator, skin)
-
-        if not skin_path:
-            await data.send(Chain(data, quote=False).text('非常抱歉博士，立绘下载失败。本次游戏结束~[face:9]'))
-            return False
-        else:
-            question.image(skin_path)
-
-    if level == '中级':
         skills = operator.skills()[0]
 
         if not skills:
@@ -39,7 +29,29 @@ async def guess_start(data: Message, level: str, title: str):
         if not os.path.exists(skill_icon):
             return True
 
-        question.image(skill_icon)
+        ask.image(skill_icon)
+
+    if level == '中级':
+        skin = random.choice(operator.skins())
+        skin_path = await ArknightsGameDataResource.get_skin_file(operator, skin)
+
+        if not skin_path:
+            await data.send(Chain(data, quote=False).text('非常抱歉博士，立绘下载失败。本次游戏结束~[face:9]'))
+            return False
+        else:
+            img = Image.open(skin_path)
+
+            area_size = int(img.size[0] * 0.2)
+            padding = 200
+
+            position_x = random.randint(padding, img.size[0] - area_size - padding)
+            position_y = random.randint(padding, img.size[1] - area_size - padding)
+
+            container = BytesIO()
+            region = img.crop((position_x, position_y, position_x + area_size, position_y + area_size))
+            region.save(container, format='PNG')
+
+            ask.image(container.getvalue())
 
     if level == '高级':
         voices = operator.voices()
@@ -49,13 +61,13 @@ async def guess_start(data: Message, level: str, title: str):
         voice = random.choice(voices)
         voice_path = await ArknightsGameDataResource.get_voice_file(operator, voice['voice_title'])
 
-        question.text('\n\n语音：').text(voice['voice_text'])
+        ask.text('\n\n语音：').text(voice['voice_text'].replace(operator.name, 'XXX'))
 
         if not voice_path:
             await data.send(Chain(data, quote=False).text('非常抱歉博士，语音文件下载失败。本次游戏结束~[face:9]'))
             return False
         else:
-            question.voice(voice_path)
+            ask.voice(voice_path)
 
     if level == '资深':
         stories = operator.stories()
@@ -70,19 +82,20 @@ async def guess_start(data: Message, level: str, title: str):
             start = random.randint(0, len(section) - 5)
             story = '。'.join(section[start:start + 5])
 
-        question.text_image(story)
+        ask.text(story)
 
-    await data.send(question)
+    await data.send(ask)
 
     tips = [
+        f'TA是{operator.type}干员',
         f'TA是{operator.rarity}星干员',
         f'TA的职业是{operator.classes}',
         f'TA的分支职业是{operator.classes_sub}',
-        f'TA的[cl 攻击范围@#ff0000 cle]是\n\n{operator.range}',
-        f'TA的标签是%s' % ','.join(operator.tags)
+        f'TA的标签是%s' % ','.join(operator.tags),
+        f'TA%s可以公招获得' % ('不' if not operator.is_recruit else '')
     ]
     if len(operator.name) > 1:
-        tips.append(f'TA的名字里有一个字是"{random.choice(operator.name)}"')
+        tips.append(f'TA的代号里有一个字是"{random.choice(operator.name)}"')
     if operator.limit:
         tips.append('TA是限定干员')
 
@@ -108,7 +121,7 @@ async def guess_start(data: Message, level: str, title: str):
             await data.send(Chain(answer).text(f'答案是{operator.name}，游戏结束~'))
             return False
 
-        if answer.text not in operators.keys():
+        if answer.text not in ArknightsGameData().operators.keys():
             continue
 
         if answer.text == operator.index_name:
@@ -126,8 +139,8 @@ async def _(data: Message):
         return Chain(data).text('抱歉博士，猜干员游戏暂时只能由管理员发起哦')
 
     level = {
-        '初级': '立绘',
-        '中级': '技能图标',
+        '初级': '技能图标',
+        '中级': '立绘',
         '高级': '语音',
         '资深': '档案'
     }
@@ -146,8 +159,16 @@ async def _(data: Message):
     if choice.text not in level.keys():
         return Chain(choice).text('博士，您没有选择难度哦。游戏取消。')
 
+    operators = {}
+
     while True:
+        if not operators:
+            operators = copy.deepcopy(ArknightsGameData().operators)
+
+        operator = operators.pop(random.choice(list(operators.keys())))
+
         await data.send(Chain(data, quote=False).text('题目准备中...'))
         await asyncio.sleep(2)
-        if not await guess_start(data, choice.text, level[choice.text]):
+
+        if not await guess_start(data, operator, choice.text, level[choice.text]):
             break
