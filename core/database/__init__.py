@@ -1,23 +1,40 @@
 import peewee
 
-from playhouse.migrate import *
 from typing import List, Any
+from playhouse.migrate import *
 from playhouse.shortcuts import model_to_dict
 from core.util import read_yaml, create_dir, pascal_case_to_snake_case
 from core import log
 
-db_conf = read_yaml('config/private/database.yaml')
-table_list: List[Model] = []
+db_config = read_yaml('config/private/database.yaml')
+is_mysql = False
+
+if db_config.mysql.enabled:
+    databases = db_config.mysql.databases
+    is_mysql = True
+else:
+    databases = db_config.sqlite
 
 
-class Model(Model):
+class ModelClass(Model):
     @classmethod
-    def insert_data(cls, rows):
-        if len(rows) > 100:
-            for batch in chunked(rows, 100):
+    def batch_insert(cls, rows: List[dict], chunk_size: int = 200):
+        if len(rows) > chunk_size:
+            for batch in chunked(rows, chunk_size):
                 cls.insert_many(batch).execute()
         else:
             cls.insert_many(rows).execute()
+
+    @classmethod
+    def insert_or_update(cls, insert: dict, update: dict = None, conflict_target: list = None, preserve: list = None):
+        conflict = {
+            'update': update,
+            'preserve': preserve
+        }
+        if not is_mysql:
+            conflict['conflict_target'] = conflict_target
+
+        cls.insert(**insert).on_conflict(**conflict).execute()
 
 
 class SearchParams:
@@ -38,22 +55,23 @@ class SearchParams:
                     self.contains[item] = value
 
 
-def table(cls: Model) -> Any:
+def table(cls: ModelClass) -> Any:
+    database: Database = cls._meta.database
+    migrator: SchemaMigrator = MySQLMigrator(cls._meta.database) if is_mysql else SqliteMigrator(cls._meta.database)
+
     table_name = pascal_case_to_snake_case(cls.__name__)
 
     cls._meta.table_name = table_name
     cls.create_table()
 
-    fields = [f for f, n in cls.__dict__.items() if type(n) is peewee.FieldAccessor]
+    description = database.execute_sql(f'select * from `{table_name}` limit 1').description
 
-    database: SqliteDatabase = cls._meta.database
-    migrator = SqliteMigrator(cls._meta.database)
-    description = database.execute_sql(f'select * from "{table_name}" limit 1').description
+    model_columns = [f for f, n in cls.__dict__.items() if type(n) is peewee.FieldAccessor]
+    table_columns = [n[0] for n in description]
 
-    columns = [n[0] for n in description]
     migrate_list = []
 
-    for f in set(fields) - set(columns):
+    for f in set(model_columns) - set(table_columns):
         migrate_list.append(
             migrator.add_column(table_name, f, getattr(cls, f))
         )
@@ -61,16 +79,17 @@ def table(cls: Model) -> Any:
     if migrate_list:
         migrate(*tuple(migrate_list))
 
-    table_list.append(cls)
-
     return cls
 
 
-def sqlite(database):
-    create_dir(database, is_file=True)
-    return SqliteDatabase(database, pragmas={
-        'timeout': 30
-    })
+def connect_database(database):
+    if is_mysql:
+        return MySQLDatabase(database, **db_config.mysql.config)
+    else:
+        create_dir(database, is_file=True)
+        return SqliteDatabase(database, pragmas={
+            'timeout': 30
+        })
 
 
 def query_to_list(query) -> List[dict]:
@@ -96,7 +115,7 @@ def select_for_paginate(model,
                         order_by: tuple = None,
                         page: int = 1,
                         page_size: int = 10):
-    model: Model
+    model: ModelClass
 
     data = model.select(*fields)
     where = []

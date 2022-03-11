@@ -2,40 +2,40 @@ from typing import Union
 from core.database import *
 from core.config import config
 
-db = sqlite(db_conf.group)
+db = connect_database(databases.group)
 
 
-class GroupBaseModel(Model):
+class GroupBaseModel(ModelClass):
     class Meta:
         database = db
 
 
 @table
 class Group(GroupBaseModel):
-    group_id: Union[TextField, str] = TextField(primary_key=True)
-    group_name: str = TextField()
-    permission: str = TextField()
+    group_id: Union[CharField, str] = CharField(primary_key=True)
+    group_name: str = CharField()
+    permission: str = CharField()
 
 
 @table
 class GroupActive(GroupBaseModel):
-    group_id: str = TextField(primary_key=True)
+    group_id: str = CharField(primary_key=True)
     active: int = IntegerField(default=1)
     sleep_time: int = BigIntegerField(default=0)
 
 
 @table
 class GroupSetting(GroupBaseModel):
-    group_id: str = TextField(primary_key=True)
+    group_id: str = CharField(primary_key=True)
     send_notice: int = IntegerField(default=1, null=True)
     send_weibo: int = IntegerField(default=0, null=True)
 
 
 @table
 class GroupNotice(GroupBaseModel):
-    content = TextField()
+    content = CharField()
     send_time = BigIntegerField()
-    send_user = TextField()
+    send_user = CharField()
 
 
 def check_group_active(group_id):

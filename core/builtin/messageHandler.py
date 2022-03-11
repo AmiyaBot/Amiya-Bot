@@ -49,10 +49,11 @@ async def choice_handlers(data: Message, handlers: List[Handler]) -> CHOICE:
 async def message_handler(data: Union[Message, Event], operation: WSOperation):
     if type(data) is Message:
 
-        info(str(data))  # 输出日志
-
         is_test = config.test.enable and data.type == 'group' and data.group_id not in config.test.group
         is_black = data.user.black == 1
+
+        if not is_test:
+            info(str(data))  # 输出日志
 
         # 检查封测和黑名单人员
         if is_test or is_black:
@@ -119,11 +120,11 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
 
             # 记录使用数
             if handler.function_id:
-                FunctionUsed \
-                    .insert(function_id=handler.function_id) \
-                    .on_conflict(conflict_target=[FunctionUsed.function_id],
-                                 update={FunctionUsed.use_num: FunctionUsed.use_num + 1}) \
-                    .execute()
+                FunctionUsed.insert_or_update(
+                    insert={'function_id': handler.function_id},
+                    update={FunctionUsed.use_num: FunctionUsed.use_num + 1},
+                    conflict_target=[FunctionUsed.function_id]
+                )
 
             # 执行功能并取消等待
             reply: Chain = await handler.action(data)

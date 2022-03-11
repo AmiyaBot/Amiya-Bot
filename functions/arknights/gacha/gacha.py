@@ -26,21 +26,21 @@ color = {
 
 @table
 class Pool(BotBaseModel):
-    pool_name: str = TextField(unique=True)
-    pickup_6: str = TextField(null=True)
-    pickup_5: str = TextField(null=True)
-    pickup_4: str = TextField(null=True)
-    pickup_s: str = TextField(null=True)
+    pool_name: str = CharField(unique=True)
+    pickup_6: str = CharField(null=True)
+    pickup_5: str = CharField(null=True)
+    pickup_4: str = CharField(null=True)
+    pickup_s: str = CharField(null=True)
     limit_pool: int = IntegerField()
 
 
 @table
 class PoolSpOperator(BotBaseModel):
     pool_id: Union[ForeignKeyField, int] = ForeignKeyField(Pool, db_column='pool_id', on_delete='CASCADE')
-    operator_name: str = TextField()
+    operator_name: str = CharField()
     rarity: int = IntegerField()
-    classes: str = TextField()
-    image: str = TextField()
+    classes: str = CharField()
+    image: str = CharField()
 
 
 @table
@@ -369,9 +369,7 @@ class GachaForUser:
                 }
 
         UserBox.delete().where(UserBox.user_id == self.data.user_id).execute()
-        UserBox.insert_data(
-            [item for name, item in box_map.items()]
-        )
+        UserBox.batch_insert([item for name, item in box_map.items()])
 
 
 class GachaPool:

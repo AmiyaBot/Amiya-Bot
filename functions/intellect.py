@@ -7,12 +7,12 @@ from core.database.user import *
 
 @table
 class Intellect(UserBaseModel):
-    user_id: str = TextField(primary_key=True)
+    user_id: str = CharField(primary_key=True)
     cur_num: int = IntegerField()
     full_num: int = IntegerField()
     full_time: int = IntegerField()
-    message_type: str = TextField()
-    group_id: str = TextField()
+    message_type: str = CharField()
+    group_id: str = CharField()
     in_time: int = IntegerField()
     status: int = IntegerField()
 
@@ -40,17 +40,17 @@ async def _(data: Message):
 
         full_time = (full_num - cur_num) * 6 * 60 + int(time.time())
 
-        Intellect.insert(
-            user_id=data.user_id,
-            cur_num=cur_num,
-            full_num=full_num,
-            full_time=full_time,
-            message_type=data.type,
-            group_id=data.group_id,
-            in_time=int(time.time()),
-            status=0
-        ).on_conflict(
-            conflict_target=[Intellect.user_id],
+        Intellect.insert_or_update(
+            insert={
+                'user_id': data.user_id,
+                'cur_num': cur_num,
+                'full_num': full_num,
+                'full_time': full_time,
+                'message_type': data.type,
+                'group_id': data.group_id,
+                'in_time': int(time.time()),
+                'status': 0
+            },
             preserve=[
                 Intellect.cur_num,
                 Intellect.full_num,
@@ -59,8 +59,9 @@ async def _(data: Message):
                 Intellect.group_id,
                 Intellect.in_time,
                 Intellect.status
-            ]
-        ).execute()
+            ],
+            conflict_target=[Intellect.user_id]
+        )
         return reply.text('阿米娅已经帮博士记住了，回复满的时候阿米娅会提醒博士的哦～')
 
     r_list = [

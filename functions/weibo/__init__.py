@@ -1,19 +1,17 @@
-import re
 import time
 
 from core.database.messages import *
-from core.database.group import GroupSetting
 from core.config import config
 from core.util import TimeRecorder
 from core import bot, websocket, http, custom_chain, Message, Chain
 
-from .helper import WeiboUser, weibo_conf, set_push_group
+from .helper import WeiboUser, weibo_conf, enables_group_list
 
 
 @table
 class WeiboRecord(MessageBaseModel):
     user_id: int = IntegerField()
-    blog_id: str = TextField()
+    blog_id: str = CharField()
     record_time: int = IntegerField()
 
 
@@ -77,13 +75,11 @@ async def _():
         if record:
             continue
 
-        await set_push_group()
-
         if config.test.enable:
             target = config.test.group
         else:
             group_list = [item['group_id'] for item in await http.get_group_list()]
-            enables_list = [int(item.group_id) for item in GroupSetting.select().where(GroupSetting.send_weibo == 1)]
+            enables_list = await enables_group_list()
             target = list(
                 set(group_list).intersection(
                     set(enables_list)

@@ -8,7 +8,7 @@ config = read_yaml('config/private/arknights.yaml', _dict=True)['operatorSetting
 
 @table
 class GachaConfig(BotBaseModel):
-    operator_name: str = TextField()
+    operator_name: str = CharField()
     operator_type: int = IntegerField()
 
 

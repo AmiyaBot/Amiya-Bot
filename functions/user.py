@@ -25,6 +25,10 @@ class UserInfo(UserBaseModel):
     sign_in: int = IntegerField(default=0)
     sign_times: int = IntegerField(default=0)
 
+    @classmethod
+    def get_user(cls, user_id):
+        return cls.get_or_create(user_id=user_id)[0]
+
 
 def get_face():
     images = []
@@ -35,7 +39,7 @@ def get_face():
 
 
 def sign_in(data: Message, sign_type=0):
-    info: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+    info: UserInfo = UserInfo.get_user(data.user_id)
 
     if info.sign_in == 0:
         coupon = 50
@@ -155,7 +159,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', verify=compose_talk_verify(talking.talk.positive, talking.call.positive))
 async def _(data: Message):
-    user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+    user: UserInfo = UserInfo.get_user(data.user_id)
     reply = Chain(data)
 
     if user.user_mood == 0:
@@ -169,7 +173,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', verify=compose_talk_verify(talking.talk.inactive, talking.call.positive))
 async def _(data: Message):
-    user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+    user: UserInfo = UserInfo.get_user(data.user_id)
     reply = Chain(data)
     setattr(reply, 'feeling', -5)
 
@@ -214,7 +218,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', keywords=['我错了', '对不起', '抱歉'])
 async def _(data: Message):
-    info: UserInfo = UserInfo.get_or_none(user_id=data.user_id)
+    info: UserInfo = UserInfo.get_user(data.user_id)
 
     reply = Chain(data)
     setattr(reply, 'feeling', 5)
@@ -234,7 +238,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', keywords=['信赖', '关系', '好感', '我的信息', '个人信息'])
 async def _(data: Message):
-    user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+    user: UserInfo = UserInfo.get_user(data.user_id)
 
     gacha = get_user_gacha_detail(data.user_id)
 
@@ -315,7 +319,7 @@ async def _(data: Mirai.NudgeEvent):
 
 @bot.before_bot_reply
 async def _(data: Message):
-    user: UserInfo = UserInfo.get_or_create(user_id=data.user_id)[0]
+    user: UserInfo = UserInfo.get_user(data.user_id)
     if user.user_mood <= 0:
         await websocket.send(
             custom_chain(data.user_id, data.group_id, data.type).at().text('哼~阿米娅生气了！不理博士！[face:38]')
@@ -333,7 +337,7 @@ async def _(data: Chain):
         if hasattr(data, 'feeling'):
             feeling = getattr(data, 'feeling')
 
-        user: UserInfo = UserInfo.get_or_create(user_id=user_id)[0]
+        user: UserInfo = UserInfo.get_user(user_id)
 
         user_mood = user.user_mood + feeling
         if user_mood <= 0:

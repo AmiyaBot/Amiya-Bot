@@ -9,6 +9,9 @@
 /resource/
 
 .DS_Store
+
+baidu.txt
+
 *.pyc
 *.spec
 *.zip

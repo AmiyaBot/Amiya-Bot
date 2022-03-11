@@ -64,7 +64,7 @@ class Pool:
                 'image': item.image
             })
 
-        PoolSpOperator.insert_data(sp)
+        PoolSpOperator.batch_insert(sp)
 
         return response(message='添加成功')
 
@@ -95,7 +95,7 @@ class Pool:
             })
 
         PoolSpOperator.delete().where(PoolSpOperator.pool_id == pool.id).execute()
-        PoolSpOperator.insert_data(sp)
+        PoolSpOperator.batch_insert(sp)
 
         return response(message='修改成功')
 

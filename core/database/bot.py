@@ -1,21 +1,21 @@
 from core.database import *
 
-db = sqlite(db_conf.bot)
+db = connect_database(databases.bot)
 
 
-class BotBaseModel(Model):
+class BotBaseModel(ModelClass):
     class Meta:
         database = db
 
 
 @table
 class FunctionUsed(BotBaseModel):
-    function_id: str = TextField(primary_key=True)
+    function_id: str = CharField(primary_key=True)
     use_num: int = IntegerField(default=1)
 
 
 @table
 class DisabledFunction(BotBaseModel):
-    function_id: str = TextField()
-    group_id: str = TextField()
+    function_id: str = CharField()
+    group_id: str = CharField()
     status: int = IntegerField()

@@ -1,4 +1,18 @@
-bot: database/bot.db
-group: database/group.db
-message: database/message.db
-user: database/user.db
+mysql:
+    enabled: false
+    config:
+        host: localhost
+        port: 3306
+        user: root
+        password:
+    databases:
+        bot: amiya_bot
+        group: amiya_group
+        message: amiya_message
+        user: amiya_user
+
+sqlite:
+    bot: database/bot.db
+    group: database/group.db
+    message: database/message.db
+    user: database/user.db

@@ -101,7 +101,7 @@ class Group:
         group_list = await http.get_group_list()
 
         GroupData.truncate_table()
-        GroupData.insert_data(group_list)
+        GroupData.batch_insert(group_list)
 
         return response(message=f'同步完成，共 {len(group_list)} 个群。')
 
@@ -112,22 +112,30 @@ class Group:
     @classmethod
     async def change_group_status(cls, items: GroupStatus, auth=AuthManager.depends()):
         if items.active is not None:
-            GroupActive.insert(group_id=items.group_id, active=items.active).on_conflict(
-                conflict_target=[GroupActive.group_id],
+            GroupActive.insert_or_update(
+                insert={
+                    'group_id': items.group_id,
+                    'active': items.active
+                },
                 update={
                     GroupActive.active: items.active
-                }
-            ).execute()
+                },
+                conflict_target=[GroupActive.group_id]
+            )
         else:
             for name in ['send_notice', 'send_weibo']:
                 value = getattr(items, name)
                 if name is not None:
-                    GroupSetting.insert(**{name: value, 'group_id': items.group_id}).on_conflict(
-                        conflict_target=[GroupSetting.group_id],
+                    GroupSetting.insert_or_update(
+                        insert={
+                            name: value,
+                            'group_id': items.group_id
+                        },
                         update={
                             getattr(GroupSetting, name): value
-                        }
-                    ).execute()
+                        },
+                        conflict_target=[GroupSetting.group_id]
+                    )
 
         return response(message='修改成功')
 

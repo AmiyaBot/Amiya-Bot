@@ -22,20 +22,18 @@ async def get_result(url, headers):
                     return json.loads(await res.text())
 
 
-async def set_push_group():
+async def enables_group_list():
     async with log.catch('group setting error:'):
         sql = 'select group_id, count(*) from message_record where msg_type = "group" group by group_id'
         counts = db.execute_sql(sql).fetchall()
 
-        for item in counts:
-            active = 1 if int(item[1]) >= weibo_conf.autoPush.groupActivity else 0
+        enables_list = [int(item.group_id) for item in GroupSetting.select().where(GroupSetting.send_weibo == 1)]
 
-            GroupSetting.insert(**{'send_weibo': active, 'group_id': item[0]}).on_conflict(
-                conflict_target=[GroupSetting.group_id],
-                update={
-                    GroupSetting.send_weibo: active
-                }
-            ).execute()
+        for item in counts:
+            if int(item[1]) >= weibo_conf.autoPush.groupActivity and int(item[0]) not in enables_list:
+                enables_list.append(int(item[0]))
+
+        return enables_list
 
 
 @dataclass

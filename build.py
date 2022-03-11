@@ -50,8 +50,10 @@ def upload_pack(folder, pack_name):
 
     logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
-    secret_id = ''
-    secret_key = ''
+    with open('baidu.txt', mode='r') as conf:
+        conf = conf.read().strip().split('\n')
+        secret_id = conf[0]
+        secret_key = conf[1]
 
     config = CosConfig(
         Region='ap-guangzhou',

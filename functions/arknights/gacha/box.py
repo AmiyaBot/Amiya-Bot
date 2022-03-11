@@ -7,8 +7,8 @@ from core.resource.arknightsGameData import ArknightsGameData, Operator
 
 @table
 class UserBox(UserBaseModel):
-    user_id: str = TextField()
-    operator_name: str = TextField()
+    user_id: str = CharField()
+    operator_name: str = CharField()
     rarity: int = IntegerField()
     count: int = IntegerField(default=1)
 
