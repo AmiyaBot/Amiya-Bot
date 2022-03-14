@@ -16,7 +16,7 @@ class Verify:
         消息校验结果对象
 
         :param result:   校验结果
-        :param weight:   权值，用于当同时存在多个检验结果时，可根据权值匹配优先的结果
+        :param weight:   权重（优先级），用于当同时存在多个检验结果时，可根据权值匹配优先的结果
         :param keywords: 校验成功匹配出来的关键字列表
         """
         self.result = result
@@ -53,8 +53,8 @@ class Message:
         self.image = []
 
         self.text = ''
-        self.text_origin = ''
         self.text_digits = ''
+        self.text_origin = ''
         self.text_initial = ''
         self.text_cut = []
         self.text_cut_pinyin = []
@@ -67,10 +67,10 @@ class Message:
         self.is_group_admin = False
         self.is_new_user = False
 
-        self.user_id = ''
-        self.group_id = ''
-        self.nickname = ''
-        self.raw_chain = ''
+        self.user_id = None
+        self.group_id = None
+        self.nickname = None
+        self.raw_chain = None
 
         self.time = int(time.time())
 

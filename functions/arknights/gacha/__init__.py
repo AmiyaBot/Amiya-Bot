@@ -1,10 +1,10 @@
 import re
 
 from typing import List
-from core import log, bot, Message, Chain
 from core.util import any_match
+from core import log, bot, Message, Chain
 
-from .gacha import GachaForUser, UserGachaInfo, Pool
+from .gacha import GachaForUser, UserInfo, UserGachaInfo, Pool
 from .box import get_user_box
 
 re_list = [
@@ -59,22 +59,39 @@ async def _(data: Message):
 
     reply = Chain(data)
 
+    times = 0
+
     for item in re_list:
+
         r = re.search(item, message)
         if r:
             times = int(find_once(r'\d+', find_once(item, message)))
 
-            if times <= 0:
-                return reply.text('博士在捉弄阿米娅吗 >.<')
-            if times > 300:
-                return reply.text('博士不要着急，罗德岛的资源要好好规划使用哦，先试试 300 次以内的寻访吧 (#^.^#)')
-            if times > coupon:
-                return reply.text('博士，您的寻访凭证（%d张）不够哦~' % coupon)
+    if not times:
+        if '单抽' in data.text:
+            times = 1
 
-            if times <= 10:
-                return gc.detailed_mode(times, ten_times=times == 10)
+    if times:
+        user_info: UserInfo = UserInfo.get_user(data.user_id)
+
+        coupon_need = times
+        point_need = 0
+
+        if times > 300:
+            return reply.text('博士不要着急，罗德岛的资源要好好规划使用哦，先试试 300 次以内的寻访吧 (#^.^#)')
+        if times > coupon:
+            coupon_need = coupon
+            point_need = (times - coupon) * 600
+
+            if user_info.jade_point >= point_need:
+                await data.send(Chain(data).text(f'寻访凭证剩余{coupon}张，将消耗{point_need}合成玉'))
             else:
-                return gc.continuous_mode(times)
+                return reply.text(f'博士，您的寻访资源不够哦~\n寻访凭证剩余{coupon}张\n合成玉剩余{user_info.jade_point}')
+
+        if times <= 10:
+            return gc.detailed_mode(times, coupon_need, point_need, ten_times=times == 10)
+        else:
+            return gc.continuous_mode(times, coupon_need, point_need)
 
     if any_match(message, ['多少', '几']):
         text = '博士的寻访凭证还剩余 %d 张~' % coupon

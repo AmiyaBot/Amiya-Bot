@@ -97,19 +97,17 @@ class Chain:
         logo = [
             ImageElem('resource/style/rabbit.png', size=30, pos=(IMAGE_WIDTH - 30, 0))
         ]
-        return self.image(
-            path=create_image(text,
-                              width=IMAGE_WIDTH,
-                              max_seat=MAX_SEAT,
-                              images=(images or []) + logo,
-                              bgcolor='#F5F5F5')
-        )
+        return self.image(target=create_image(text,
+                                              width=IMAGE_WIDTH,
+                                              max_seat=MAX_SEAT,
+                                              images=(images or []) + logo,
+                                              bgcolor='#F5F5F5'))
 
-    def image(self, path: Union[str, bytes, List[Union[str, bytes]]]):
-        if type(path) is not list:
-            path = [path]
+    def image(self, target: Union[str, bytes, List[Union[str, bytes]]]):
+        if type(target) is not list:
+            target = [target]
 
-        for item in path:
+        for item in target:
             self.chain.append({
                 'type': 'Image',
                 'path': item,
@@ -117,11 +115,11 @@ class Chain:
             })
         return self
 
-    def voice(self, path: Union[str, List[str]]):
-        if type(path) is str:
-            path = [path]
+    def voice(self, target: Union[str, List[str]]):
+        if type(target) is str:
+            target = [target]
 
-        for item in path:
+        for item in target:
             self.voice_list.append({
                 'type': 'Voice',
                 'path': item,

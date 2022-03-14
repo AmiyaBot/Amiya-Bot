@@ -9,6 +9,8 @@ from core.database.bot import *
 from core.util import insert_empty
 from core.resource.arknightsGameData import ArknightsGameData
 
+from functions.user.userBase import UserInfo, UserGachaInfo
+
 from .box import UserBox
 
 line_height = 16
@@ -41,14 +43,6 @@ class PoolSpOperator(BotBaseModel):
     rarity: int = IntegerField()
     classes: str = CharField()
     image: str = CharField()
-
-
-@table
-class UserGachaInfo(UserBaseModel):
-    user_id: Union[ForeignKeyField, str] = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
-    coupon: int = IntegerField(default=50)
-    gacha_break_even: int = IntegerField(default=0)
-    gacha_pool: int = IntegerField(default=1)
 
 
 class GachaForUser:
@@ -125,8 +119,8 @@ class GachaForUser:
             }
         return operators
 
-    def continuous_mode(self, times):
-        operators = self.start_gacha(times)
+    def continuous_mode(self, times, coupon, point):
+        operators = self.start_gacha(times, coupon, point)
 
         rarity_sum = [0, 0, 0, 0]
         high_star = {
@@ -205,8 +199,8 @@ class GachaForUser:
 
         return Chain(self.data).text_image(result)
 
-    def detailed_mode(self, times, ten_times=False):
-        operators = self.start_gacha(times)
+    def detailed_mode(self, times, coupon, point, ten_times=False):
+        operators = self.start_gacha(times, coupon, point)
         operators_info = {}
 
         game_data = ArknightsGameData()
@@ -272,7 +266,7 @@ class GachaForUser:
 
         return f'当前已经抽取了 {self.break_even} 次而未获得六星干员\n下次抽出六星干员的概率为 {100 - break_even_rate}%'
 
-    def start_gacha(self, times):
+    def start_gacha(self, times, coupon, point):
         operators = []
 
         for i in range(0, times):
@@ -303,9 +297,11 @@ class GachaForUser:
                 'name': operator
             })
 
-        UserGachaInfo.update(gacha_break_even=self.break_even, coupon=UserGachaInfo.coupon - times) \
+        UserGachaInfo.update(gacha_break_even=self.break_even, coupon=UserGachaInfo.coupon - coupon) \
             .where(UserGachaInfo.user_id == self.data.user_id) \
             .execute()
+
+        UserInfo.update(jade_point=UserInfo.jade_point - point).where(UserInfo.user_id == self.data.user_id).execute()
 
         self.set_box(operators)
 
