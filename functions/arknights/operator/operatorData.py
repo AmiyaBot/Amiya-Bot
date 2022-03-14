@@ -22,11 +22,12 @@ max_seat = MAX_SEAT - 20
 class OperatorData:
     @classmethod
     def check_evolve_costs(cls, info: OperatorSearchInfo):
+        operators = ArknightsGameData().operators
 
-        if not info.name:
+        if not info.name or info.name not in operators:
             return '博士，请仔细描述想要查询的信息哦'
 
-        operator = ArknightsGameData().operators[info.name]
+        operator = operators[info.name]
         evolve_costs = operator.evolve_costs()
 
         result = []
@@ -74,7 +75,12 @@ class OperatorData:
 
     @classmethod
     def find_operator_module(cls, info: OperatorSearchInfo, story: bool):
-        operator = ArknightsGameData().operators[info.name]
+        operators = ArknightsGameData().operators
+
+        if not info.name or info.name not in operators:
+            return '博士，请仔细描述想要查询的信息哦'
+
+        operator = operators[info.name]
         modules = operator.modules()
 
         if modules:
@@ -86,7 +92,12 @@ class OperatorData:
 
     @classmethod
     def get_detail_info(cls, info: OperatorSearchInfo):
-        operator = ArknightsGameData().operators[info.name]
+        operators = ArknightsGameData().operators
+
+        if not info.name or info.name not in operators:
+            return '博士，请仔细描述想要查询的信息哦'
+
+        operator = operators[info.name]
 
         detail, trust = operator.detail()
         talents = operator.talents()
@@ -262,7 +273,7 @@ class OperatorData:
     def check_skill_list(skill_operator, info: OperatorSearchInfo):
         operators = ArknightsGameData().operators
 
-        if not info.skill and not info.name:
+        if (not info.skill and not info.name) or info.name not in operators:
             return '博士，请仔细描述想要查询的信息哦'
 
         if info.skill and any_match(info.skill, ['α', 'β', 'γ']):
