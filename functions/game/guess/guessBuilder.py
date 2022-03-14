@@ -96,28 +96,10 @@ def calc_rank(cls: GuessReferee):
     return text, reward_list
 
 
-async def guess_start(data: Message, operator: Operator, level: str, title: str):
+async def guess_start(data: Message, operator: Operator, level: str, title: str, level_rate: int):
     ask = Chain(data, quote=False).text(f'博士，这是哪位干员的{title}呢，请发送干员名猜一猜吧！').text('\n')
 
     if level == '初级':
-        skills = operator.skills()[0]
-
-        if not skills:
-            return GuessResult()
-
-        skill = random.choice(skills)
-
-        if any_match(skill['skill_name'], ['α', 'β', 'γ']):
-            return GuessResult()
-
-        skill_icon = 'resource/gamedata/skill/%s.png' % skill['skill_icon']
-
-        if not os.path.exists(skill_icon):
-            return GuessResult()
-
-        ask.image(skill_icon)
-
-    if level == '中级':
         skin = random.choice(operator.skins())
         skin_path = await ArknightsGameDataResource.get_skin_file(operator, skin)
 
@@ -138,6 +120,24 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str)
             region.save(container, format='PNG')
 
             ask.image(container.getvalue())
+
+    if level == '中级':
+        skills = operator.skills()[0]
+
+        if not skills:
+            return GuessResult()
+
+        skill = random.choice(skills)
+
+        if any_match(skill['skill_name'], ['α', 'β', 'γ']):
+            return GuessResult()
+
+        skill_icon = 'resource/gamedata/skill/%s.png' % skill['skill_icon']
+
+        if not os.path.exists(skill_icon):
+            return GuessResult()
+
+        ask.image(skill_icon)
 
     if level == '高级':
         voices = operator.voices()
@@ -221,7 +221,7 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str)
             continue
 
         if answer.text == operator.index_name:
-            rewards = int(guess_config.rewards.bingo * (100 + result.total_point) / 100)
+            rewards = int(guess_config.rewards.bingo * level_rate * (100 + result.total_point) / 100)
 
             await data.send(Chain(answer).text(f'回答正确！分数+1，合成玉+{rewards}'))
 

@@ -12,8 +12,8 @@ async def _(data: Message):
         return Chain(data).text('抱歉博士，猜干员游戏暂时只能由管理员发起哦')
 
     level = {
-        '初级': '技能图标',
-        '中级': '立绘',
+        '初级': '立绘',
+        '中级': '技能',
         '高级': '语音',
         '资深': '档案'
     }
@@ -35,6 +35,9 @@ async def _(data: Message):
     operators = {}
     referee = GuessReferee()
     curr = None
+    level_rate = list(level.keys()).index(choice.text) + 1
+
+    await data.send(Chain(choice).text(f'{choice.text}难度，奖励倍数 {level_rate}'))
 
     while True:
         if not operators:
@@ -52,7 +55,7 @@ async def _(data: Message):
             await data.send(text)
             await asyncio.sleep(2)
 
-        result = await guess_start(data, operator, choice.text, level[choice.text])
+        result = await guess_start(data, operator, choice.text, level[choice.text], level_rate)
         end = False
         skip = False
 
@@ -61,7 +64,7 @@ async def _(data: Message):
         if result.status in [GuessStatus.userSkip, GuessStatus.systemSkip]:
             skip = True
         if result.status == GuessStatus.bingo:
-            rewards = int(guess_config.rewards.bingo * (100 + result.total_point) / 100)
+            rewards = int(guess_config.rewards.bingo * level_rate * (100 + result.total_point) / 100)
             UserInfo.add_jade_point(result.answer.user_id, rewards)
             set_rank(referee, result.answer, 1)
 
@@ -80,19 +83,19 @@ async def _(data: Message):
     if referee.count < guess_config.finish_min:
         return Chain(data, quote=False).text(f'游戏结束，本轮共进行了{referee.count}次竞猜，不进行结算')
 
-    rewards_rate = (100 + referee.total_point) / 100
+    rewards_rate = (100 + (referee.total_point if referee.total_point > -90 else -90)) / 100
     text, reward_list = calc_rank(referee)
     text += '\n\n'
 
     for r, l in reward_list.items():
         if r == 0:
-            rewards = int(guess_config.rewards.golden * rewards_rate)
+            rewards = int(guess_config.rewards.golden * level_rate * rewards_rate)
             text += f'第一名获得{rewards}合成玉；\n'
         elif r == 1:
-            rewards = int(guess_config.rewards.silver * rewards_rate)
+            rewards = int(guess_config.rewards.silver * level_rate * rewards_rate)
             text += f'第二名获得{rewards}合成玉；\n'
         else:
-            rewards = int(guess_config.rewards.copper * rewards_rate)
+            rewards = int(guess_config.rewards.copper * level_rate * rewards_rate)
             text += f'第三名获得{rewards}合成玉；\n'
 
     return Chain(data, quote=False).text('游戏结束').text('\n').text(text)
