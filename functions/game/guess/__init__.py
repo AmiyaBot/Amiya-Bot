@@ -77,10 +77,11 @@ async def _(data: Message):
         if end:
             break
 
+    if referee.count < guess_config.finish_min:
+        return Chain(data, quote=False).text(f'游戏结束，本轮共进行了{referee.count}次竞猜，不进行结算')
+
     rewards_rate = (100 + referee.total_point) / 100
-
     text, reward_list = calc_rank(referee)
-
     text += '\n\n'
 
     for r, l in reward_list.items():
