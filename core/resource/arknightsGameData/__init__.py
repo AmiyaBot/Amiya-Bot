@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import zipfile
 
 from typing import List, Dict, Tuple
@@ -202,9 +203,9 @@ class ArknightsGameData(metaclass=Singleton):
 
 
 class ArknightsGameDataResource:
-    create_dir(gamedata_path)
+    create_dir('resource')
 
-    local_version_file = gamedata_path + '/version.txt'
+    local_version_file = 'resource/gamedata-lock.txt'
 
     @classmethod
     def check_gamedata_update(cls):
@@ -238,7 +239,7 @@ class ArknightsGameDataResource:
             return None
 
         url = f'{resource_config.remote.cos}/resource/gamedata/Arknights-Bot-Resource-{latest_ver}.zip'
-        path = f'{gamedata_path}/Arknights-Bot-Resource-{latest_ver}.zip'
+        path = f'resource/Arknights-Bot-Resource-{latest_ver}.zip'
 
         if not os.path.exists(path):
             data = download_sync(url, progress=True)
@@ -259,6 +260,10 @@ class ArknightsGameDataResource:
     @classmethod
     def unpack_gamedata_files(cls, path):
         log.info(f'unpacking {path}...')
+
+        shutil.rmtree(gamedata_path)
+        create_dir(gamedata_path)
+
         pack = zipfile.ZipFile(path)
         for pack_file in pack.namelist():
             pack.extract(pack_file, gamedata_path)
