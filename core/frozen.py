@@ -7,7 +7,6 @@ import subprocess
 
 from core.resource.botResource import resource_config
 from core.network.download import download_sync
-from core.util import TimeRecorder
 from core import log
 
 bucket = resource_config.remote.cos
@@ -29,14 +28,12 @@ def check_upgrade():
     new_pack = f'AmiyaBot-{new_version}.zip'
 
     if exe_name == local_exe:
-        log.info('exe version is up to date.')
+        log.info('AmiyaBot version is up to date.')
         return False
 
     log.info(f'difference detected, downloading new pack {new_pack}')
 
-    rec = TimeRecorder()
-
-    pack = download_sync(f'{bucket}/package/{new_pack}')
+    pack = download_sync(f'{bucket}/package/{new_pack}', progress=True)
     if pack:
         with open(new_pack, mode='wb+') as f:
             f.write(pack)
@@ -48,7 +45,6 @@ def check_upgrade():
         log.info(f'new version download fail.')
         return False
 
-    log.info(f'download success! cost {rec.rec(millisecond=True)} ms.')
     log.info(f'restart new pack in 3 sec...')
 
     cmd = f'''

@@ -75,7 +75,14 @@ async def _(data: Message):
 
 @bot.on_group_message(keywords=['功能'])
 async def _(data: Message):
-    return Chain(data).text('博士，这是阿米娅的功能指引\nhttps://www.amiyabot.com/blog/function.html')
+    text = [
+        '博士，这是阿米娅的功能指引',
+        'https://www.amiyabot.com/blog/function.html',
+        '如需获得更多帮助，请访问官方网站',
+        'https://www.amiyabot.com',
+        '或加入官方交流群 362165038',
+    ]
+    return Chain(data).text('\n'.join(text))
 
 
 @bot.on_group_message(keywords=['代码', '源码'])
