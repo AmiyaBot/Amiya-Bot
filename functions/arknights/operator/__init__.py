@@ -21,7 +21,7 @@ class LoopBreak(Exception):
         return self.index, self.name
 
 
-def search_info(words: list, source_keys: list = None):
+def search_info(words: list, source_keys: list = None, text: str = ''):
     info_source = {
         'name': [OperatorInfo.operator_map, OperatorInfo.operator_list],
         'level': [InitData.skill_level_list],
@@ -36,6 +36,11 @@ def search_info(words: list, source_keys: list = None):
     info_key = list(info_source.keys()) if not source_keys else source_keys
 
     words = [n.lower() for n in copy.deepcopy(words)]
+
+    if 'name' in info_key and text:
+        for name in OperatorInfo.operator_one_char_list:
+            if name in text:
+                info.name = name
 
     while True:
         try:
@@ -77,18 +82,18 @@ def search_info(words: list, source_keys: list = None):
 
 
 async def level_up(data: Message):
-    info = search_info(data.text_cut, source_keys=['level', 'skill_index'])
+    info = search_info(data.text_cut, source_keys=['level', 'skill_index'], text=data.text)
     return bool(info.level) or any_match(data.text, ['精英', '专精']), 2
 
 
 async def operator(data: Message):
-    info = search_info(data.text_cut, source_keys=['name'])
+    info = search_info(data.text_cut, source_keys=['name'], text=data.text)
     return bool(info.name), 2 if info.name != '阿米娅' else 0
 
 
 @bot.on_group_message(function_id='checkOperator', keywords=['皮肤', '立绘'], level=2)
 async def _(data: Message):
-    info = search_info(data.text_cut, source_keys=['skin_key', 'name'])
+    info = search_info(data.text_cut, source_keys=['skin_key', 'name'], text=data.text)
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
@@ -141,7 +146,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='checkOperator', keywords=['模组'], level=2)
 async def _(data: Message):
-    info = search_info(data.text_cut, source_keys=['name'])
+    info = search_info(data.text_cut, source_keys=['name'], text=data.text)
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
@@ -162,7 +167,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='checkOperator', keywords=['语音'], level=2)
 async def _(data: Message):
-    info = search_info(data.text_cut, source_keys=['voice_key', 'name'])
+    info = search_info(data.text_cut, source_keys=['voice_key', 'name'], text=data.text)
     cn = '中文' in data.text
 
     if not info.name:
@@ -219,7 +224,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='checkOperator', keywords=['档案', '资料'], level=2)
 async def _(data: Message):
-    info = search_info(data.text_cut, source_keys=['story_key', 'name'])
+    info = search_info(data.text_cut, source_keys=['story_key', 'name'], text=data.text)
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
@@ -289,7 +294,7 @@ async def _(data: Message):
 
         return Chain(data).text(text) if count else Chain(data).text(f'博士，{date_str}没有干员生日')
 
-    info = search_info(data.text_cut, source_keys=['name'])
+    info = search_info(data.text_cut, source_keys=['name'], text=data.text)
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
@@ -309,7 +314,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='checkOperator', verify=level_up)
 async def _(data: Message):
-    info = search_info(data.text_cut, source_keys=['level', 'skill_index', 'name'])
+    info = search_info(data.text_cut, source_keys=['level', 'skill_index', 'name'], text=data.text)
 
     if not info.name:
         wait = await data.waiting(Chain(data).text('博士，请说明需要查询的干员名'))
@@ -343,7 +348,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='checkOperator', verify=operator)
 async def _(data: Message):
-    info = search_info(data.text_cut, source_keys=['name'])
+    info = search_info(data.text_cut, source_keys=['name'], text=data.text)
 
     result = OperatorData.get_detail_info(info)
 

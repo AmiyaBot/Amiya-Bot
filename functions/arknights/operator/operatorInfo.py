@@ -20,6 +20,7 @@ class OperatorInfo:
     operator_keywords = []
     operator_list = []
     operator_map = {}
+    operator_one_char_list = []
 
     @staticmethod
     @exec_before_init
@@ -47,6 +48,9 @@ class OperatorInfo:
 
             OperatorInfo.operator_list.append(name)
             OperatorInfo.operator_map[e_name] = name
+
+            if len(name) == 1:
+                OperatorInfo.operator_one_char_list.append(name)
 
             skills = item.skills()[0]
 
