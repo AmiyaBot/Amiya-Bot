@@ -82,7 +82,7 @@ async def _(data: Message):
         'https://www.amiyabot.com',
         '或加入官方交流群 362165038',
     ]
-    return Chain(data).text('\n'.join(text))
+    return Chain(data).text('\n'.join(text), auto_convert=False)
 
 
 @bot.on_group_message(keywords=['代码', '源码'])
