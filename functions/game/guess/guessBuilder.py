@@ -168,7 +168,7 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
             start = random.randint(0, len(section) - 5)
             story = '。'.join(section[start:start + 5])
 
-        ask.text(story)
+        ask.text(story, auto_convert=False)
 
     await data.send(ask)
 

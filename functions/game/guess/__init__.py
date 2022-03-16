@@ -50,7 +50,7 @@ async def _(data: Message):
 
             text = Chain(data, quote=False).text(f'题目准备中...（{referee.count + 1}/{guess_config.questions}）')
             if referee.user_ranking:
-                text.text('\n').text(calc_rank(referee)[0])
+                text.text('\n').text(calc_rank(referee)[0], auto_convert=False)
 
             await data.send(text)
             await asyncio.sleep(2)
@@ -98,4 +98,4 @@ async def _(data: Message):
             rewards = int(guess_config.rewards.copper * level_rate * rewards_rate)
             text += f'第三名获得{rewards}合成玉；\n'
 
-    return Chain(data, quote=False).text('游戏结束').text('\n').text(text)
+    return Chain(data, quote=False).text('游戏结束').text('\n').text(text, auto_convert=False)
