@@ -119,7 +119,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', verify=only_name)
 async def _(data: Message):
-    return Chain(data, quote=False).image(random.choice(get_face()))
+    return Chain(data).image(random.choice(get_face()))
 
 
 @bot.on_group_message(function_id='user', verify=any_talk)
@@ -176,7 +176,7 @@ async def _(data: Message):
 async def _(data: Message):
     text = f'哼！Dr.{data.nickname}不许叫人家{random.choice(data.verify.keywords)}，不然人家要生气了！'
 
-    reply = Chain(data, at=True, quote=False).text(text)
+    reply = Chain(data, at=True).text(text)
     setattr(reply, 'feeling', -5)
 
     return reply
@@ -195,7 +195,7 @@ async def _(data: Message):
     if status['status']:
         text += status['text']
 
-    return Chain(data, at=True, quote=False).text(text)
+    return Chain(data, at=True).text(text)
 
 
 @bot.on_group_message(function_id='user', keywords=['晚安'], check_prefix=False)
@@ -280,7 +280,7 @@ async def _(data: Mirai.MemberJoinEvent):
         return False
 
     chain = custom_chain(data.member.id, data.member.group.id)
-    await websocket.send(chain.at().text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
+    await websocket.send(chain.at(enter=True).text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
 
 
 @bot.on_event(Mirai.BotJoinGroupEvent)
@@ -312,7 +312,7 @@ async def _(data: Message):
     user: UserInfo = UserInfo.get_user(data.user_id)
     if user.user_mood <= 0:
         await websocket.send(
-            custom_chain(data.user_id, data.group_id, data.type).at().text('哼~阿米娅生气了！不理博士！[face:38]')
+            custom_chain(data.user_id, data.group_id, data.type).at(enter=True).text('哼~阿米娅生气了！不理博士！[face:38]')
         )
         return False
     return True

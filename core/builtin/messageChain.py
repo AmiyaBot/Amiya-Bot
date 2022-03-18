@@ -15,7 +15,7 @@ MAX_SEAT = IMAGE_WIDTH - 50
 
 
 class Chain:
-    def __init__(self, data: Message, at: bool = False, quote: bool = True):
+    def __init__(self, data: Message, at: bool = False, quote: bool = False):
         """
         创建 Mirai 消息链
 
@@ -42,7 +42,7 @@ class Chain:
     def __str__(self):
         return f'{self.command}: {self.target}'
 
-    def at(self, user: int = None, enter: bool = True):
+    def at(self, user: int = None, enter: bool = False):
         self.chain.append({
             'type': 'At',
             'target': user or self.data.user_id
@@ -170,4 +170,4 @@ def custom_chain(user_id: int = 0, group_id: int = 0, msg_type: str = 'group') -
     data.user_id = user_id
     data.group_id = group_id
 
-    return Chain(data, quote=False)
+    return Chain(data)

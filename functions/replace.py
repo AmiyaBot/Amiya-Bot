@@ -80,7 +80,7 @@ async def _(data: Message):
             return Chain(data).text(text)
 
         # 开始审核...
-        await data.send(Chain(data, quote=False).text('正在审核，博士请稍等...'))
+        await data.send(Chain(data).text('正在审核，博士请稍等...'))
 
         # 检查原生词语和设置禁止的词语，禁止使用数字替换词
         forbidden = check_forbidden(replace, origin)

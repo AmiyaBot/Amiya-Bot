@@ -95,6 +95,6 @@ async def _():
             text = f'博士！博士！您的理智已经满 {item.full_num} 了，快点上线查看吧～'
 
             data = custom_chain(int(item.user_id), int(item.group_id), item.message_type)
-            data.at().text(text)
+            data.at(enter=True).text(text)
 
             await websocket.send(data)

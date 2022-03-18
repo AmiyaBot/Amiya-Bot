@@ -189,14 +189,14 @@ async def _(data: Message):
             if not baidu.enable:
                 return None
 
-            wait = await data.waiting(Chain(data, at=True, quote=False).text('博士，请发送您的公招界面截图~'), force=True)
+            wait = await data.waiting(Chain(data, at=True).text('博士，请发送您的公招界面截图~'), force=True)
 
             if wait and wait.image:
                 return Chain(wait).text(
                     await Recruit.action(await get_ocr_result(wait.image[0]), ocr=True)
                 )
             else:
-                return Chain(data, at=True, quote=False).text('博士，您没有发送图片哦~')
+                return Chain(data, at=True).text('博士，您没有发送图片哦~')
 
 
 @bot.on_group_message(function_id='recruit', verify=auto_discern, check_prefix=False)
