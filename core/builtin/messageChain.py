@@ -11,11 +11,12 @@ from core.builtin.resourceManager import ResourceManager
 config = read_yaml('config/private/bot.yaml')
 
 IMAGE_WIDTH = 700
-MAX_SEAT = IMAGE_WIDTH - 50
+PADDING = 10
+MAX_SEAT = IMAGE_WIDTH - PADDING * 2
 
 
 class Chain:
-    def __init__(self, data: Message, at: bool = False, quote: bool = False):
+    def __init__(self, data: Message, at: bool = True, quote: bool = False):
         """
         创建 Mirai 消息链
 
@@ -37,7 +38,7 @@ class Chain:
             if data.user_id and quote:
                 self.quote = True
             if data.user_id and at:
-                self.at()
+                self.at(enter=True)
 
     def __str__(self):
         return f'{self.command}: {self.target}'
@@ -93,14 +94,20 @@ class Chain:
             return self.text('\n')
         return self
 
-    def text_image(self, text, images: IMAGES_TYPE = None):
+    def text_image(self,
+                   text,
+                   images: IMAGES_TYPE = None,
+                   width: int = None,
+                   height: int = None):
         logo = [
-            ImageElem('resource/style/rabbit.png', size=30, pos=(IMAGE_WIDTH - 30, 0))
+            ImageElem('resource/style/rabbit.png', size=20, pos=(-20, 0))
         ]
         return self.image(target=create_image(text,
-                                              width=IMAGE_WIDTH,
-                                              max_seat=MAX_SEAT,
                                               images=(images or []) + logo,
+                                              width=width,
+                                              height=height,
+                                              padding=PADDING,
+                                              max_seat=MAX_SEAT,
                                               bgcolor='#F5F5F5'))
 
     def image(self, target: Union[str, bytes, List[Union[str, bytes]]]):
@@ -163,7 +170,17 @@ class Chain:
         yield self
 
 
-def custom_chain(user_id: int = 0, group_id: int = 0, msg_type: str = 'group') -> Chain:
+def custom_chain(user_id: int = 0,
+                 group_id: int = 0,
+                 msg_type: str = 'group') -> Chain:
+    """
+    自定义消息体，可以在没有 Message 对象的场景下使用
+
+    :param user_id:  用户ID
+    :param group_id: 群组ID
+    :param msg_type: 消息类型
+    :return:         Chain 对象
+    """
     data = Message()
 
     data.type = msg_type

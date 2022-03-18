@@ -16,7 +16,6 @@ skill_images_source = 'resource/gamedata/skill/'
 side_padding = 10
 line_height = 16
 icon_size = 34
-max_seat = MAX_SEAT - 20
 
 
 class OperatorData:
@@ -175,7 +174,8 @@ class OperatorData:
 
         if result:
             text += '【7级技能】\n\n'
-            top = TextParser(text, max_seat).line * line_height + int(line_height / 2) + side_padding
+            top = TextParser(text, MAX_SEAT).line * line_height + int(line_height / 2) + side_padding
+
             content, skill_icons = cls.build_skill_content(result, top)
 
             text += content
@@ -257,7 +257,7 @@ class OperatorData:
                 content += '%s\n\n' % item['description'].replace('\\\\n', '\n')
                 text += content
 
-                y += TextParser(content, max_seat).line * line_height
+                y += TextParser(content, MAX_SEAT).line * line_height
 
         for index, item in enumerate(skill_images):
             if os.path.exists(item):
@@ -361,7 +361,7 @@ class OperatorData:
             text += '[解锁材料]'
             if item['itemCost']:
                 text += '\n\n'
-                i = TextParser(text, max_seat).line * line_height + side_padding + int(
+                i = TextParser(text, MAX_SEAT).line * line_height + side_padding + int(
                     (line_height * 3 - icon_size) / 2)
                 for cost in item['itemCost']:
                     material = materials[cost['id']]

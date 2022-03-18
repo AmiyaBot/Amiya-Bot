@@ -119,7 +119,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', verify=only_name)
 async def _(data: Message):
-    return Chain(data).image(random.choice(get_face()))
+    return Chain(data, at=False).image(random.choice(get_face()))
 
 
 @bot.on_group_message(function_id='user', verify=any_talk)
@@ -243,10 +243,10 @@ async def _(data: Message):
 
     text += f'累计抽卡数：%s\n' % gacha['count']
     text += f'BOX干员数：%s\n' % gacha['box_num']
-    text += f'  --  6星干员数：%s (%s)\n' % tuple(gacha['rarity_6'])
-    text += f'  --  5星干员数：%s (%s)\n' % tuple(gacha['rarity_5'])
-    text += f'  --  4星干员数：%s (%s)\n' % tuple(gacha['rarity_4'])
-    text += f'  --  3星干员数：%s (%s)\n' % tuple(gacha['rarity_3'])
+    text += f'  --  6星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_6'])
+    text += f'  --  5星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_5'])
+    text += f'  --  4星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_4'])
+    text += f'  --  3星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_3'])
 
     voice_list = []
     for item in talking.stage:

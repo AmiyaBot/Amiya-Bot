@@ -1,5 +1,6 @@
 import re
 import os
+import math
 
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
@@ -34,6 +35,7 @@ class TextParser:
         self.text = text
         self.color = color
         self.max_seat = max_seat
+        self.width_seat = 0
         self.line = 0
 
         self.char_list: List[CharElem] = []
@@ -66,6 +68,9 @@ class TextParser:
 
             length += self.__font_seat(char)[0]
             sub_text += char
+
+            if length > self.width_seat:
+                self.width_seat = length
 
             is_end = idx == len(text) - 1
             if length >= self.max_seat or char == '\n' or is_end:
@@ -124,14 +129,23 @@ def create_image(text: str = '',
     :param images:      插入的图片列表，内容为 ImageElem 对象
     :return:            图片路径
     """
-    text = TextParser(text, (max_seat or width) - padding * 2, color, font_size)
-    image = Image.new('RGB', (width, height or ((text.line + 2) * line_height)), bgcolor)
+    # 计算最大占位
+    max_seat = max_seat or ((width - padding * 2) if width else math.inf)
+
+    # 解析文本
+    text_obj = TextParser(text, max_seat, color, font_size)
+
+    # 自适应宽度
+    width = width or (text_obj.width_seat + padding * 2 + 50)
+
+    # 创建图片
+    image = Image.new('RGB', (width, height or ((text_obj.line + 2) * line_height)), bgcolor)
     draw = ImageDraw.Draw(image)
 
     row = 0
     col = padding
-    for line, item in enumerate(text.char_list):
-        draw.text((col, padding + row * line_height), item.text, font=text.font, fill=item.color)
+    for line, item in enumerate(text_obj.char_list):
+        draw.text((col, padding + row * line_height), item.text, font=text_obj.font, fill=item.color)
         col += item.width
         if item.enter:
             row += 1
@@ -143,17 +157,20 @@ def create_image(text: str = '',
                 item = ImageElem(**item)
             if os.path.exists(item.path) is False:
                 continue
+
             img = Image.open(item.path).convert('RGBA')
 
-            pos = list(item.pos)
-            width = int(item.size * (img.width / img.height))
-            height = item.size
-            offset = (height - width) / 2
+            pos = [int(n if n >= 0 else width + n) for n in item.pos]
+
+            item_width = int(item.size * (img.width / img.height))
+            item_height = item.size
+
+            offset = (item_height - item_width) / 2
             if offset:
                 pos[0] += int(offset)
 
-            img = img.resize(size=(width, height))
-            image.paste(img, box=tuple(pos), mask=img)
+            img = img.resize(size=(item_width, item_height))
+            image.paste(img, box=(pos[0], pos[1]), mask=img)
 
     container = BytesIO()
     image.save(container, format='PNG')
