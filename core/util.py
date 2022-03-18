@@ -4,6 +4,7 @@ import time
 import yaml
 import jieba
 import jionlp
+import shutil
 import string
 import random
 import difflib
@@ -217,6 +218,12 @@ def char_seat(char):
 
 def text_to_pinyin(text: str):
     return ''.join([item[0] for item in pypinyin.pinyin(text, style=pypinyin.NORMAL)]).lower()
+
+
+def remove_dir(path: str):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    return path
 
 
 def remove_punctuation(text: str):

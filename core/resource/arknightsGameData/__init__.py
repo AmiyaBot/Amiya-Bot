@@ -1,12 +1,11 @@
 import os
 import re
-import shutil
 import zipfile
 
 from typing import List, Dict, Tuple
 from core.network.download import download_sync, download_async
 from core.resource import resource_config
-from core.util import Singleton, remove_xml_tag, remove_punctuation, create_dir, sorted_dict
+from core.util import Singleton, remove_xml_tag, remove_punctuation, create_dir, sorted_dict, remove_dir
 from core import log
 
 from .common import ArknightsConfig, JsonData
@@ -261,7 +260,7 @@ class ArknightsGameDataResource:
     def unpack_gamedata_files(cls, path):
         log.info(f'unpacking {path}...')
 
-        shutil.rmtree(gamedata_path)
+        remove_dir(gamedata_path)
         create_dir(gamedata_path)
 
         pack = zipfile.ZipFile(path)
