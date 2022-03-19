@@ -5,6 +5,7 @@ import time
 from typing import Union
 from core import bot, websocket, http, Message, Chain, Mirai
 from core.util import TimeRecorder, random_code, any_match
+from core.resource.arknightsGameData.common import GachaConfig
 from core.network.download import download_async
 from core.database.group import Group, GroupActive
 from core.database.user import Admin, User
@@ -146,6 +147,8 @@ async def _(data: Message):
                 Pool.batch_insert(res['Pool'])
                 PoolSpOperator.truncate_table()
                 PoolSpOperator.batch_insert(res['PoolSpOperator'])
+                GachaConfig.truncate_table()
+                GachaConfig.batch_insert(res['GachaConfig'])
 
                 await data.send(Chain(data).text(f'同步成功。'))
             else:

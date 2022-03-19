@@ -125,7 +125,8 @@ class Pool:
     async def _get_gacha_pool(cls):
         return response(data={
             'Pool': query_to_list(PoolBase.select()),
-            'PoolSpOperator': query_to_list(PoolSpOperator.select())
+            'PoolSpOperator': query_to_list(PoolSpOperator.select()),
+            'GachaConfig': query_to_list(GachaConfig.select())
         })
 
 
