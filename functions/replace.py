@@ -1,4 +1,3 @@
-import re
 import time
 
 from core.database.group import *

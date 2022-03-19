@@ -1,14 +1,19 @@
-import os
 import re
+import json
 import time
 
 from typing import Union
 from core import bot, websocket, http, Message, Chain, Mirai
 from core.util import TimeRecorder, random_code, any_match
+from core.network.download import download_async
 from core.database.group import Group, GroupActive
 from core.database.user import Admin, User
 from core.control import StateControl
 from core.config import config
+
+from functions.arknights.gacha.gacha import Pool, PoolSpOperator
+
+official_console = 'http://console.amiyabot.com'
 
 
 async def mute(data: Message):
@@ -124,6 +129,27 @@ async def _(data: Message):
         Group.truncate_table()
         Group.batch_insert(group_list)
         await data.send(Chain(data).text(f'同步完成，共 {len(group_list)} 个群。'))
+
+
+@bot.on_private_message(keywords=bot.equal('同步卡池'))
+async def _(data: Message):
+    if data.is_admin:
+        confirm = await data.waiting(Chain(data).text('同步将使用官方DEMO的卡池数据覆盖现有设置，回复"确认"开始同步。'))
+        if confirm.text == '确认':
+            await data.send(Chain(data).text(f'开始同步'))
+
+            res = await download_async(official_console + '/pool/getGachaPool', stringify=True)
+            if res:
+                res = json.loads(res)['data']
+
+                Pool.truncate_table()
+                Pool.batch_insert(res['Pool'])
+                PoolSpOperator.truncate_table()
+                PoolSpOperator.batch_insert(res['PoolSpOperator'])
+
+                await data.send(Chain(data).text(f'同步成功。'))
+            else:
+                await data.send(Chain(data).text(f'同步失败，数据请求失败。'))
 
 
 @bot.on_event(Mirai.BotInvitedJoinGroupRequestEvent)

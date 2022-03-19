@@ -70,8 +70,6 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
         else:
             waiting_target = data.user_id
 
-        print(wait_events.bucket)
-
         # 寻找是否存在等待事件
         if data.group_id in wait_events:
             waiting = wait_events[data.group_id]

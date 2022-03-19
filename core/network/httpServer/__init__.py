@@ -2,6 +2,7 @@ import os
 import asyncio
 import uvicorn
 
+from typing import Dict, Callable
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,12 +27,18 @@ class HttpServer:
         """
         for cls in controllers:
             attrs = [item for item in dir(cls) if not item.startswith('__')]
-            methods = {n: getattr(cls, n) for n in attrs}
+            methods: Dict[str, Callable] = {n: getattr(cls, n) for n in attrs}
 
             cname = cls.__name__[0].lower() + cls.__name__[1:]
 
             for name, func in methods.items():
-                router = self.app.post(path=f'/{cname}/{snake_case_to_pascal_case(name)}', tags=[cname.title()])
+                method = 'post'
+                if name.startswith('_'):
+                    method = 'get'
+
+                router_builder = getattr(self.app, method)
+                router = router_builder(path=f'/{cname}/{snake_case_to_pascal_case(name.strip("_"))}',
+                                        tags=[cname.title()])
                 router(func)
 
         self.app.post(AuthManager.login_url, tags=['Auth'])(AuthManager.login)

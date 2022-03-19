@@ -3,7 +3,7 @@ from fastapi import File, UploadFile
 from core.util import create_dir
 from core.network import response
 from core.network.httpServer.auth import AuthManager
-from core.database import SearchParams, select_for_paginate, model_to_dict
+from core.database import SearchParams, select_for_paginate, model_to_dict, query_to_list
 from core.resource.arknightsGameData import ArknightsGameData
 from core.resource.arknightsGameData.common import GachaConfig
 
@@ -120,6 +120,13 @@ class Pool:
             f.write(content)
 
         return response(data={'filename': file.filename}, message='上传成功')
+
+    @classmethod
+    async def _get_gacha_pool(cls):
+        return response(data={
+            'Pool': query_to_list(PoolBase.select()),
+            'PoolSpOperator': query_to_list(PoolSpOperator.select())
+        })
 
 
 class Operator:

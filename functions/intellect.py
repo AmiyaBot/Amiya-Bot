@@ -1,4 +1,3 @@
-import re
 import time
 
 from core import bot, websocket, Message, Chain, custom_chain
