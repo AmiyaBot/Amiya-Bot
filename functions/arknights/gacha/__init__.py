@@ -37,11 +37,11 @@ def change_pool(item: Pool, user_id=None):
         f'{"所有" if not user_id else ""}博士的卡池已切换为{"【限定】" if item.limit_pool != 0 else ""}【{item.pool_name}】\n'
     ]
     if item.pickup_6:
-        text.append('[★★★★★★] %s' % item.pickup_6.replace(',', '、'))
+        text.append('[[cl ★★★★★★@#FF4343 cle]] %s' % item.pickup_6.replace(',', '、'))
     if item.pickup_5:
-        text.append('[★★★★★　] %s' % item.pickup_5.replace(',', '、'))
+        text.append('[[cl ★★★★★@#FEA63A cle]　] %s' % item.pickup_5.replace(',', '、'))
     if item.pickup_4:
-        text.append('[☆☆☆☆　　] %s' % item.pickup_4.replace(',', '、'))
+        text.append('[[cl ☆☆☆☆@#A288B5 cle]　　] %s' % item.pickup_4.replace(',', '、'))
 
     return '\n'.join(text)
 
