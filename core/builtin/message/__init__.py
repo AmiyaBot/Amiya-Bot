@@ -99,7 +99,13 @@ class Message:
         await self.operation.send(reply)
 
     async def waiting(self, reply=None, max_time: int = 30, force: bool = False, target: str = 'user'):
-        target_id = self.group_id if target == 'group' else self.user_id
+        if target == 'group':
+            target_id = self.group_id
+        else:
+            if self.group_id:
+                target_id = f'{self.group_id}_{self.user_id}'
+            else:
+                target_id = self.user_id
 
         wid = await wait_events.set_wait(target_id, force, target)
 

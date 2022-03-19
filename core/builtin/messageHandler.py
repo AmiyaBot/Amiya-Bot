@@ -65,12 +65,18 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
             data = await BotHandlers.message_handler_middleware(data) or data
 
         waiting: Optional[WaitEvent] = None
+        if data.group_id:
+            waiting_target = f'{data.group_id}_{data.user_id}'
+        else:
+            waiting_target = data.user_id
+
+        print(wait_events.bucket)
 
         # 寻找是否存在等待事件
         if data.group_id in wait_events:
             waiting = wait_events[data.group_id]
-        if data.user_id in wait_events:
-            waiting = wait_events[data.user_id]
+        if waiting_target in wait_events:
+            waiting = wait_events[waiting_target]
 
         # 若存在等待事件并且等待事件设置了强制等待，则直接进入事件
         if waiting and waiting.force:
