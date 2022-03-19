@@ -123,11 +123,16 @@ class Pool:
 
     @classmethod
     async def _get_gacha_pool(cls):
-        return response(data={
+        data = {
             'Pool': query_to_list(PoolBase.select()),
             'PoolSpOperator': query_to_list(PoolSpOperator.select()),
             'GachaConfig': query_to_list(GachaConfig.select())
-        })
+        }
+
+        for item in data['PoolSpOperator']:
+            item['pool_id'] = item['pool_id']['id']
+
+        return response(data=data)
 
 
 class Operator:
