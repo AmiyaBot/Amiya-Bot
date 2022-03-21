@@ -8,7 +8,7 @@ from core.network import WSOperation
 from core.database.messages import MessageRecord
 from core.builtin.message import WaitEventCancel
 from core.builtin.messageChain import Chain, custom_chain
-from core.builtin.message.mirai import Mirai
+from core.builtin.message.mirai import mirai_message_formatter
 from core.builtin.messageHandler import message_handler
 from core.control import StateControl
 from core.config import config
@@ -101,7 +101,7 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
                     chain.text('启动完毕')
                 return False
 
-            message_data = Mirai.mirai_message_formatter(account, data, self)
+            message_data = mirai_message_formatter(account, data, self)
             if message_data:
                 await message_handler(message_data, self)
 

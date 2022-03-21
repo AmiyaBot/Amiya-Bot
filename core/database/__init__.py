@@ -57,7 +57,7 @@ class SearchParams:
 
 def table(cls: ModelClass) -> Any:
     database: Database = cls._meta.database
-    migrator: SchemaMigrator = MySQLMigrator(cls._meta.database) if is_mysql else SqliteMigrator(cls._meta.database)
+    migrator: SchemaMigrator = SchemaMigrator.from_database(cls._meta.database)
 
     table_name = pascal_case_to_snake_case(cls.__name__)
 

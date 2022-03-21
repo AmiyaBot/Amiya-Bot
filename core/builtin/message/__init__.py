@@ -158,20 +158,21 @@ class MessageMatch:
 
 
 class Event:
-    def __init__(self, event_name, event_message):
+    def __init__(self, event_name, data):
         """
-        事件的处理接口类
+        事件处理
 
-        :param event_message: 原消息对象
+        :param event_name: 事件名
+        :param data:       事件数据
         """
-        self.event_message = event_message
         self.event_name = event_name
+        self.data = data
 
     def __str__(self):
         return self.event_name
 
     def __repr__(self):
-        return f'<Event, {self.event_message}>'
+        return f'<Event, {self.event_name}>'
 
     def handle(self, *args, **kwargs):
         pass
