@@ -97,14 +97,14 @@ def calc_rank(cls: GuessReferee):
 
 
 async def guess_start(data: Message, operator: Operator, level: str, title: str, level_rate: int):
-    ask = Chain(data).text(f'博士，这是哪位干员的{title}呢，请发送干员名猜一猜吧！').text('\n')
+    ask = Chain(data, at=False).text(f'博士，这是哪位干员的{title}呢，请发送干员名猜一猜吧！').text('\n')
 
     if level == '初级':
         skin = random.choice(operator.skins())
         skin_path = await ArknightsGameDataResource.get_skin_file(operator, skin)
 
         if not skin_path:
-            await data.send(Chain(data).text('非常抱歉博士，立绘下载失败。本次游戏结束~[face:9]'))
+            await data.send(Chain(data, at=False).text('非常抱歉博士，立绘下载失败。本次游戏结束~[face:9]'))
             return GuessResult(GuessStatus.systemClose)
         else:
             img = Image.open(skin_path)
@@ -150,7 +150,7 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
         ask.text('\n\n语音：').text(voice['voice_text'].replace(operator.name, 'XXX'))
 
         if not voice_path:
-            await data.send(Chain(data).text('非常抱歉博士，语音文件下载失败。本次游戏结束~[face:9]'))
+            await data.send(Chain(data, at=False).text('非常抱歉博士，语音文件下载失败。本次游戏结束~[face:9]'))
             return GuessResult(GuessStatus.systemClose)
         else:
             ask.voice(voice_path)
@@ -160,7 +160,7 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
         if not stories:
             return GuessResult()
 
-        stories = [n for n in stories if n['story_title'] not in ['基础档案', '综合体检测试']]
+        stories = [n for n in stories if n['story_title'] not in ['基础档案', '综合体检测试', '综合性能检测结果', '临床诊断分析']]
         story = random.choice(stories)['story_text'].replace(operator.name, 'XXX')
         section = story.split('。')
 
@@ -192,12 +192,12 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
         answer = await data.waiting(force=True, target='group', max_time=60)
 
         if not answer:
-            await data.send(Chain(data).text(f'答案是{operator.name}，没有博士回答吗？那游戏结束咯~'))
+            await data.send(Chain(data, at=False).text(f'答案是{operator.name}，没有博士回答吗？那游戏结束咯~'))
             result.status = GuessStatus.systemClose
             return result
 
         if any_match(answer.text, ['下一题', '放弃', '跳过']):
-            await data.send(Chain(data).text(f'答案是{operator.name}，结算奖励-10%'))
+            await data.send(Chain(data, at=False).text(f'答案是{operator.name}，结算奖励-10%'))
             set_point(result, answer.user_id, -10)
             result.answer = answer
             result.status = GuessStatus.userSkip
@@ -206,14 +206,14 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
         if any_match(answer.text, ['不知道', '提示']):
             if tips:
                 text = f'{answer.nickname} 使用了提示，结算奖励-2%'
-                await data.send(Chain(data).text(text).text('\n').text(random_pop(tips)))
+                await data.send(Chain(data, at=False).text(text).text('\n').text(random_pop(tips)))
                 set_point(result, answer.user_id, -2)
             else:
-                await data.send(Chain(data).text('没有更多提示了~'))
+                await data.send(Chain(data, at=False).text('没有更多提示了~'))
             continue
 
         if any_match(answer.text, ['不玩了', '结束']):
-            await data.send(Chain(answer).text(f'答案是{operator.name}，游戏结束~'))
+            await data.send(Chain(answer, at=False).text(f'答案是{operator.name}，游戏结束~'))
             result.status = GuessStatus.userClose
             return result
 
@@ -223,7 +223,7 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
         if answer.text == operator.index_name:
             rewards = int(guess_config.rewards.bingo * level_rate * (100 + result.total_point) / 100)
 
-            await data.send(Chain(answer).text(f'回答正确！分数+1，合成玉+{rewards}'))
+            await data.send(Chain(answer, at=False).text(f'回答正确！分数+1，合成玉+{rewards}'))
 
             result.answer = answer
             result.status = GuessStatus.bingo
@@ -231,8 +231,8 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
         else:
             count += 1
             if count >= max_count:
-                await data.send(Chain(data).text(f'机会耗尽，答案是{operator.name}，结算奖励-5%'))
+                await data.send(Chain(data, at=False).text(f'机会耗尽，答案是{operator.name}，结算奖励-5%'))
                 set_point(result, 0, -5)
                 return result
             else:
-                await data.send(Chain(answer).text(f'不对哦，博士。请再猜猜吧~（{count}/{max_count}）'))
+                await data.send(Chain(answer, at=False).text(f'不对哦，博士。请再猜猜吧~（{count}/{max_count}）'))

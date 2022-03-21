@@ -48,7 +48,7 @@ async def _(data: Message):
         if curr != referee.count:
             curr = referee.count
 
-            text = Chain(data).text(f'题目准备中...（{referee.count + 1}/{guess_config.questions}）')
+            text = Chain(data, at=False).text(f'题目准备中...（{referee.count + 1}/{guess_config.questions}）')
             if referee.user_ranking:
                 text.text('\n').text(calc_rank(referee)[0], auto_convert=False)
 
@@ -81,7 +81,7 @@ async def _(data: Message):
             break
 
     if referee.count < guess_config.finish_min:
-        return Chain(data).text(f'游戏结束，本轮共进行了{referee.count}次竞猜，不进行结算')
+        return Chain(data, at=False).text(f'游戏结束，本轮共进行了{referee.count}次竞猜，不进行结算')
 
     rewards_rate = (100 + (referee.total_point if referee.total_point > -90 else -90)) / 100
     text, reward_list = calc_rank(referee)
@@ -98,4 +98,4 @@ async def _(data: Message):
             rewards = int(guess_config.rewards.copper * level_rate * rewards_rate)
             text += f'第三名获得{rewards}合成玉；\n'
 
-    return Chain(data).text('游戏结束').text('\n').text(text, auto_convert=False)
+    return Chain(data, at=False).text('游戏结束').text('\n').text(text, auto_convert=False)
