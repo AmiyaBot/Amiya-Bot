@@ -325,7 +325,7 @@ class Mirai(BotEvents,
     pass
 
 
-def mirai_message_formatter(account: int, data: dict, operation: WSOperation) -> Union[Message, Event, None]:
+def mirai_message_formatter(account: int, data: dict, operation: WSOperation = None) -> Union[Message, Event, None]:
     """
     Mirai 消息解析
 

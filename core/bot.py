@@ -49,7 +49,7 @@ class Handler:
         self.level = level
 
     def __repr__(self):
-        return f'<Handler, {self.function_id}, {self.keywords}>'
+        return f'<Handler, {self.function_id}, {self.custom_verify or self.keywords}>'
 
     def __check(self, data: Message, obj: KEYWORDS) -> Verify:
         methods = {

@@ -16,7 +16,7 @@ websocket = WebsocketClient()
 init_task = []
 
 
-async def download_files():
+async def initialization():
     BotResource.download_bot_resource()
     BotResource.download_amiya_bot_console()
     ArknightsGameDataResource.download_gamedata_files()
@@ -32,7 +32,7 @@ def exec_before_init(coro):
 
 def init_core():
     return [
-        download_files(),
+        initialization(),
         http.init_session(),
         websocket.connect_websocket(),
         speed.clean_container(),
