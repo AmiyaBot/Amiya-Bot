@@ -136,7 +136,7 @@ async def _(data: Message):
 async def _(data: Message):
     if data.is_admin:
         confirm = await data.waiting(Chain(data).text('同步将使用官方DEMO的卡池数据覆盖现有设置，回复"确认"开始同步。'))
-        if confirm.text == '确认' and not confirm is None:
+        if confirm is not None and confirm.text == '确认':
             await data.send(Chain(data).text(f'开始同步'))
 
             res = await download_async(official_console + '/pool/getGachaPool', stringify=True)
