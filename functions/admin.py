@@ -50,8 +50,13 @@ async def _(data: Message):
     else:
         seconds = int(time.time()) - int(group_active.sleep_time)
         total = TimeRecorder.calc_time_total(seconds)
-
-        return Chain(data).text(f'阿米娅休息了{total}，博士需要的时候请让阿米娅工作吧。^_^')
+        if seconds > 60 and seconds < 21600:
+            return Chain(data, at=False).text('（阿米娅似乎已经睡着了...）')
+        else:
+            if seconds < 60:
+                return Chain(data).text('阿米娅已经下班啦，博士需要的时候请让阿米娅工作吧^_^')
+            else:
+                return Chain(data).text(f'阿米娅已经休息了{total}啦，博士需要的时候请让阿米娅工作吧\n^_^')
 
 
 @bot.on_group_message(function_id='admin', keywords=['工作', '上班'])
