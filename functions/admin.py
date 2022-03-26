@@ -70,7 +70,7 @@ async def _(data: Message):
         seconds = int(time.time()) - int(group_active.sleep_time)
         total = TimeRecorder.calc_time_total(seconds)
         text = '打卡上班啦~阿米娅%s休息了%s……' % ('才' if seconds < 600 else '一共', total)
-        if seconds < 600:
+        if seconds < 21600:
             text += '\n博士真是太过分了！哼~ >.<'
         else:
             text += '\n充足的休息才能更好的工作，博士，不要忘记休息哦 ^_^'
