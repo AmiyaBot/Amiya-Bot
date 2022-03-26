@@ -8,7 +8,7 @@ from core import bot
 
 @bot.on_group_message(function_id='guess', keywords=['猜干员'])
 async def _(data: Message):
-    if not data.is_group_admin:
+    if not data.is_group_admin and not data.is_admin:
         return Chain(data).text('抱歉博士，猜干员游戏暂时只能由管理员发起哦')
 
     level = {
