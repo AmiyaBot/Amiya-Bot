@@ -3,7 +3,7 @@ import time
 from core.database.group import *
 from core.database.bot import BotBaseModel
 from core.builtin.baiduCloud import BaiduCloud
-from core.builtin.message.mirai import text_convert
+from core.builtin.message.build import text_convert
 from core import bot, Message, Chain
 
 baidu = BaiduCloud()

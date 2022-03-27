@@ -18,9 +18,13 @@ BotHandlers.add_prefix(
 
 class Simulation(WSOperation, ABC):
     async def send(self, reply: Chain):
-        for item in reply.chain:
+        for item in reply.chain + reply.voice_list:
             if item['type'] == 'Plain':
-                print('text: ', item['text'])
+                print('text: ', item['text'].strip('\n'))
+
+            if item['type'] == 'Voice':
+                print('voice: ', item['path'])
+
             if item['type'] == 'Image':
                 if type(item['path']) is bytes:
                     png = f'fileStorage/test/{int(time.time())}.png'
@@ -29,6 +33,8 @@ class Simulation(WSOperation, ABC):
                     with open(png, mode='wb') as file:
                         file.write(item['path'])
                         print('image: ', png)
+                else:
+                    print('image: ', item['path'])
 
 
 async def test():
@@ -40,6 +46,8 @@ async def test():
     )
 
     await initialization()
+
+    log.info('testing ready, please input the message text.')
 
     while True:
         await asyncio.sleep(0)

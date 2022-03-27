@@ -124,7 +124,7 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='user', verify=any_talk)
 async def _(data: Message):
-    result = await baidu.emotion(data.text)
+    result = await baidu.emotion(data.text_initial)
     if result and 'items' in result and result['items']:
         item = result['items'][0]
         label = item['label']

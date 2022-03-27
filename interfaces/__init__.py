@@ -11,5 +11,6 @@ controllers = [
     Replace,
     Group,
     Pool,
-    User
+    User,
+    Bot,
 ]
