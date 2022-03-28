@@ -81,6 +81,9 @@ def get_user_box(user_id):
 def get_user_gacha_detail(user_id):
     box: OperatorBox = OperatorBox.get_or_none(user_id=user_id)
 
+    if not box:
+        return None
+
     count = 0
     rarity = {
         3: [0, 0],

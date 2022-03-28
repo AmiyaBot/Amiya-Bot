@@ -227,8 +227,6 @@ async def _(data: Message):
 async def _(data: Message):
     user: UserInfo = UserInfo.get_user(data.user_id)
 
-    gacha = get_user_gacha_detail(data.user_id)
-
     feeling = user.user_feeling if user.user_feeling <= 4000 else 4000
 
     text = '博士，这是您的个人信息\n\n'
@@ -241,12 +239,14 @@ async def _(data: Message):
     text += f'合成玉：{user.jade_point}\n'
     text += f'今日已获得：{user.jade_point_max}/{game.jade_point_max}\n\n'
 
-    text += f'累计抽卡数：%s\n' % gacha['count']
-    text += f'BOX干员数：%s\n' % gacha['box_num']
-    text += f'  --  6星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_6'])
-    text += f'  --  5星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_5'])
-    text += f'  --  4星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_4'])
-    text += f'  --  3星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_3'])
+    gacha = get_user_gacha_detail(data.user_id)
+    if gacha:
+        text += f'累计抽卡数：%s\n' % gacha['count']
+        text += f'BOX干员数：%s\n' % gacha['box_num']
+        text += f'  --  6星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_6'])
+        text += f'  --  5星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_5'])
+        text += f'  --  4星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_4'])
+        text += f'  --  3星干员数：%s (平均概率 %s)\n' % tuple(gacha['rarity_3'])
 
     voice_list = []
     for item in talking.stage:
