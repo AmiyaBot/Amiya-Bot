@@ -61,7 +61,7 @@ class User:
     async def edit_password(cls, items: EditPassword, auth=AuthManager.depends()):
         user_id = auth.user_id
         password = items.password
-        new_password = items.new_password
+        new_password = items.newPassword
 
         admin = Admin.get_or_none(user_id=user_id, password=password)
         if admin:

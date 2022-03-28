@@ -23,5 +23,6 @@ class AddCoupon(BaseModel):
 
 
 class EditPassword(BaseModel):
+    newPassword: str
+    newPasswordConfirm: str
     password: str
-    new_password: str
