@@ -1,3 +1,4 @@
+import re
 import time
 import asyncio
 
@@ -52,7 +53,7 @@ class Group:
         if where:
             where = 'where ' + ' and '.join(where)
 
-        sql = f'''
+        sql = re.sub(' +', ' ', f'''
         select g.group_id,
                g.group_name,
                g.permission,
@@ -60,11 +61,11 @@ class Group:
                g2.sleep_time,
                g3.send_notice,
                g3.send_weibo
-        from "group" g
+        from `group` g
                  left join group_active g2 on g.group_id = g2.group_id
                  left join group_setting g3 on g.group_id = g3.group_id
                   {where if where else ''} {order if order else ''}
-        '''.strip().replace('\n', ' ')
+        '''.strip().replace('\n', ' '))
 
         fields = [
             'group_id',
@@ -84,15 +85,16 @@ class Group:
         page = res[limit:offset]
 
         gid = ', '.join([n['group_id'] for n in page])
-        msg = messages.execute_sql(
-            f'select group_id, count(*) from message_record where group_id in ({gid}) group by group_id'
-        ).fetchall()
-        msg = {str(n[0]): n[1] for n in msg}
+        if gid:
+            msg = messages.execute_sql(
+                f'select group_id, count(*) from message_record where group_id in ({gid}) group by group_id'
+            ).fetchall()
+            msg = {str(n[0]): n[1] for n in msg}
 
-        for item in page:
-            item['message_num'] = 0
-            if item['group_id'] in msg:
-                item['message_num'] = msg[item['group_id']]
+            for item in page:
+                item['message_num'] = 0
+                if item['group_id'] in msg:
+                    item['message_num'] = msg[item['group_id']]
 
         return response({'count': len(res), 'data': page})
 
