@@ -280,7 +280,7 @@ async def _(data: Mirai.MemberJoinEvent):
         return False
 
     chain = custom_chain(data.member.id, data.member.group.id)
-    await websocket.send(chain.at(enter=True).text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
+    await websocket.send(chain.text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
 
 
 @bot.on_event(Mirai.BotJoinGroupEvent)
@@ -323,6 +323,9 @@ async def _(data: Chain):
     if data.command == 'sendGroupMessage':
         user_id = data.data.user_id
         feeling = 2
+
+        if not User.get_or_none(user_id=user_id):
+            return None
 
         if hasattr(data, 'feeling'):
             feeling = getattr(data, 'feeling')
