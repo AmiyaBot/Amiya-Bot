@@ -173,4 +173,9 @@ async def _(data: Message):
 
 @bot.on_group_message(function_id='gacha', keywords=['box'])
 async def _(data: Message):
-    return Chain(data).image(get_user_box(data.user_id))
+    res = get_user_box(data.user_id)
+
+    if type(res) is str:
+        return Chain(data).text(res)
+
+    return Chain(data).image(res)

@@ -6,15 +6,16 @@ from core.resource.arknightsGameData import ArknightsGameData, Operator
 
 
 @table
-class UserBox(UserBaseModel):
+class OperatorBox(UserBaseModel):
     user_id: str = CharField()
-    operator_name: str = CharField()
-    rarity: int = IntegerField()
-    count: int = IntegerField(default=1)
+    operator: str = TextField(default='')
 
 
 def get_user_box(user_id):
-    box: List[UserBox] = UserBox.select().where(UserBox.user_id == user_id)
+    box: OperatorBox = OperatorBox.get_or_none(user_id=user_id)
+
+    if not box or not box.operator:
+        return '博士，您尚未获得任何干员'
 
     operators = ArknightsGameData().operators
 
@@ -26,15 +27,17 @@ def get_user_box(user_id):
     }
     images = []
 
-    for item in box:
-        if item.operator_name in operators:
-            operator: Operator = operators[item.operator_name]
+    for item in box.operator.split('|'):
+        operator_name, rarity, count = tuple(item.split(':'))
+
+        if operator_name in operators:
+            operator: Operator = operators[operator_name]
 
             if operator.rarity in collect:
                 collect[operator.rarity].append(
                     {
                         'avatar': f'resource/gamedata/avatar/{operator.id}.png',
-                        'rank': f'resource/images/rank/{item.count if item.count <= 6 else 6}.png'
+                        'rank': f'resource/images/rank/{count if int(count) <= 6 else 6}.png'
                     }
                 )
 
@@ -76,7 +79,7 @@ def get_user_box(user_id):
 
 
 def get_user_gacha_detail(user_id):
-    box: List[UserBox] = UserBox.select().where(UserBox.user_id == user_id)
+    box: OperatorBox = OperatorBox.get_or_none(user_id=user_id)
 
     count = 0
     rarity = {
@@ -85,13 +88,16 @@ def get_user_gacha_detail(user_id):
         5: [0, 0],
         6: [0, 0]
     }
-    box_num = len(box)
+    operators = box.operator.split('|')
+    box_num = len(operators)
 
-    for item in box:
-        rarity[item.rarity][0] += 1
-        rarity[item.rarity][1] += item.count
+    for item in operators:
+        _, r, c = tuple(item.split(':'))
 
-        count += item.count
+        rarity[int(r)][0] += 1
+        rarity[int(r)][1] += int(c)
+
+        count += int(c)
 
     def rate(n):
         return f'{round(rarity[n][1] / count * 100, 2) if rarity[n][1] else 0}%'

@@ -11,7 +11,7 @@ from core.resource.arknightsGameData import ArknightsGameData
 
 from functions.user.userBase import UserInfo, UserGachaInfo
 
-from .box import UserBox
+from .box import OperatorBox
 
 line_height = 16
 side_padding = 10
@@ -341,31 +341,29 @@ class GachaForUser:
         return random.choice(operator_list)
 
     def set_box(self, result):
-        user_box: List[UserBox] = UserBox.select().where(UserBox.user_id == self.data.user_id)
-        box_map = {
-            n.operator_name: {
-                'user_id': n.user_id,
-                'operator_name': n.operator_name,
-                'rarity': n.rarity,
-                'count': n.count
-            } for n in user_box
-        }
+        user_box: OperatorBox = OperatorBox.get_or_create(user_id=self.data.user_id)[0]
+        box_map = {}
+
+        if user_box.operator:
+            for n in user_box.operator.split('|'):
+                n = n.split(':')
+                box_map[n[0]] = [
+                    n[0],
+                    int(n[1]),
+                    int(n[2])
+                ]
 
         for item in result:
             name = item['name']
 
             if name in box_map:
-                box_map[name]['count'] += 1
+                box_map[name][2] += 1
             else:
-                box_map[name] = {
-                    'user_id': self.data.user_id,
-                    'operator_name': name,
-                    'rarity': item['rarity'],
-                    'count': 1
-                }
+                box_map[name] = [name, item['rarity'], 1]
 
-        UserBox.delete().where(UserBox.user_id == self.data.user_id).execute()
-        UserBox.batch_insert([item for name, item in box_map.items()])
+        box_res = '|'.join([':'.join([str(i) for i in item]) for n, item in box_map.items()])
+
+        OperatorBox.update(operator=box_res).where(OperatorBox.user_id == self.data.user_id).execute()
 
 
 class GachaPool:
