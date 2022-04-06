@@ -18,8 +18,16 @@ class User(UserBaseModel):
 
 
 @table
+class Role(UserBaseModel):
+    role_name: str = CharField(null=True)
+    access_path: str = TextField(null=True)
+    active: int = IntegerField(default=1)
+
+
+@table
 class Admin(UserBaseModel):
     user_id = CharField(primary_key=True)
+    role_id: Role = ForeignKeyField(Role, db_column='role_id', on_delete='SET NULL', null=True)
     password = CharField()
     last_login = BigIntegerField(null=True)
     last_login_ip = CharField(null=True)

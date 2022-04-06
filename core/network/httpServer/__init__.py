@@ -11,12 +11,15 @@ from starlette.templating import Jinja2Templates
 from interfaces import controllers
 from core.util import snake_case_to_pascal_case
 from core.network.httpServer.auth import AuthManager
+from core.database.user import Role, Admin
 from core.config import config
 from core import log
 
 
 class HttpServer:
     def __init__(self):
+        self.__routes = []
+
         self.app = FastAPI()
         self.server = self.load_server()
         self.load_controllers()
@@ -36,10 +39,12 @@ class HttpServer:
                 if name.startswith('_'):
                     method = 'get'
 
+                router_path = f'/{cname}/' + snake_case_to_pascal_case(name.strip('_'))
                 router_builder = getattr(self.app, method)
-                router = router_builder(path=f'/{cname}/{snake_case_to_pascal_case(name.strip("_"))}',
-                                        tags=[cname.title()])
+                router = router_builder(path=router_path, tags=[cname.title()])
                 router(func)
+
+                self.__routes.append(router_path)
 
         self.app.post(AuthManager.login_url, tags=['Auth'])(AuthManager.login)
         self.app.post(AuthManager.token_url, tags=['Auth'])(AuthManager.token)
@@ -60,6 +65,25 @@ class HttpServer:
                                                     log_config='config/private/server.yaml'))
 
     async def serve(self):
+        if Role.get_or_none(id=1):
+            Role.update(access_path=','.join(self.__routes)).where(Role.id == 1).execute()
+        else:
+            Role.create(
+                id=1,
+                role_name='超级管理员',
+                access_path=','.join(self.__routes),
+                active=1
+            )
+
+        for item in config.admin.accounts:
+            if not Admin.get_or_none(user_id=item):
+                Admin.create(
+                    user_id=item,
+                    role_id=1,
+                    password='admin123',
+                    active=1
+                )
+
         if not os.path.exists('view'):
             await asyncio.sleep(5)
 

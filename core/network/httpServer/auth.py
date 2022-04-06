@@ -4,10 +4,51 @@ import passlib.handlers.bcrypt
 from typing import Union
 from datetime import timedelta
 from pydantic import BaseModel
-from fastapi import Depends, HTTPException
+from fastapi import Request, Depends, HTTPException
 from fastapi_login import LoginManager
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
 from core.database.user import Admin
+
+
+class LoginManagerHook(LoginManager):
+    def __init__(self, secret: str, token_url: str):
+        super().__init__(secret, token_url, custom_exception=HTTPException(
+            status_code=401,
+            detail='用户权限失效',
+            headers={'WWW-Authenticate': 'Bearer'}
+        ))
+
+    async def __call__(self, request: Request, security_scopes: SecurityScopes = None):
+        token = await self._get_token(request)
+
+        if token is None:
+            raise self.not_authenticated_exception
+
+        if security_scopes is not None and security_scopes.scopes:
+            if not self.has_scopes(token, security_scopes):
+                raise self.not_authenticated_exception
+
+        return await self.get_user(request, token)
+
+    async def get_user(self, request: Request, token: str):
+        payload = self._get_payload(token)
+
+        user_identifier = payload.get('sub')
+        if user_identifier is None:
+            raise self.not_authenticated_exception
+
+        user: Admin = await self._load_user(user_identifier)
+
+        if user is None or not user.role_id:
+            raise self.not_authenticated_exception
+
+        if request.url.path not in user.role_id.access_path.split(','):
+            raise HTTPException(
+                status_code=401,
+                detail='没有访问该接口的权限'
+            )
+
+        return user
 
 
 class AuthModel(BaseModel):
@@ -18,7 +59,7 @@ class AuthModel(BaseModel):
 class AuthManager:
     login_url = '/login'
     token_url = '/token'
-    manager = LoginManager(os.urandom(24).hex(), token_url=token_url)
+    manager = LoginManagerHook(os.urandom(24).hex(), token_url=token_url)
 
     @classmethod
     def depends(cls) -> Admin:

@@ -66,7 +66,7 @@ def table(cls: ModelClass) -> Any:
 
     description = database.execute_sql(f'select * from `{table_name}` limit 1').description
 
-    model_columns = [f for f, n in cls.__dict__.items() if type(n) is peewee.FieldAccessor]
+    model_columns = [f for f, n in cls.__dict__.items() if type(n) in [peewee.FieldAccessor, peewee.ForeignKeyAccessor]]
     table_columns = [n[0] for n in description]
 
     migrate_list = []
