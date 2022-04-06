@@ -13,17 +13,17 @@ from functions.arknights.gacha.gacha import Pool as PoolBase, PoolSpOperator
 
 class Pool:
     @classmethod
-    async def get_pools_by_pages(cls, items: PoolTable, auth=AuthManager.depends()):
+    async def get_pools_by_pages(cls, params: PoolTable, auth=AuthManager.depends()):
         search = SearchParams(
-            items.search,
+            params.search,
             contains=['limit_pool', 'pool_name']
         )
 
         data, count = select_for_paginate(PoolBase,
                                           search,
                                           order_by=(PoolBase.id.desc(),),
-                                          page=items.page,
-                                          page_size=items.pageSize)
+                                          page=params.page,
+                                          page_size=params.pageSize)
 
         data = {item['id']: item for item in data}
 
@@ -40,22 +40,22 @@ class Pool:
         return response({'count': count, 'data': [item for i, item in data.items()]})
 
     @classmethod
-    async def add_new_pool(cls, items: PoolInfo, auth=AuthManager.depends()):
-        check = PoolBase.get_or_none(pool_name=items.pool_name)
+    async def add_new_pool(cls, params: PoolInfo, auth=AuthManager.depends()):
+        check = PoolBase.get_or_none(pool_name=params.pool_name)
         if check:
             return response(message='卡池已存在')
 
         pool: PoolBase = PoolBase.create(
-            pickup_4=items.pickup_4,
-            pickup_5=items.pickup_5,
-            pickup_6=items.pickup_6,
-            pickup_s=items.pickup_s,
-            limit_pool=items.limit_pool,
-            pool_name=items.pool_name
+            pickup_4=params.pickup_4,
+            pickup_5=params.pickup_5,
+            pickup_6=params.pickup_6,
+            pickup_s=params.pickup_s,
+            limit_pool=params.limit_pool,
+            pool_name=params.pool_name
         )
 
         sp = []
-        for item in items.sp_list:
+        for item in params.sp_list:
             sp.append({
                 'pool_id': pool.id,
                 'operator_name': item.operator_name,
@@ -69,23 +69,23 @@ class Pool:
         return response(message='添加成功')
 
     @classmethod
-    async def edit_pool(cls, items: PoolInfo, auth=AuthManager.depends()):
-        pool: PoolBase = PoolBase.get_or_none(pool_name=items.pool_name)
+    async def edit_pool(cls, params: PoolInfo, auth=AuthManager.depends()):
+        pool: PoolBase = PoolBase.get_or_none(pool_name=params.pool_name)
         if not pool:
             return response(message='卡池不存在')
 
         PoolBase.update(
-            pickup_4=items.pickup_4,
-            pickup_5=items.pickup_5,
-            pickup_6=items.pickup_6,
-            pickup_s=items.pickup_s,
-            limit_pool=items.limit_pool
+            pickup_4=params.pickup_4,
+            pickup_5=params.pickup_5,
+            pickup_6=params.pickup_6,
+            pickup_s=params.pickup_s,
+            limit_pool=params.limit_pool
         ).where(
             PoolBase.id == pool.id
         ).execute()
 
         sp = []
-        for item in items.sp_list:
+        for item in params.sp_list:
             sp.append({
                 'pool_id': pool.id,
                 'operator_name': item.operator_name,
@@ -100,8 +100,8 @@ class Pool:
         return response(message='修改成功')
 
     @classmethod
-    async def del_pool(cls, items: PoolInfo, auth=AuthManager.depends()):
-        pool: PoolBase = PoolBase.get_or_none(pool_name=items.pool_name)
+    async def del_pool(cls, params: PoolInfo, auth=AuthManager.depends()):
+        pool: PoolBase = PoolBase.get_or_none(pool_name=params.pool_name)
         if not pool:
             return response(message='卡池不存在')
 
@@ -154,9 +154,9 @@ class Operator:
         return response(operators)
 
     @classmethod
-    async def get_operator_gacha_config(cls, items: GachaConfigTable, auth=AuthManager.depends()):
+    async def get_operator_gacha_config(cls, params: GachaConfigTable, auth=AuthManager.depends()):
         search = SearchParams(
-            items.search,
+            params.search,
             equal=['operator_type'],
             contains=['operator_name']
         )
@@ -164,39 +164,39 @@ class Operator:
         data, count = select_for_paginate(GachaConfig,
                                           search,
                                           order_by=(GachaConfig.id.desc(),),
-                                          page=items.page,
-                                          page_size=items.pageSize)
+                                          page=params.page,
+                                          page_size=params.pageSize)
 
         return response({'count': count, 'data': data})
 
     @classmethod
-    async def add_config(cls, items: GachaConfigItem, auth=AuthManager.depends()):
-        check = GachaConfig.get_or_none(operator_name=items.operator_name)
+    async def add_config(cls, params: GachaConfigItem, auth=AuthManager.depends()):
+        check = GachaConfig.get_or_none(operator_name=params.operator_name)
         if check:
             return response(message='干员已存在')
 
         GachaConfig.create(
-            operator_name=items.operator_name,
-            operator_type=items.operator_type
+            operator_name=params.operator_name,
+            operator_type=params.operator_type
         )
 
         return response(message='添加成功')
 
     @classmethod
-    async def edit_config(cls, items: GachaConfigItem, auth=AuthManager.depends()):
+    async def edit_config(cls, params: GachaConfigItem, auth=AuthManager.depends()):
         GachaConfig.update(
-            operator_name=items.operator_name,
-            operator_type=items.operator_type
+            operator_name=params.operator_name,
+            operator_type=params.operator_type
         ).where(
-            GachaConfig.id == items.id
+            GachaConfig.id == params.id
         ).execute()
 
         return response(message='修改成功')
 
     @classmethod
-    async def del_config(cls, items: GachaConfigItem, auth=AuthManager.depends()):
+    async def del_config(cls, params: GachaConfigItem, auth=AuthManager.depends()):
         GachaConfig.delete().where(
-            GachaConfig.id == items.id
+            GachaConfig.id == params.id
         ).execute()
 
         return response(message='删除成功')

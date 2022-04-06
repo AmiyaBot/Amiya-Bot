@@ -7,8 +7,6 @@ from core.database.messages import MessageRecord
 from core.database.bot import FunctionUsed
 from core import account
 
-from functions.user import UserInfo
-
 
 def get_last_time(hour=24):
     curr_time = int(time.time())
@@ -23,9 +21,28 @@ def get_active_users_count(hour):
                                         MessageRecord.classify == 'call').group_by(MessageRecord.user_id).count()
 
 
+class DashboardCache:
+    cache = {}
+
+    @classmethod
+    def set_cache(cls, cache_name, data):
+        cls.cache[cache_name] = (time.time(), data)
+        return data
+
+    @classmethod
+    def get_cache(cls, cache_name):
+        if cache_name in cls.cache:
+            now = time.time()
+            if now - cls.cache[cache_name][0] <= 300:
+                return cls.cache[cache_name][1]
+
+
 class Dashboard:
     @classmethod
     async def get_message_analysis(cls, auth=AuthManager.depends()):
+        if DashboardCache.get_cache('message_analysis'):
+            return response(DashboardCache.get_cache('message_analysis'))
+
         last_time = get_last_time(23)
         now = time.localtime(time.time())
         hour = now.tm_hour
@@ -53,45 +70,29 @@ class Dashboard:
                 if item.classify == 'call':
                     res[hour]['call'] += 1
 
-        return response(res)
+        return response(DashboardCache.set_cache('message_analysis', res))
 
     @classmethod
     async def get_function_used(cls, auth=AuthManager.depends()):
+        if DashboardCache.get_cache('function_used'):
+            return response(DashboardCache.get_cache('function_used'))
+
         res = [
             {'function_id': item.function_id, 'use_num': item.use_num} for item in FunctionUsed.select()
         ]
-        return response(res)
+
+        return response(DashboardCache.set_cache('function_used', res))
 
     @classmethod
-    async def get_active_users(cls, auth=AuthManager.depends()):
-        return response(get_active_users_count(24))
+    async def get_real_time_data(cls, auth=AuthManager.depends()):
+        if DashboardCache.get_cache('real_time_data'):
+            return response(DashboardCache.get_cache('real_time_data'))
 
-    @classmethod
-    async def get_user_sign_rate(cls, auth=AuthManager.depends()):
-        hour = time.localtime(time.time()).tm_hour - 4
-        if hour < 0:
-            hour = 24 + hour
-
-        count = get_active_users_count(hour)
-        sign = UserInfo.select().where(UserInfo.sign_in == 1).count()
-
-        return response([count, sign])
-
-    @classmethod
-    async def get_message_speed(cls, auth=AuthManager.depends()):
-        start = int(time.time()) - 120
-        end = int(time.time()) - 60
-
-        count = MessageRecord.select().where(MessageRecord.create_time >= start,
-                                             MessageRecord.create_time < end,
-                                             MessageRecord.msg_type == 'group').count()
-
-        return response(count)
-
-    @classmethod
-    async def get_total_message(cls, auth=AuthManager.depends()):
-        last_time = get_last_time()
-        count = MessageRecord.select().where(MessageRecord.create_time >= last_time,
-                                             MessageRecord.user_id == account).count()
-
-        return response(count)
+        return response(DashboardCache.set_cache('real_time_data', {
+            'reply': MessageRecord.select().where(MessageRecord.create_time >= get_last_time(),
+                                                  MessageRecord.user_id == account).count(),
+            'speed': MessageRecord.select().where(MessageRecord.create_time >= int(time.time()) - 120,
+                                                  MessageRecord.create_time < int(time.time()) - 60,
+                                                  MessageRecord.msg_type == 'group').count(),
+            'activeUsers': get_active_users_count(24)
+        }))

@@ -15,7 +15,7 @@ from .model.group import GroupInfo, GroupTable, GroupStatus, GroupNoticeTable, N
 
 class Group:
     @classmethod
-    async def get_group_by_pages(cls, items: GroupTable, auth=AuthManager.depends()):
+    async def get_group_by_pages(cls, params: GroupTable, auth=AuthManager.depends()):
         where = []
         order = ''
 
@@ -31,24 +31,24 @@ class Group:
         }
 
         for field, item in like.items():
-            value = getattr(items.search, item)
+            value = getattr(params.search, item)
             if value:
                 where.append(f"{field} like '%{value}%'")
 
         for field, item in equal.items():
-            value = getattr(items.search, item)
+            value = getattr(params.search, item)
             if value:
                 where.append(f"{field} = '{value}'")
 
-        if items.search.orderBy:
-            field = items.search.orderByField
+        if params.search.orderBy:
+            field = params.search.orderByField
 
             if field == 'group_id':
-                order = f'order by g.group_id {items.search.orderBy}'
+                order = f'order by g.group_id {params.search.orderBy}'
             elif field == 'group_name':
-                order = f'order by g.group_name {items.search.orderBy}'
+                order = f'order by g.group_name {params.search.orderBy}'
             elif field == 'message_num':
-                order = f'order by g4.message_num {items.search.orderBy}'
+                order = f'order by g4.message_num {params.search.orderBy}'
 
         if where:
             where = 'where ' + ' and '.join(where)
@@ -77,8 +77,8 @@ class Group:
             'send_weibo'
         ]
 
-        limit = (items.page - 1) * items.pageSize
-        offset = items.page * items.pageSize
+        limit = (params.page - 1) * params.pageSize
+        offset = params.page * params.pageSize
 
         res = group.execute_sql(sql).fetchall()
         res = [{fields[i]: n for i, n in enumerate(row)} for row in res]
@@ -112,26 +112,26 @@ class Group:
         return response(code=0, message='接口未开放')
 
     @classmethod
-    async def change_group_status(cls, items: GroupStatus, auth=AuthManager.depends()):
-        if items.active is not None:
+    async def change_group_status(cls, params: GroupStatus, auth=AuthManager.depends()):
+        if params.active is not None:
             GroupActive.insert_or_update(
                 insert={
-                    'group_id': items.group_id,
-                    'active': items.active
+                    'group_id': params.group_id,
+                    'active': params.active
                 },
                 update={
-                    GroupActive.active: items.active
+                    GroupActive.active: params.active
                 },
                 conflict_target=[GroupActive.group_id]
             )
         else:
             for name in ['send_notice', 'send_weibo']:
-                value = getattr(items, name)
+                value = getattr(params, name)
                 if name is not None:
                     GroupSetting.insert_or_update(
                         insert={
                             name: value,
-                            'group_id': items.group_id
+                            'group_id': params.group_id
                         },
                         update={
                             getattr(GroupSetting, name): value
@@ -142,26 +142,26 @@ class Group:
         return response(message='修改成功')
 
     @classmethod
-    async def leave_group(cls, items: GroupInfo, auth=AuthManager.depends()):
-        members = await http.leave_group(items.group_id)
+    async def leave_group(cls, params: GroupInfo, auth=AuthManager.depends()):
+        members = await http.leave_group(params.group_id)
         return response(members)
 
     @classmethod
-    async def get_group_notice_by_pages(cls, items: GroupNoticeTable, auth=AuthManager.depends()):
+    async def get_group_notice_by_pages(cls, params: GroupNoticeTable, auth=AuthManager.depends()):
         search = SearchParams(
-            items.search,
+            params.search,
             contains=['content', 'send_user']
         )
 
         data, count = select_for_paginate(GroupNotice,
                                           search,
-                                          page=items.page,
-                                          page_size=items.pageSize)
+                                          page=params.page,
+                                          page_size=params.pageSize)
 
         return response({'count': count, 'data': data})
 
     @classmethod
-    async def push_notice(cls, items: Notice, auth=AuthManager.depends()):
+    async def push_notice(cls, params: Notice, auth=AuthManager.depends()):
         group_list = await http.get_group_list()
 
         disabled: List[GroupSetting] = GroupSetting.select().where(GroupSetting.send_notice == 0)
@@ -177,7 +177,7 @@ class Group:
 
             async with log.catch('push error:'):
                 data = custom_chain(group_id=int(group_id))
-                data.text(f'亲爱的{group_name}的博士们，有来自管理员{auth.user_id}的公告：\n\n{items.content}')
+                data.text(f'亲爱的{group_name}的博士们，有来自管理员{auth.user_id}的公告：\n\n{params.content}')
 
                 await websocket.send(data)
 
@@ -186,7 +186,7 @@ class Group:
             await asyncio.sleep(0.5)
 
         GroupNotice.create(
-            content=items.content,
+            content=params.content,
             send_time=int(time.time()),
             send_user=auth.user_id
         )
@@ -194,6 +194,6 @@ class Group:
         return response(message=f'公告推送完毕，成功：{success}/{len(group_list)}')
 
     @classmethod
-    async def del_notice(cls, items: Notice, auth=AuthManager.depends()):
-        GroupNotice.delete().where(GroupNotice.notice_id == items.notice_id).execute()
+    async def del_notice(cls, params: Notice, auth=AuthManager.depends()):
+        GroupNotice.delete().where(GroupNotice.notice_id == params.notice_id).execute()
         return response(message='删除成功')

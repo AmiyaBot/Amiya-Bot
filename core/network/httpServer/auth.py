@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from fastapi import Request, Depends, HTTPException
 from fastapi_login import LoginManager
 from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
-from core.database.user import Admin
+from core.database.user import Admin, model_to_dict
 
 
 class LoginManagerHook(LoginManager):
@@ -44,7 +44,7 @@ class LoginManagerHook(LoginManager):
 
         if request.url.path not in user.role_id.access_path.split(','):
             raise HTTPException(
-                status_code=401,
+                status_code=403,
                 detail='没有访问该接口的权限'
             )
 
@@ -100,7 +100,7 @@ class AuthManager:
             expires=timedelta(hours=12)
         )
 
-        return {'access_token': access_token, 'token_type': 'bearer'}
+        return {'access_token': access_token, 'admin': model_to_dict(admin)}
 
 
 @AuthManager.manager.user_loader()

@@ -8,49 +8,49 @@ from functions.replace import TextReplace, TextReplaceSetting
 
 class Replace:
     @classmethod
-    async def get_replace_text_by_pages(cls, items: ReplaceTable, auth=AuthManager.depends()):
+    async def get_replace_text_by_pages(cls, params: ReplaceTable, auth=AuthManager.depends()):
         search = SearchParams(
-            items.search,
+            params.search,
             equal=['is_global', 'is_active'],
             contains=['user_id', 'group_id', 'origin', 'replace']
         )
 
         data, count = select_for_paginate(TextReplace,
                                           search,
-                                          page=items.page,
-                                          page_size=items.pageSize)
+                                          page=params.page,
+                                          page_size=params.pageSize)
 
         return response({'count': count, 'data': data})
 
     @classmethod
-    async def delete_replace_text(cls, items: DeleteReplace, auth=AuthManager.depends()):
-        if items.group_origin_all:
-            TextReplace.delete().where(TextReplace.group_id == items.group_id,
-                                       TextReplace.origin == items.origin).execute()
+    async def delete_replace_text(cls, params: DeleteReplace, auth=AuthManager.depends()):
+        if params.group_origin_all:
+            TextReplace.delete().where(TextReplace.group_id == params.group_id,
+                                       TextReplace.origin == params.origin).execute()
 
-        elif items.user_all:
-            TextReplace.delete().where(TextReplace.group_id == items.group_id,
-                                       TextReplace.user_id == items.user_id).execute()
+        elif params.user_all:
+            TextReplace.delete().where(TextReplace.group_id == params.group_id,
+                                       TextReplace.user_id == params.user_id).execute()
 
-        elif items.group_all:
-            TextReplace.delete().where(TextReplace.group_id == items.group_id).execute()
+        elif params.group_all:
+            TextReplace.delete().where(TextReplace.group_id == params.group_id).execute()
 
-        elif items.origin_all:
-            TextReplace.delete().where(TextReplace.origin == items.origin).execute()
+        elif params.origin_all:
+            TextReplace.delete().where(TextReplace.origin == params.origin).execute()
 
-        elif items.replace_all:
-            TextReplace.delete().where(TextReplace.replace == items.replace).execute()
+        elif params.replace_all:
+            TextReplace.delete().where(TextReplace.replace == params.replace).execute()
 
         else:
-            TextReplace.delete().where(TextReplace.id == items.id).execute()
+            TextReplace.delete().where(TextReplace.id == params.id).execute()
 
         return response(message='删除成功')
 
     @classmethod
-    async def change_replace_text_status(cls, items: ReplaceDataItem, auth=AuthManager.depends()):
+    async def change_replace_text_status(cls, params: ReplaceDataItem, auth=AuthManager.depends()):
         TextReplace \
-            .update(is_global=items.is_global, is_active=items.is_active) \
-            .where(TextReplace.id == items.id) \
+            .update(is_global=params.is_global, is_active=params.is_active) \
+            .where(TextReplace.id == params.id) \
             .execute()
 
         return response(message='设置成功')
@@ -60,15 +60,15 @@ class Replace:
         return response(data=query_to_list(TextReplaceSetting.select()))
 
     @classmethod
-    async def add_replace_setting(cls, items: ReplaceSettingItem, auth=AuthManager.depends()):
+    async def add_replace_setting(cls, params: ReplaceSettingItem, auth=AuthManager.depends()):
 
-        data: TextReplaceSetting = TextReplaceSetting.create(text=items.text, status=items.status)
+        data: TextReplaceSetting = TextReplaceSetting.create(text=params.text, status=params.status)
 
         return response(message='添加成功', data=data.id)
 
     @classmethod
-    async def delete_replace_setting(cls, items: ReplaceSettingItem, auth=AuthManager.depends()):
+    async def delete_replace_setting(cls, params: ReplaceSettingItem, auth=AuthManager.depends()):
 
-        TextReplaceSetting.delete().where(TextReplaceSetting.id == items.id).execute()
+        TextReplaceSetting.delete().where(TextReplaceSetting.id == params.id).execute()
 
         return response(message='删除成功')
