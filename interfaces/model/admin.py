@@ -26,16 +26,21 @@ class AdminState(BaseModel):
     active: int
 
 
+class AdminRole(BaseModel):
+    user_id: str
+    role_id: str
+
+
 class RoleTableSearch(SearchBase):
     active: str = None
     role_name: str = None
 
 
 class RoleModel(BaseModel):
-    id: int
+    id: int = None
+    active: int = None
     role_name: str
     access_path: str
-    active: int
 
 
 class RoleTable(Pagination):
