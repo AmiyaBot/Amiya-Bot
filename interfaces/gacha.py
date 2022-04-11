@@ -1,7 +1,9 @@
 from typing import List
 from fastapi import File, UploadFile
+
 from core.util import create_dir
 from core.network import response
+from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate, model_to_dict, query_to_list
 from core.resource.arknightsGameData import ArknightsGameData
@@ -12,8 +14,9 @@ from functions.arknights.gacha.gacha import Pool as PoolBase, PoolSpOperator
 
 
 class Pool:
-    @classmethod
-    async def get_pools_by_pages(cls, params: PoolTable, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_pools_by_pages(params: PoolTable, auth=AuthManager.depends()):
         search = SearchParams(
             params.search,
             contains=['limit_pool', 'pool_name']
@@ -39,8 +42,9 @@ class Pool:
 
         return response({'count': count, 'data': [item for i, item in data.items()]})
 
-    @classmethod
-    async def add_new_pool(cls, params: PoolInfo, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def add_new_pool(params: PoolInfo, auth=AuthManager.depends()):
         check = PoolBase.get_or_none(pool_name=params.pool_name)
         if check:
             return response(message='卡池已存在')
@@ -68,8 +72,9 @@ class Pool:
 
         return response(message='添加成功')
 
-    @classmethod
-    async def edit_pool(cls, params: PoolInfo, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def edit_pool(params: PoolInfo, auth=AuthManager.depends()):
         pool: PoolBase = PoolBase.get_or_none(pool_name=params.pool_name)
         if not pool:
             return response(message='卡池不存在')
@@ -99,8 +104,9 @@ class Pool:
 
         return response(message='修改成功')
 
-    @classmethod
-    async def del_pool(cls, params: PoolInfo, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def del_pool(params: PoolInfo, auth=AuthManager.depends()):
         pool: PoolBase = PoolBase.get_or_none(pool_name=params.pool_name)
         if not pool:
             return response(message='卡池不存在')
@@ -109,8 +115,9 @@ class Pool:
 
         return response(message='删除成功')
 
-    @classmethod
-    async def upload_image(cls, file: UploadFile = File(...), auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def upload_image(file: UploadFile = File(...), auth=AuthManager.depends()):
         content = await file.read()
         path = 'resource/images/temp'
 
@@ -121,8 +128,9 @@ class Pool:
 
         return response(data={'filename': file.filename}, message='上传成功')
 
-    @classmethod
-    async def _get_gacha_pool(cls):
+    @staticmethod
+    @interface.register(method='get')
+    async def get_gacha_pool():
         data = {
             'Pool': query_to_list(PoolBase.select()),
             'PoolSpOperator': query_to_list(PoolSpOperator.select()),
@@ -136,8 +144,9 @@ class Pool:
 
 
 class Operator:
-    @classmethod
-    async def get_all_operator(cls, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_all_operator(auth=AuthManager.depends()):
         operators = []
 
         for name, item in ArknightsGameData().operators.items():
@@ -153,8 +162,9 @@ class Operator:
 
         return response(operators)
 
-    @classmethod
-    async def get_operator_gacha_config(cls, params: GachaConfigTable, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_operator_gacha_config(params: GachaConfigTable, auth=AuthManager.depends()):
         search = SearchParams(
             params.search,
             equal=['operator_type'],
@@ -169,8 +179,9 @@ class Operator:
 
         return response({'count': count, 'data': data})
 
-    @classmethod
-    async def add_config(cls, params: GachaConfigItem, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def add_config(params: GachaConfigItem, auth=AuthManager.depends()):
         check = GachaConfig.get_or_none(operator_name=params.operator_name)
         if check:
             return response(message='干员已存在')
@@ -182,8 +193,9 @@ class Operator:
 
         return response(message='添加成功')
 
-    @classmethod
-    async def edit_config(cls, params: GachaConfigItem, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def edit_config(params: GachaConfigItem, auth=AuthManager.depends()):
         GachaConfig.update(
             operator_name=params.operator_name,
             operator_type=params.operator_type
@@ -193,8 +205,9 @@ class Operator:
 
         return response(message='修改成功')
 
-    @classmethod
-    async def del_config(cls, params: GachaConfigItem, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def del_config(params: GachaConfigItem, auth=AuthManager.depends()):
         GachaConfig.delete().where(
             GachaConfig.id == params.id
         ).execute()

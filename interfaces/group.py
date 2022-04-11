@@ -7,6 +7,7 @@ from core.database import SearchParams, select_for_paginate
 from core.database.group import db as group, GroupActive, GroupSetting, GroupNotice, Group as GroupData
 from core.database.messages import db as messages
 from core.network import response
+from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core import http, websocket, custom_chain, log
 
@@ -14,8 +15,9 @@ from .model.group import GroupInfo, GroupTable, GroupStatus, GroupNoticeTable, N
 
 
 class Group:
-    @classmethod
-    async def get_group_by_pages(cls, params: GroupTable, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_group_by_pages(params: GroupTable, auth=AuthManager.depends()):
         where = []
         order = ''
 
@@ -98,8 +100,9 @@ class Group:
 
         return response({'count': len(res), 'data': page})
 
-    @classmethod
-    async def refresh_group_list(cls, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def refresh_group_list(auth=AuthManager.depends()):
         group_list = await http.get_group_list()
 
         GroupData.truncate_table()
@@ -107,12 +110,14 @@ class Group:
 
         return response(message=f'同步完成，共 {len(group_list)} 个群。')
 
-    @classmethod
-    async def get_member_list(cls, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_member_list(auth=AuthManager.depends()):
         return response(code=0, message='接口未开放')
 
-    @classmethod
-    async def change_group_status(cls, params: GroupStatus, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def change_group_status(params: GroupStatus, auth=AuthManager.depends()):
         if params.active is not None:
             GroupActive.insert_or_update(
                 insert={
@@ -141,13 +146,15 @@ class Group:
 
         return response(message='修改成功')
 
-    @classmethod
-    async def leave_group(cls, params: GroupInfo, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def leave_group(params: GroupInfo, auth=AuthManager.depends()):
         members = await http.leave_group(params.group_id)
         return response(members)
 
-    @classmethod
-    async def get_group_notice_by_pages(cls, params: GroupNoticeTable, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_group_notice_by_pages(params: GroupNoticeTable, auth=AuthManager.depends()):
         search = SearchParams(
             params.search,
             contains=['content', 'send_user']
@@ -160,8 +167,9 @@ class Group:
 
         return response({'count': count, 'data': data})
 
-    @classmethod
-    async def push_notice(cls, params: Notice, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def push_notice(params: Notice, auth=AuthManager.depends()):
         group_list = await http.get_group_list()
 
         disabled: List[GroupSetting] = GroupSetting.select().where(GroupSetting.send_notice == 0)
@@ -193,7 +201,8 @@ class Group:
 
         return response(message=f'公告推送完毕，成功：{success}/{len(group_list)}')
 
-    @classmethod
-    async def del_notice(cls, params: Notice, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def del_notice(params: Notice, auth=AuthManager.depends()):
         GroupNotice.delete().where(GroupNotice.notice_id == params.notice_id).execute()
         return response(message='删除成功')

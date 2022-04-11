@@ -1,4 +1,5 @@
 from core.network import response
+from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate, query_to_list
 
@@ -7,8 +8,9 @@ from functions.replace import TextReplace, TextReplaceSetting
 
 
 class Replace:
-    @classmethod
-    async def get_replace_text_by_pages(cls, params: ReplaceTable, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_replace_text_by_pages(params: ReplaceTable, auth=AuthManager.depends()):
         search = SearchParams(
             params.search,
             equal=['is_global', 'is_active'],
@@ -22,8 +24,9 @@ class Replace:
 
         return response({'count': count, 'data': data})
 
-    @classmethod
-    async def delete_replace_text(cls, params: DeleteReplace, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def delete_replace_text(params: DeleteReplace, auth=AuthManager.depends()):
         if params.group_origin_all:
             TextReplace.delete().where(TextReplace.group_id == params.group_id,
                                        TextReplace.origin == params.origin).execute()
@@ -46,8 +49,9 @@ class Replace:
 
         return response(message='删除成功')
 
-    @classmethod
-    async def change_replace_text_status(cls, params: ReplaceDataItem, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def change_replace_text_status(params: ReplaceDataItem, auth=AuthManager.depends()):
         TextReplace \
             .update(is_global=params.is_global, is_active=params.is_active) \
             .where(TextReplace.id == params.id) \
@@ -55,19 +59,22 @@ class Replace:
 
         return response(message='设置成功')
 
-    @classmethod
-    async def get_text_replace_setting(cls, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_text_replace_setting(auth=AuthManager.depends()):
         return response(data=query_to_list(TextReplaceSetting.select()))
 
-    @classmethod
-    async def add_replace_setting(cls, params: ReplaceSettingItem, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def add_replace_setting(params: ReplaceSettingItem, auth=AuthManager.depends()):
 
         data: TextReplaceSetting = TextReplaceSetting.create(text=params.text, status=params.status)
 
         return response(message='添加成功', data=data.id)
 
-    @classmethod
-    async def delete_replace_setting(cls, params: ReplaceSettingItem, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def delete_replace_setting(params: ReplaceSettingItem, auth=AuthManager.depends()):
 
         TextReplaceSetting.delete().where(TextReplaceSetting.id == params.id).execute()
 

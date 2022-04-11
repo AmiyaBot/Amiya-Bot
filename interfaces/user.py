@@ -1,4 +1,5 @@
 from core.network import response
+from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate
 from core.database.user import User as UserBase, query_to_list
@@ -9,8 +10,9 @@ from functions.arknights.gacha.gacha import UserGachaInfo
 
 
 class User:
-    @classmethod
-    async def get_users_by_pages(cls, params: UserTable, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_users_by_pages(params: UserTable, auth=AuthManager.depends()):
         search = SearchParams(
             params.search,
             equal=['sign_in', 'black'],
@@ -41,13 +43,15 @@ class User:
 
         return response({'count': count, 'data': data})
 
-    @classmethod
-    async def set_black_user(cls, params: UserState, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def set_black_user(params: UserState, auth=AuthManager.depends()):
         UserBase.update(black=params.black).where(UserBase.user_id == params.user_id).execute()
         return response(message='设置成功')
 
-    @classmethod
-    async def send_coupon(cls, params: AddCoupon, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def send_coupon(params: AddCoupon, auth=AuthManager.depends()):
         value = int(params.value)
 
         query = UserGachaInfo.update(coupon=UserGachaInfo.coupon + value)

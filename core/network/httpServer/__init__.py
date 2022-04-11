@@ -2,15 +2,12 @@ import os
 import asyncio
 import uvicorn
 
-from typing import Dict, Callable
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
-from starlette.templating import Jinja2Templates
 from interfaces import controllers
-from core.util import snake_case_to_pascal_case
 from core.network.httpServer.auth import AuthManager
+from core.network.httpServer.loader import interface
 from core.database.user import Role, Admin
 from core.config import config
 from core import log
@@ -29,22 +26,19 @@ class HttpServer:
         加载控制器
         """
         for cls in controllers:
-            attrs = [item for item in dir(cls) if not item.startswith('__')]
-            methods: Dict[str, Callable] = {n: getattr(cls, n) for n in attrs}
+            for fn, router_path, method, cname, options in interface.load_controller(cls):
+                arguments = {
+                    'path': router_path,
+                    'tags': [cname.title()],
+                    **options
+                }
 
-            cname = cls.__name__[0].lower() + cls.__name__[1:]
-
-            for name, func in methods.items():
-                method = 'post'
-                if name.startswith('_'):
-                    method = 'get'
-
-                router_path = f'/{cname}/' + snake_case_to_pascal_case(name.strip('_'))
                 router_builder = getattr(self.app, method)
-                router = router_builder(path=router_path, tags=[cname.title()])
-                router(func)
+                router = router_builder(**arguments)
+                router(fn)
 
-                self.__routes.append(router_path)
+                if cname != 'index':
+                    self.__routes.append(router_path)
 
         self.app.post(AuthManager.login_url, tags=['Auth'])(AuthManager.login)
         self.app.post(AuthManager.token_url, tags=['Auth'])(AuthManager.token)
@@ -99,16 +93,5 @@ class HttpServer:
                 allow_headers=['*'],
                 allow_credentials=True
             )
-
-            # 加载模板
-            templates = Jinja2Templates(directory='view/dist')
-
-            @self.app.get('/', tags=['Index'], response_class=HTMLResponse)
-            async def index(request: Request):
-                return templates.TemplateResponse('index.html', {'request': request})
-
-            @self.app.get('/images', tags=['Image'], response_class=StreamingResponse)
-            async def index(filename: str):
-                return StreamingResponse(open(f'resource/images/temp/{filename}', mode='rb'), media_type='image/png')
 
             await self.server.serve()

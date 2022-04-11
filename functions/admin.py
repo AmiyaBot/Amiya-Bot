@@ -50,7 +50,7 @@ async def _(data: Message):
     else:
         seconds = int(time.time()) - int(group_active.sleep_time)
         total = TimeRecorder.calc_time_total(seconds)
-        if seconds > 60 and seconds < 21600:
+        if 60 < seconds < 21600:
             return Chain(data, at=False).text('（阿米娅似乎已经睡着了...）')
         else:
             if seconds < 60:
@@ -184,4 +184,4 @@ async def _(data: Union[Mirai.BotMuteEvent, Mirai.BotLeaveEventKick]):
 
 @bot.on_overspeed
 async def _(data: Message):
-    return Chain(data).text('博士说话太快了，请再慢一些吧~')
+    return Chain(data, at=False).text('博士说话太快了，请再慢一些吧~')

@@ -1,4 +1,5 @@
 import os
+import time
 import passlib.handlers.bcrypt
 
 from typing import Union
@@ -39,7 +40,7 @@ class LoginManagerHook(LoginManager):
 
         user: Admin = await self._load_user(user_identifier)
 
-        if user is None or not user.role_id:
+        if user is None or not user.role_id or user.role_id.active == 0:
             raise self.not_authenticated_exception
 
         if request.url.path not in user.role_id.access_path.split(','):
@@ -78,27 +79,26 @@ class AuthManager:
         admin = get_admin(user_id)
 
         if not admin:
-            raise HTTPException(
-                status_code=401,
-                detail='用户不存在'
-            )
+            raise HTTPException(status_code=401, detail='用户不存在')
 
         if password != admin.password:
-            raise HTTPException(
-                status_code=401,
-                detail='密码不正确'
-            )
+            raise HTTPException(status_code=401, detail='密码不正确')
+
+        if not admin.role_id:
+            raise HTTPException(status_code=401, detail='用户无角色权限')
+
+        if admin.role_id.active == 0:
+            raise HTTPException(status_code=401, detail='角色已被禁用')
 
         if admin.active == 0:
-            raise HTTPException(
-                status_code=401,
-                detail='用户已被禁用'
-            )
+            raise HTTPException(status_code=401, detail='用户已被禁用')
 
         access_token = cls.manager.create_access_token(
             data=dict(sub=user_id),
             expires=timedelta(hours=12)
         )
+
+        Admin.update(last_login=int(time.time())).where(Admin.user_id == user_id).execute()
 
         return {'access_token': access_token, 'admin': model_to_dict(admin)}
 

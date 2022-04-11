@@ -2,6 +2,7 @@ import time
 
 from typing import List
 from core.network import response
+from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core.database.messages import MessageRecord
 from core.database.bot import FunctionUsed
@@ -38,8 +39,9 @@ class DashboardCache:
 
 
 class Dashboard:
-    @classmethod
-    async def get_message_analysis(cls, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_message_analysis(auth=AuthManager.depends()):
         if DashboardCache.get_cache('message_analysis'):
             return response(DashboardCache.get_cache('message_analysis'))
 
@@ -72,8 +74,9 @@ class Dashboard:
 
         return response(DashboardCache.set_cache('message_analysis', res))
 
-    @classmethod
-    async def get_function_used(cls, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_function_used(auth=AuthManager.depends()):
         if DashboardCache.get_cache('function_used'):
             return response(DashboardCache.get_cache('function_used'))
 
@@ -83,8 +86,9 @@ class Dashboard:
 
         return response(DashboardCache.set_cache('function_used', res))
 
-    @classmethod
-    async def get_real_time_data(cls, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_real_time_data(auth=AuthManager.depends()):
         if DashboardCache.get_cache('real_time_data'):
             return response(DashboardCache.get_cache('real_time_data'))
 

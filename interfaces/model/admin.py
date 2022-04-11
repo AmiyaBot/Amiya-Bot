@@ -24,3 +24,24 @@ class AdminTable(Pagination):
 class AdminState(BaseModel):
     user_id: str
     active: int
+
+
+class RoleTableSearch(SearchBase):
+    active: str = None
+    role_name: str = None
+
+
+class RoleModel(BaseModel):
+    id: int
+    role_name: str
+    access_path: str
+    active: int
+
+
+class RoleTable(Pagination):
+    search: RoleTableSearch
+
+
+class RoleState(BaseModel):
+    role_id: str
+    active: int

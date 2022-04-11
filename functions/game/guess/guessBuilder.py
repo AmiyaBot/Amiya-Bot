@@ -8,7 +8,6 @@ from operator import itemgetter
 from itertools import groupby
 from dataclasses import dataclass, field
 from core.util import any_match, random_pop, read_yaml
-from core.database.user import User
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource, Operator
 from core import Message, Chain
 

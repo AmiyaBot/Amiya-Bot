@@ -2,11 +2,12 @@ import random
 import string
 
 from core.network import response
+from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate
-from core.database.user import Admin as AdminBase
+from core.database.user import Admin as AdminBase, Role as RoleBase
 
-from .model.admin import EditPassword, AdminModel, AdminTable, AdminState
+from .model.admin import *
 
 
 def random_code(length):
@@ -18,8 +19,9 @@ def random_code(length):
 
 
 class Admin:
-    @classmethod
-    async def edit_password(cls, params: EditPassword, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def edit_password(params: EditPassword, auth=AuthManager.depends()):
         user_id = auth.user_id
         password = params.password
         new_password = params.newPassword
@@ -31,8 +33,9 @@ class Admin:
         else:
             return response(message='密码错误', code=0)
 
-    @classmethod
-    async def get_admins_by_pages(cls, params: AdminTable, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def get_admins_by_pages(params: AdminTable, auth=AuthManager.depends()):
         search = SearchParams(
             params.search,
             equal=['active'],
@@ -48,22 +51,62 @@ class Admin:
 
         return response({'count': count, 'data': data})
 
-    @classmethod
-    async def register_admin(cls, params: AdminModel, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def register_admin(params: AdminModel, auth=AuthManager.depends()):
         password = random_code(10)
         AdminBase.create(user_id=params.user_id, password=password)
 
         return response(message='注册成功', data=password)
 
-    @classmethod
-    async def set_active(cls, params: AdminState, auth=AuthManager.depends()):
+    @staticmethod
+    @interface.register()
+    async def set_active(params: AdminState, auth=AuthManager.depends()):
         AdminBase.update(active=params.active).where(AdminBase.user_id == params.user_id).execute()
 
         return response(message='设置成功')
 
-    @classmethod
-    async def del_admin(cls, params: AdminModel, auth=AuthManager.depends()):
-
+    @staticmethod
+    @interface.register()
+    async def del_admin(params: AdminModel, auth=AuthManager.depends()):
         AdminBase.delete().where(AdminBase.user_id == params.user_id).execute()
 
+        return response(message='删除成功')
+
+
+class Role:
+    @staticmethod
+    @interface.register()
+    async def get_roles_by_pages(params: RoleTable, auth=AuthManager.depends()):
+        search = SearchParams(
+            params.search,
+            equal=['active'],
+            contains=['role_name']
+        )
+
+        data, count = select_for_paginate(RoleBase,
+                                          search,
+                                          page=params.page,
+                                          page_size=params.pageSize)
+
+        return response({'count': count, 'data': data})
+
+    @staticmethod
+    @interface.register()
+    async def set_active(params: RoleState, auth=AuthManager.depends()):
+        if params.role_id == 1:
+            return response(code=500, message='无法操作超级管理员')
+
+        RoleBase.update(active=params.active).where(RoleBase.id == params.role_id).execute()
+
+        return response(message='设置成功')
+
+    @staticmethod
+    @interface.register()
+    async def del_role(params: RoleModel, auth=AuthManager.depends()):
+        if params.id == 1:
+            return response(code=500, message='无法操作超级管理员')
+
+        RoleBase.delete().where(RoleBase.id == params.id).execute()
+        AdminBase.update(role_id=None).where(AdminBase.role_id == params.id).execute()
         return response(message='删除成功')
