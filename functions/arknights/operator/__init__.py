@@ -75,8 +75,11 @@ def search_info(words: list, source_keys: list = None, text: str = ''):
             else:
                 info_key.remove(e.name)
 
-    if info.name == '阿米娅' and text.startswith('阿米娅') and text.count('阿米娅') == 1:
-        info.name = ''
+    if info.name == '阿米娅':
+        for item in ['阿米娅', 'amiya']:
+            t = text.lower()
+            if t.startswith(item) and t.count(item) == 1:
+                info.name = ''
 
     if info.name and info.skill and OperatorInfo.skill_operator[info.skill] != info.name:
         info.skill = ''

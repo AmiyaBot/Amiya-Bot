@@ -16,11 +16,13 @@ BotHandlers.add_prefix(
 )
 
 
-class Simulation(WSOperation, ABC):
+class SimulationClient(WSOperation, ABC):
     async def send(self, reply: Chain):
         for item in reply.chain + reply.voice_list:
             if item['type'] == 'Plain':
-                print('text: ', item['text'].strip('\n'))
+                text = item['text'].strip('\n')
+                if text:
+                    print('text: ', text)
 
             if item['type'] == 'Voice':
                 print('voice: ', item['path'])
@@ -30,6 +32,7 @@ class Simulation(WSOperation, ABC):
                     png = f'fileStorage/test/{int(time.time())}.png'
 
                     create_dir(png, is_file=True)
+
                     with open(png, mode='wb') as file:
                         file.write(item['path'])
                         print('image: ', png)
@@ -47,12 +50,12 @@ async def test():
 
     await initialization()
 
-    log.info('testing ready, please input the message text.')
+    log.info('testing ready.')
 
     while True:
         await asyncio.sleep(0)
         data = message(input())
-        await message_handler(data, Simulation())
+        await message_handler(data, SimulationClient())
 
 
 def message(text, _type='group'):
@@ -75,7 +78,7 @@ def message(text, _type='group'):
             }
         }
     }
-    return mirai_message_formatter(account=config.miraiApiHttp.account, data=mirai_text, operation=Simulation())
+    return mirai_message_formatter(account=config.miraiApiHttp.account, data=mirai_text, operation=SimulationClient())
 
 
 if __name__ == '__main__':
