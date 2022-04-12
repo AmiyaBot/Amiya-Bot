@@ -102,7 +102,7 @@ class WeiboUser:
             return cards
 
         for item in result['data']['cards']:
-            if item['card_type'] == 9 and 'isTop' not in item['mblog']:
+            if item['card_type'] == 9 and 'isTop' not in item['mblog'] and item['mblog']['mblogtype'] == 0:
                 cards.append(item)
 
         return cards
