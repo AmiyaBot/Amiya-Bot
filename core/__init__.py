@@ -1,5 +1,5 @@
-from core.network.websocketClient import WebsocketClient, account
-from core.network.httpSessionClient import HttpSessionClient
+from core.network.mirai.websocketClient import WebsocketClient, account
+from core.network.mirai.httpClient import HttpClient
 from core.database.messages import MessageStack
 from core.builtin.timedTask import TasksControl
 
@@ -11,7 +11,7 @@ from core.builtin.messageHandler import speed
 from core.resource.botResource import BotResource
 from core.resource.arknightsGameData import ArknightsGameDataResource, ArknightsGameData
 
-http = HttpSessionClient()
+http = HttpClient()
 websocket = WebsocketClient()
 init_task = []
 

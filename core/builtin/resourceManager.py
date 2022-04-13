@@ -1,9 +1,9 @@
 from graiax import silkcoder
-from core.network.httpSessionClient import HttpSessionClient
+from core.network.mirai.httpClient import HttpClient
 
 
 class ResourceManager:
-    http = HttpSessionClient()
+    http = HttpClient()
 
     @classmethod
     async def get_image_id(cls, target, msg_type):
