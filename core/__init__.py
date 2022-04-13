@@ -1,41 +1,43 @@
-from core.network.mirai.websocketClient import WebsocketClient, account
-from core.network.mirai.httpClient import HttpClient
-from core.database.messages import MessageStack
-from core.builtin.timedTask import TasksControl
+from core import log
+from core.util import read_yaml, create_yaml, combine_dict
+from .covidConfig import CovidData
 
-from core.builtin.message import Message, Event
-from core.builtin.messageChain import Chain, custom_chain
-from core.builtin.message.mirai import Mirai
-from core.builtin.messageHandler import speed
+from .mahConfig import MiraiApiHttp
+from .adminConfig import Admin
+from .baiduConfig import BaiduCloud
+from .serverConfig import ServerConfig
+from .testConfig import TestConfig
 
-from core.resource.botResource import BotResource
-from core.resource.arknightsGameData import ArknightsGameDataResource, ArknightsGameData
-
-http = HttpClient()
-websocket = WebsocketClient()
-init_task = []
+config_file = 'config/config.yaml'
 
 
-async def initialization():
-    BotResource.download_bot_resource()
-    BotResource.download_amiya_bot_console()
-    ArknightsGameDataResource.download_gamedata_files()
+class Config:
+    admin: Admin
+    baiduCloud: BaiduCloud
+    httpServer: ServerConfig
+    miraiApiHttp: MiraiApiHttp
+    covidData: CovidData
+    test: TestConfig
 
-    for coro in init_task:
-        await coro()
+    @classmethod
+    def desc(cls):
+        return {
+            'admin': Admin.desc(),
+            'baiduCloud': BaiduCloud.desc(),
+            'httpServer': ServerConfig.desc(),
+            'miraiApiHttp': MiraiApiHttp.desc(),
+            'covidData': CovidData.desc(),
+            'test': TestConfig.desc(),
+        }
 
 
-def exec_before_init(coro):
-    init_task.append(coro)
-    return coro
+log.info('inspecting and loading Configuration...')
 
+if not create_yaml(config_file, Config.desc()):
+    combine = combine_dict(read_yaml(config_file, _dict=True), Config.desc())
+    create_yaml(config_file, combine, overwrite=True)
 
-def init_core():
-    return [
-        initialization(),
-        http.init_session(),
-        websocket.connect_websocket(),
-        speed.clean_container(),
-        MessageStack.run_recording(),
-        TasksControl.run_tasks(websocket)
-    ]
+log.info('Configuration loading completed.')
+
+config: Config = read_yaml(config_file)
+
