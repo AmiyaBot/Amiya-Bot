@@ -1,9 +1,9 @@
 import os
 import json
-import aiohttp
 
 from core import log
 from core.util import Singleton, create_dir
+from core.network.httpRequests import http_requests
 from core.database.group import Group, GroupActive, GroupSetting
 from core.config import config
 
@@ -11,67 +11,42 @@ session_file = 'fileStorage/session.txt'
 create_dir(session_file, is_file=True)
 
 
-class HttpSessionClient(metaclass=Singleton):
+class HttpClient(metaclass=Singleton):
     def __init__(self):
         self.host = f'{config.miraiApiHttp.host}:{config.miraiApiHttp.port.http}'
         self.session = None
-
-    def __url(self, interface):
-        return 'http://%s/%s' % (self.host, interface)
 
     @staticmethod
     def __json(interface, res):
         try:
             response = json.loads(res)
             if response['code'] != 0:
-                log.error(f'http </{interface}> response: {response}')
+                log.error(f'http <{interface}> response: {response}')
                 return None
             return response
         except json.decoder.JSONDecodeError:
             return res
 
+    def __url(self, interface):
+        return 'http://%s/%s' % (self.host, interface)
+
     async def get(self, interface):
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(self.__url(interface)) as res:
-                    if res.status == 200:
-                        return self.__json(interface, await res.text())
-                    else:
-                        log.error(f'bad to request </{interface}>[GET]. Got code {res.status}')
-        except aiohttp.ClientConnectorError:
-            log.error(f'fail to request </{interface}>[GET]')
+        res = await http_requests.get(self.__url(interface))
+        if res:
+            return self.__json(interface, res)
 
     async def post(self, interface, data):
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(self.__url(interface), data=json.dumps(data), headers=headers) as res:
-                    if res.status == 200:
-                        return self.__json(interface, await res.text())
-                    else:
-                        log.error(f'bad to request </{interface}>[POST]. Got code {res.status}')
-        except aiohttp.ClientConnectorError:
-            log.error(f'fail to request </{interface}>[POST]')
+        res = await http_requests.post(self.__url(interface), data)
+        if res:
+            return self.__json(interface, res)
 
-    async def upload(self, interface, field, file, msg_type):
-        data = aiohttp.FormData()
-        data.add_field('sessionKey', self.session)
-        data.add_field('type', msg_type)
-        data.add_field(field,
-                       file,
-                       content_type='application/octet-stream')
-
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(self.__url(interface), data=data) as res:
-                    if res.status == 200:
-                        return json.loads(await res.text())
-                    else:
-                        log.error(f'bad to request </{interface}>[UPLOAD]. Got code {res.status}')
-        except aiohttp.ClientConnectorError:
-            log.error(f'fail to request </{interface}>[UPLOAD]')
+    async def upload(self, interface, field_type, file, msg_type):
+        res = await http_requests.upload(self.__url(interface), file, file_field=field_type, payload={
+            'sessionKey': self.session,
+            'type': msg_type
+        })
+        if res:
+            return json.loads(res)
 
     async def upload_image(self, file, msg_type):
         res = await self.upload('uploadImage', 'img', file, msg_type)

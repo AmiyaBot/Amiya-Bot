@@ -1,6 +1,6 @@
 from typing import Union
 from core.network import WSOperation
-from core.network.httpSessionClient import HttpSessionClient
+from core.network.mirai.httpClient import HttpClient
 from core.builtin.message import Message, Event
 from core.builtin.message.build import text_convert
 from core.database.user import User
@@ -8,7 +8,7 @@ from core.config import config
 
 from .miraiEventDTO import Friend, Group, Subject, Client, GroupMember
 
-http = HttpSessionClient()
+http = HttpClient()
 
 
 class BotEvents:
