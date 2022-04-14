@@ -148,11 +148,12 @@ async def _(data: Message):
             if res:
                 res = json.loads(res)['data']
 
-                Pool.truncate_table()
-                Pool.batch_insert(res['Pool'])
-                PoolSpOperator.truncate_table()
-                PoolSpOperator.batch_insert(res['PoolSpOperator'])
                 GachaConfig.truncate_table()
+                PoolSpOperator.truncate_table()
+                Pool.truncate_table()
+
+                Pool.batch_insert(res['Pool'])
+                PoolSpOperator.batch_insert(res['PoolSpOperator'])
                 GachaConfig.batch_insert(res['GachaConfig'])
 
                 await data.send(Chain(data).text(f'同步成功。'))

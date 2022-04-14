@@ -33,7 +33,18 @@ class Enemy:
         jieba.load_userdict('resource/enemies.txt')
 
     @classmethod
-    def find_enemy(cls, name: str):
+    def find_enemies(cls, name: str):
+        result = []
+        for item in cls.enemies:
+            if name == item:
+                return [item]
+            if name in item:
+                result.append(item)
+
+        return result
+
+    @classmethod
+    def get_enemy(cls, name: str):
         enemies = ArknightsGameData().enemies
 
         data = enemies[name]['info']
@@ -110,10 +121,10 @@ async def _(data: Message):
         r = re.search(re.compile(reg), message)
         if r:
             enemy_name = r.group(1)
-            result, rate = find_similar_list(enemy_name, Enemy.enemies, _random=False)
+            result = Enemy.find_enemies(enemy_name)
             if result:
                 if len(result) == 1:
-                    return Chain(data).text_image(*Enemy.find_enemy(result[0]))
+                    return Chain(data).text_image(*Enemy.get_enemy(result[0]))
 
                 text = '博士，为您搜索到以下敌方单位：\n\n'
 
@@ -130,10 +141,10 @@ async def _(data: Message):
                         if index >= len(result):
                             index = len(result) - 1
 
-                        return Chain(data).text_image(*Enemy.find_enemy(result[index]))
+                        return Chain(data).text_image(*Enemy.get_enemy(result[index]))
             else:
                 return Chain(data).text('博士，没有找到敌方单位%s的资料呢 >.<' % enemy_name)
 
     for item in words:
         if item in Enemy.enemies:
-            return Chain(data).text_image(*Enemy.find_enemy(item))
+            return Chain(data).text_image(*Enemy.get_enemy(item))
