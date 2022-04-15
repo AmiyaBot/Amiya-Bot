@@ -6,7 +6,6 @@ from .adminConfig import Admin
 from .baiduConfig import BaiduCloud
 from .serverConfig import ServerConfig
 from .testConfig import TestConfig
-from .covidConfig import CovidData
 
 config_file = 'config/config.yaml'
 
@@ -16,7 +15,6 @@ class Config:
     baiduCloud: BaiduCloud
     httpServer: ServerConfig
     miraiApiHttp: MiraiApiHttp
-    covidData: CovidData
     test: TestConfig
 
     @classmethod
@@ -26,7 +24,6 @@ class Config:
             'baiduCloud': BaiduCloud.desc(),
             'httpServer': ServerConfig.desc(),
             'miraiApiHttp': MiraiApiHttp.desc(),
-            'covidData': CovidData.desc(),
             'test': TestConfig.desc(),
         }
 
