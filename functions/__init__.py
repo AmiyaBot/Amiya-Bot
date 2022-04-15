@@ -5,4 +5,5 @@ from . import (user,
                weibo,
                replace,
                intellect,
-               arknights)
+               arknights,
+               covid)
