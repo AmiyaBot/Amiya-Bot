@@ -8,7 +8,8 @@ from pydantic import BaseModel
 from fastapi import Request, Depends, HTTPException
 from fastapi_login import LoginManager
 from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
-from core.database.user import Admin, model_to_dict
+from core.database.user import Admin, Role, model_to_dict
+from core.config import config
 
 
 class LoginManagerHook(LoginManager):
@@ -101,6 +102,29 @@ class AuthManager:
         Admin.update(last_login=int(time.time())).where(Admin.user_id == user_id).execute()
 
         return {'access_token': access_token, 'admin': model_to_dict(admin)}
+
+    @classmethod
+    async def set_super_admin(cls, routes):
+        if Role.get_or_none(id=1):
+            Role.update(access_path=routes).where(Role.id == 1).execute()
+        else:
+            Role.create(
+                id=1,
+                role_name='超级管理员',
+                access_path=routes,
+                active=1
+            )
+
+        for item in config.admin.accounts:
+            if not Admin.get_or_none(user_id=item):
+                Admin.create(
+                    user_id=item,
+                    role_id=1,
+                    password='admin123',
+                    active=1
+                )
+
+        Admin.update(role_id=1).where(Admin.user_id.in_(config.admin.accounts)).execute()
 
 
 @AuthManager.manager.user_loader()
