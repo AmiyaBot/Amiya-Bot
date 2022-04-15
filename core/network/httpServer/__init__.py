@@ -8,7 +8,6 @@ from starlette.staticfiles import StaticFiles
 from interfaces import controllers
 from core.network.httpServer.auth import AuthManager
 from core.network.httpServer.loader import interface
-from core.database.user import Role, Admin
 from core.config import config
 from core import log
 
@@ -59,24 +58,7 @@ class HttpServer:
                                                     log_config='config/private/server.yaml'))
 
     async def serve(self):
-        if Role.get_or_none(id=1):
-            Role.update(access_path=','.join(self.__routes)).where(Role.id == 1).execute()
-        else:
-            Role.create(
-                id=1,
-                role_name='超级管理员',
-                access_path=','.join(self.__routes),
-                active=1
-            )
-
-        for item in config.admin.accounts:
-            if not Admin.get_or_none(user_id=item):
-                Admin.create(
-                    user_id=item,
-                    role_id=1,
-                    password='admin123',
-                    active=1
-                )
+        await AuthManager.set_super_admin(','.join(self.__routes))
 
         if not os.path.exists('view'):
             await asyncio.sleep(5)
