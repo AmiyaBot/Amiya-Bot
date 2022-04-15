@@ -4,10 +4,12 @@ import time
 from typing import List
 
 from core import bot, Message, Chain, log
-from core.config import config
 from core.network.httpRequests import http_requests
+from core.util import read_yaml
 
-get_data_time = 0.0
+config = read_yaml('config/private/covid.yaml')
+
+reload_data_time = 0.0
 reload_time = config.covidData.reloadTime
 reload_request_times = config.covidData.reloadRequestTimes
 request_time_now = 0
@@ -18,17 +20,17 @@ special = ['台湾', '香港', '澳门']
 
 
 async def get_data():
-    global get_data_time
+    global reload_data_time
     global request_time_now
     global covid_data
     global vaccine_top_data
-    if time.time() - get_data_time > reload_time or request_time_now >= reload_request_times:
+    if time.time() - reload_data_time > reload_time or request_time_now >= reload_request_times:
         covid_data = json.loads(
             json.loads(await http_requests.get('https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5'))['data']
         )
         vaccine_top_data = json.loads(await http_requests.get('https://api.inews.qq.com/newsqa/v1/automation/modules'
                                                               '/list?modules=VaccineTopData'))['data']
-        get_data_time = time.time()
+        reload_data_time = time.time()
         request_time_now = 0
         log.info('Reload Covid Data')
 
