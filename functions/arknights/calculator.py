@@ -83,11 +83,11 @@ async def action(data: Message):
             year = time.localtime().tm_year
 
             if time_array.tm_year - year > 100:
-                return reply.text('博士，罗德岛的未来，需要我们携手踏踏实实地前进，可不能好高骛远哦，阿米娅会一直陪在博士身边的[face21]')
+                return reply.text('博士，罗德岛的未来，需要我们携手踏踏实实地前进，可不能好高骛远哦，阿米娅会一直陪在博士身边的[face:21]')
 
             time_stamp = time.mktime(time_array)
             if time.time() >= time_stamp:
-                return reply.text('博士，过去的只能成为了过去，我们只需要朝着我们的未来前进就好，可以的话，阿米娅会一直陪在博士身边的[face21]')
+                return reply.text('博士，过去的只能成为了过去，我们只需要朝着我们的未来前进就好，可以的话，阿米娅会一直陪在博士身边的[face:21]')
 
             text = calc_jade(time_stamp)
 

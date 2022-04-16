@@ -1,9 +1,8 @@
-import collections
 import json
 import time
-from typing import List
 
-from core import bot, Message, Chain, log
+from typing import List, Dict, Any
+from core import bot, Message, Chain
 from core.network.httpRequests import http_requests
 from core.util import read_yaml
 
@@ -14,8 +13,8 @@ reload_time = config.covidData.reloadTime
 reload_request_times = config.covidData.reloadRequestTimes
 request_time_now = 0
 
-covid_data = collections.defaultdict
-vaccine_top_data = collections.defaultdict
+covid_data: Dict[str, Any] = dict()
+vaccine_top_data: Dict[str, Any] = dict()
 special = ['台湾', '香港', '澳门']
 
 
@@ -24,6 +23,7 @@ async def get_data():
     global request_time_now
     global covid_data
     global vaccine_top_data
+
     if time.time() - reload_data_time > reload_time or request_time_now >= reload_request_times:
         covid_data = json.loads(
             json.loads(await http_requests.get('https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5'))['data']
@@ -32,14 +32,12 @@ async def get_data():
                                                               '/list?modules=VaccineTopData'))['data']
         reload_data_time = time.time()
         request_time_now = 0
-        log.info('Reload Covid Data')
 
 
 def get_latest_correct_data(data: List[dict], key, err_val) -> dict:
     for i in range(1, len(data) + 1):
         if data[-i][key] != err_val:
             return data[-i]
-    return None
 
 
 async def china_vaccine_trend():
@@ -63,8 +61,8 @@ async def world_vaccine_trend():
 async def city_covid(prov_name: str, city_name: str):
     try:
         await get_data()
-        areaTree_data = covid_data['areaTree']
-        for prov_data in areaTree_data[0]['children']:
+        area_tree_data = covid_data['areaTree']
+        for prov_data in area_tree_data[0]['children']:
             now_prov_name = prov_data['name']
             if prov_name != now_prov_name:
                 continue
@@ -84,8 +82,8 @@ async def city_covid(prov_name: str, city_name: str):
 async def prov_covid(prov_name: str):
     try:
         await get_data()
-        areaTree_data = covid_data['areaTree']
-        for prov_data in areaTree_data[0]['children']:
+        area_tree_data = covid_data['areaTree']
+        for prov_data in area_tree_data[0]['children']:
             now_prov_name = prov_data['name']
             if now_prov_name != prov_name:
                 continue
