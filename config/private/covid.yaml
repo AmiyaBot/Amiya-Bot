@@ -1,0 +1,3 @@
+covidData:
+    reloadTime: 600
+    reloadRequestTimes: 1000
