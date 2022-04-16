@@ -1,16 +1,17 @@
 import json
 import time
 
-from typing import List, Dict, Any
-from core import bot, Message, Chain
+from typing import Dict, Any
+from core import bot, Message, Chain, log
+from core.config import config
 from core.network.httpRequests import http_requests
-from core.util import read_yaml
+from core.util import read_yaml, is_all_chinese
 
-config = read_yaml('config/private/covid.yaml')
+covid_config = read_yaml('config/private/covid.yaml')
 
 reload_data_time = 0.0
-reload_time = config.covidData.reloadTime
-reload_request_times = config.covidData.reloadRequestTimes
+reload_time = covid_config.covidData.reloadTime
+reload_request_times = covid_config.covidData.reloadRequestTimes
 request_time_now = 0
 
 covid_data: Dict[str, Any] = dict()
@@ -34,10 +35,16 @@ async def get_data():
         request_time_now = 0
 
 
-def get_latest_correct_data(data: List[dict], key, err_val) -> dict:
-    for i in range(1, len(data) + 1):
-        if data[-i][key] != err_val:
-            return data[-i]
+async def get_area_data(area_name: str):
+    area = json.loads(await http_requests.get('https://apis.map.qq.com/ws/district/v1/search'
+                                              '?&keyword=%s'
+                                              '&key=%s' % (area_name, config.tencentLbs.key)))['result'][0]
+    result = []
+    for item in area:
+        if item['level'] > 2:
+            break
+        result.append(item['address'])
+    return result
 
 
 async def china_vaccine_trend():
@@ -112,17 +119,38 @@ async def china_covid():
 @bot.on_group_message(keywords='疫情查询')
 async def _(data: Message):
     data_list = data.text.split(' ')
+    if not is_all_chinese(data_list):
+        return Chain(data).text('博士，查询必须全中文哦！')
     if len(data_list) > 3:
         return Chain(data).text('博士，输入的地点格式不对哦！应遵循以下格式：'
-                                '\n兔兔疫情查询 省级行政区名（可选） 市级行政区名（可选），'
-                                '\n例如：'
-                                '\n兔兔疫情查询'
-                                '\n兔兔疫情查询 北京'
-                                '\n兔兔疫情查询 北京 朝阳')
+                                '\n兔兔疫情查询 <行政区名>（可选）'
+                                '\n目前支持进行全国、省级、市级查询')
     if len(data_list) == 1:
         result = await china_covid()
     elif len(data_list) == 2:
-        result = await prov_covid(data_list[1])
+        if config.tencentLbs.enable:
+            try:
+                result_list = await get_area_data(data_list[1])
+                if len(result_list) > 1:
+                    choose_text = ''
+                    for i in range(len(result_list)):
+                        choose_text += '\n' + str(i + 1) + '.' + result_list[i]
+                    index = int((await data.waiting(Chain(data).text('博士，阿米娅找到了以下相关地区，发送序号来告诉阿米娅您想找的是哪一个吧！'
+                                                                     + choose_text))).text) - 1
+                else:
+                    index = 0
+                place = result_list[index].split(',')
+                if len(place) == 1:
+                    result = await prov_covid(place[0])
+                else:
+                    result = await city_covid(place[0], place[1])
+                    data_list[1] = place[0]
+                    data_list.append(place[1])
+            except IndexError:
+                log.info("aaa")
+                result = None
+        else:
+            result = await prov_covid(data_list[1])
     else:
         result = await city_covid(data_list[1], data_list[2])
     place = ''
@@ -131,14 +159,11 @@ async def _(data: Message):
     place += ' '.join(data_list[1:])
     if result is None:
         return Chain(data).text('博士，未查询到 %s 疫情数据！原因可能是格式不符，应为：'
-                                '\n兔兔疫情查询 省级行政区名（可选） 市级行政区名（可选），'
-                                '\n例如：'
-                                '\n兔兔疫情查询'
-                                '\n兔兔疫情查询 北京'
-                                '\n兔兔疫情查询 北京 朝阳' % place)
+                                '\n兔兔疫情查询 <行政区名>（可选）'
+                                '\n目前支持进行全国、省级、市级查询' % place)
     return Chain(data).text('截止%s，%s 共有确诊病例%d例，昨日新增%d例，共治愈%d例，累计死亡%d例'
                             '\n数据来源：国家及各地卫健委每日信息发布'
-                            '\n数据整合：腾讯'
+                            '\n数据整合：腾讯新闻'
                             % (result[0], place, result[1], result[2],
                                result[3], result[4]))
 
@@ -147,7 +172,7 @@ async def _(data: Message):
 async def _(data: Message):
     return Chain(data).text('目前全球共接种了%d剂次新冠疫苗'
                             '\n数据来源：OurWorldInData, WHO等官方数据'
-                            '\n数据整合：腾讯'
+                            '\n数据整合：腾讯新闻'
                             % (await world_vaccine_trend())['total_vaccinations'])
 
 
@@ -155,7 +180,7 @@ async def _(data: Message):
 async def _(data: Message):
     return Chain(data).text('目前国内共接种了%d剂次新冠疫苗'
                             '\n数据来源：国家及各地卫健委每日信息发布'
-                            '\n数据整合：腾讯'
+                            '\n数据整合：腾讯新闻'
                             % (await china_vaccine_trend())['total_vaccinations'])
 
 
