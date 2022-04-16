@@ -1,6 +1,8 @@
 import re
 import os
 import time
+from typing import List
+
 import yaml
 import jieba
 import jionlp
@@ -361,3 +363,11 @@ def chinese_to_digits(text: str):
         text = text.replace(symbol_str, digits, 1)
 
     return text
+
+
+def is_all_chinese(text: List[str]):
+    for word in text:
+        for char in word:
+            if not '\u4e00' <= char <= '\u9fff':
+                return False
+    return True
