@@ -16,8 +16,7 @@ class HttpServer:
     def __init__(self):
         self.__routes = []
 
-        self.app = FastAPI(title='AmiyaBot Console Interfaces',
-                           description='AmiyaBot 后台管理系统接口，https://www.amiyabot.com/docs/amiyaConsole.html')
+        self.app = FastAPI()
         self.server = self.load_server()
         self.load_controllers()
 

@@ -78,16 +78,9 @@ async def action(data: Message):
     try:
         time_array = extract_time(data.text_origin)
         if time_array:
-            time_array = time_array[-1]
-
-            year = time.localtime().tm_year
-
-            if time_array.tm_year - year > 100:
-                return reply.text('博士，这片大地变幻莫测，罗德岛的未来有太多不可预期，阿米娅觉得我们更应该把眼光放在当下[face:21]')
-
-            time_stamp = time.mktime(time_array)
+            time_stamp = time.mktime(time_array[-1])
             if time.time() >= time_stamp:
-                return reply.text('博士，过去的只能成为了过去，我们只需要朝着我们的未来前进就好，可以的话，阿米娅会一直陪在博士身边的[face:21]')
+                return reply.text('博士，过去的只能成为了过去，我们只需要朝着我们的未来前进就好，可以的话，阿米娅会一直陪在博士身边的[face21]')
 
             text = calc_jade(time_stamp)
 
