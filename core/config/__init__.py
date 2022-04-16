@@ -4,7 +4,6 @@ from core.util import read_yaml, create_yaml, combine_dict
 from .mahConfig import MiraiApiHttp
 from .adminConfig import Admin
 from .baiduConfig import BaiduCloud
-from .mapConfig import MapConfig
 from .serverConfig import ServerConfig
 from .testConfig import TestConfig
 
@@ -16,7 +15,6 @@ class Config:
     baiduCloud: BaiduCloud
     httpServer: ServerConfig
     miraiApiHttp: MiraiApiHttp
-    tencentLbs: MapConfig
     test: TestConfig
 
     @classmethod
@@ -26,7 +24,6 @@ class Config:
             'baiduCloud': BaiduCloud.desc(),
             'httpServer': ServerConfig.desc(),
             'miraiApiHttp': MiraiApiHttp.desc(),
-            'tencentLbs': MapConfig.desc(),
             'test': TestConfig.desc(),
         }
 

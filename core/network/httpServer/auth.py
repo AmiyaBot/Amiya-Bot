@@ -12,7 +12,7 @@ from core.database.user import Admin, Role, model_to_dict
 from core.config import config
 
 
-class LoginManagerMiddleware(LoginManager):
+class LoginManagerHook(LoginManager):
     def __init__(self, secret: str, token_url: str):
         super().__init__(secret, token_url, custom_exception=HTTPException(
             status_code=401,
@@ -61,7 +61,7 @@ class AuthModel(BaseModel):
 class AuthManager:
     login_url = '/login'
     token_url = '/token'
-    manager = LoginManagerMiddleware(os.urandom(24).hex(), token_url=token_url)
+    manager = LoginManagerHook(os.urandom(24).hex(), token_url=token_url)
 
     @classmethod
     def depends(cls) -> Admin:
