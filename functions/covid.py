@@ -122,8 +122,7 @@ async def _(data: Message):
     if not is_all_chinese(data_list):
         return Chain(data).text('博士，地区名称必须为中文哦！')
     if len(data_list) > 3:
-        return Chain(data).text('博士，输入的地点格式不对哦！格式：'
-                                '\n兔兔疫情查询 <行政区名>（可选）')
+        return Chain(data).text('博士，输入地点的格式不对哦！')
     if len(data_list) == 1:
         result = await china_covid()
     elif len(data_list) == 2:
@@ -157,8 +156,8 @@ async def _(data: Message):
         place += '中国'
     place += ' '.join(data_list[1:])
     if result is None:
-        return Chain(data).text('博士，未查询到 %s 疫情数据！请检查格式和是否有错别字后重试！（如多次出现此故障请联系开发者）' % place)
-    return Chain(data).text('截至%s，%s 共有确诊病例%d例，昨日新增%d例，共治愈%d例，累计死亡%d例'
+        return Chain(data).text('博士，未查询到【%s】疫情数据！请检查格式和是否有错别字后重试！（如多次出现此故障请联系开发者）' % place)
+    return Chain(data).text('截至%s，【%s】共有确诊病例%d例，昨日新增%d例，共治愈%d例，累计死亡%d例'
                             '\n数据来源：国家及各地卫健委每日信息发布'
                             '\n数据整合：腾讯新闻'
                             % (result[0], place, result[1], result[2],
