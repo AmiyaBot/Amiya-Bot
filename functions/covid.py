@@ -122,9 +122,8 @@ async def _(data: Message):
     if not is_all_chinese(data_list):
         return Chain(data).text('博士，查询必须全中文哦！')
     if len(data_list) > 3:
-        return Chain(data).text('博士，输入的地点格式不对哦！应遵循以下格式：'
-                                '\n兔兔疫情查询 <行政区名>（可选）'
-                                '\n目前支持进行全国、省级、市级查询')
+        return Chain(data).text('博士，输入的地点格式不对哦！格式：'
+                                '\n兔兔疫情查询 <行政区名>（可选）')
     if len(data_list) == 1:
         result = await china_covid()
     elif len(data_list) == 2:
@@ -158,9 +157,7 @@ async def _(data: Message):
         place += '中国'
     place += ' '.join(data_list[1:])
     if result is None:
-        return Chain(data).text('博士，未查询到 %s 疫情数据！原因可能是格式不符，应为：'
-                                '\n兔兔疫情查询 <行政区名>（可选）'
-                                '\n目前支持进行全国、省级、市级查询' % place)
+        return Chain(data).text('博士，未查询到 %s 疫情数据！请检查格式和是否有错别字后重试！（如多次出现此故障请联系开发者）' % place)
     return Chain(data).text('截止%s，%s 共有确诊病例%d例，昨日新增%d例，共治愈%d例，累计死亡%d例'
                             '\n数据来源：国家及各地卫健委每日信息发布'
                             '\n数据整合：腾讯新闻'
@@ -170,7 +167,7 @@ async def _(data: Message):
 
 @bot.on_group_message(keywords='全球疫苗查询')
 async def _(data: Message):
-    return Chain(data).text('目前全球共接种了%d剂次新冠疫苗'
+    return Chain(data).text('目前全球共报告接种新冠疫苗%d剂次'
                             '\n数据来源：OurWorldInData, WHO等官方数据'
                             '\n数据整合：腾讯新闻'
                             % (await world_vaccine_trend())['total_vaccinations'])
@@ -178,7 +175,7 @@ async def _(data: Message):
 
 @bot.on_group_message(keywords='国内疫苗查询')
 async def _(data: Message):
-    return Chain(data).text('目前国内共接种了%d剂次新冠疫苗'
+    return Chain(data).text('目前国内共报告接种新冠疫苗%d剂次'
                             '\n数据来源：国家及各地卫健委每日信息发布'
                             '\n数据整合：腾讯新闻'
                             % (await china_vaccine_trend())['total_vaccinations'])
