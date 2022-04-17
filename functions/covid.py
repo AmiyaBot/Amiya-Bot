@@ -2,7 +2,7 @@ import json
 import time
 
 from typing import Dict, Any
-from core import bot, Message, Chain, log
+from core import bot, Message, Chain
 from core.config import config
 from core.network.httpRequests import http_requests
 from core.util import read_yaml, is_all_chinese
@@ -81,9 +81,13 @@ async def city_covid(prov_name: str, city_name: str):
                 confirm_add = city_data['today']['confirm']
                 heal = city_data['total']['heal']
                 dead = city_data['total']['dead']
-                return covid_data['lastUpdateTime'], confirm, confirm_add, heal, dead
+                if prov_name in special:
+                    prov_name = '中国' + prov_name
+                return prov_name + city_name, covid_data['lastUpdateTime'], confirm, confirm_add, heal, dead
     except KeyError:
-        return None
+        if prov_name in special:
+            prov_name = '中国' + prov_name
+        return prov_name + city_name
 
 
 async def prov_covid(prov_name: str):
@@ -98,9 +102,13 @@ async def prov_covid(prov_name: str):
             confirm_add = prov_data['today']['confirm']
             heal = prov_data['total']['heal']
             dead = prov_data['total']['dead']
-            return covid_data['lastUpdateTime'], confirm, confirm_add, heal, dead
+            if prov_name in special:
+                prov_name = '中国' + prov_name
+            return prov_name, covid_data['lastUpdateTime'], confirm, confirm_add, heal, dead
     except KeyError:
-        return None
+        if prov_name in special:
+            prov_name = '中国' + prov_name
+        return prov_name
 
 
 async def china_covid():
@@ -111,58 +119,76 @@ async def china_covid():
         confirm_add = china_data['today']['confirm']
         heal = china_data['total']['heal']
         dead = china_data['total']['dead']
-        return covid_data['lastUpdateTime'], confirm, confirm_add, heal, dead
+        return '中国', covid_data['lastUpdateTime'], confirm, confirm_add, heal, dead
     except KeyError:
-        return None
+        return '中国'
 
 
-@bot.on_group_message(keywords='疫情查询')
+async def pure_query():
+    return await china_covid()
+
+
+async def prov_or_city_query(data: Message):
+    data_list = data.text.split(' ')
+    if config.tencentLbs.enable:
+        try:
+            result_list = await get_area_data(data_list[1])
+            index = 0
+            if len(result_list) > 1:
+                choose_text = ''
+                for i in range(len(result_list)):
+                    choose_text += '\n' + str(i + 1) + '.' + result_list[i]
+                index = int((await data.waiting(Chain(data).text('博士，阿米娅找到了以下相关地区，'
+                                                                 '发送序号来告诉阿米娅您想找的是哪一个吧！'
+                                                                 + choose_text))).text) - 1
+            place = result_list[index].split(',')
+            if len(place) == 1:
+                return await prov_covid(place[0])
+            return await city_covid(place[0], place[1])
+        except IndexError:
+            return None
+    return prov_covid(data_list[1])
+
+
+async def city_query(data: Message):
+    data_list = data.text.split(' ')
+    return await city_covid(data_list[1], data_list[2])
+
+
+async def covid_query(data: Message):
+    func_dict = {
+        1: pure_query,
+        2: prov_or_city_query,
+        3: city_query,
+    }
+    param_dict = {
+        1: False,
+        2: True,
+        3: True,
+    }
+    return func_dict.get(len(data.text.split(' '))), param_dict.get(len(data.text.split(' ')))
+
+
+@bot.on_group_message(keywords='疫情查询', level=10)
 async def _(data: Message):
     data_list = data.text.split(' ')
     if not is_all_chinese(data_list):
         return Chain(data).text('博士，查询必须全中文哦！')
-    if len(data_list) > 3:
+    query = await covid_query(data)
+    if query is None:
         return Chain(data).text('博士，输入的地点格式不对哦！格式：'
                                 '\n兔兔疫情查询 <行政区名>（可选）')
-    if len(data_list) == 1:
-        result = await china_covid()
-    elif len(data_list) == 2:
-        if config.tencentLbs.enable:
-            try:
-                result_list = await get_area_data(data_list[1])
-                if len(result_list) > 1:
-                    choose_text = ''
-                    for i in range(len(result_list)):
-                        choose_text += '\n' + str(i + 1) + '.' + result_list[i]
-                    index = int((await data.waiting(Chain(data).text('博士，阿米娅找到了以下相关地区，发送序号来告诉阿米娅您想找的是哪一个吧！'
-                                                                     + choose_text))).text) - 1
-                else:
-                    index = 0
-                place = result_list[index].split(',')
-                if len(place) == 1:
-                    result = await prov_covid(place[0])
-                else:
-                    result = await city_covid(place[0], place[1])
-                    data_list[1] = place[0]
-                    data_list.append(place[1])
-            except IndexError:
-                log.info("aaa")
-                result = None
-        else:
-            result = await prov_covid(data_list[1])
+    if query[1]:
+        result = await query[0](data)
     else:
-        result = await city_covid(data_list[1], data_list[2])
-    place = ''
-    if (len(data_list) == 1) or (len(data_list) > 1 and data_list[1] in special):
-        place += '中国'
-    place += ' '.join(data_list[1:])
-    if result is None:
-        return Chain(data).text('博士，未查询到 %s 疫情数据！请检查格式和是否有错别字后重试！（如多次出现此故障请联系开发者）' % place)
+        result = await query[0]()
+    if len(result) == 1:
+        return Chain(data).text('博士，未查询到 %s 疫情数据！请检查格式和是否有错别字后重试！（如多次出现此故障请联系开发者）' % result[0])
     return Chain(data).text('截止%s，%s 共有确诊病例%d例，昨日新增%d例，共治愈%d例，累计死亡%d例'
                             '\n数据来源：国家及各地卫健委每日信息发布'
                             '\n数据整合：腾讯新闻'
-                            % (result[0], place, result[1], result[2],
-                               result[3], result[4]))
+                            % (result[1], result[0], result[2], result[3],
+                               result[4], result[5]))
 
 
 @bot.on_group_message(keywords='全球疫苗查询')
