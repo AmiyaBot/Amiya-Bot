@@ -151,7 +151,7 @@ async def china_covid():
 
 
 # 疫情查询监听
-@bot.on_group_message(keywords='疫情查询')
+@bot.on_group_message(keywords='疫情查询', level=3)
 async def _(data: Message):
     data_list = data.text.split(' ')
     # 防止出现符号
