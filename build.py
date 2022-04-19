@@ -111,7 +111,10 @@ def build(version, folder):
         cmd.append(disc[0] + ':')
 
     cmd += [
-        f'pyi-makespec -F -n AmiyaBot-{version} -i {local}/amiya.ico --version-file={folder}/version.txt {local}/amiya.py',
+        f'set PLAYWRIGHT_BROWSERS_PATH=0',
+        f'playwright install chromium',
+        f'pyi-makespec -F -n AmiyaBot-{version} -i {local}/amiya.ico'
+        f' --version-file={folder}/version.txt {local}/amiya.py',
         f'pyinstaller AmiyaBot-{version}.spec'
     ]
 
