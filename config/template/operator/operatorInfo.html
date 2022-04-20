@@ -33,7 +33,7 @@
                     {{ item.potential_desc }}
                 </div>
             </div>
-            <div class="range" v-html="range(data.info.range)"></div>
+            <div class="range" style="margin: 15px 0" v-html="range(data.info.range)"></div>
             <div class="operator-name">
                 <div class="class-info">
                     <div style="width: 60px;padding: 5px;background: #000">
@@ -41,13 +41,13 @@
                              :src="'../../../resource/images/classify/' + classesIcons[data.info.classes]"
                              alt="classify">
                     </div>
-                    <div class="trait" v-html="colorSpan(data.detail.operator_trait)"></div>
+                    <div class="trait" v-html="colorSpan(data.detail.operator_trait, false)"></div>
                 </div>
                 <div style="font-size: 30px">
                     <i v-for="n in data.info.rarity">★</i>
                 </div>
-                <div style="font-size: 30px">{{ data.info.en_name }}</div>
-                <div style="font-size: 60px">{{ data.info.name }}</div>
+                <div class="name" style="font-size: 30px">{{ data.info.en_name }}</div>
+                <div class="name" style="font-size: 60px">{{ data.info.name }}</div>
             </div>
         </div>
         <div class="right">
@@ -107,7 +107,7 @@
                 return this.data.detail[name] + (this.data.trust[name] ? `<span>+${this.data.trust[name]}</span>` : '')
             },
             skillItem(item) {
-                return this.data.skills_desc[item.skill_no][8]
+                return this.data.skills_desc[item.skill_no][6]
             },
             range(text) {
                 let lines = []
@@ -130,9 +130,9 @@
                 }
                 return lines.join('')
             },
-            colorSpan(text) {
-                text = text.replace(/\[cl /g, '<span class="mark">')
-                text = text.replace(/@#174CC6 cle]/g, '</span>')
+            colorSpan(text, tag = true) {
+                text = text.replace(/\[cl /g, tag ? '<span class="mark">' : '')
+                text = text.replace(/@#174CC6 cle]/g, tag ? '</span>' : '')
                 text = text.replace(/\n/g, '<br/>')
 
                 return text
