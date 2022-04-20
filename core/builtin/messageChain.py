@@ -6,7 +6,9 @@ from contextlib import asynccontextmanager
 from core.util import read_yaml
 from core.builtin.message import Message
 from core.builtin.imageCreator import create_image, ImageElem, IMAGES_TYPE
+from core.builtin.htmlConverter import ChromiumBrowser
 from core.builtin.resourceManager import ResourceManager
+from core import log
 
 config = read_yaml('config/private/bot.yaml')
 
@@ -117,8 +119,7 @@ class Chain:
         for item in target:
             self.chain.append({
                 'type': 'Image',
-                'path': item,
-                'imageId': None
+                'path': item
             })
         return self
 
@@ -129,27 +130,61 @@ class Chain:
         for item in target:
             self.voice_list.append({
                 'type': 'Voice',
-                'path': item,
-                'voiceId': None
+                'path': item
             })
+        return self
+
+    def html(self, template: str, data: Union[dict, list] = None, is_file: bool = True):
+        self.chain.append({
+            'type': 'Html',
+            'data': data,
+            'template': f'config/template/{template}',
+            'is_file': is_file
+        })
         return self
 
     async def build(self, session: str, chain: list = None, sync_id: int = 1):
 
         chain = chain or self.chain
+        chain_data = []
+
         if chain:
             for item in chain:
-                if item['type'] == 'Image' and not item['imageId']:
-                    item['imageId'] = await ResourceManager.get_image_id(item['path'], self.data.type)
-                    del item['path']
-                if item['type'] == 'Voice' and not item['voiceId']:
-                    item['voiceId'] = await ResourceManager.get_voice_id(item['path'], self.data.type)
-                    del item['path']
+                if item['type'] == 'Image':
+                    chain_data.append({
+                        'type': 'Image',
+                        'imageId': await ResourceManager.get_image_id(item['path'], self.data.type)
+                    })
+                    continue
+
+                if item['type'] == 'Voice':
+                    chain_data.append({
+                        'type': 'Voice',
+                        'voiceId': await ResourceManager.get_voice_id(item['path'], self.data.type)
+                    })
+                    continue
+
+                if item['type'] == 'Html':
+                    async with log.catch('html convert error:'):
+                        browser = ChromiumBrowser()
+                        page = await browser.open_page(item['template'], is_file=item['is_file'])
+
+                        if item['data']:
+                            await page.init_data(item['data'])
+
+                        chain_data.append({
+                            'type': 'Image',
+                            'imageId': await ResourceManager.get_image_id(await page.make_image(), self.data.type)
+                        })
+                        await page.close()
+                    continue
+
+                chain_data.append(item)
 
         content = {
             'target': self.target,
             'sessionKey': session,
-            'messageChain': chain
+            'messageChain': chain_data
         }
 
         if self.quote:

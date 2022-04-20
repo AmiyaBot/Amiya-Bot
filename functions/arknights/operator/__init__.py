@@ -356,6 +356,6 @@ async def _(data: Message):
 async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['name'], text=data.text)
 
-    result = OperatorData.get_detail_info(info)
+    result = await OperatorData.get_detail_info(info)
 
-    return Chain(data).text_image(*result)
+    return Chain(data).html('operator/operatorInfo.html', result)

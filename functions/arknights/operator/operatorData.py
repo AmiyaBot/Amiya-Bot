@@ -1,6 +1,6 @@
 import os
 
-from core.resource.arknightsGameData import ArknightsGameData
+from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
 from core.resource.arknightsGameData.operatorBuilder import ArknightsConfig, parse_template
 from core.builtin.imageCreator import TextParser
 from core.builtin.messageChain import MAX_SEAT
@@ -19,6 +19,47 @@ icon_size = 34
 
 
 class OperatorData:
+    @classmethod
+    async def get_detail_info(cls, info: OperatorSearchInfo):
+        operators = ArknightsGameData().operators
+
+        if not info.name or info.name not in operators:
+            return '博士，请仔细描述想要查询的信息哦'
+
+        operator = operators[info.name]
+
+        detail, trust = operator.detail()
+
+        info.level = 7
+        info.skill = ''
+        info.skill_index = 0
+        skill_list, skills_cost, skills_desc = cls.check_skill_list(
+            OperatorInfo.skill_operator,
+            info
+        )
+
+        return {
+            'info': {
+                'id': operator.id,
+                'name': operator.name,
+                'en_name': operator.en_name,
+                'rarity': operator.rarity,
+                'range': operator.range,
+                'classes': operator.classes,
+                'classes_sub': operator.classes_sub,
+                'birthday': operator.birthday
+            },
+            'skin': await ArknightsGameDataResource.get_skin_file(operator, operator.skins()[0]),
+            'trust': trust,
+            'detail': detail,
+            'talents': operator.talents(),
+            'potential': operator.potential(),
+            'building_skills': operator.building_skills(),
+            'skill_list': skill_list,
+            'skills_cost': skills_cost,
+            'skills_desc': skills_desc,
+        }
+
     @classmethod
     def check_evolve_costs(cls, info: OperatorSearchInfo):
         operators = ArknightsGameData().operators
@@ -88,100 +129,6 @@ class OperatorData:
             return cls.build_module_content(info.name, modules)
         else:
             return f'博士，干员{info.name}尚未拥有模组哦~'
-
-    @classmethod
-    def get_detail_info(cls, info: OperatorSearchInfo):
-        operators = ArknightsGameData().operators
-
-        if not info.name or info.name not in operators:
-            return '博士，请仔细描述想要查询的信息哦'
-
-        operator = operators[info.name]
-
-        detail, trust = operator.detail()
-        talents = operator.talents()
-        potential = operator.potential()
-        building_skills = operator.building_skills()
-
-        text = '博士，为您找到以下干员资料\n\n\n\n\n\n\n'
-        icons = [
-            {
-                'path': avatars_images_source + operator.id + '.png',
-                'size': 80,
-                'pos': (side_padding, 30)
-            }
-        ]
-
-        text += '%s [%s]\n%s\n\n' % (operator.name,
-                                     operator.en_name,
-                                     '★' * operator.rarity)
-
-        text += '%s\n' % operator.range
-
-        text += '【职业】%s - %s\n　%s\n\n' % (operator.classes, operator.classes_sub, detail['operator_trait'])
-
-        text += '【生日】%s\n\n' % operator.birthday
-
-        text += '%s\n -- 「%s」\n\n' % (detail['operator_usage'], detail['operator_quote'])
-
-        text += '【信物】\n　%s\n\n' % detail['operator_token'] if detail['operator_token'] else ''
-
-        text += '【精英 %s 级属性】\n' % detail['max_level']
-
-        for key, name in ArknightsConfig.attr_dict.items():
-            text += f' -- {name}：'
-            if key in detail:
-                text += str(integer(detail[key]))
-            if key in trust and int(trust[key]):
-                text += '(%s)' % integer(trust[key])
-            text += '\n'
-
-        talents_text = ''
-        for item in talents:
-            talents_text += '<[cl %s@#174CC6 cle]>\n　%s\n' % (item['talents_name'], item['talents_desc'])
-        text += ('\n【天赋】\n%s\n' % talents_text) if talents_text else ''
-
-        potential_text = ''
-        for item in potential:
-            potential_text += '　[%s] %s\n' % (InitData.potential_rank[item['potential_rank']], item['potential_desc'])
-        text += ('【潜能】\n%s\n' % potential_text) if potential_text else ''
-
-        building_text = ''
-        for item in building_skills:
-            building_text += '<[cl %s@#174CC6 cle]>\n　[cl 精英%s解锁@#D60008 cle]\n　%s\n' % \
-                             (item['bs_name'], item['bs_unlocked'], item['bs_desc'])
-        text += ('【基建技能】\n%s\n' % building_text) if building_text else ''
-
-        info.level = 7
-        info.skill = ''
-        info.skill_index = 0
-        skill_list, skills_cost, skills_desc = cls.check_skill_list(
-            OperatorInfo.skill_operator,
-            info
-        )
-
-        result = []
-
-        for skl in skill_list:
-            details = skills_desc[skl['skill_no']]
-            dt = {
-                'skill_name': skl['skill_name'],
-                'skill_index': skl['skill_index'],
-                'skill_icon': skl['skill_icon']
-            }
-            dt.update(details[info.level - 1])
-            result.append(dt)
-
-        if result:
-            text += '【7级技能】\n\n'
-            top = TextParser(text, MAX_SEAT).line * line_height + int(line_height / 2) + side_padding
-
-            content, skill_icons = cls.build_skill_content(result, top)
-
-            text += content
-            icons += skill_icons
-
-        return text, icons
 
     @classmethod
     def get_skill_data(cls, info: OperatorSearchInfo):
