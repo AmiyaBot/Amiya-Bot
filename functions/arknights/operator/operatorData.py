@@ -4,7 +4,7 @@ from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameData
 from core.resource.arknightsGameData.operatorBuilder import ArknightsConfig, parse_template
 from core.builtin.imageCreator import TextParser
 from core.builtin.messageChain import MAX_SEAT
-from core.util import integer, any_match
+from core.util import integer, any_match, snake_case_to_pascal_case
 
 from .initData import OperatorSearchInfo, InitData
 from .operatorInfo import OperatorInfo
@@ -29,6 +29,15 @@ class OperatorData:
         operator = operators[info.name]
 
         detail, trust = operator.detail()
+        modules = operator.modules()
+
+        module_attr = {}
+        if modules:
+            module = modules[-1]
+            if module['detail']:
+                attrs = module['detail']['phases'][-1]['attributeBlackboard']
+                for attr in attrs:
+                    module_attr[snake_case_to_pascal_case(attr['key'])] = integer(attr['value'])
 
         info.level = 7
         info.skill = ''
@@ -37,7 +46,6 @@ class OperatorData:
             OperatorInfo.skill_operator,
             info
         )
-
         return {
             'info': {
                 'id': operator.id,
@@ -52,6 +60,7 @@ class OperatorData:
             'skin': await ArknightsGameDataResource.get_skin_file(operator, operator.skins()[0]),
             'trust': trust,
             'detail': detail,
+            'modules': module_attr,
             'talents': operator.talents(),
             'potential': operator.potential(),
             'building_skills': operator.building_skills(),

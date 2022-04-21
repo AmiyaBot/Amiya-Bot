@@ -35,7 +35,7 @@ body {
 }
 
 .right {
-    width: 55%;
+    width: 57%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -54,8 +54,12 @@ body {
     background: rgb(236 236 236 / 80%);
 }
 
-.operator-attr .attr span {
-    color: #00b3ff;
+.operator-attr .attr span.a {
+    color: #0069ff;
+}
+
+.operator-attr .attr span.b {
+    color: #ff641e;
 }
 
 .operator-attr .attr:before {
@@ -75,22 +79,21 @@ body {
 
 .operator-name .name {
     border-radius: 2px;
-    background: rgb(236 236 236 / 80%);
+    background: linear-gradient(to left, rgb(236 236 236 / 80%), rgb(236 236 236 / 0%));
 }
 
 .class-info {
     display: flex;
     height: 60px;
-    margin-bottom: 10px;
 }
 
 .trait {
-    width: calc(100% - 80px);
     font-size: 16px;
-    padding: 0 20px;
+    padding: 10px 10px 10px 0;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
-    background: rgb(236 236 236 / 80%);
+    background: linear-gradient(to left, rgb(236 236 236 / 80%), rgb(236 236 236 / 0%));
 }
 
 .skill-item {
@@ -102,12 +105,12 @@ body {
 }
 
 .skill-item:not(:last-child) {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .skill-type {
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .skill-type > div {
@@ -130,6 +133,7 @@ body {
     width: 120px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .skill-desc {
@@ -164,23 +168,30 @@ body {
 }
 
 .title {
-    background: #000;
     color: #fff;
+    background: #000;
     padding: 0 10px;
+}
+
+.exInfo {
+    display: flex;
+    align-items: flex-start;
+}
+
+.exInfo:last-child {
     margin-bottom: 10px;
 }
 
+.exInfo > div {
+    font-size: 15px !important;
+    background: rgb(255 255 255 / 50%);
+}
+
+
 .potential {
     display: flex;
-    align-items: center;
 }
 
-.building {
-    display: flex;
-    align-items: center;
-}
-
-.potential > div,
-.building > div {
-    font-size: 15px !important;
+.title + .potential {
+    margin-top: 5px;
 }

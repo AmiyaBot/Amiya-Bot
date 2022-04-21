@@ -47,6 +47,7 @@ class SimulationClient(WSOperation, ABC):
 
                     if item['data']:
                         await page.init_data(item['data'])
+                        await asyncio.sleep(0.2)
 
                     png = f'fileStorage/test/{int(time.time())}.png'
 

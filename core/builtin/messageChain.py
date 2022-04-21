@@ -1,5 +1,6 @@
 import re
 import json
+import asyncio
 
 from typing import Union, List
 from contextlib import asynccontextmanager
@@ -171,6 +172,7 @@ class Chain:
 
                         if item['data']:
                             await page.init_data(item['data'])
+                            await asyncio.sleep(0.2)
 
                         chain_data.append({
                             'type': 'Image',

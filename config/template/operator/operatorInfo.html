@@ -13,24 +13,26 @@
     <div :style="{backgroundImage: `url('../../../${data.skin}')`}"
          class="background">
         <div class="left">
-            <div class="operator-attr">
-                <div class="attr" title="攻击力" v-html="attr('atk')"></div>
-                <div class="attr" title="攻击速度" v-html="attr('attackSpeed')"></div>
-                <div class="attr" title="攻击间隔" v-html="attr('baseAttackTime')"></div>
-                <div class="attr" title="阻挡数" v-html="attr('blockCnt')"></div>
-                <div class="attr" title="部署费用" v-html="attr('cost')"></div>
-                <div class="attr" title="防御力" v-html="attr('def')"></div>
-                <div class="attr" title="魔法抗性" v-html="attr('magicResistance')"></div>
-                <div class="attr" title="最大生命值" v-html="attr('maxHp')"></div>
-                <div class="attr" title="再部署时间" v-html="attr('respawnTime')">秒</div>
-            </div>
             <div>
-                <div class="title" style="width: 120px">潜能提升</div>
-                <div class="potential" v-for="item in data.potential">
-                    <img style="width: 25px;margin-right: 10px"
-                         :src="'../../../resource/images/rank/' + item.potential_rank + '.png'"
-                         alt="rank">
-                    {{ item.potential_desc }}
+                <div class="operator-attr">
+                    <div class="attr" title="最大生命值" v-html="attr('maxHp')"></div>
+                    <div class="attr" title="攻击力" v-html="attr('atk')"></div>
+                    <div class="attr" title="防御力" v-html="attr('def')"></div>
+                    <div class="attr" title="魔法抗性" v-html="attr('magicResistance')"></div>
+                    <div class="attr" title="攻击速度" v-html="attr('attackSpeed')"></div>
+                    <div class="attr" title="攻击间隔" v-html="attr('baseAttackTime')"></div>
+                    <div class="attr" title="阻挡数" v-html="attr('blockCnt')"></div>
+                    <div class="attr" title="部署费用" v-html="attr('cost')"></div>
+                    <div class="attr" title="再部署时间" v-html="attr('respawnTime') + '秒'"></div>
+                </div>
+                <div>
+                    <div class="title" style="width: 120px">潜能提升</div>
+                    <div class="potential" v-for="item in data.potential">
+                        <img style="width: 25px;margin-right: 10px"
+                             :src="'../../../resource/images/rank/' + (item.potential_rank + 1) + '.png'"
+                             alt="rank">
+                        {{ item.potential_desc }}
+                    </div>
                 </div>
             </div>
             <div class="range" style="margin: 15px 0" v-html="range(data.info.range)"></div>
@@ -41,11 +43,14 @@
                              :src="'../../../resource/images/classify/' + classesIcons[data.info.classes]"
                              alt="classify">
                     </div>
-                    <div class="trait" v-html="colorSpan(data.detail.operator_trait, false)"></div>
+                    <div style="display: flex;flex-direction: column;justify-content: center;padding-left: 10px">
+                        <div style="font-size: 30px;display: flex">
+                            <i v-for="n in data.info.rarity">★</i>
+                        </div>
+                        <div>{{ data.info.classes }} - {{ data.info.classes_sub }}</div>
+                    </div>
                 </div>
-                <div style="font-size: 30px">
-                    <i v-for="n in data.info.rarity">★</i>
-                </div>
+                <div class="trait" v-html="colorSpan(data.detail.operator_trait, false)"></div>
                 <div class="name" style="font-size: 30px">{{ data.info.en_name }}</div>
                 <div class="name" style="font-size: 60px">{{ data.info.name }}</div>
             </div>
@@ -53,14 +58,14 @@
         <div class="right">
             <div>
                 <div class="title">天赋</div>
-                <div class="potential" v-for="item in data.talents">
+                <div class="exInfo" v-for="item in data.talents">
                     <div style="width: 100px">{{ item.talents_name }}</div>
                     <div style="width: calc(100% - 100px);padding-left: 10px">{{ item.talents_desc }}</div>
                 </div>
             </div>
             <div>
                 <div class="title">基建技能</div>
-                <div class="building" v-for="item in data.building_skills">
+                <div class="exInfo" v-for="item in data.building_skills">
                     <div style="width: 60px">精英{{ item.bs_unlocked }}</div>
                     <div style="width: 100px">{{ item.bs_name }}</div>
                     <div style="width: calc(100% - 160px);padding-left: 10px">{{ item.bs_desc }}</div>
@@ -104,7 +109,9 @@
                 this.$set(this, 'data', data)
             },
             attr(name) {
-                return this.data.detail[name] + (this.data.trust[name] ? `<span>+${this.data.trust[name]}</span>` : '')
+                return this.data.detail[name]
+                    + (this.data.trust[name] ? `<span class="a">+${this.data.trust[name]}</span>` : '')
+                    + (this.data.modules[name] ? `<span class="b">+${this.data.modules[name]}</span>` : '').replace(/\+-/g, '-')
             },
             skillItem(item) {
                 return this.data.skills_desc[item.skill_no][6]
@@ -131,8 +138,9 @@
                 return lines.join('')
             },
             colorSpan(text, tag = true) {
-                text = text.replace(/\[cl /g, tag ? '<span class="mark">' : '')
-                text = text.replace(/@#174CC6 cle]/g, tag ? '</span>' : '')
+                text = text.replace(/\s/g, '')
+                text = text.replace(/\[cl/g, tag ? '<span class="mark">' : '')
+                text = text.replace(/@#174CC6cle]/g, tag ? '</span>' : '')
                 text = text.replace(/\n/g, '<br/>')
 
                 return text
