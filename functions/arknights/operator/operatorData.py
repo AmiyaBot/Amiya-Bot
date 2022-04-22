@@ -24,7 +24,7 @@ class OperatorData:
         operators = ArknightsGameData().operators
 
         if not info.name or info.name not in operators:
-            return '博士，请仔细描述想要查询的信息哦'
+            return None
 
         operator = operators[info.name]
 
@@ -67,6 +67,59 @@ class OperatorData:
             'skill_list': skill_list,
             'skills_cost': skills_cost,
             'skills_desc': skills_desc,
+        }
+
+    @classmethod
+    async def get_level_up_cost(cls, info: OperatorSearchInfo):
+        operators = ArknightsGameData().operators
+        materials = ArknightsGameData().materials
+
+        if not info.name or info.name not in operators:
+            return None
+
+        operator = operators[info.name]
+        evolve_costs = operator.evolve_costs()
+
+        evolve_costs_list = {}
+        for item in evolve_costs:
+            material = materials[item['use_material_id']]
+
+            if item['evolve_level'] not in evolve_costs_list:
+                evolve_costs_list[item['evolve_level']] = []
+
+            evolve_costs_list[item['evolve_level']].append({
+                'material_name': material['material_name'],
+                'material_icon': material['material_icon'],
+                'use_number': item['use_number']
+            })
+
+        skills, skills_id, skills_cost, skills_desc = operator.skills()
+
+        skills_cost_list = {}
+        for item in skills_cost:
+            material = materials[item['use_material_id']]
+            skill_no = item['skill_no'] or 'common'
+
+            if skill_no and skill_no not in skills_cost_list:
+                skills_cost_list[skill_no] = {}
+
+            if item['level'] not in skills_cost_list[skill_no]:
+                skills_cost_list[skill_no][item['level']] = []
+
+            skills_cost_list[skill_no][item['level']].append({
+                'material_name': material['material_name'],
+                'material_icon': material['material_icon'],
+                'use_number': item['use_number']
+            })
+
+        skins = operator.skins()
+        skin = skins[1] if len(skins) > 1 else skins[0]
+
+        return {
+            'skin': await ArknightsGameDataResource.get_skin_file(operator, skin),
+            'evolve_costs': evolve_costs_list,
+            'skills': skills,
+            'skills_cost': skills_cost_list
         }
 
     @classmethod

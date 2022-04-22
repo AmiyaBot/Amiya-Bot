@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 import time
 import yaml
 import jieba
@@ -86,6 +87,20 @@ class Singleton(type):
         if cls not in cls.instances:
             cls.instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.instances[cls]
+
+
+def argv(name, formatter=str):
+    key = f'--{name}'
+    if key in sys.argv:
+        index = sys.argv.index(key) + 1
+
+        if index >= len(sys.argv):
+            return True
+
+        if sys.argv[index].startswith('--'):
+            return True
+        else:
+            return formatter(sys.argv[index])
 
 
 def sorted_dict(data: dict, *args, **kwargs):

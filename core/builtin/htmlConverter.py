@@ -3,8 +3,10 @@ import json
 
 from typing import Optional, Union
 from playwright.async_api import Browser, Page, Playwright, async_playwright
-from core.util import Singleton
+from core.util import Singleton, argv
 from core import log
+
+debug = argv('debug')
 
 
 class PageController:
@@ -30,7 +32,7 @@ class ChromiumBrowser(metaclass=Singleton):
         log.info('launching chromium...')
 
         self.playwright = await async_playwright().start()
-        self.browser = await self.playwright.chromium.launch(headless=True, **kwargs)
+        self.browser = await self.playwright.chromium.launch(headless=not debug, **kwargs)
 
         log.info('chromium launched successful.')
 

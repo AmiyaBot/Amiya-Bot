@@ -328,28 +328,16 @@ async def _(data: Message):
             return None
         info.name = wait.text
 
-    if not info.level:
-        return Chain(data).text('博士，要告诉阿米娅精英或专精等级哦')
+    if '材料' in data.text:
+        result = await OperatorData.get_level_up_cost(info)
+        if not result:
+            return Chain(data).text('博士，请仔细描述想要查询的信息哦')
 
-    if info.level < 0:
-        info.level = abs(info.level)
-        result = OperatorData.check_evolve_costs(info)
-    else:
-        if info.level <= 7 and '材料' in data.text:
-            return Chain(data).text('博士，暂时只可以查询专一以上的材料哦')
+        with open('fileStorage/cost.json', mode='w') as file:
+            import json
+            file.write(json.dumps(result, ensure_ascii=False))
 
-        elif info.level >= 8 and '材料' in data.text:
-            info.level -= 7
-            result = OperatorData.check_mastery_costs(info)
-
-        else:
-            result = OperatorData.get_skill_data(info)
-
-    if result:
-        if type(result) is tuple:
-            return Chain(data).text_image(*result)
-        else:
-            return Chain(data).text(result)
+        return Chain(data).html('operator/operatorCost.html', result)
 
 
 @bot.on_group_message(function_id='checkOperator', verify=operator)
@@ -357,5 +345,7 @@ async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['name'], text=data.text)
 
     result = await OperatorData.get_detail_info(info)
+    if not result:
+        return Chain(data).text('博士，请仔细描述想要查询的信息哦')
 
     return Chain(data).html('operator/operatorInfo.html', result)

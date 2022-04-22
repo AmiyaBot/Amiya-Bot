@@ -172,8 +172,22 @@ class Operator:
 
         skills = []
         skills_id = []
+        skills_cost = []
         skills_desc = {}
-        skills_cost = {}
+
+        level_up_data = self.data['allSkillLvlup']
+        if level_up_data:
+            for index, item in enumerate(level_up_data):
+                if item['lvlUpCost']:
+                    for cost in item['lvlUpCost']:
+                        skills_cost.append({
+                            'skill_no': None,
+                            'level': index + 2,
+                            'mastery_level': 0,
+                            'use_material_id': cost['id'],
+                            'use_number': cost['count']
+                        })
+
         for index, item in enumerate(self.data['skills']):
             code = item['skillId']
 
@@ -190,8 +204,6 @@ class Operator:
 
             if code not in skills_desc:
                 skills_desc[code] = []
-            if code not in skills_cost:
-                skills_cost[code] = []
 
             for lev, desc in enumerate(detail['levels']):
                 description = parse_template(desc['blackboard'], desc['description'])
@@ -217,7 +229,9 @@ class Operator:
                     continue
 
                 for idx, cost in enumerate(cond['levelUpCost']):
-                    skills_cost[code].append({
+                    skills_cost.append({
+                        'skill_no': code,
+                        'level': lev + 8,
                         'mastery_level': lev + 1,
                         'use_material_id': cost['id'],
                         'use_number': cost['count']

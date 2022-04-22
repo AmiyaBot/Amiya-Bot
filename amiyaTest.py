@@ -8,7 +8,7 @@ from core.builtin.message.mirai import mirai_message_formatter
 from core.builtin.messageHandler import message_handler
 from core.builtin.htmlConverter import ChromiumBrowser
 from core.config import config
-from core.util import read_yaml, create_dir
+from core.util import read_yaml, create_dir, argv
 from core.bot import BotHandlers, Chain
 from core import log, initialization
 
@@ -56,7 +56,9 @@ class SimulationClient(WSOperation, ABC):
                     with open(png, mode='wb') as file:
                         file.write(await page.make_image())
                         print('image: ', png)
-                    await page.close()
+
+                    if not argv('debug'):
+                        await page.close()
 
 
 async def test():
