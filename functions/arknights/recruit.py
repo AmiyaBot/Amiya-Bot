@@ -1,3 +1,9 @@
+import os
+import re
+import time
+
+import aiofiles
+import aiofiles.os
 import dhash
 import jieba
 
@@ -7,13 +13,18 @@ from jieba import posseg
 from typing import List
 from itertools import combinations
 from core import exec_before_init, log, bot, Message, Chain
+from core.builtin.localOcr import LocalOCR
+from core.config import config
 from core.util import insert_empty, all_match, read_yaml
 from core.builtin.baiduCloud import BaiduCloud
 from core.network.download import download_async
 from core.resource.arknightsGameData import ArknightsGameData
 
 baidu = BaiduCloud()
-discern = read_yaml('config/private/recruit.yaml').autoDiscern
+local_ocr = LocalOCR()
+recruit_config = read_yaml('config/private/recruit.yaml')
+discern = recruit_config.autoDiscern
+replace = recruit_config.replace
 
 
 def find_operator_tags_by_tags(tags, max_rarity):
@@ -62,12 +73,23 @@ async def auto_discern(data: Message):
 
 
 async def get_ocr_result(image):
-    res = await baidu.basic_accurate(image)
-    if not res:
-        res = await baidu.basic_general(image)
+    if config.baiduCloud.enable:
+        res = await baidu.basic_accurate(image)
+        if not res:
+            res = await baidu.basic_general(image)
 
-    if res and 'words_result' in res:
-        return ''.join([item['words'] for item in res['words_result']])
+        if res and 'words_result' in res:
+            return ''.join([item['words'] for item in res['words_result']])
+
+    if not os.path.exists('fileStorage/recruit/'):
+        await aiofiles.os.mkdir('fileStorage/recruit/')
+    path = 'fileStorage/recruit/' + str(time.time()) + '.jpg'
+    async with aiofiles.open(path, mode='wb+') as f:
+        await f.write(image)
+    res = ''.join(await local_ocr.ocr(path))
+    for regex in replace:
+        res = re.sub(regex.key, regex.val, res)
+    return res
 
 
 class Recruit:
