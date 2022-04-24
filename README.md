@@ -71,6 +71,8 @@ Amiya-Bot 的所有说明均可查阅本项目的官方网站 [https://www.amiya
     - [微博移动版](https://m.weibo.cn)
 - 抽卡图片合成逻辑参考
     - [刀客塔的办公室](https://github.com/Rominwolf/doctors_office)
+- 文字识别
+    - [飞桨OCR](https://github.com/PaddlePaddle/PaddleOCR)
 
 ## 共生项目
 
