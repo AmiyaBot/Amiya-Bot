@@ -1,8 +1,6 @@
 import re
 import os
 import time
-from typing import List
-
 import yaml
 import jieba
 import jionlp
@@ -13,11 +11,12 @@ import difflib
 import asyncio
 import datetime
 import pypinyin
-from paddleocr import paddleocr
 
 from yaml import SafeDumper
+from typing import List
 from string import punctuation
 from attrdict import AttrDict
+from paddleocr import paddleocr
 from functools import partial
 from zhon.hanzi import punctuation as punctuation_cn
 from concurrent.futures import ThreadPoolExecutor
