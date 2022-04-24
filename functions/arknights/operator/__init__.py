@@ -333,10 +333,6 @@ async def _(data: Message):
         if not result:
             return Chain(data).text('博士，请仔细描述想要查询的信息哦')
 
-        with open('fileStorage/cost.json', mode='w') as file:
-            import json
-            file.write(json.dumps(result, ensure_ascii=False))
-
         return Chain(data).html('operator/operatorCost.html', result)
 
 
