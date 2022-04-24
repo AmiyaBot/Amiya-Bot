@@ -16,13 +16,11 @@ from yaml import SafeDumper
 from typing import List
 from string import punctuation
 from attrdict import AttrDict
-from paddleocr import paddleocr
 from functools import partial
 from zhon.hanzi import punctuation as punctuation_cn
 from concurrent.futures import ThreadPoolExecutor
 
 jieba.setLogLevel(jieba.logging.INFO)
-paddleocr.logging.disable()
 
 yaml_cache = {
     'attr': {},

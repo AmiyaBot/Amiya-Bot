@@ -15,15 +15,26 @@
 """
 import aiofiles.os
 
-from paddleocr import PaddleOCR
 from core.util import Singleton
+
+try:
+    from paddleocr import PaddleOCR
+
+    paddleocr.logging.disable()
+    enabled = True
+except ModuleNotFoundError:
+    enabled = False
 
 
 class LocalOCR(metaclass=Singleton):
     def __init__(self):
-        self.__ocr = PaddleOCR(lang='ch')
+        if enabled:
+            self.__ocr = PaddleOCR(lang='ch')
 
     async def ocr(self, path: str):
+        if not enabled:
+            return ''
+
         result = [text[1][0] for text in self.__ocr.ocr(path)]
         await aiofiles.os.remove(path)
         return result
