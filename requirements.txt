@@ -1,4 +1,5 @@
 aiohttp~=3.8.1
+aiofiles~=0.8.0
 attrdict~=2.0.1
 baidu-aip~=2.2.18.0
 dhash~=1.3

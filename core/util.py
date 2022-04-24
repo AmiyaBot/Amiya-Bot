@@ -14,6 +14,7 @@ import datetime
 import pypinyin
 
 from yaml import SafeDumper
+from typing import List
 from string import punctuation
 from attrdict import AttrDict
 from functools import partial
@@ -41,7 +42,7 @@ async def run_in_thread_pool(block_func, *args, **kwargs):
         res = await run_in_thread_pool(func, index)
 
     :param block_func: IO阻塞型函数
-    :param args:       元祖参数
+    :param args:       元组参数
     :param kwargs:     字典参数
     :return:
     """
@@ -54,6 +55,11 @@ class TimeRecorder:
         self.time = time.time()
 
     def rec(self, millisecond=False):
+        """
+        获取从开始计时到调用时经过了多少秒/毫秒
+        :param millisecond: 是否适用毫秒计时
+        :return: 单位为秒/毫秒的时间
+        """
         mil = 1000 if millisecond else 1
         return int(time.time() * mil - self.time * mil)
 
@@ -62,11 +68,20 @@ class TimeRecorder:
 
     @staticmethod
     def calc_time_total(seconds):
+        """
+        将秒数转化为日常计时
+        :param seconds: 秒数
+        :return: 日常计时
+        """
+        # 将秒数转化为日常计时中 天数+小时+分钟+秒 的形式
         timedelta = datetime.timedelta(seconds=seconds)
+        # 获取天数
         day = timedelta.days
+        # 获取 时、分、秒
         hour, mint, sec = tuple([
             int(n) for n in str(timedelta).split(',')[-1].split(':')
         ])
+        # 转化成汉语字符串
         total = ''
         if day:
             total += '%d天' % day
@@ -74,12 +89,14 @@ class TimeRecorder:
             total += '%d小时' % hour
         if mint:
             total += '%d分钟' % mint
+        # 如果时间超过一分钟，则不显示秒数
         if sec and not (day or hour or mint):
             total += '%d秒' % sec
 
         return total
 
 
+# 使用metaclass实现单例类
 class Singleton(type):
     instances = {}
 
@@ -103,11 +120,18 @@ def argv(name, formatter=str):
             return formatter(sys.argv[index])
 
 
+# 变成按照一定规则将data的key值排序后的有序字典
 def sorted_dict(data: dict, *args, **kwargs):
     return {n: data[n] for n in sorted(data, *args, **kwargs)}
 
 
 def all_match(text: str, items: list):
+    """
+    判断text中是否包含items中的所有元素
+    :param text: 源文本
+    :param items: 待匹配元素列表
+    :return: 是否匹配
+    """
     for item in items:
         if item not in text:
             return False
@@ -115,17 +139,31 @@ def all_match(text: str, items: list):
 
 
 def any_match(text: str, items: list):
+    """
+    判断text中是否包含items中的任一元素
+    :param text: 源文本
+    :param items: 待匹配元素列表
+    :return: 是否匹配
+    """
     for item in items:
         if item in text:
             return True
     return False
 
 
+# 在元素列表中随机选出其中一个
 def random_pop(items: list):
     return items.pop(random.randrange(0, len(items)))
 
 
 def check_sentence_by_re(sentence: str, words: list, names: list):
+    """
+    按照words的正则表达式在sentence中匹配names中的任一元素
+    :param sentence: 待匹配文本
+    :param words: 正则列表
+    :param names: 填充列表
+    :return: 是否匹配
+    """
     for item in words:
         for n in names:
             if re.search(re.compile(item % n if '%s' in item else item), sentence):
@@ -134,6 +172,13 @@ def check_sentence_by_re(sentence: str, words: list, names: list):
 
 
 def find_similar_list(text: str, text_list: list, _random: bool = False):
+    """
+    在text_list中找到和text最接近的字符串
+    :param text: 参考字符串
+    :param text_list: 待选字符串列表
+    :param _random: 若为True，如果有多个字符串与text的相似程度相同，则返回其中任意一个，若为False，则返回所有最接近的字符串
+    :return: 最接近的字符串/字符串列表
+    """
     result = {}
     for item in text_list:
         rate = float(
@@ -157,6 +202,13 @@ def find_similar_list(text: str, text_list: list, _random: bool = False):
 
 
 def read_yaml(path: str, _dict: bool = False, _refresh=True):
+    """
+    读取yaml配置文件
+    :param path: 文件路径
+    :param _dict: 若为True，返回一个dict，否则返回AttrDict
+    :param _refresh: 若为True或该文件没有被缓存，则从文件中读取，否则从缓存中读取
+    :return: dict/AttrDict形式的配置
+    """
     t = 'dict' if _dict else 'attr'
 
     if path in yaml_cache[t] and not _refresh:
@@ -173,6 +225,13 @@ def read_yaml(path: str, _dict: bool = False, _refresh=True):
 
 
 def create_yaml(path: str, data: dict, overwrite: bool = False):
+    """
+    根据data创建yaml配置文件
+    :param path: 文件路径
+    :param data: 配置数据
+    :param overwrite: 是否在该path所指向的文件存在时重写yaml
+    :return: 是否成功创建
+    """
     SafeDumper.add_representer(
         type(None),
         lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:null', '')
@@ -189,6 +248,12 @@ def create_yaml(path: str, data: dict, overwrite: bool = False):
 
 
 def create_dir(path: str, is_file: bool = False):
+    """
+    创建文件/目录
+    :param path: 文件/目录路径
+    :param is_file: 该path是否为文件
+    :return: 标准的文件/目录路径
+    """
     if is_file:
         path = '/'.join(path.replace('\\', '/').split('/')[:-1])
 
@@ -376,3 +441,16 @@ def chinese_to_digits(text: str):
         text = text.replace(symbol_str, digits, 1)
 
     return text
+
+
+def is_all_chinese(text: List[str]):
+    """
+    判断列表中所有的字符串是否全部为汉字
+    :param text: 字符串列表
+    :return: 是否全为汉字
+    """
+    for word in text:
+        for char in word:
+            if not '\u4e00' <= char <= '\u9fff':
+                return False
+    return True

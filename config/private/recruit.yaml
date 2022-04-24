@@ -1,3 +1,9 @@
 autoDiscern:
     templateHash: 298539435919003337906396405361402448896
     maxDifferent: 25
+
+replace:
+    - key: "千员"
+      val: "干员"
+    - key: ".击干员"
+      val: "狙击干员"
