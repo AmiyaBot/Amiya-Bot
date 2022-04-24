@@ -1,11 +1,10 @@
 import os
 import re
 import time
-
-import aiofiles
-import aiofiles.os
 import dhash
 import jieba
+import aiofiles
+import aiofiles.os
 
 from io import BytesIO
 from PIL import Image
@@ -83,9 +82,12 @@ async def get_ocr_result(image):
 
     if not os.path.exists('fileStorage/recruit/'):
         await aiofiles.os.mkdir('fileStorage/recruit/')
+
     path = 'fileStorage/recruit/' + str(time.time()) + '.jpg'
+
     async with aiofiles.open(path, mode='wb+') as f:
         await f.write(image)
+
     res = ''.join(await local_ocr.ocr(path))
     for regex in replace:
         res = re.sub(regex.key, regex.val, res)
