@@ -14,14 +14,14 @@
    limitations under the License.
 """
 import aiofiles.os
-from paddleocr import PaddleOCR
 
+from paddleocr import PaddleOCR
 from core.util import Singleton
 
 
 class LocalOCR(metaclass=Singleton):
     def __init__(self):
-        self.__ocr = PaddleOCR(lang="ch")
+        self.__ocr = PaddleOCR(lang='ch')
 
     async def ocr(self, path: str):
         result = [text[1][0] for text in self.__ocr.ocr(path)]
