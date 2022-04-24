@@ -135,12 +135,12 @@ class Chain:
             })
         return self
 
-    def html(self, template: str, data: Union[dict, list] = None, is_file: bool = True):
+    def html(self, path: str, data: Union[dict, list] = None, is_template: bool = True):
         self.chain.append({
             'type': 'Html',
             'data': data,
-            'template': f'config/template/{template}',
-            'is_file': is_file
+            'template': f'config/template/{path}' if is_template else path,
+            'is_file': is_template
         })
         return self
 

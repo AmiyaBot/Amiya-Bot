@@ -17,7 +17,7 @@ class PageController:
         await self.page.evaluate(f'init({json.dumps(data)})')
 
     async def make_image(self):
-        return await self.page.screenshot(full_page=False)
+        return await self.page.screenshot(full_page=True)
 
     async def close(self):
         await self.page.close()
@@ -43,7 +43,7 @@ class ChromiumBrowser(metaclass=Singleton):
 
     async def open_page(self, url: str, is_file: bool = False):
         if self.browser:
-            page = await self.browser.new_page()
+            page = await self.browser.new_page(no_viewport=True)
 
             if is_file:
                 url = 'file:///' + os.path.abspath(url)

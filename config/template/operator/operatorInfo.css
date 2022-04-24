@@ -9,7 +9,7 @@ body {
 
 #template {
     width: 1280px;
-    height: 720px;
+    height: 800px;
     overflow: hidden;
     position: relative;
 }
@@ -18,7 +18,7 @@ body {
     width: 100%;
     height: 100%;
     padding: 10px;
-    background: bottom 0 left 15% / 600px no-repeat;
+    background: bottom 50px left 15% / 600px no-repeat;
     position: absolute;
     top: 0;
     left: 0;
@@ -183,7 +183,6 @@ body {
 }
 
 .exInfo > div {
-    font-size: 15px !important;
     background: rgb(255 255 255 / 50%);
 }
 

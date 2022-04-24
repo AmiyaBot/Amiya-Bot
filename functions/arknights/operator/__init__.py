@@ -330,18 +330,29 @@ async def _(data: Message):
 
     if '材料' in data.text:
         result = await OperatorData.get_level_up_cost(info)
-        if not result:
-            return Chain(data).text('博士，请仔细描述想要查询的信息哦')
+        template = 'operator/operatorCost.html'
+    else:
+        result = await OperatorData.get_skills_detail(info)
+        template = 'operator/skillsDetail.html'
 
-        return Chain(data).html('operator/operatorCost.html', result)
+    if not result:
+        return Chain(data).text('博士，请仔细描述想要查询的信息哦')
+
+    return Chain(data).html(template, result)
 
 
 @bot.on_group_message(function_id='checkOperator', verify=operator)
 async def _(data: Message):
     info = search_info(data.text_cut, source_keys=['name'], text=data.text)
 
-    result = await OperatorData.get_detail_info(info)
+    if '技能' in data.text:
+        result = await OperatorData.get_skills_detail(info)
+        template = 'operator/skillsDetail.html'
+    else:
+        result = await OperatorData.get_operator_detail(info)
+        template = 'operator/operatorInfo.html'
+
     if not result:
         return Chain(data).text('博士，请仔细描述想要查询的信息哦')
 
-    return Chain(data).html('operator/operatorInfo.html', result)
+    return Chain(data).html(template, result)

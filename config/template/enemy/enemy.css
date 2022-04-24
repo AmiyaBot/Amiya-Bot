@@ -9,11 +9,9 @@ body {
 
 #template {
     width: 1280px;
-    height: 720px;
     padding: 20px;
     color: #fff;
-    background: #000;
-    overflow: hidden;
+    background: #161616;
     position: relative;
 }
 
@@ -76,7 +74,7 @@ body {
     color: #000;
     background: #fff;
     display: inline-block;
-    margin: 10px 0;
+    margin: 30px 0 10px 0;
 }
 
 .mark {
