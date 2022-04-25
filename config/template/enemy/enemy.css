@@ -43,12 +43,13 @@ body {
 .name .tags {
     display: flex;
     align-items: flex-end;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .tag {
     padding: 4px 10px;
     border-radius: 4px;
+    margin-left: 10px;
 }
 
 .tag.NORMAL {
