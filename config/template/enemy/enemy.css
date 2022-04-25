@@ -17,6 +17,7 @@ body {
 
 .avatar {
     display: flex;
+    align-items: center;
 }
 
 .name .attr-s {
@@ -36,14 +37,18 @@ body {
 }
 
 .name .attr-s > div > span {
-    font-size: 30px;
-    font-weight: bold;
+    font-size: 35px;
+}
+
+.name .tags {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
 }
 
 .tag {
-    padding: 2px 10px;
+    padding: 4px 10px;
     border-radius: 4px;
-    margin-left: 10px;
 }
 
 .tag.NORMAL {
@@ -59,13 +64,11 @@ body {
 }
 
 .tag.attackType {
-    background: #00bcd4;
-    margin-left: 5px;
+    background: #2196f3;
 }
 
 .tag.enemyIndex {
     background: #6b6b6b;
-    margin-left: 5px;
 }
 
 .title {

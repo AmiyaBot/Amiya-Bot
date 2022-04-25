@@ -15,10 +15,10 @@
         <div class="avatar">
             <img :src="'../../../resource/gamedata/enemy/' + data.info.enemyId + '.png'" alt="enemy">
             <div class="name">
-                <div>
+                <div class="tags">
                     <span style="font-size: 40px">{{ data.info.name }}</span>
                     <span class="tag" :class="data.info.enemyLevel">{{ level[data.info.enemyLevel] }}</span>
-                    <span class="tag attackType">{{ data.info.attackType }}</span>
+                    <span class="tag attackType" v-for="n in data.info.attackType.split(' ')">{{ n }}</span>
                     <span class="tag enemyIndex">{{ data.info.enemyIndex }}</span>
                 </div>
                 <div class="attr-s">
@@ -49,19 +49,19 @@
                         <div class="attr" title="攻击距离">{{ item.rangeRadius }}</div>
                         <div class="attr" title="进点损失">{{ item.lifePointReduce }}</div>
                         <div class="attr" title="晕眩免疫" :class="{ on: item.stunImmune }">
-                            {{ item.stunImmune ? '有' : '无' }}
+                            <span>{{ item.stunImmune ? '有' : '无' }}</span>
                         </div>
                         <div class="attr" title="沉默免疫" :class="{ on: item.silenceImmune }">
-                            {{ item.silenceImmune ? '有' : '无' }}
+                            <span>{{ item.silenceImmune ? '有' : '无' }}</span>
                         </div>
                         <div class="attr" title="睡眠免疫" :class="{ on: item.sleepImmune }">
-                            {{ item.sleepImmune ? '有' : '无' }}
+                            <span>{{ item.sleepImmune ? '有' : '无' }}</span>
                         </div>
                         <div class="attr" title="冷冻免疫" :class="{ on: item.frozenImmune }">
-                            {{ item.frozenImmune ? '有' : '无' }}
+                            <span>{{ item.frozenImmune ? '有' : '无' }}</span>
                         </div>
-                        <div class="attr" title="浮空抗性" :class="{ on: item.levitateImmune }">
-                            {{ item.frozenImmune ? '有' : '无' }}
+                        <div class="attr" title="浮空免疫" :class="{ on: item.levitateImmune }">
+                            <span>{{ item.levitateImmune ? '有' : '无' }}</span>
                         </div>
                     </div>
                 </div>
