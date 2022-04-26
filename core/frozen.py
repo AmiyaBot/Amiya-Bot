@@ -2,14 +2,17 @@ import re
 import os
 import sys
 import jieba
+import shutil
 import zipfile
 import subprocess
 
 from core.resource.botResource import resource_config
 from core.network.download import download_sync
+from core.util import read_yaml, create_yaml, combine_dict, create_dir
 from core import log
 
 bucket = resource_config.remote.cos
+temp = 'temp'
 
 
 def check_upgrade():
@@ -17,7 +20,7 @@ def check_upgrade():
 
     local_exe = sys.argv[0].replace('\\', '/').split('/')[-1]
 
-    new_version = download_sync(f'{bucket}/package/version5.txt', stringify=True)
+    new_version = download_sync(f'{bucket}/package/version6.txt', stringify=True)
     if not new_version:
         log.info('upgrade check fail.')
         return False
@@ -37,10 +40,28 @@ def check_upgrade():
     if pack:
         with open(new_pack, mode='wb+') as f:
             f.write(pack)
+
+        create_dir(temp)
+
+        log.info(f'unpacking {new_pack}...')
+
         pack = zipfile.ZipFile(new_pack)
+
         for pack_file in pack.namelist():
-            if os.path.exists(pack_file) is False:
+            if not os.path.exists(pack_file):
                 pack.extract(pack_file)
+                continue
+
+            if pack_file.split('.')[-1] == 'yaml':
+                pack.extract(pack_file, temp)
+
+                ori_conf = read_yaml(pack_file, _dict=True)
+                new_conf = read_yaml(os.path.join(temp, pack_file), _dict=True)
+
+                combine = combine_dict(ori_conf, new_conf)
+                create_yaml(pack_file, combine, overwrite=True)
+
+        shutil.rmtree(temp)
     else:
         log.info(f'new version download fail.')
         return False

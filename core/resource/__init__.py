@@ -1,5 +1,4 @@
-from typing import Union
-from attrdict import AttrDict
+from core.util import read_yaml
 
 
 class Remote:
@@ -11,9 +10,4 @@ class ResourceConfig:
     remote: Remote
 
 
-resource_config: Union[ResourceConfig, AttrDict] = AttrDict({
-    'remote': {
-        'cos': 'https://cos.amiyabot.com',
-        'wiki': 'https://static.prts.wiki'
-    }
-})
+resource_config: ResourceConfig = read_yaml('config/private/cos.yaml')

@@ -15,4 +15,4 @@ class ResourceManager:
 
     @classmethod
     async def get_voice_id(cls, path, msg_type):
-        return await cls.http.upload_voice(await silkcoder.encode(path), msg_type)
+        return await cls.http.upload_voice(await silkcoder.async_encode(path), msg_type)
