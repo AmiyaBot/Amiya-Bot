@@ -11,7 +11,7 @@ body {
     width: 1280px;
     padding: 20px;
     color: #fff;
-    background: #161616;
+    background: url(../assets/pc_bg.jpeg) center / cover no-repeat;
     position: relative;
 }
 

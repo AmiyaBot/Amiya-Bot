@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="styleSheet" href="../font.css"/>
+    <link type="text/css" rel="styleSheet" href="material.css"/>
+    <title>template</title>
+</head>
+<body>
+<div id="template">
+    <div style="display: flex;align-items: center;">
+        <img style="width: 100px;margin-right: 20px"
+             :src="'../../../resource/gamedata/item/' + data.info.material_icon + '.png'" alt="material">
+        <div class="material-name">
+            <div style="font-size: 40px;margin-bottom: 10px">{{ data.info.material_name }}</div>
+            <div>{{ data.info.material_desc }}</div>
+        </div>
+    </div>
+    <template v-if="data.children.length">
+        <div class="title">加工站合成路线</div>
+        <div>
+            <div class="material-tree main" :class="{ parent: data.children.length }" v-if="Object.keys(data).length">
+                <div class="material">
+                    <img style="margin-right: 10px"
+                         :src="'../../../resource/gamedata/item/' + data.info.material_icon + '.png'" alt="material">
+                </div>
+                <item-children :list="data.children"></item-children>
+            </div>
+        </div>
+    </template>
+    <template v-if="Object.keys(data.source.main).length || Object.keys(data.source.act).length">
+        <div class="title">地图掉落信息</div>
+        <div class="source-info">
+            <div v-if="Object.keys(data.source.main).length">
+                <div class="sub_title">主线掉落</div>
+                <div class="source-detail">
+                    <div v-for="item in data.source.main">
+                        <div>{{ item.stage_code }}</div>
+                        <div>{{ item.stage_name }}</div>
+                        <div :rate="item.rate">{{ item.rate }}</div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="Object.keys(data.source.act).length">
+                <div class="sub_title">活动掉落</div>
+                <div class="source-detail">
+                    <div v-for="item in data.source.act">
+                        <div>{{ item.stage_code }}</div>
+                        <div>{{ item.stage_name }}</div>
+                        <div :rate="item.rate">{{ item.rate }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+</body>
+<script src="../vue.min.js"></script>
+<script>
+    Vue.component('item-children', {
+        template: '' +
+            '<div class="children">' +
+            '   <div class="material-tree" :class="{ parent: item.children.length, lonely: list.length === 1 }" v-for="item in list">' +
+            '       <div class="material sub-item">' +
+            '           <img :src="\'../../../resource/gamedata/item/\' + item.material_icon + \'.png\'" alt="material">' +
+            '           <span class="num">{{ item.use_number }}</span>' +
+            '           <span>{{ item.material_name }}</span>' +
+            '       </div>' +
+            '       <item-children v-if="item.children.length" :list="item.children"></item-children>' +
+            '   </div>' +
+            '</div>',
+        props: ['list']
+    })
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init(data) {
+                this.$set(this, 'data', data)
+            }
+        },
+        data() {
+            return {
+                data: {}
+            }
+        },
+        mounted() {
+            window.init = this.init
+        }
+    })
+</script>
+</html>
