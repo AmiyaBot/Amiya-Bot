@@ -15,8 +15,10 @@ Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
 
 <div>
     <img alt="Python" src="https://img.shields.io/badge/Python-3.8-%233776AB?logo=python&logoColor=white">
-    <img alt="SQLite" src="https://img.shields.io/badge/SQLite-^3.24-%23003B57?logo=SQLite&logoColor=white"><br>
-    <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blueviolet">
+    <img alt="vue" src="https://img.shields.io/badge/vue-2.0-%234FC08D?logo=vue.js&logoColor=white">
+    <img alt="SQLite" src="https://img.shields.io/badge/SQLite-^3.24-%23003B57?logo=SQLite&logoColor=white">
+    <img alt="MySQL" src="https://img.shields.io/badge/MySQL-^5.0-%231b4d6d?logo=MySQL&logoColor=white"><br>
+    <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20ubuntu-blueviolet">
     <img alt="commit" src="https://img.shields.io/github/commit-activity/m/AmiyaBot/Amiya-Bot?color=%23ff69b4">
     <img alt="size" src="https://img.shields.io/github/repo-size/AmiyaBot/Amiya-Bot?color=%23ffeb3b"><br>
     <img alt="license" src="https://img.shields.io/badge/license-GPL-green">
