@@ -6,8 +6,9 @@ from abc import ABC
 from core.network import WSOperation
 from core.builtin.message.mirai import mirai_message_formatter
 from core.builtin.messageHandler import message_handler
+from core.builtin.htmlConverter import ChromiumBrowser
 from core.config import config
-from core.util import read_yaml, create_dir
+from core.util import read_yaml, create_dir, argv
 from core.bot import BotHandlers, Chain
 from core import log, initialization
 
@@ -38,6 +39,26 @@ class SimulationClient(WSOperation, ABC):
                         print('image: ', png)
                 else:
                     print('image: ', item['path'])
+
+            if item['type'] == 'Html':
+                async with log.catch('html convert error:'):
+                    browser = ChromiumBrowser()
+                    page = await browser.open_page(item['template'], is_file=item['is_file'])
+
+                    if item['data']:
+                        await page.init_data(item['data'])
+                        await asyncio.sleep(0.2)
+
+                    png = f'fileStorage/test/{int(time.time())}.png'
+
+                    create_dir(png, is_file=True)
+
+                    with open(png, mode='wb') as file:
+                        file.write(await page.make_image())
+                        print('image: ', png)
+
+                    if not argv('debug'):
+                        await page.close()
 
 
 async def test():

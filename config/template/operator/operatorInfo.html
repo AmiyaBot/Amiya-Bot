@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="styleSheet" href="../font.css"/>
+    <link type="text/css" rel="styleSheet" href="operatorInfo.css"/>
+    <title>template</title>
+</head>
+<body>
+<div id="template">
+    <div :style="{backgroundImage: `url('../../../${data.skin}')`}"
+         class="background">
+        <div class="left">
+            <div>
+                <div class="operator-attr">
+                    <div class="attr" title="最大生命值" v-html="attr('maxHp')"></div>
+                    <div class="attr" title="攻击力" v-html="attr('atk')"></div>
+                    <div class="attr" title="防御力" v-html="attr('def')"></div>
+                    <div class="attr" title="魔法抗性" v-html="attr('magicResistance')"></div>
+                    <div class="attr" title="攻击速度" v-html="attr('attackSpeed')"></div>
+                    <div class="attr" title="攻击间隔" v-html="attr('baseAttackTime')"></div>
+                    <div class="attr" title="阻挡数" v-html="attr('blockCnt')"></div>
+                    <div class="attr" title="部署费用" v-html="attr('cost')"></div>
+                    <div class="attr" title="再部署时间" v-html="attr('respawnTime') + '秒'"></div>
+                </div>
+                <div>
+                    <div class="title" style="width: 120px">潜能提升</div>
+                    <div class="potential" v-for="item in data.potential">
+                        <img style="width: 25px;margin-right: 10px"
+                             :src="'../../../resource/images/rank/' + (item.potential_rank + 1) + '.png'"
+                             alt="rank">
+                        {{ item.potential_desc }}
+                    </div>
+                </div>
+            </div>
+            <div class="operator-name">
+                <div class="range" style="margin: 15px 0" v-html="range(data.info.range)"></div>
+                <div class="class-info">
+                    <div style="width: 60px;padding: 5px;background: #000">
+                        <img style="width: 100%"
+                             :src="'../../../resource/images/classify/' + classesIcons[data.info.classes]"
+                             alt="classify">
+                    </div>
+                    <div class="rarity">
+                        <div style="font-size: 30px;display: flex">
+                            <i v-for="n in data.info.rarity">★</i>
+                        </div>
+                        <div>{{ data.info.classes }} - {{ data.info.classes_sub }}</div>
+                    </div>
+                </div>
+                <div class="trait" v-html="colorSpan(data.detail.operator_trait, false)"></div>
+                <div class="name" style="font-size: 30px">{{ data.info.en_name }}</div>
+                <div class="name" style="font-size: 60px">{{ data.info.name }}</div>
+            </div>
+        </div>
+        <div class="right">
+            <div>
+                <div class="title">天赋</div>
+                <div class="exInfo" v-for="item in data.talents">
+                    <div style="width: 100px">{{ item.talents_name }}</div>
+                    <div style="width: calc(100% - 100px);padding-left: 10px">{{ item.talents_desc }}</div>
+                </div>
+            </div>
+            <div>
+                <div class="title">基建技能</div>
+                <div class="exInfo" v-for="item in data.building_skills">
+                    <div style="width: 60px">精英{{ item.bs_unlocked }}</div>
+                    <div style="width: 100px">{{ item.bs_name }}</div>
+                    <div style="width: calc(100% - 160px);padding-left: 10px">{{ item.bs_desc }}</div>
+                </div>
+            </div>
+            <div class="skills">
+                <div v-for="item in data.skill_list" class="skill-item">
+                    <div style="width: 120px;text-align: center">
+                        <div>
+                            <img style="width: 80px"
+                                 :src="'../../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
+                        </div>
+                        <div>{{ item.skill_name }}</div>
+                    </div>
+                    <div style="width: calc(100% - 240px);padding: 0 10px">
+                        <div class="skill-type">
+                            <div :class="'t' + skillItem(item).sp_type">
+                                {{ spType[skillItem(item).sp_type] }}
+                            </div>
+                            <div>{{ skillType[skillItem(item).skill_type] }}</div>
+                            <div>技力 {{ skillItem(item).sp_init }}/{{ skillItem(item).sp_cost }}</div>
+                            <div v-if="skillItem(item).duration > 0">持续 {{ skillItem(item).duration }} 秒</div>
+                        </div>
+                        <div class="skill-desc" v-html="colorSpan(skillItem(item).description)"></div>
+                    </div>
+                    <div class="skill-range">
+                        <div v-html="range(skillItem(item).range)"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../vue.min.js"></script>
+<script>
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init(data) {
+                this.$set(this, 'data', data)
+            },
+            attr(name) {
+                return this.data.detail[name]
+                    + (this.data.trust[name] ? `<span class="a">+${this.data.trust[name]}</span>` : '')
+                    + (this.data.modules[name] ? `<span class="b">+${this.data.modules[name]}</span>` : '').replace(/\+-/g, '-')
+            },
+            skillItem(item) {
+                return this.data.skills_desc[item.skill_no][6]
+            },
+            range(text) {
+                let lines = []
+                for (let line of text.split('\n')) {
+                    let items = []
+                    for (let char of line) {
+                        switch (char) {
+                            case '　':
+                                items.push('<div class="block"></div>')
+                                break
+                            case '□':
+                                items.push('<div class="block r"></div>')
+                                break
+                            case '■':
+                                items.push('<div class="block s"></div>')
+                                break
+                        }
+                    }
+                    lines.push(`<div class="block-group">${items.join('')}</div>`)
+                }
+                return lines.join('')
+            },
+            colorSpan(text, tag = true) {
+                text = text.replace(/\s/g, '')
+                text = text.replace(/\[cl/g, tag ? '<span class="mark">' : '')
+                text = text.replace(/@#174CC6cle]/g, tag ? '</span>' : '')
+                text = text.replace(/\n/g, '<br/>')
+
+                return text
+            }
+        },
+        data() {
+            return {
+                data: {},
+                classesIcons: {
+                    '术师': 'caster.png',
+                    '医疗': 'medic.png',
+                    '先锋': 'pioneer.png',
+                    '狙击': 'sniper.png',
+                    '特种': 'special.png',
+                    '辅助': 'support.png',
+                    '重装': 'tank.png',
+                    '近卫': 'warrior.png'
+                },
+                spType: {
+                    1: '自动回复',
+                    2: '攻击回复',
+                    4: '受击回复',
+                    8: '被动'
+                },
+                skillType: {
+                    0: '被动',
+                    1: '手动触发',
+                    2: '自动触发'
+                }
+            }
+        },
+        mounted() {
+            window.init = this.init
+        }
+    })
+</script>
+</html>

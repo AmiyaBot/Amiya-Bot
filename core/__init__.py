@@ -1,7 +1,8 @@
 from core.network.mirai.websocketClient import WebsocketClient, account
 from core.network.mirai.httpClient import HttpClient
-from core.database.messages import MessageStack
+from core.builtin.htmlConverter import ChromiumBrowser
 from core.builtin.timedTask import TasksControl
+from core.database.messages import MessageStack
 
 from core.builtin.message import Message, Event
 from core.builtin.messageChain import Chain, custom_chain
@@ -13,7 +14,9 @@ from core.resource.arknightsGameData import ArknightsGameDataResource, Arknights
 
 http = HttpClient()
 websocket = WebsocketClient()
-init_task = []
+init_task = [
+    ChromiumBrowser().launch
+]
 
 
 async def initialization():

@@ -1,0 +1,156 @@
+* {
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#template {
+    width: 1280px;
+    min-height: 720px;
+    padding: 20px;
+    color: #fff;
+    background: url(../assets/pc_bg.jpeg) center / cover no-repeat;
+    position: relative;
+}
+
+.material-name {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.material-tree {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+}
+
+.material-tree:not(.main, .lonely):before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    border-left: 2px solid #fff;
+    position: absolute;
+    left: 0;
+}
+
+.material-tree:not(:first-child) {
+    top: 0;
+}
+
+.material-tree:last-child:before {
+    height: 26px;
+}
+
+.material-tree:first-child:before {
+    height: calc(100% - 26px);
+    bottom: 0;
+}
+
+.children {
+
+}
+
+.material {
+    display: flex;
+    align-items: center;
+}
+
+.material span {
+    padding: 0 10px;
+}
+
+.parent > .material:after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 2px;
+    background: #fff;
+}
+
+.material:not(.main > .material):before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #fff;
+    position: relative;
+}
+
+.material > img {
+    width: 50px;
+    margin-left: 10px;
+}
+
+.material > .num {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #008eff;
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.source-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.source-info > div {
+    width: 50%;
+    padding-right: 20px;
+}
+
+.source-detail {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.source-detail > div {
+    width: 50%;
+    display: flex;
+    margin: 3px 0;
+}
+
+.source-detail > div > div:nth-child(1) {
+    width: 60px;
+}
+
+.source-detail > div > div:nth-child(2) {
+    width: 150px;
+}
+
+.source-detail > div > div:nth-child(3) {
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+[rate="罕见"] {
+    background: #f4511e;
+}
+
+[rate="大概率"] {
+    background: #f57c00;
+}
+
+[rate="中概率"] {
+    background: #7cb342;
+}
+
+[rate="固定"] {
+    background: #2196f3;
+}
+
+.title {
+    border-bottom: 1px solid rgb(255, 255, 255);
+    padding: 10px 0;
+    margin: 20px 0 15px 0;
+    font-size: 25px;
+}
+
+.sub_title {
+    margin-bottom: 20px;;
+    font-size: 20px;
+}

@@ -1,0 +1,123 @@
+* {
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#template {
+    width: 1280px;
+    padding: 20px;
+    color: #fff;
+    background: url(../assets/pc_bg.jpeg) center / cover no-repeat;
+    position: relative;
+}
+
+.avatar {
+    display: flex;
+    align-items: center;
+}
+
+.name .attr-s {
+    display: flex;
+    margin-top: 10px;
+}
+
+.name .attr-s > div {
+    width: 100px;
+    height: 80px;
+    border: 2px solid #fff;
+    margin-right: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.name .attr-s > div > span {
+    font-size: 35px;
+}
+
+.name .tags {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+}
+
+.tag {
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.tag.NORMAL {
+    background: #3cb300;
+}
+
+.tag.ELITE {
+    background: #6f00b3;
+}
+
+.tag.BOSS {
+    background: #c30000;
+}
+
+.tag.attackType {
+    background: #2196f3;
+}
+
+.tag.enemyIndex {
+    background: #6b6b6b;
+}
+
+.title {
+    font-size: 20px;
+    padding: 2px 50px 2px 10px;
+    color: #000;
+    background: #fff;
+    display: inline-block;
+    margin: 30px 0 10px 0;
+}
+
+.mark {
+    color: #ff6900;
+}
+
+.attrs-content {
+    display: flex;
+}
+
+.attrs-content > div {
+    width: calc(100% / 3 - 20px);
+    margin-right: 20px;
+}
+
+.attrs {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.attr {
+    width: 50%;
+    border: 1px solid #fff;
+}
+
+.attr:before {
+    content: attr(title);
+    width: 80px;
+    padding: 0 10px;
+    margin-right: 10px;
+    display: inline-block;
+    background: #fff;
+    color: #000;
+}
+
+.attr.on {
+    color: #ff6900;
+}
+
+.attr.on:before {
+    background: #ffeb3b;
+}

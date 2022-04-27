@@ -1,0 +1,93 @@
+* {
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#template {
+    width: 1280px;
+    padding: 20px;
+    color: #fff;
+    background: #161616;
+    overflow: hidden;
+    position: relative;
+}
+
+.skill-item {
+    margin-bottom: 40px;
+}
+
+.skill-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.mastery-icon {
+    width: 30px;
+    height: 30px;
+    background: center / 30px no-repeat;
+    display: inline-block;
+}
+
+.skill-type {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.skill-type > div {
+    margin-right: 5px;
+    background: #737373;
+    padding: 0 5px;
+    border-radius: 4px;
+}
+
+.skill-type > .t1 {
+    background: #98c043 !important;
+}
+
+.skill-type > .t2,
+.skill-type > .t4 {
+    background: #ec7e4c !important;
+}
+
+.mark {
+    color: #00b3ff;
+}
+
+.block-group {
+    display: flex;
+}
+
+.block {
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+}
+
+.block.r {
+    border: 1px solid #fff;
+}
+
+.block.s {
+    background: #fff;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+table th,
+table td {
+    padding: 5px 10px;
+    border: 1px solid #b7b7b7;
+}
+
+table th {
+    white-space: nowrap;
+    text-align: left;
+}
