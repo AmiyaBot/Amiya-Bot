@@ -5,7 +5,7 @@ setting:
     imagesCache: fileStorage/weibo
 
 autoPush:
-    groupActivity: 3200
+    groupActivity: 3000
 
 listen:
     - 6279793937
