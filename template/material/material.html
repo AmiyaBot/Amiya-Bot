@@ -13,7 +13,7 @@
 <div id="template">
     <div style="display: flex;align-items: center;">
         <img style="width: 100px;margin-right: 20px"
-             :src="'../../../resource/gamedata/item/' + data.info.material_icon + '.png'" alt="material">
+             :src="'../../resource/gamedata/item/' + data.info.material_icon + '.png'" alt="material">
         <div class="material-name">
             <div style="font-size: 40px;margin-bottom: 10px">{{ data.info.material_name }}</div>
             <div>{{ data.info.material_desc }}</div>
@@ -25,7 +25,7 @@
             <div class="material-tree main" :class="{ parent: data.children.length }" v-if="Object.keys(data).length">
                 <div class="material">
                     <img style="margin-right: 10px"
-                         :src="'../../../resource/gamedata/item/' + data.info.material_icon + '.png'" alt="material">
+                         :src="'../../resource/gamedata/item/' + data.info.material_icon + '.png'" alt="material">
                 </div>
                 <item-children :list="data.children"></item-children>
             </div>
@@ -65,7 +65,7 @@
             '<div class="children">' +
             '   <div class="material-tree" :class="{ parent: item.children.length, lonely: list.length === 1 }" v-for="item in list">' +
             '       <div class="material sub-item">' +
-            '           <img :src="\'../../../resource/gamedata/item/\' + item.material_icon + \'.png\'" alt="material">' +
+            '           <img :src="\'../../resource/gamedata/item/\' + item.material_icon + \'.png\'" alt="material">' +
             '           <span class="num">{{ item.use_number }}</span>' +
             '           <span>{{ item.material_name }}</span>' +
             '       </div>' +

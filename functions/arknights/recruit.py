@@ -29,12 +29,13 @@ replace = recruit_config.replace
 def find_operator_tags_by_tags(tags, max_rarity):
     res = []
     for name, item in ArknightsGameData().operators.items():
-        if item.is_recruit is False or item.rarity > max_rarity:
+        if not item.is_recruit or item.rarity > max_rarity:
             continue
         for tag in item.tags:
             if tag in tags:
                 res.append(
                     {
+                        'operator_id': item.id,
                         'operator_name': name,
                         'operator_rarity': item.rarity,
                         'operator_tags': tag
@@ -116,10 +117,12 @@ class Recruit:
         Recruit.tags_list = tags
 
     @classmethod
-    async def action(cls, text: str, ocr: bool = False):
+    async def action(cls, data: Message, text: str, ocr: bool = False):
+        reply = Chain(data)
+
         if not text:
             if ocr:
-                return '图片识别失败'
+                return reply.text('图片识别失败')
             return None
 
         words = posseg.lcut(text.replace('公招', ''))
@@ -149,65 +152,52 @@ class Recruit:
                     else:
                         operators[name]['operator_tags'] += item['operator_tags']
 
-                text = ''
-                color = {
-                    6: 'FF4343',
-                    5: 'FEA63A',
-                    4: 'A288B5'
-                }
+                groups = []
 
                 for comb in [tags] if len(tags) == 1 else find_combinations(tags):
                     lst = []
+                    max_r = 0
                     for name, item in operators.items():
                         rarity = item['operator_rarity']
                         if all_match(item['operator_tags'], comb):
                             if rarity == 6 and '高级资深干员' not in comb:
                                 continue
                             if rarity >= 4 or rarity == 1:
+                                if rarity > max_r:
+                                    max_r = rarity
                                 lst.append(item)
                             else:
                                 break
                     else:
                         if lst:
-                            text += '\n[cl [%s]@#174CC6 cle]\n' % '，'.join(comb)
-                            if comb == ['高级资深干员']:
-                                text += f'[[cl ★★★★★★@#{color[6]} cle]] 六星 %d 选 1\n' % len(lst)
-                                continue
-                            if comb == ['资深干员']:
-                                text += f'[[cl ★★★★★@#{color[5]} cle]] 五星 %d 选 1\n' % len(lst)
-                                continue
-                            for item in lst:
-                                rarity = item['operator_rarity']
-                                name = item["operator_name"]
-                                star = '★'
-                                c = color[4] if rarity < 5 else color[rarity]
-                                text += f'[[cl {insert_empty(star * rarity, 6, True)}@#{c} cle]] {name}\n'
+                            groups.append({
+                                'tags': comb,
+                                'max_rarity': max_r,
+                                'operators': lst
+                            })
 
-                if text:
-                    text = '博士，根据标签已找到以下可以锁定稀有干员的组合\n' + text
+                if groups:
+                    groups = sorted(groups, key=lambda n: (-len(n['tags']), -n['max_rarity']))
+                    return reply.html('operator/operatorRecruit.html', {'groups': groups, 'tags': tags})
                 else:
-                    text = '博士，没有找到可以锁定稀有干员的组合'
-
-                return text
+                    return reply.text('博士，没有找到可以锁定稀有干员的组合')
             else:
-                return '博士，无法查询到标签所拥有的稀有干员'
+                return reply.text('博士，无法查询到标签所拥有的稀有干员')
 
         if ocr:
-            return '博士，没有在图片内找到标签信息'
+            return reply.text('博士，没有在图内找到标签信息')
 
 
 @bot.on_group_message(function_id='recruit', keywords=['公招', '公开招募'])
 async def _(data: Message):
     if data.image:
         # 直接 OCR 识别图片
-        return Chain(data).text(
-            await Recruit.action(await get_ocr_result(data.image[0]), ocr=True)
-        )
+        return await Recruit.action(data, await get_ocr_result(data.image[0]), ocr=True)
     else:
         # 先验证文本内容
-        recruit = await Recruit.action(data.text_origin)
+        recruit = await Recruit.action(data, data.text_origin)
         if recruit:
-            return Chain(data).text(recruit)
+            return recruit
         else:
             # 文本内容验证不出则询问截图
             if not baidu.enable:
@@ -216,15 +206,11 @@ async def _(data: Message):
             wait = await data.waiting(Chain(data, at=True).text('博士，请发送您的公招界面截图~'), force=True)
 
             if wait and wait.image:
-                return Chain(wait).text(
-                    await Recruit.action(await get_ocr_result(wait.image[0]), ocr=True)
-                )
+                return await Recruit.action(wait, await get_ocr_result(wait.image[0]), ocr=True)
             else:
                 return Chain(data, at=True).text('博士，您没有发送图片哦~')
 
 
 @bot.on_group_message(function_id='recruit', verify=auto_discern, check_prefix=False)
 async def _(data: Message):
-    return Chain(data).text(
-        await Recruit.action(await get_ocr_result(data.image[0]), ocr=True)
-    )
+    return await Recruit.action(data, await get_ocr_result(data.image[0]), ocr=True)

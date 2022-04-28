@@ -139,7 +139,7 @@ class Chain:
         self.chain.append({
             'type': 'Html',
             'data': data,
-            'template': f'config/template/{path}' if is_template else path,
+            'template': f'template/{path}' if is_template else path,
             'is_file': is_template
         })
         return self

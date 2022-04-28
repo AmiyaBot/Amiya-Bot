@@ -11,7 +11,7 @@
 </head>
 <body>
 <div id="template">
-    <div :style="{backgroundImage: `url('../../../${data.skin}')`}"
+    <div :style="{backgroundImage: `url('../../${data.skin}')`}"
          class="background">
         <div class="left">
             <div>
@@ -30,7 +30,7 @@
                     <div class="title" style="width: 120px">潜能提升</div>
                     <div class="potential" v-for="item in data.potential">
                         <img style="width: 25px;margin-right: 10px"
-                             :src="'../../../resource/images/rank/' + (item.potential_rank + 1) + '.png'"
+                             :src="'../../resource/images/rank/' + (item.potential_rank + 1) + '.png'"
                              alt="rank">
                         {{ item.potential_desc }}
                     </div>
@@ -41,7 +41,7 @@
                 <div class="class-info">
                     <div style="width: 60px;padding: 5px;background: #000">
                         <img style="width: 100%"
-                             :src="'../../../resource/images/classify/' + classesIcons[data.info.classes]"
+                             :src="'../../resource/images/classify/' + classesIcons[data.info.classes]"
                              alt="classify">
                     </div>
                     <div class="rarity">
@@ -77,7 +77,7 @@
                     <div style="width: 120px;text-align: center">
                         <div>
                             <img style="width: 80px"
-                                 :src="'../../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
+                                 :src="'../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
                         </div>
                         <div>{{ item.skill_name }}</div>
                     </div>

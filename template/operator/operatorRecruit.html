@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="styleSheet" href="../font.css"/>
+    <link type="text/css" rel="styleSheet" href="operatorRecruit.css"/>
+    <title>template</title>
+</head>
+<body>
+<div id="template">
+    <div class="group-list">
+        <div v-for="group in data.groups">
+            <div>
+                <span class="tag" v-for="tag in group.tags">{{ tag }}</span>
+            </div>
+            <div class="operator-list">
+                <div v-for="item in group.operators" class="operator">
+                    <img :src="'../../resource/gamedata/portrait/' + item.operator_id + '_1.png'"
+                         :class="'rarity' + item.operator_rarity"
+                         :alt="item.operator_name">
+                    <span>{{ item.operator_name }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../vue.min.js"></script>
+<script>
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init(data) {
+                this.$set(this, 'data', data)
+            }
+        },
+        data() {
+            return {
+                data: {}
+            }
+        },
+        mounted() {
+            window.init = this.init
+        }
+    })
+</script>
+</html>
