@@ -39,8 +39,9 @@ span.tag {
 }
 
 .operator-list {
-    display: flex;
     margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .operator {
