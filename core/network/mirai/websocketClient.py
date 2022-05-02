@@ -105,6 +105,40 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
             if message_data:
                 await message_handler(message_data, self)
 
+    async def mute(self, target: int, member_id: int, mute_time: int = 0, sync_id: int = 1):
+        await self.connect.send(
+            json.dumps(
+                {
+                    'syncId': sync_id,
+                    'command': 'mute',
+                    'subCommand': None,
+                    'content': {
+                        'sessionKey': self.session,
+                        'target': target,
+                        'memberId': member_id,
+                        'time': mute_time
+                    }
+                },
+                ensure_ascii=False
+            )
+        )
+
+    async def recall(self, target: int = 1, sync_id: int = 1):
+        await self.connect.send(
+            json.dumps(
+                {
+                    'syncId': sync_id,
+                    'command': 'recall',
+                    'subCommand': None,
+                    'content': {
+                        'sessionKey': self.session,
+                        'target': target,
+                    }
+                },
+                ensure_ascii=False
+            )
+        )
+
     async def handle_error(self, message: str):
         if not self.session:
             return

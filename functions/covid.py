@@ -156,7 +156,7 @@ def get_input(area: dict) -> tuple:
 
 
 # 疫情查询监听
-@bot.on_group_message(keywords='疫情查询', level=3)
+@bot.on_group_message(function_id='covid', keywords='疫情查询', level=3)
 async def _(data: Message):
     if config.covid.enable and sync_status in (SyncStatus.unsync, SyncStatus.success):
         await get_data()
