@@ -454,3 +454,9 @@ def is_all_chinese(text: List[str]):
             if not '\u4e00' <= char <= '\u9fff':
                 return False
     return True
+
+
+def number_with_sign(number: int):
+    if number >= 0:
+        return '+' + str(number)
+    return str(number)
