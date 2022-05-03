@@ -7,9 +7,9 @@ from json import JSONDecodeError
 
 from typing import Dict, Any, List
 
-from fake_useragent import UserAgent
+from fake_useragent import UserAgent, UserAgentError
 
-from core import bot, Message, Chain, log
+from core import bot, Message, Chain
 from core.config import config
 from core.network.httpRequests import http_requests
 from core.util import read_yaml, is_all_chinese, number_with_sign
@@ -20,6 +20,14 @@ class SyncStatus(Enum):
     syncing = 1
     unsync = 2
     failed = 3
+
+
+class DataFetchError(Exception):
+    def __init__(self, msg):
+        self.msg = 'Failed to load covid data at get_data() in functions/covid.py, ' + msg
+
+    def __reduce__(self):
+        return self.__class__, self.msg
 
 
 covid_config = read_yaml('config/private/covid.yaml')
@@ -53,18 +61,26 @@ useless_key = ['未明确地区', '地区未确认', '待确认', '本土病例'
 min_eps = 0.6
 
 
-# 更新数据
 async def get_data():
+    """
+    同步疫情数据，在超出数据有效期或查询次数有效期（两者取最短时间）时进行数据更新
+
+    :return: 无返回值，同步状态会在sync_status变量中展现
+    """
     global reload_data_time
     global request_times_now
     global sync_status
     global covid_data
 
+    # 在sync_status不属于 正在同步 或 同步失败（此时该功能停用） 且 超出了 数据有效期 或 请求次数有效期 时进行数据同步
     if sync_status not in (SyncStatus.syncing, SyncStatus.failed) \
        and time.time() - reload_data_time > reload_time \
        or request_times_now >= reload_request_times:
+        # 标记同步状态，防止出现资源抢占
         sync_status = SyncStatus.syncing
         try:
+            # 加载数据， 由于网易数据源的原因，需要使用fake_useragent库进行UA的生成，如果生成ua时报错请尝试更新fake_useragent库的版本
+            # 如果成功，请修改requirements.txt中该库版本并对原项目发送pr
             data = json.loads(
                 await http_requests.get(covid_url,
                                         headers={
@@ -76,26 +92,50 @@ async def get_data():
                 if country['name'] == '中国':
                     covid_data = country
                     break
+        except UserAgentError:
+            raise DataFetchError(f'maybe cause by the version fake_useragent package, try to update it. If it works, '
+                                 f'update requirements.txt and make a pull request to the repo.')
         except JSONDecodeError:
-            log.error(f'fail to sync covid data, maybe cause by the format of data from {covid_url}')
             sync_status = SyncStatus.failed
+            raise DataFetchError(f'maybe cause by the format of data from {covid_url}.')
         else:
             sync_status = SyncStatus.success
             if covid_data is None:
-                log.error(f'fail to sync covid data, maybe cause by the content of data from {covid_url}')
                 sync_status = SyncStatus.failed
+                raise DataFetchError(f'maybe cause by the content of data from {covid_url}.')
         finally:
             reload_data_time = time.time()
             request_times_now = 0
 
 
 def bleu(cand: str, refer: str) -> float:
+    """
+    衡量对于refer字符串来说，cand字符串与之的相似度的算法，广泛用于翻译准确度评估。
+
+    :param cand: 候选字符串
+    :param refer: 参考字符串
+    :return: 相似度，[0.0, 1.0]之间，完全相同为1.0，完全不同为0.0
+    """
+    # 特判，降低计算量
     if cand == refer:
         return 1.0
+    # 数据准备
+    # n: 最长字符串单元长度，将会进行n - 1次计算，在第i次计算时（i: [0, n)），会将cand和refer字符串分别分割为由相邻i个字符组成的长度为len - i的列表
+    # score: 相似度评分
+    # cand_len: cand字符串长度
+    # refer_len: refer字符串长度
+    # bp: 惩罚因子，防止由于cand_len过短而导致的准确率虚高
     n = min(len(cand), len(refer)) - 1
+    score = 0.0
     cand_len = len(cand)
     refer_len = len(refer)
-    score = 0.0
+    bp = math.exp(min(0, 1 - refer_len / cand_len))
+    # 特判，在cand字符串长度为1时直接返回惩罚因子或0，取决于refer字符串中是否包含cand
+    # 该特判是为了防止cand长度为1时直接返回0，没有参考价值
+    # 不对refer进行特判的原因是网易api的行政区名长度最少为2
+    if cand_len == 1:
+        return bp if refer.count(cand) >= 1 else 0
+    # 算法主体，建议结合bleu算法简介阅读
     for i in range(n):
         times = 0
         ref_dict = collections.defaultdict(int)
@@ -115,11 +155,16 @@ def bleu(cand: str, refer: str) -> float:
             return 0.0
         score += math.log(gram)
     score /= n
-    bp = math.exp(min(0, 1 - refer_len / cand_len))
     return math.exp(score) * bp
 
 
 def search(area: str) -> List[str]:
+    """
+    根据提供的地区名进行模糊查询
+
+    :param area: 地区名
+    :return: 相似度由大到小排序的地区名列表
+    """
     eps = max(min_eps, (len(area) - 2) / (len(area) - 1))
     search_result = []
     for prov in covid_data['children']:
@@ -136,6 +181,12 @@ def search(area: str) -> List[str]:
 
 
 def find_data_by_addr(addr: str) -> dict:
+    """
+    根据提供的addr地址找到疫情数据dict
+
+    :param addr: 地址，形如"江苏"或"江苏,南京"
+    :return: 如果找到该地区，返回该地区的数据dict，否则返回None
+    """
     places = addr.split(',')
     if len(places) < 1:
         return covid_data
@@ -150,9 +201,16 @@ def find_data_by_addr(addr: str) -> dict:
 
 
 def get_input(area: dict) -> tuple:
+    """
+    在查询非全国数据时使用，用于查询行政区的境外输入病例信息
+
+    :param area: 地区疫情数据dict
+    :return: 该地境外输入病例信息，为一个tuple，第一项为总计，第二项为新增
+    """
     for item in area['children']:
         if item['name'] in input_key:
             return item['total']['confirm'], item['today']['confirm']
+    return None
 
 
 # 疫情查询监听
