@@ -1,9 +1,11 @@
 import re
-import json
 import asyncio
 
 from typing import Union, List
 from contextlib import asynccontextmanager
+
+from core.network.mirai import get_func_name
+from core.network.mirai.websoketCommand import WebsocketCommand
 from core.util import read_yaml
 from core.builtin.message import Message
 from core.builtin.imageCreator import create_image, ImageElem, IMAGES_TYPE
@@ -30,12 +32,12 @@ class Chain:
         self.data = data
         self.chain = []
         self.voice_list = []
-        self.command = 'sendFriendMessage'
+        self.command = WebsocketCommand.MessageSend.SendFriendMessage
         self.target = data.user_id
         self.quote = False
 
         if self.data.type == 'group':
-            self.command = 'sendGroupMessage'
+            self.command = WebsocketCommand.MessageSend.SendGroupMessage
             self.target = data.group_id
 
             if data.user_id and quote:
@@ -44,7 +46,7 @@ class Chain:
                 self.at(enter=True)
 
     def __str__(self):
-        return f'{self.command}: {self.target}'
+        return f'{get_func_name(self.command)}: {self.target}'
 
     def at(self, user: int = None, enter: bool = False):
         self.chain.append({
@@ -183,24 +185,9 @@ class Chain:
 
                 chain_data.append(item)
 
-        content = {
-            'target': self.target,
-            'sessionKey': session,
-            'messageChain': chain_data
-        }
-
         if self.quote:
-            content['quote'] = self.data.message_id
-
-        return json.dumps(
-            {
-                'syncId': sync_id,
-                'command': self.command,
-                'subCommand': None,
-                'content': content
-            },
-            ensure_ascii=False
-        )
+            return self.command(session, self.target, chain_data, quoteMessageId=self.data.message_id, syncId=sync_id)
+        return self.command(session, self.target, chain_data, syncId=sync_id)
 
     @asynccontextmanager
     async def create(self):
