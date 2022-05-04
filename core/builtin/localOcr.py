@@ -37,5 +37,5 @@ class LocalOCR(metaclass=Singleton):
             return ''
 
         result = [text[1][0] for text in self.__ocr.ocr(path)]
-        await aiofiles.os.remove(path)
+        await aiofiles.os.remove('tmp.jpg')
         return result
