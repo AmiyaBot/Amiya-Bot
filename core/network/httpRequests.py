@@ -10,13 +10,13 @@ outline = argv('outline')
 
 class HttpRequests:
     @classmethod
-    async def get(cls, interface: str):
+    async def get(cls, interface: str, *args, **kwargs):
         if outline:
             return None
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(interface) as res:
+                async with session.get(interface, *args, **kwargs) as res:
                     if res.status == 200:
                         return await res.text()
                     else:
