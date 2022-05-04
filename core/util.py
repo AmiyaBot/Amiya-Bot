@@ -346,7 +346,7 @@ def random_code(length):
     return code
 
 
-def extract_time(text: str):
+def extract_time(text: str, to_time_point: bool = True):
     result = jionlp.ner.extract_time(text)
     if result:
         try:
@@ -364,9 +364,14 @@ def extract_time(text: str):
                     'minute': 60,
                     'second': 1
                 }
+                time_result = 0
                 for k, v in time_length.items():
                     if k in detail['time']:
-                        return [time.localtime(time.time() + detail['time'][k] * v)]
+                        if to_time_point:
+                            return [time.localtime(time.time() + detail['time'][k] * v)]
+                        time_result += detail['time'][k] * v
+                return time_result
+
 
             elif detail['type'] == 'time_period':
                 pass

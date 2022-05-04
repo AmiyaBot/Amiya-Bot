@@ -80,16 +80,7 @@ async def get_ocr_result(image):
 
         if res and 'words_result' in res:
             return ''.join([item['words'] for item in res['words_result']])
-
-    if not os.path.exists('fileStorage/recruit/'):
-        await aiofiles.os.mkdir('fileStorage/recruit/')
-
-    path = 'fileStorage/recruit/' + str(time.time()) + '.jpg'
-
-    async with aiofiles.open(path, mode='wb+') as f:
-        await f.write(image)
-
-    res = ''.join(await local_ocr.ocr(path))
+    res = ''.join(await local_ocr.ocr(image))
     for regex in replace:
         res = re.sub(regex.key, regex.val, res)
     return res
