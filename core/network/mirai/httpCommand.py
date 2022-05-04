@@ -3,7 +3,7 @@ from abc import abstractmethod, ABCMeta
 
 class HttpCommand:
     class Api:
-        def __int__(self, url: str, method: str = 'GET'):
+        def __init__(self, url: str, method: str = 'GET'):
             self.url = url
             self.method = method
 

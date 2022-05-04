@@ -10,128 +10,106 @@ class WebsocketCommandClass(metaclass=Singleton):
     class PluginInfoClass(metaclass=Singleton):
         @func_with_name(name='About')
         def About(self, syncId: int = 1):
-            return build_command(content=None, command='about', syncId=syncId)
+            return build_command(command='about', syncId=syncId)
 
     class MessageCacheClass(metaclass=Singleton):
         @func_with_name(name='MessageFromId')
-        def MessageFromId(self, sessionKey: str, messageId: int, syncId: int = 1):
-            return build_command({
+        def MessageFromId(self, sessionKey: str, id: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'id': messageId
+                'id': id
             }, command='messageFromId', syncId=syncId)
 
     class AccountInfoClass(metaclass=Singleton):
         @func_with_name(name='FriendList')
         def FriendList(self, sessionKey: str, syncId: int = 1):
-            return build_command({
+            return build_command(content={
                 'sessionKey': sessionKey
             }, command='friendList', syncId=syncId)
 
         @func_with_name(name='GroupList')
         def GroupList(self, sessionKey: str, syncId: int = 1):
-            return build_command({
+            return build_command(content={
                 'sessionKey': sessionKey
             }, command='groupList', syncId=syncId)
 
         @func_with_name(name='MemberList')
-        def MemberList(self, sessionKey: str, groupId: int, syncId: int = 1):
-            return build_command({
+        def MemberList(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId
+                'target': target
             }, command='memberList', syncId=syncId)
 
         @func_with_name(name='BotProfile')
         def BotProfile(self, sessionKey: str, syncId: int = 1):
-            return build_command({
+            return build_command(content={
                 'sessionKey': sessionKey
             }, command='botProfile', syncId=syncId)
 
         @func_with_name(name='FriendProfile')
-        def FriendProfile(self, sessionKey: str, friendId: int, syncId: int = 1):
-            return build_command({
+        def FriendProfile(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': friendId
+                'target': target
             }, command='friendProfile', syncId=syncId)
 
         @func_with_name(name='MemberProfile')
-        def MemberProfile(self, sessionKey: str, groupId: int, memberId: int, syncId: int = 1):
-            return build_command({
+        def MemberProfile(self, sessionKey: str, target: int, memberId: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
+                'target': target,
                 'memberId': memberId
             }, command='memberProfile', syncId=syncId)
 
         @func_with_name(name='UserProfile')
-        def UserProfile(self, sessionKey: str, userId: int, syncId: int = 1):
-            return build_command({
+        def UserProfile(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': userId,
+                'target': target,
             }, command='userProfile', syncId=syncId)
 
     class MessageSendClass(metaclass=Singleton):
         @func_with_name(name='SendFriendMessage')
-        def SendFriendMessage(self, sessionKey: str, friendId: int,
-                              messageChain: List[dict], quoteMessageId: int = -1, syncId: int = 1):
-            if quoteMessageId == -1:
-                return build_command({
-                    'sessionKey': sessionKey,
-                    'target': friendId,
-                    'messageChain': messageChain
-                }, command='sendFriendMessage', syncId=syncId)
-            return build_command({
+        def SendFriendMessage(self, sessionKey: str, target: int,
+                              messageChain: List[dict], syncId: int = 1, **kwargs):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': friendId,
-                'quote': quoteMessageId,
+                'target': target,
                 'messageChain': messageChain
-            }, command='sendFriendMessage', syncId=syncId)
+            }, command='sendFriendMessage', syncId=syncId, **kwargs)
 
         @func_with_name(name='SendGroupMessage')
-        def SendGroupMessage(self, sessionKey: str, groupId: int,
-                             messageChain: List[dict], quoteMessageId: int = -1, syncId: int = 1):
-            if quoteMessageId == -1:
-                return build_command({
-                    'sessionKey': sessionKey,
-                    'target': groupId,
-                    'messageChain': messageChain
-                }, command='sendGroupMessage', syncId=syncId)
-            return build_command({
+        def SendGroupMessage(self, sessionKey: str, target: int,
+                             messageChain: List[dict], syncId: int = 1, **kwargs):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
-                'quote': quoteMessageId,
+                'target': target,
                 'messageChain': messageChain
-            }, command='sendGroupMessage', syncId=syncId)
+            }, command='sendGroupMessage', syncId=syncId, **kwargs)
 
         @func_with_name(name='SendTempMessage')
-        def SendTempMessage(self, sessionKey: str, groupId: int, memberId: int,
-                            messageChain: List[dict], quoteMessageId: int = -1, syncId: int = 1):
-            if quoteMessageId == -1:
-                return build_command({
-                    'sessionKey': sessionKey,
-                    'qq': memberId,
-                    'group': groupId,
-                    'messageChain': messageChain
-                }, command='sendTempMessage', syncId=syncId)
-            return build_command({
+        def SendTempMessage(self, sessionKey: str, group: int, qq: int,
+                            messageChain: List[dict], syncId: int = 1, **kwargs):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'qq': memberId,
-                'group': groupId,
-                'quote': quoteMessageId,
+                'qq': qq,
+                'group': group,
                 'messageChain': messageChain
-            }, command='sendTempMessage', syncId=syncId)
+            }, command='sendTempMessage', syncId=syncId, **kwargs)
 
         @func_with_name(name='SendNudge')
-        def SendNudge(self, sessionKey: str, userId: int,
-                      subjectId: int, syncId: int = 1):
-            return build_command({
+        def SendNudge(self, sessionKey: str, target: int,
+                      subject: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': userId,
-                'subject': subjectId
+                'target': target,
+                'subject': subject
             }, command='sendNudge', syncId=syncId)
 
     class MessageRecallClass(metaclass=Singleton):
         @func_with_name(name='RecallMessage')
         def RecallMessage(self, sessionKey: str, messageId: int, syncId: int = 1):
-            return build_command({
+            return build_command(content={
                 'sessionKey': sessionKey,
                 'messageId': messageId
             }, command='recall', syncId=syncId)
@@ -163,137 +141,137 @@ class WebsocketCommandClass(metaclass=Singleton):
 
     class AccountManageClass(metaclass=Singleton):
         @func_with_name(name='DeleteFriend')
-        def DeleteFriend(self, sessionKey: str, friendId: int, syncId: int = 1):
-            return build_command({
+        def DeleteFriend(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': friendId
+                'target': target
             }, command='deleteFriend', syncId=syncId)
 
     class AdminOperateClass(metaclass=Singleton):
         @func_with_name(name='Mute')
-        def Mute(self, sessionKey: str, groupId: int, memberId: int, time: int = 0, syncId: int = 1):
-            return build_command({
+        def Mute(self, sessionKey: str, target: int, memberId: int, time: int = 0, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
+                'target': target,
                 'memberId': memberId,
                 'time': time
             }, command='mute', syncId=syncId)
 
         @func_with_name(name='UnMute')
-        def UnMute(self, sessionKey: str, groupId: int, memberId: int, syncId: int = 1):
-            return build_command({
+        def UnMute(self, sessionKey: str, target: int, memberId: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
+                'target': target,
                 'memberId': memberId,
             }, command='unmute', syncId=syncId)
 
         @func_with_name(name='Kick')
-        def Kick(self, sessionKey: str, groupId: int, memberId: int, msg: str, syncId: int = 1):
-            return build_command({
+        def Kick(self, sessionKey: str, target: int, memberId: int, msg: str, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
+                'target': target,
                 'memberId': memberId,
                 'msg': msg
             }, command='kick', syncId=syncId)
 
         @func_with_name(name='Quit')
-        def Quit(self, sessionKey: str, groupId: int, syncId: int = 1):
-            return build_command({
+        def Quit(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId
+                'target': target
             }, command='quit', syncId=syncId)
 
         @func_with_name(name='MuteAll')
-        def MuteAll(self, sessionKey: str, groupId: int, syncId: int = 1):
-            return build_command({
+        def MuteAll(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId
+                'target': target
             }, command='muteAll', syncId=syncId)
 
         @func_with_name(name='UnMuteAll')
-        def UnMuteAll(self, sessionKey: str, groupId: int, syncId: int = 1):
-            return build_command({
+        def UnMuteAll(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId
+                'target': target
             }, command='unmuteAll', syncId=syncId)
 
         @func_with_name(name='SetEssence')
-        def SetEssence(self, sessionKey: str, messageId: int, syncId: int = 1):
-            return build_command({
+        def SetEssence(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': messageId
+                'target': target
             }, command='setEssence', syncId=syncId)
 
         @func_with_name(name='GroupConfigGet')
-        def GroupConfigGet(self, sessionKey: str, groupId: int, syncId: int = 1):
-            return build_command({
+        def GroupConfigGet(self, sessionKey: str, target: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId
+                'target': target
             }, command='groupConfig', subcommand='get', syncId=syncId)
 
         @func_with_name(name='GroupConfigUpdate')
-        def GroupConfigUpdate(self, sessionKey: str, groupId: int, config: dict, syncId: int = 1):
-            return build_command({
+        def GroupConfigUpdate(self, sessionKey: str, target: int, config: dict, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
+                'target': target,
                 'config': config
             }, command='groupConfig', subcommand='update', syncId=syncId)
 
         @func_with_name(name='MemberInfoGet')
-        def MemberInfoGet(self, sessionKey: str, groupId: int, memberId: int, syncId: int = 1):
-            return build_command({
+        def MemberInfoGet(self, sessionKey: str, target: int, memberId: int, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
+                'target': target,
                 'memberId': memberId
             }, command='memberInfo', subcommand='get', syncId=syncId)
 
         @func_with_name(name='MemberInfoUpdate')
-        def MemberInfoUpdate(self, sessionKey: str, groupId: int, memberId: int, info: dict, syncId: int = 1):
-            return build_command({
+        def MemberInfoUpdate(self, sessionKey: str, target: int, memberId: int, info: dict, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
+                'target': target,
                 'memberId': memberId,
                 'info': info
             }, command='memberInfo', subcommand='update', syncId=syncId)
 
         @func_with_name(name='')
-        def MemberAdmin(self, sessionKey: str, groupId: int, memberId: int, assign: bool, syncId: int = 1):
-            return build_command({
+        def MemberAdmin(self, sessionKey: str, target: int, memberId: int, assign: bool, syncId: int = 1):
+            return build_command(content={
                 'sessionKey': sessionKey,
-                'target': groupId,
+                'target': target,
                 'memberId': memberId,
                 'assgin': assign
             }, command='memberAdmin', syncId=syncId)
 
     class GroupAnnounceClass(metaclass=Singleton):
         @func_with_name(name='AnnoList')
-        def AnnoList(self, groupId: int, offset: int, size: int, syncId: int = 1):
-            return build_command({
-                'id': groupId,
+        def AnnoList(self, id: int, offset: int, size: int, syncId: int = 1):
+            return build_command(content={
+                'id': id,
                 'offset': offset,
                 'size': size
             }, command='anno_list', syncId=syncId)
 
         @func_with_name(name='AnnoPublish')
-        def AnnoPublish(self, groupId: int, content: str, pinned: bool = False, syncId: int = 1, **kwargs):
-            return build_command({
-                                     'target': groupId,
-                                     'content': content,
-                                     'pinned': pinned,
-                                 }.update(**kwargs), command='anno_publish', syncId=syncId)
+        def AnnoPublish(self, target: int, content: str, pinned: bool = False, syncId: int = 1, **kwargs):
+            return build_command(content={
+                'target': target,
+                'content': content,
+                'pinned': pinned,
+            }, command='anno_publish', syncId=syncId, **kwargs)
 
         @func_with_name(name='AnnoDelete')
-        def AnnoDelete(self, groupId: int, annoId: int, syncId: int = 1):
-            return build_command({
-                'id': groupId,
-                'fid': annoId
+        def AnnoDelete(self, id: int, fid: int, syncId: int = 1):
+            return build_command(content={
+                'id': id,
+                'fid': fid
             }, command='anno_delete', syncId=syncId)
 
     class EventHandleClass(metaclass=Singleton):
         @func_with_name(name='NewFriendRequestEvent')
         def NewFriendRequestEvent(self, sessionKey: str, eventId: int, fromId: int, groupId: int,
                                   operate: int, msg: str, syncId: int = 1):
-            return build_command({
+            return build_command(content={
                 'sessionKey': sessionKey,
                 'eventId': eventId,
                 'fromId': fromId,
@@ -305,7 +283,7 @@ class WebsocketCommandClass(metaclass=Singleton):
         @func_with_name(name='MemberJoinRequestEvent')
         def MemberJoinRequestEvent(self, sessionKey: str, eventId: int, fromId: int, groupId: int,
                                    operate: int, msg: str, syncId: int = 1):
-            return build_command({
+            return build_command(content={
                 'sessionKey': sessionKey,
                 'eventId': eventId,
                 'fromId': fromId,
@@ -317,7 +295,7 @@ class WebsocketCommandClass(metaclass=Singleton):
         @func_with_name(name='BotInvitedJoinGroupRequestEvent')
         def BotInvitedJoinGroupRequestEvent(self, sessionKey: str, eventId: int, fromId: int, groupId: int,
                                             operate: int, msg: str, syncId: int = 1):
-            return build_command({
+            return build_command(content={
                 'sessionKey': sessionKey,
                 'eventId': eventId,
                 'fromId': fromId,
@@ -338,28 +316,27 @@ class WebsocketCommandClass(metaclass=Singleton):
         self.EventHandle = self.EventHandleClass()
 
     @classmethod
-    def build_command(cls, content, command, subcommand=None, syncId: int = 1):
-        if content is None:
-            return json.dumps(
-                {
+    def build_command(cls, command, subcommand=None, content=None, syncId: int = 1, **kwargs):
+        if content:
+            return cls.__build_command__(content={
+                **content,
+                **kwargs
+            }, command=command, subcommand=subcommand, syncId=syncId)
+        return cls.__build_command__(content={
+            **kwargs
+        }, command=command, subcommand=subcommand, syncId=syncId)
+
+    @classmethod
+    def __build_command__(cls, command, subcommand=None, syncId: int = 1, **kwargs):
+        return json.dumps({
+                **{
                     'syncId': syncId,
                     'command': command,
-                    'subCommand': subcommand,
-                },
-                ensure_ascii=False
-            )
-        return json.dumps(
-            {
-                'syncId': syncId,
-                'command': command,
-                'subCommand': subcommand,
-                'content': content
+                    'subCommand': subcommand
+                }, **kwargs
             },
             ensure_ascii=False
         )
-
-    def debug(self):
-        print(type(self))
 
 
 build_command = WebsocketCommandClass.build_command

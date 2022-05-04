@@ -186,7 +186,7 @@ class Chain:
                 chain_data.append(item)
 
         if self.quote:
-            return self.command(session, self.target, chain_data, quoteMessageId=self.data.message_id, syncId=sync_id)
+            return self.command(session, self.target, chain_data, quote=self.data.message_id, syncId=sync_id)
         return self.command(session, self.target, chain_data, syncId=sync_id)
 
     @asynccontextmanager

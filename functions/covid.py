@@ -74,8 +74,8 @@ async def get_data():
 
     # 在sync_status不属于 正在同步 或 同步失败（此时该功能停用） 且 超出了 数据有效期 或 请求次数有效期 时进行数据同步
     if sync_status not in (SyncStatus.syncing, SyncStatus.failed) \
-       and time.time() - reload_data_time > reload_time \
-       or request_times_now >= reload_request_times:
+       and (time.time() - reload_data_time > reload_time
+            or request_times_now >= reload_request_times):
         # 标记同步状态，防止出现资源抢占
         sync_status = SyncStatus.syncing
         try:
@@ -93,6 +93,7 @@ async def get_data():
                     covid_data = country
                     break
         except UserAgentError:
+            sync_status = SyncStatus.failed
             raise DataFetchError(f'maybe cause by the version fake_useragent package, try to update it. If it works, '
                                  f'update requirements.txt and make a pull request to the repo.')
         except JSONDecodeError:
