@@ -12,6 +12,7 @@ from core.builtin.message.mirai import mirai_message_formatter
 from core.builtin.messageHandler import message_handler
 from core.control import StateControl
 from core.config import config
+from core.network.mirai.websoketCommand import WebsocketCommand
 from core.util import Singleton
 from core.bot import BotHandlers
 from core import log
@@ -104,6 +105,12 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
             message_data = mirai_message_formatter(account, data, self)
             if message_data:
                 await message_handler(message_data, self)
+
+    async def mute(self, target: int, member_id: int, mute_time: int = 0, sync_id: int = 1):
+        await self.connect.send(WebsocketCommand.AdminOperate.Mute(self.session, target, member_id, mute_time, sync_id))
+
+    async def recall(self, target: int, sync_id: int = 1):
+        await self.connect.send(WebsocketCommand.MessageRecall.RecallMessage(self.session, target, sync_id))
 
     async def handle_error(self, message: str):
         if not self.session:

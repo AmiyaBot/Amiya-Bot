@@ -18,6 +18,7 @@ import aiofiles.os
 from core.util import Singleton
 
 try:
+    from paddleocr import paddleocr
     from paddleocr import PaddleOCR
 
     paddleocr.logging.disable()

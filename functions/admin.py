@@ -87,6 +87,13 @@ async def _(data: Message):
         return await mute(data)
 
 
+@bot.on_group_message(function_id='admin', keywords='禁言')
+async def _(data: Message):
+    if data.is_admin or data.is_group_admin:
+        member_id, mute_time = data.text.split(' ')[1:]
+        return await websocket.mute(data.group_id, member_id, mute_time)
+
+
 @bot.on_private_message(keywords=['屏蔽'])
 async def _(data: Message):
     if data.is_admin:
