@@ -214,7 +214,7 @@ class ArknightsGameDataResource:
                                         stringify=True)
 
         if not latest_ver:
-            log.info(f'ArknightsGameData version file request failed.')
+            log.error(f'ArknightsGameData version file request failed.')
             return None
 
         local_ver = 'None'

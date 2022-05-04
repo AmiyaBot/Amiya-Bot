@@ -73,10 +73,13 @@ async def test():
 
     log.info('testing ready.')
 
-    while True:
-        await asyncio.sleep(0)
-        data = message(input())
-        await message_handler(data, SimulationClient())
+    try:
+        while True:
+            await asyncio.sleep(0)
+            data = message(input())
+            await message_handler(data, SimulationClient())
+    except KeyboardInterrupt:
+        pass
 
 
 def message(text, _type='group'):
