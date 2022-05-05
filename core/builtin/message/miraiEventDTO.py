@@ -33,12 +33,12 @@ class GroupMember:
     def __init__(self, data):
         if data is None:
             self.id = config.miraiApiHttp.account
-            return
-        self.id = data['id']
-        self.memberName = data['memberName']
-        self.specialTitle = data['specialTitle']
-        self.permission = data['permission']
-        self.joinTimestamp = data['joinTimestamp']
-        self.lastSpeakTimestamp = data['lastSpeakTimestamp']
-        self.muteTimeRemaining = data['muteTimeRemaining']
-        self.group = Group(**data['group'])
+        else
+            self.id = data['id']
+            self.memberName = data['memberName']
+            self.specialTitle = data['specialTitle']
+            self.permission = data['permission']
+            self.joinTimestamp = data['joinTimestamp']
+            self.lastSpeakTimestamp = data['lastSpeakTimestamp']
+            self.muteTimeRemaining = data['muteTimeRemaining']
+            self.group = Group(**data['group'])
