@@ -137,12 +137,13 @@ class Chain:
             })
         return self
 
-    def html(self, path: str, data: Union[dict, list] = None, is_template: bool = True):
+    def html(self, path: str, data: Union[dict, list] = None, is_template: bool = True, render_time: int = 200):
         self.chain.append({
             'type': 'Html',
             'data': data,
             'template': f'template/{path}' if is_template else path,
-            'is_file': is_template
+            'is_file': is_template,
+            'render_time': render_time
         })
         return self
 
@@ -174,7 +175,8 @@ class Chain:
 
                         if item['data']:
                             await page.init_data(item['data'])
-                            await asyncio.sleep(0.2)
+
+                        await asyncio.sleep(item['render_time'] / 1000)
 
                         chain_data.append({
                             'type': 'Image',
