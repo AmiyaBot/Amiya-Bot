@@ -2,11 +2,9 @@ from core.network import response
 from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate
-from core.database.user import User as UserBase, query_to_list
+from core.database.user import User as UserBase, UserInfo, UserGachaInfo, query_to_list
 
 from .model.user import UserTable, UserState, AddCoupon
-from functions.user import UserInfo
-from functions.arknights.gacha.gacha import UserGachaInfo
 
 
 class User:

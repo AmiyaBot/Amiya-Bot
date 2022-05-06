@@ -1,9 +1,9 @@
 import copy
 import asyncio
 
-from functions.user import UserInfo
-from functions.game.guess.guessBuilder import *
 from core import bot
+from core.database.user import UserInfo
+from functions.game.guess.guessBuilder import *
 
 
 @bot.on_group_message(function_id='guess', keywords=['猜干员'])

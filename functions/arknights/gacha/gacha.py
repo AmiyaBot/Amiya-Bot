@@ -3,15 +3,12 @@ import random
 
 from io import BytesIO
 from PIL import Image, ImageDraw
+from typing import List
 from core import Message, Chain
-from core.database.user import *
-from core.database.bot import *
+from core.database.user import OperatorBox, UserGachaInfo, UserInfo, User
+from core.database.bot import Pool, PoolSpOperator
 from core.util import insert_empty
 from core.resource.arknightsGameData import ArknightsGameData
-
-from functions.user.userBase import UserInfo, UserGachaInfo
-
-from .box import OperatorBox
 
 line_height = 16
 side_padding = 10
@@ -24,25 +21,6 @@ color = {
     2: '7F7F7F',
     1: '7F7F7F'
 }
-
-
-@table
-class Pool(BotBaseModel):
-    pool_name: str = CharField(unique=True)
-    pickup_6: str = CharField(null=True)
-    pickup_5: str = CharField(null=True)
-    pickup_4: str = CharField(null=True)
-    pickup_s: str = CharField(null=True)
-    limit_pool: int = IntegerField()
-
-
-@table
-class PoolSpOperator(BotBaseModel):
-    pool_id: Union[ForeignKeyField, int] = ForeignKeyField(Pool, db_column='pool_id', on_delete='CASCADE')
-    operator_name: str = CharField()
-    rarity: int = IntegerField()
-    classes: str = CharField()
-    image: str = CharField()
 
 
 class GachaForUser:

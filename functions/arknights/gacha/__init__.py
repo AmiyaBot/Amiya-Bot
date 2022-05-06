@@ -3,8 +3,10 @@ import re
 from typing import List
 from core.util import any_match
 from core import log, bot, Message, Chain
+from core.database.user import UserInfo, UserGachaInfo
+from core.database.bot import Pool
 
-from .gacha import GachaForUser, UserInfo, UserGachaInfo, Pool
+from .gacha import GachaForUser
 from .box import get_user_box
 
 re_list = [

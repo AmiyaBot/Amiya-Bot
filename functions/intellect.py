@@ -1,19 +1,9 @@
+import re
 import time
 
+from typing import List
 from core import bot, websocket, Message, Chain, custom_chain
-from core.database.user import *
-
-
-@table
-class Intellect(UserBaseModel):
-    user_id: str = CharField(primary_key=True)
-    cur_num: int = IntegerField()
-    full_num: int = IntegerField()
-    full_time: int = IntegerField()
-    message_type: str = CharField()
-    group_id: str = CharField()
-    in_time: int = IntegerField()
-    status: int = IntegerField()
+from core.database.user import Intellect
 
 
 async def verify(data: Message):

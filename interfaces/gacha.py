@@ -6,11 +6,10 @@ from core.network import response
 from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate, model_to_dict, query_to_list
+from core.database.bot import Pool as PoolBase, PoolSpOperator, GachaConfig
 from core.resource.arknightsGameData import ArknightsGameData
-from core.resource.arknightsGameData.common import GachaConfig
 
 from .model.pool import PoolTable, PoolInfo, GachaConfigTable, GachaConfigItem
-from functions.arknights.gacha.gacha import Pool as PoolBase, PoolSpOperator
 
 
 class Pool:

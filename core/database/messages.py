@@ -51,3 +51,10 @@ class MessageStack:
             'classify': 'call' if effective else '',
             'create_time': item.time
         })
+
+
+@table
+class WeiboRecord(MessageBaseModel):
+    user_id: int = IntegerField()
+    blog_id: str = CharField()
+    record_time: int = IntegerField()

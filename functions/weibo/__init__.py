@@ -1,18 +1,13 @@
+import re
 import time
+import asyncio
 
-from core.database.messages import *
+from core.database.messages import WeiboRecord
 from core.config import config
 from core.util import TimeRecorder
 from core import bot, websocket, http, custom_chain, Message, Chain
 
 from .helper import WeiboUser, weibo_conf, enables_group_list
-
-
-@table
-class WeiboRecord(MessageBaseModel):
-    user_id: int = IntegerField()
-    blog_id: str = CharField()
-    record_time: int = IntegerField()
 
 
 async def send_by_index(index: int, weibo: WeiboUser, data: Message):

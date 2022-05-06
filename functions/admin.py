@@ -5,14 +5,12 @@ import time
 from typing import Union
 from core import bot, websocket, http, Message, Chain, Mirai
 from core.util import TimeRecorder, random_code, any_match, extract_time
-from core.resource.arknightsGameData.common import GachaConfig
 from core.network.download import download_async
 from core.database.group import Group, GroupActive
 from core.database.user import Admin, User
+from core.database.bot import GachaConfig, Pool, PoolSpOperator
 from core.control import StateControl
 from core.config import config
-
-from functions.arknights.gacha.gacha import Pool, PoolSpOperator
 
 official_console = 'http://console.amiyabot.com'
 
