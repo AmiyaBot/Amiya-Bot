@@ -18,6 +18,7 @@ official_console = 'http://console.amiyabot.com'
 
 mute_time_default = 60 * 60
 
+
 async def mute(data: Message):
     message = data.text
     target = data.at_target

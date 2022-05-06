@@ -33,7 +33,7 @@ class GroupMember:
     def __init__(self, data):
         if data is None:
             self.id = config.miraiApiHttp.account
-        else
+        else:
             self.id = data['id']
             self.memberName = data['memberName']
             self.specialTitle = data['specialTitle']

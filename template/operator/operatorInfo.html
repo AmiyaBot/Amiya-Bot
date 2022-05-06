@@ -115,7 +115,8 @@
                     + (this.data.modules[name] ? `<span class="b">+${this.data.modules[name]}</span>` : '').replace(/\+-/g, '-')
             },
             skillItem(item) {
-                return this.data.skills_desc[item.skill_no][6]
+                const skills = this.data.skills_desc[item.skill_no]
+                return skills[skills.length - 1]
             },
             range(text) {
                 let lines = []

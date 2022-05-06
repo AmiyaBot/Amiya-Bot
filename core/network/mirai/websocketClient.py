@@ -5,6 +5,7 @@ import websockets
 
 from contextlib import asynccontextmanager
 from core.network import WSOperation
+from core.network.mirai.websocketCommand import WebsocketCommand
 from core.database.messages import MessageRecord
 from core.builtin.message import WaitEventCancel
 from core.builtin.messageChain import Chain, custom_chain
@@ -12,7 +13,6 @@ from core.builtin.message.mirai import mirai_message_formatter
 from core.builtin.messageHandler import message_handler
 from core.control import StateControl
 from core.config import config
-from core.network.mirai.websoketCommand import WebsocketCommand
 from core.util import Singleton
 from core.bot import BotHandlers
 from core import log

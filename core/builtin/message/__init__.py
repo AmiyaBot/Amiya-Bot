@@ -82,10 +82,9 @@ class Message:
         face = ''.join([f'[face:{n}]' for n in self.face])
         image = '[image]' * len(self.image)
 
-        return 'Type:{type:7}MessageId:{messageId:<6}Group:{group:<12}User:{user:<12}{username}: {message}'.format(
+        return 'Type:{type:7}Group:{group:<12}User:{user:<12}{username}: {message}'.format(
             **{
                 'type': self.type,
-                'messageId': self.message_id,
                 'user': self.user_id,
                 'group': self.group_id or 'None',
                 'username': self.nickname,

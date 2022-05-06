@@ -5,7 +5,7 @@ from typing import Union, List
 from contextlib import asynccontextmanager
 
 from core.network.mirai import get_func_name
-from core.network.mirai.websoketCommand import WebsocketCommand
+from core.network.mirai.websocketCommand import WebsocketCommand
 from core.util import read_yaml
 from core.builtin.message import Message
 from core.builtin.imageCreator import create_image, ImageElem, IMAGES_TYPE
