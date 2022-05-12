@@ -1,6 +1,5 @@
 from core.database import *
-from core.database.user import User as UserData
-from functions.arknights.gacha import UserInfo, UserGachaInfo
+from core.database.user import User as UserData, UserInfo, UserGachaInfo
 
 amiya = SqliteDatabase('amiya.db')
 

@@ -3,14 +3,20 @@ import aiohttp
 
 from typing import Union
 from core import log
+from core.util import argv
+
+outline = argv('outline')
 
 
 class HttpRequests:
     @classmethod
-    async def get(cls, interface: str):
+    async def get(cls, interface: str, *args, **kwargs):
+        if outline:
+            return None
+
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(interface) as res:
+                async with session.get(interface, *args, **kwargs) as res:
                     if res.status == 200:
                         return await res.text()
                     else:
@@ -20,6 +26,9 @@ class HttpRequests:
 
     @classmethod
     async def post(cls, interface: str, payload: Union[dict, list] = None, headers: dict = None):
+        if outline:
+            return None
+
         _headers = {
             'Content-Type': 'application/json',
             **(headers or {})
@@ -39,6 +48,9 @@ class HttpRequests:
 
     @classmethod
     async def upload(cls, interface: str, file: bytes, file_field: str = 'file', payload: dict = None):
+        if outline:
+            return None
+
         data = aiohttp.FormData()
         data.add_field(file_field,
                        file,

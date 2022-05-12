@@ -1,29 +1,12 @@
 import time
 
 from core.database.group import *
-from core.database.bot import BotBaseModel
+from core.database.bot import TextReplace, TextReplaceSetting
 from core.builtin.baiduCloud import BaiduCloud
 from core.builtin.message.build import text_convert
 from core import bot, Message, Chain
 
 baidu = BaiduCloud()
-
-
-@table
-class TextReplace(BotBaseModel):
-    user_id: str = CharField()
-    group_id: str = CharField()
-    origin: str = TextField()
-    replace: str = TextField()
-    in_time: int = BigIntegerField()
-    is_global: int = IntegerField(default=0)
-    is_active: int = IntegerField(default=1)
-
-
-@table
-class TextReplaceSetting(BotBaseModel):
-    text: str = CharField()
-    status: int = IntegerField()
 
 
 @bot.handler_middleware

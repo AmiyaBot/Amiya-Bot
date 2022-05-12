@@ -1,10 +1,6 @@
-import os
 import re
-import time
 import dhash
 import jieba
-import aiofiles
-import aiofiles.os
 
 from io import BytesIO
 from PIL import Image
@@ -14,7 +10,7 @@ from itertools import combinations
 from core import exec_before_init, log, bot, Message, Chain
 from core.builtin.localOcr import LocalOCR
 from core.config import config
-from core.util import insert_empty, all_match, read_yaml
+from core.util import all_match, read_yaml
 from core.builtin.baiduCloud import BaiduCloud
 from core.network.download import download_async
 from core.resource.arknightsGameData import ArknightsGameData
@@ -80,16 +76,7 @@ async def get_ocr_result(image):
 
         if res and 'words_result' in res:
             return ''.join([item['words'] for item in res['words_result']])
-
-    if not os.path.exists('fileStorage/recruit/'):
-        await aiofiles.os.mkdir('fileStorage/recruit/')
-
-    path = 'fileStorage/recruit/' + str(time.time()) + '.jpg'
-
-    async with aiofiles.open(path, mode='wb+') as f:
-        await f.write(image)
-
-    res = ''.join(await local_ocr.ocr(path))
+    res = ''.join(await local_ocr.ocr(image))
     for regex in replace:
         res = re.sub(regex.key, regex.val, res)
     return res

@@ -61,7 +61,7 @@ class TasksControl:
                         async with log.catch('TimedTask Error:', handler=client.handle_error):
                             chain = await task.task()
                             if chain:
-                                await client.send(chain)
+                                await client.send_message(chain)
 
         except KeyboardInterrupt:
             pass

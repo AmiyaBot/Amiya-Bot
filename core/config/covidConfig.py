@@ -1,10 +1,8 @@
-class MapConfig:
+class CovidConfig:
     enable: bool
-    key: str
 
     @classmethod
     def desc(cls):
         return {
-            'enable': False,
-            'key': ''
+            'enable': True
         }

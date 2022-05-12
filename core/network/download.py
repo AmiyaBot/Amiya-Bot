@@ -3,7 +3,9 @@ import requests
 
 from io import BytesIO
 from core import log
+from core.util import argv
 
+outline = argv('outline')
 default_headers = {
     'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) '
                   'AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'
@@ -11,6 +13,9 @@ default_headers = {
 
 
 def download_sync(url: str, headers=None, stringify=False, progress=False):
+    if outline:
+        return None
+
     try:
         stream = requests.get(url, headers=headers or default_headers, stream=True)
         file_size = int(stream.headers['content-length'])
@@ -41,6 +46,9 @@ def download_sync(url: str, headers=None, stringify=False, progress=False):
 
 
 async def download_async(url, headers=None, stringify=False):
+    if outline:
+        return None
+
     async with log.catch('download error:', ignore=[requests.exceptions.SSLError]):
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers or default_headers) as res:

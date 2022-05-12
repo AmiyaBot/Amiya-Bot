@@ -3,6 +3,7 @@ import json
 
 from core import log
 from core.util import Singleton, create_dir
+from core.network.mirai import HttpAdapter
 from core.network.httpRequests import http_requests
 from core.database.group import Group, GroupActive, GroupSetting
 from core.config import config
@@ -101,9 +102,4 @@ class HttpClient(metaclass=Singleton):
         GroupSetting.delete().where(GroupSetting.group_id == group_id).execute()
 
     async def send_nudge(self, user_id, group_id):
-        await self.post('sendNudge', {
-            'sessionKey': self.session,
-            'target': user_id,
-            'subject': group_id,
-            'kind': 'Group'
-        })
+        await self.post('sendNudge', HttpAdapter.nudge(self.session, user_id, group_id))

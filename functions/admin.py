@@ -4,17 +4,18 @@ import time
 
 from typing import Union
 from core import bot, websocket, http, Message, Chain, Mirai
-from core.util import TimeRecorder, random_code, any_match
-from core.resource.arknightsGameData.common import GachaConfig
+from core.util import TimeRecorder, random_code, any_match, extract_time
+from core.network.mirai import WebsocketAdapter
 from core.network.download import download_async
 from core.database.group import Group, GroupActive
 from core.database.user import Admin, User
+from core.database.bot import GachaConfig, Pool, PoolSpOperator
 from core.control import StateControl
 from core.config import config
 
-from functions.arknights.gacha.gacha import Pool, PoolSpOperator
-
 official_console = 'http://console.amiyabot.com'
+
+mute_time_default = 60 * 60
 
 
 async def mute(data: Message):
@@ -85,6 +86,32 @@ async def _(data: Message):
 async def _(data: Message):
     if data.is_admin:
         return await mute(data)
+
+
+@bot.on_group_message(function_id='admin', keywords='禁言', check_prefix=False)
+async def _(data: Message):
+    if data.is_admin or data.is_group_admin:
+        if data.at_target:
+            target_id = data.at_target[0]
+            mute_time = extract_time(data.text.split('禁言')[1], to_time_point=False) \
+                if data.text.split('禁言')[1] \
+                else mute_time_default
+        else:
+            params = data.text.split(' ')
+            if len(params) < 2:
+                return Chain(data).text(f'禁言格式如下：禁言 <目标qq号> <禁言时间>'
+                                        f'\n或 禁言 <@目标> <禁言时间>'
+                                        f'\n禁言时间可选，默认{mute_time_default}s')
+            target_id = params[1]
+            if len(params) == 2:
+                mute_time = mute_time_default
+            else:
+                mute_time = extract_time(params[2], to_time_point=False)
+
+        return await websocket.send_command(WebsocketAdapter.mute(websocket.session,
+                                                                  data.group_id,
+                                                                  target_id,
+                                                                  int(mute_time)))
 
 
 @bot.on_private_message(keywords=['屏蔽'])

@@ -18,7 +18,7 @@ BotHandlers.add_prefix(
 
 
 class SimulationClient(WSOperation, ABC):
-    async def send(self, reply: Chain):
+    async def send_message(self, reply: Chain):
         for item in reply.chain + reply.voice_list:
             if item['type'] == 'Plain':
                 text = item['text'].strip('\n')
@@ -47,7 +47,8 @@ class SimulationClient(WSOperation, ABC):
 
                     if item['data']:
                         await page.init_data(item['data'])
-                        await asyncio.sleep(0.2)
+
+                    await asyncio.sleep(item['render_time'] / 1000)
 
                     png = f'fileStorage/test/{int(time.time())}.png'
 
@@ -73,10 +74,13 @@ async def test():
 
     log.info('testing ready.')
 
-    while True:
-        await asyncio.sleep(0)
-        data = message(input())
-        await message_handler(data, SimulationClient())
+    try:
+        while True:
+            await asyncio.sleep(0)
+            data = message(input())
+            await message_handler(data, SimulationClient())
+    except KeyboardInterrupt:
+        pass
 
 
 def message(text, _type='group'):

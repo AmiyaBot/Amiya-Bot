@@ -1,15 +1,9 @@
 import json
 
-from core.database.bot import *
+from core.database.bot import GachaConfig
 from core.util import read_yaml
 
 config = read_yaml('config/private/arknights.yaml', _dict=True)['operatorSetting']
-
-
-@table
-class GachaConfig(BotBaseModel):
-    operator_name: str = CharField()
-    operator_type: int = IntegerField()
 
 
 class ArknightsConfig:

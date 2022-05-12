@@ -53,16 +53,14 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
         except ConnectionRefusedError:
             log.error('cannot connect to mirai-api-http websocket server.')
 
-    async def send(self, reply: Chain):
+    async def send_message(self, reply: Chain):
         if reply.chain:
             await self.connect.send(await reply.build(self.session))
 
         if reply.voice_list:
             reply.quote = False
             for voice in reply.voice_list:
-                await self.connect.send(
-                    await reply.build(self.session, chain=[voice])
-                )
+                await self.connect.send(await reply.build(self.session, chain=[voice]))
 
         if BotHandlers.after_reply_handlers:
             for handler in BotHandlers.after_reply_handlers:
@@ -77,6 +75,9 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
             create_time=int(time.time())
         )
 
+    async def send_command(self, command: str):
+        await self.connect.send(command)
+
     @asynccontextmanager
     async def send_to_admin(self):
         data = custom_chain(msg_type='friend')
@@ -86,7 +87,7 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
         for item in config.admin.accounts:
             data.target = item
 
-            await self.send(data)
+            await self.send_message(data)
 
     async def handle_message(self, message: str):
         async with log.catch(handler=self.handle_error, ignore=[WaitEventCancel, json.JSONDecodeError]):

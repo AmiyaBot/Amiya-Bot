@@ -16,6 +16,7 @@ class BotResource:
         version_file = download_sync(f'{resource_config.remote.cos}/console/version.txt', stringify=True)
 
         if not version_file:
+            log.error('Amiya-Bot Console version file request failed.')
             return False
 
         version = version_file.strip('\n').split('\n').pop(0)
@@ -69,12 +70,15 @@ class BotResource:
         lock_file = 'resource/assets-lock.txt'
         pack_zip = 'resource/Amiya-Bot-assets.zip'
 
+        log.info('checking assets update...')
+
         flag = False
         latest_ver = download_sync(version, stringify=True)
         if os.path.exists(lock_file):
-            with open(lock_file, mode='r') as lf:
-                if lf.read() != latest_ver:
-                    flag = True
+            if latest_ver:
+                with open(lock_file, mode='r') as lf:
+                    if lf.read() != latest_ver:
+                        flag = True
         else:
             flag = True
 
@@ -95,3 +99,5 @@ class BotResource:
         if latest_ver:
             with open(lock_file, mode='w+') as v:
                 v.write(latest_ver)
+        else:
+            log.error('assets version file request failed.')

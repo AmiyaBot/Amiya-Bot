@@ -1,14 +1,15 @@
 import re
-import json
 import asyncio
 
 from typing import Union, List
 from contextlib import asynccontextmanager
+
 from core.util import read_yaml
 from core.builtin.message import Message
 from core.builtin.imageCreator import create_image, ImageElem, IMAGES_TYPE
 from core.builtin.htmlConverter import ChromiumBrowser
 from core.builtin.resourceManager import ResourceManager
+from core.network.mirai import WebsocketAdapter
 from core import log
 
 config = read_yaml('config/private/bot.yaml')
@@ -30,12 +31,12 @@ class Chain:
         self.data = data
         self.chain = []
         self.voice_list = []
-        self.command = 'sendFriendMessage'
+        self.command = WebsocketAdapter.friend_message
         self.target = data.user_id
         self.quote = False
 
         if self.data.type == 'group':
-            self.command = 'sendGroupMessage'
+            self.command = WebsocketAdapter.group_message
             self.target = data.group_id
 
             if data.user_id and quote:
@@ -44,7 +45,7 @@ class Chain:
                 self.at(enter=True)
 
     def __str__(self):
-        return f'{self.command}: {self.target}'
+        return f'{self.command.__name__}: {self.target}'
 
     def at(self, user: int = None, enter: bool = False):
         self.chain.append({
@@ -135,16 +136,17 @@ class Chain:
             })
         return self
 
-    def html(self, path: str, data: Union[dict, list] = None, is_template: bool = True):
+    def html(self, path: str, data: Union[dict, list] = None, is_template: bool = True, render_time: int = 200):
         self.chain.append({
             'type': 'Html',
             'data': data,
             'template': f'template/{path}' if is_template else path,
-            'is_file': is_template
+            'is_file': is_template,
+            'render_time': render_time
         })
         return self
 
-    async def build(self, session: str, chain: list = None, sync_id: int = 1):
+    async def build(self, session: str, chain: list = None):
 
         chain = chain or self.chain
         chain_data = []
@@ -172,7 +174,8 @@ class Chain:
 
                         if item['data']:
                             await page.init_data(item['data'])
-                            await asyncio.sleep(0.2)
+
+                        await asyncio.sleep(item['render_time'] / 1000)
 
                         chain_data.append({
                             'type': 'Image',
@@ -183,24 +186,9 @@ class Chain:
 
                 chain_data.append(item)
 
-        content = {
-            'target': self.target,
-            'sessionKey': session,
-            'messageChain': chain_data
-        }
-
-        if self.quote:
-            content['quote'] = self.data.message_id
-
-        return json.dumps(
-            {
-                'syncId': sync_id,
-                'command': self.command,
-                'subCommand': None,
-                'content': content
-            },
-            ensure_ascii=False
-        )
+        if self.quote and self.command.__name__ == 'group_message':
+            return self.command(session, self.target, chain_data, quote=self.data.message_id)
+        return self.command(session, self.target, chain_data)
 
     @asynccontextmanager
     async def create(self):

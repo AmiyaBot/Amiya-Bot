@@ -3,7 +3,7 @@ import jieba
 
 from typing import List
 from core import log, bot, Message, Chain, exec_before_init
-from core.util import remove_xml_tag, integer, any_match
+from core.util import integer, any_match
 from core.resource.arknightsGameData import ArknightsGameData
 
 line_height = 16

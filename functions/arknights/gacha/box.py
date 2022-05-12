@@ -1,14 +1,8 @@
 import os
 
-from core.database.user import *
+from core.database.user import OperatorBox
 from core.builtin.imageCreator import ImageElem, create_image
 from core.resource.arknightsGameData import ArknightsGameData, Operator
-
-
-@table
-class OperatorBox(UserBaseModel):
-    user_id: str = CharField()
-    operator: str = TextField(default='')
 
 
 def get_user_box(user_id):

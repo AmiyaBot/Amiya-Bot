@@ -2,9 +2,9 @@ from core.network import response
 from core.network.httpServer.loader import interface
 from core.network.httpServer.auth import AuthManager
 from core.database import SearchParams, select_for_paginate, query_to_list
+from core.database.bot import TextReplace, TextReplaceSetting
 
 from .model.replace import ReplaceTable, DeleteReplace, ReplaceDataItem, ReplaceSettingItem
-from functions.replace import TextReplace, TextReplaceSetting
 
 
 class Replace:
