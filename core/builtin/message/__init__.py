@@ -96,7 +96,7 @@ class Message:
         return f'<Message, {self.message}>'
 
     async def send(self, reply):
-        await self.operation.send(reply)
+        await self.operation.send_message(reply)
 
     async def waiting(self, reply=None, max_time: int = 30, force: bool = False, target: str = 'user'):
         if target == 'group':
@@ -110,7 +110,7 @@ class Message:
         wid = await wait_events.set_wait(target_id, force, target)
 
         if reply:
-            await self.operation.send(reply)
+            await self.operation.send_message(reply)
 
         while max_time:
             await asyncio.sleep(0.5)

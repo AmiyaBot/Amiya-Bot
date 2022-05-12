@@ -372,9 +372,9 @@ def extract_time(text: str, to_time_point: bool = True):
                         time_result += detail['time'][k] * v
                 return time_result
 
-
             elif detail['type'] == 'time_period':
                 pass
+
         except OSError:
             pass
     return []

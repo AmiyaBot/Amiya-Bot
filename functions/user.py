@@ -279,13 +279,13 @@ async def _(data: Mirai.MemberJoinEvent):
         return False
 
     chain = custom_chain(data.member.id, data.member.group.id)
-    await websocket.send(chain.text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
+    await websocket.send_message(chain.text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
 
 
 @bot.on_event(Mirai.BotJoinGroupEvent)
 async def _(data: Mirai.BotJoinGroupEvent):
     chain = custom_chain(group_id=data.group.id)
-    await websocket.send(chain.text('博士，初次见面，这里是阿米娅2号，姐姐去了很远的地方，今后就由我来代替姐姐的工作吧，请多多指教哦'))
+    await websocket.send_message(chain.text('博士，初次见面，这里是阿米娅，请大家多多指教哦~\n发送【阿米娅功能】来获取功能清单。'))
 
 
 @bot.on_event(Mirai.NudgeEvent)
@@ -310,9 +310,8 @@ async def _(data: Mirai.NudgeEvent):
 async def _(data: Message):
     user: UserInfo = UserInfo.get_user(data.user_id)
     if user.user_mood <= 0:
-        await websocket.send(
-            custom_chain(data.user_id, data.group_id, data.type).at(enter=True).text('哼~阿米娅生气了！不理博士！[face:38]')
-        )
+        await websocket.send_message(
+            custom_chain(data.user_id, data.group_id, data.type).at(enter=True).text('哼~阿米娅生气了！不理博士！[face:38]'))
         return False
     return True
 

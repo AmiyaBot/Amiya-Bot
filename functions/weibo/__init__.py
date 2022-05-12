@@ -106,7 +106,7 @@ async def _():
             data.text(result.detail_url)
             data.image(result.pics_list)
 
-            await websocket.send(data)
+            await websocket.send_message(data)
             await asyncio.sleep(0.5)
 
         async with websocket.send_to_admin() as chain:

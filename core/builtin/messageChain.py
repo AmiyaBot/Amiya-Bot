@@ -4,13 +4,12 @@ import asyncio
 from typing import Union, List
 from contextlib import asynccontextmanager
 
-from core.network.mirai import get_func_name
-from core.network.mirai.websocketCommand import WebsocketCommand
 from core.util import read_yaml
 from core.builtin.message import Message
 from core.builtin.imageCreator import create_image, ImageElem, IMAGES_TYPE
 from core.builtin.htmlConverter import ChromiumBrowser
 from core.builtin.resourceManager import ResourceManager
+from core.network.mirai import WebsocketAdapter
 from core import log
 
 config = read_yaml('config/private/bot.yaml')
@@ -32,12 +31,12 @@ class Chain:
         self.data = data
         self.chain = []
         self.voice_list = []
-        self.command = WebsocketCommand.MessageSend.SendFriendMessage
+        self.command = WebsocketAdapter.friend_message
         self.target = data.user_id
         self.quote = False
 
         if self.data.type == 'group':
-            self.command = WebsocketCommand.MessageSend.SendGroupMessage
+            self.command = WebsocketAdapter.group_message
             self.target = data.group_id
 
             if data.user_id and quote:
@@ -46,7 +45,7 @@ class Chain:
                 self.at(enter=True)
 
     def __str__(self):
-        return f'{get_func_name(self.command)}: {self.target}'
+        return f'{self.command.__name__}: {self.target}'
 
     def at(self, user: int = None, enter: bool = False):
         self.chain.append({
@@ -147,7 +146,7 @@ class Chain:
         })
         return self
 
-    async def build(self, session: str, chain: list = None, sync_id: int = 1):
+    async def build(self, session: str, chain: list = None):
 
         chain = chain or self.chain
         chain_data = []
@@ -187,9 +186,9 @@ class Chain:
 
                 chain_data.append(item)
 
-        if self.quote:
-            return self.command(session, self.target, chain_data, quote=self.data.message_id, syncId=sync_id)
-        return self.command(session, self.target, chain_data, syncId=sync_id)
+        if self.quote and self.command.__name__ == 'group_message':
+            return self.command(session, self.target, chain_data, quote=self.data.message_id)
+        return self.command(session, self.target, chain_data)
 
     @asynccontextmanager
     async def create(self):

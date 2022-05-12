@@ -5,7 +5,6 @@ import websockets
 
 from contextlib import asynccontextmanager
 from core.network import WSOperation
-from core.network.mirai.websocketCommand import WebsocketCommand
 from core.database.messages import MessageRecord
 from core.builtin.message import WaitEventCancel
 from core.builtin.messageChain import Chain, custom_chain
@@ -54,16 +53,14 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
         except ConnectionRefusedError:
             log.error('cannot connect to mirai-api-http websocket server.')
 
-    async def send(self, reply: Chain):
+    async def send_message(self, reply: Chain):
         if reply.chain:
             await self.connect.send(await reply.build(self.session))
 
         if reply.voice_list:
             reply.quote = False
             for voice in reply.voice_list:
-                await self.connect.send(
-                    await reply.build(self.session, chain=[voice])
-                )
+                await self.connect.send(await reply.build(self.session, chain=[voice]))
 
         if BotHandlers.after_reply_handlers:
             for handler in BotHandlers.after_reply_handlers:
@@ -78,6 +75,9 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
             create_time=int(time.time())
         )
 
+    async def send_command(self, command: str):
+        await self.connect.send(command)
+
     @asynccontextmanager
     async def send_to_admin(self):
         data = custom_chain(msg_type='friend')
@@ -87,7 +87,7 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
         for item in config.admin.accounts:
             data.target = item
 
-            await self.send(data)
+            await self.send_message(data)
 
     async def handle_message(self, message: str):
         async with log.catch(handler=self.handle_error, ignore=[WaitEventCancel, json.JSONDecodeError]):
@@ -105,12 +105,6 @@ class WebsocketClient(WSOperation, metaclass=Singleton):
             message_data = mirai_message_formatter(account, data, self)
             if message_data:
                 await message_handler(message_data, self)
-
-    async def mute(self, target: int, member_id: int, mute_time: int = 0, sync_id: int = 1):
-        await self.connect.send(WebsocketCommand.AdminOperate.Mute(self.session, target, member_id, mute_time, sync_id))
-
-    async def recall(self, target: int, sync_id: int = 1):
-        await self.connect.send(WebsocketCommand.MessageRecall.RecallMessage(self.session, target, sync_id))
 
     async def handle_error(self, message: str):
         if not self.session:

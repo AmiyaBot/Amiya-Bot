@@ -5,6 +5,7 @@ import time
 from typing import Union
 from core import bot, websocket, http, Message, Chain, Mirai
 from core.util import TimeRecorder, random_code, any_match, extract_time
+from core.network.mirai import WebsocketAdapter
 from core.network.download import download_async
 from core.database.group import Group, GroupActive
 from core.database.user import Admin, User
@@ -106,7 +107,11 @@ async def _(data: Message):
                 mute_time = mute_time_default
             else:
                 mute_time = extract_time(params[2], to_time_point=False)
-        return await websocket.mute(data.group_id, target_id, int(mute_time))
+
+        return await websocket.send_command(WebsocketAdapter.mute(websocket.session,
+                                                                  data.group_id,
+                                                                  target_id,
+                                                                  int(mute_time)))
 
 
 @bot.on_private_message(keywords=['屏蔽'])

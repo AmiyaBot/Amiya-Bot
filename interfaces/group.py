@@ -187,7 +187,7 @@ class Group:
                 data = custom_chain(group_id=int(group_id))
                 data.text(f'亲爱的{group_name}的博士们，有来自管理员{auth.user_id}的公告：\n\n{params.content}')
 
-                await websocket.send(data)
+                await websocket.send_message(data)
 
                 success += 1
 

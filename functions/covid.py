@@ -1,14 +1,11 @@
-import collections
 import json
 import math
 import time
+import collections
+
 from enum import Enum
-from json import JSONDecodeError
-
 from typing import Dict, Any, List
-
 from fake_useragent import UserAgent, UserAgentError
-
 from core import bot, Message, Chain
 from core.config import config
 from core.network.httpRequests import http_requests
@@ -36,7 +33,7 @@ covid_config = read_yaml('config/private/covid.yaml')
 reload_data_time: 上一次更新数据的时间戳
 request_times_now: 从上次更新数据时起，共经过了多少次查询
 reload_time: 数据有效时间
-realod_request_times: 请求次数阈值
+reload_request_times: 请求次数阈值
 """
 reload_data_time = 0.0
 request_times_now = 0
@@ -74,8 +71,8 @@ async def get_data():
 
     # 在sync_status不属于 正在同步 或 同步失败（此时该功能停用） 且 超出了 数据有效期 或 请求次数有效期 时进行数据同步
     if sync_status not in (SyncStatus.syncing, SyncStatus.failed) \
-       and (time.time() - reload_data_time > reload_time
-            or request_times_now >= reload_request_times):
+        and (time.time() - reload_data_time > reload_time
+             or request_times_now >= reload_request_times):
         # 标记同步状态，防止出现资源抢占
         sync_status = SyncStatus.syncing
         try:
@@ -96,7 +93,7 @@ async def get_data():
             sync_status = SyncStatus.failed
             raise DataFetchError(f'maybe cause by the version fake_useragent package, try to update it. If it works, '
                                  f'update requirements.txt and make a pull request to the repo.')
-        except JSONDecodeError:
+        except json.JSONDecodeError:
             sync_status = SyncStatus.failed
             raise DataFetchError(f'maybe cause by the format of data from {covid_url}.')
         else:
@@ -130,7 +127,7 @@ def bleu(cand: str, refer: str) -> float:
     score = 0.0
     cand_len = len(cand)
     refer_len = len(refer)
-    bp = math.exp(min(0, 1 - refer_len / cand_len))
+    bp = math.exp(min(0, int(1 - refer_len / cand_len)))
     # 特判，在cand字符串长度为1时直接返回惩罚因子或0，取决于refer字符串中是否包含cand
     # 该特判是为了防止cand长度为1时直接返回0，没有参考价值
     # 不对refer进行特判的原因是网易api的行政区名长度最少为2
@@ -198,7 +195,6 @@ def find_data_by_addr(addr: str) -> dict:
             for city in prov['children']:
                 if city['name'] == places[1]:
                     return city
-    return None
 
 
 def get_input(area: dict) -> tuple:
@@ -211,7 +207,6 @@ def get_input(area: dict) -> tuple:
     for item in area['children']:
         if item['name'] in input_key:
             return item['total']['confirm'], item['today']['confirm']
-    return None
 
 
 # 疫情查询监听
@@ -274,14 +269,14 @@ async def _(data: Message):
         # 无症状
         symptom_str = ''
     # 数据更新时间
-    lastUpdateTime = query_covid_data['lastUpdateTime']
-    time_str = f'截至{lastUpdateTime}，' if lastUpdateTime is not None else ''
+    last_update_time = query_covid_data['lastUpdateTime']
+    time_str = f'截至{last_update_time}，' if last_update_time is not None else ''
     # 确诊
     total_confirm = query_covid_data['total']['confirm']
     today_confirm = query_covid_data['today']['confirm']
     total_confirm_str = f'共有确诊病例{total_confirm}例，' if total_confirm is not None else ''
     today_confirm_str = f'较昨日{number_with_sign(today_confirm)}例，' if today_confirm is not None else ''
-    comfirm_str = total_confirm_str + today_confirm_str + '\n'
+    confirm_str = total_confirm_str + today_confirm_str + '\n'
     # 治愈
     total_heal = query_covid_data['total']['heal']
     today_heal = query_covid_data['today']['heal']
@@ -301,6 +296,6 @@ async def _(data: Message):
     today_store_confirm_str = f'较昨日{number_with_sign(today_store_confirm)}例，' \
         if today_store_confirm is not None else ''
     store_confirm_str = total_store_confirm_str + today_store_confirm_str + '\n'
-    return Chain(data).text_image(time_str + area_name + comfirm_str + '其中' + store_confirm_str + symptom_str
+    return Chain(data).text_image(time_str + area_name + confirm_str + '其中' + store_confirm_str + symptom_str
                                   + input_str + heal_str + dead_str + '\n数据来源：国家及各地卫健委每日信息发布'
-                                  '\n数据整合：网易新闻')
+                                                                      '\n数据整合：网易新闻')

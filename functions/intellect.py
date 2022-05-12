@@ -86,4 +86,4 @@ async def _():
             data = custom_chain(int(item.user_id), int(item.group_id), item.message_type)
             data.at(enter=True).text(text)
 
-            await websocket.send(data)
+            await websocket.send_message(data)

@@ -18,7 +18,7 @@ BotHandlers.add_prefix(
 
 
 class SimulationClient(WSOperation, ABC):
-    async def send(self, reply: Chain):
+    async def send_message(self, reply: Chain):
         for item in reply.chain + reply.voice_list:
             if item['type'] == 'Plain':
                 text = item['text'].strip('\n')

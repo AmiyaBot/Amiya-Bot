@@ -1,4 +1,5 @@
 import os
+import copy
 
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
 from core.resource.arknightsGameData.operatorBuilder import ArknightsConfig, parse_template
@@ -134,12 +135,27 @@ class OperatorData:
     @classmethod
     def find_operator_module(cls, info: OperatorSearchInfo, story: bool):
         operators = ArknightsGameData().operators
+        materials = ArknightsGameData().materials
 
         if not info.name or info.name not in operators:
             return '博士，请仔细描述想要查询的信息哦'
 
         operator = operators[info.name]
-        modules = operator.modules()
+        modules = copy.deepcopy(operator.modules())
+
+        for item in modules:
+            if item['itemCost']:
+                for i, cost in enumerate(item['itemCost']):
+                    material = materials[cost['id']]
+                    item['itemCost'][i] = {
+                        **cost,
+                        'info': material
+                    }
+
+        data = {
+            'stage': 0,
+            'modules': modules
+        }
 
         if modules:
             if story:

@@ -1,10 +1,6 @@
-import os
 import re
-import time
 import dhash
 import jieba
-import aiofiles
-import aiofiles.os
 
 from io import BytesIO
 from PIL import Image

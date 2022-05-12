@@ -13,10 +13,19 @@ class WSOperation:
         pass
 
     @abc.abstractmethod
-    async def send(self, reply):
+    async def send_message(self, reply):
         """
         发送消息的方式，传入 Chain 对象
         :param reply: Chain 对象
+        :return:
+        """
+        pass
+
+    @abc.abstractmethod
+    async def send_command(self, command: str):
+        """
+        发送命令
+        :param command: 命令内容
         :return:
         """
         pass

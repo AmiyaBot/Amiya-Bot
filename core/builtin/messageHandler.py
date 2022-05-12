@@ -107,7 +107,7 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
                 if BotHandlers.overspeed_handler:
                     reply: Chain = await BotHandlers.overspeed_handler(data)
                     if reply:
-                        await operation.send(reply)
+                        await operation.send_message(reply)
                 return
             elif exceed == 2:
                 return
@@ -133,7 +133,7 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
             # 执行功能并取消等待
             reply: Chain = await handler.action(data)
             if reply:
-                await operation.send(reply)
+                await operation.send_message(reply)
                 if waiting:
                     waiting.cancel()
 
@@ -148,4 +148,4 @@ async def message_handler(data: Union[Message, Event], operation: WSOperation):
             for handler in BotHandlers.event_handlers[data.event_name]:
                 reply: Chain = await handler(data)
                 if reply:
-                    await operation.send(reply)
+                    await operation.send_message(reply)
