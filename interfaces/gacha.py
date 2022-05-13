@@ -3,8 +3,8 @@ from fastapi import File, UploadFile
 
 from core.util import create_dir
 from core.network import response
-from core.network.httpServer.loader import interface
-from core.network.httpServer.auth import AuthManager
+from core.network.server.loader import interface
+from core.network.server.auth import AuthManager
 from core.database import SearchParams, select_for_paginate, model_to_dict, query_to_list
 from core.database.bot import Pool as PoolBase, PoolSpOperator, GachaConfig
 from core.resource.arknightsGameData import ArknightsGameData

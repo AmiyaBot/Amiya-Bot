@@ -40,4 +40,3 @@ if not create_yaml(config_file, Config.desc()):
 log.info('Configuration loading completed.')
 
 config: Config = read_yaml(config_file)
-

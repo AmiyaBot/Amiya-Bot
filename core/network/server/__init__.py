@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 from interfaces import controllers
-from core.network.httpServer.auth import AuthManager
-from core.network.httpServer.loader import interface
+from core.network.server.auth import AuthManager
+from core.network.server.loader import interface
 from core.config import config
 from core import log
 

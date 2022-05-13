@@ -14,7 +14,7 @@ class MiraiApiHttp:
     host: str
     port: Port
     authKey: str
-    account: int
+    account: list
 
     @classmethod
     def desc(cls):
@@ -22,5 +22,5 @@ class MiraiApiHttp:
             'host': '127.0.0.1',
             'port': Port.desc(),
             'authKey': 'AmiyaBot',
-            'account': None,
+            'account': [],
         }

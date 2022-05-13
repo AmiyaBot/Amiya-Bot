@@ -1,4 +1,4 @@
-from core.network.httpServer.loader import interface
+from core.network.server.loader import interface
 from starlette.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi import Request

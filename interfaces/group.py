@@ -7,8 +7,8 @@ from core.database import SearchParams, select_for_paginate
 from core.database.group import db as group, GroupActive, GroupSetting, GroupNotice, Group as GroupData
 from core.database.messages import db as messages
 from core.network import response
-from core.network.httpServer.loader import interface
-from core.network.httpServer.auth import AuthManager
+from core.network.server.loader import interface
+from core.network.server.auth import AuthManager
 from core import http, websocket, custom_chain, log
 
 from .model.group import GroupInfo, GroupTable, GroupStatus, GroupNoticeTable, Notice

@@ -1,6 +1,6 @@
 from core.network import response
-from core.network.httpServer.loader import interface
-from core.network.httpServer.auth import AuthManager
+from core.network.server.loader import interface
+from core.network.server.auth import AuthManager
 from core.control import StateControl
 
 

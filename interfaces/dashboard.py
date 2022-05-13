@@ -2,8 +2,8 @@ import time
 
 from typing import List
 from core.network import response
-from core.network.httpServer.loader import interface
-from core.network.httpServer.auth import AuthManager
+from core.network.server.loader import interface
+from core.network.server.auth import AuthManager
 from core.database.messages import MessageRecord
 from core.database.bot import FunctionUsed
 from core import account

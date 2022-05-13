@@ -2,7 +2,7 @@ import core.frozen
 import asyncio
 import functions
 
-from core.network.httpServer import HttpServer
+from core.network.server import HttpServer
 from core.control import StateControl
 from core.util import read_yaml
 from core.bot import BotHandlers

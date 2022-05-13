@@ -2,8 +2,8 @@ import random
 import string
 
 from core.network import response
-from core.network.httpServer.loader import interface
-from core.network.httpServer.auth import AuthManager
+from core.network.server.loader import interface
+from core.network.server.auth import AuthManager
 from core.database import SearchParams, select_for_paginate, query_to_list
 from core.database.user import Admin as AdminBase, Role as RoleBase
 
