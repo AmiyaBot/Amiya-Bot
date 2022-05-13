@@ -3,12 +3,13 @@ import re
 import time
 import random
 
-from core import bot, websocket, http, account, custom_chain, Message, Chain, Mirai
+from core import bot, accounts, custom_chain, Message, Chain, Mirai
+from core.util import read_yaml, check_sentence_by_re
+from core.config import Config
 from core.database.user import User, UserInfo, UserGachaInfo, game
 from core.database.group import check_group_active
 from core.database.messages import MessageRecord
 from core.builtin.lib.baiduCloud import BaiduCloud
-from core.util import read_yaml, check_sentence_by_re
 
 from functions.arknights.gacha.box import get_user_gacha_detail
 
@@ -106,8 +107,9 @@ async def maintain():
     last_time = int(time.time()) - 7 * 86400
     MessageRecord.delete().where(MessageRecord.create_time <= last_time).execute()
 
-    async with websocket.send_to_admin() as chain:
-        chain.text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    for item in accounts.list():
+        async with item.websocket.send_to_admin() as chain:
+            chain.text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
 
 @bot.on_private_message(keywords=bot.equal('维护'))
@@ -279,18 +281,18 @@ async def _(data: Mirai.MemberJoinEvent):
         return False
 
     chain = custom_chain(data.member.id, data.member.group.id)
-    await websocket.send_message(chain.text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
+    await data.websocket.send_message(chain.text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
 
 
 @bot.on_event(Mirai.BotJoinGroupEvent)
 async def _(data: Mirai.BotJoinGroupEvent):
     chain = custom_chain(group_id=data.group.id)
-    await websocket.send_message(chain.text('博士，初次见面，这里是阿米娅，请大家多多指教哦~\n发送【阿米娅功能】来获取功能清单。'))
+    await data.websocket.send_message(chain.text('博士，初次见面，这里是阿米娅，请大家多多指教哦~\n发送【阿米娅功能】来获取功能清单。'))
 
 
 @bot.on_event(Mirai.NudgeEvent)
 async def _(data: Mirai.NudgeEvent):
-    if data.fromId == account or data.target != account:
+    if int(data.fromId) in Config.miraiApiHttp.account or int(data.target) not in Config.miraiApiHttp.account:
         return False
 
     if not check_group_active(data.subject.id):
@@ -301,7 +303,7 @@ async def _(data: Mirai.NudgeEvent):
         return False
 
     if random.randint(1, 10) > 5:
-        await http.send_nudge(data.fromId, data.subject.id)
+        await data.websocket.http_client.send_nudge(data.fromId, data.subject.id)
     else:
         return custom_chain(data.fromId, data.subject.id).image(random.choice(get_face()))
 
@@ -310,7 +312,7 @@ async def _(data: Mirai.NudgeEvent):
 async def _(data: Message):
     user: UserInfo = UserInfo.get_user(data.user_id)
     if user.user_mood <= 0:
-        await websocket.send_message(
+        await data.websocket.send_message(
             custom_chain(data.user_id, data.group_id, data.type).at(enter=True).text('哼~阿米娅生气了！不理博士！[face:38]'))
         return False
     return True

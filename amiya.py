@@ -1,12 +1,12 @@
 import core.frozen
-import asyncio
 import functions
+import asyncio
 
 from core.network.server import HttpServer
 from core.control import StateControl
 from core.util import read_yaml
 from core.bot import BotHandlers
-from core import log, init_core
+from core import initialization, log
 
 BotHandlers.add_prefix(
     read_yaml('config/private/talking.yaml').call.positive
@@ -24,10 +24,10 @@ class AmiyaBot:
 
         StateControl.start()
 
-        self.tasks = init_core()
+        self.init = [initialization()]
 
     async def run(self):
-        await asyncio.wait(self.tasks)
+        await asyncio.wait(self.init)
         log.info('AmiyaBot shutdown.')
 
 

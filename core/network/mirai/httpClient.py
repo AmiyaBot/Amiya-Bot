@@ -1,20 +1,17 @@
-import os
 import json
 
 from core import log
-from core.util import Singleton, create_dir
 from core.network.mirai import HttpAdapter
 from core.network.httpRequests import http_requests
 from core.database.group import Group, GroupActive, GroupSetting
+from core.database.bot import Session
 from core.config import config
 
-session_file = 'fileStorage/session.txt'
-create_dir(session_file, is_file=True)
 
-
-class HttpClient(metaclass=Singleton):
-    def __init__(self):
+class HttpClient:
+    def __init__(self, account):
         self.host = f'{config.miraiApiHttp.host}:{config.miraiApiHttp.port.http}'
+        self.account = account
         self.session = None
 
     @staticmethod
@@ -64,17 +61,16 @@ class HttpClient(metaclass=Singleton):
         if response:
             self.session = response['session']
 
-            log.info('http verify successful. session: ' + self.session)
+            log.info(f'{self.account} verify successful. session: {self.session}')
 
-            if os.path.exists(session_file):
-                with open(session_file, mode='r+') as sf:
-                    await self.post('release',
-                                    {'sessionKey': sf.read().strip('\n '), 'qq': config.miraiApiHttp.account})
+            record: Session = Session.get_or_none(account=self.account)
+            if record:
+                await self.post('release', {'sessionKey': record.session, 'qq': self.account})
+                Session.update(session=self.session).where(Session.account == self.account).execute()
+            else:
+                Session.create(session=self.session, account=self.account)
 
-            await self.post('bind', {'sessionKey': self.session, 'qq': config.miraiApiHttp.account})
-
-            with open(session_file, mode='w+') as sf:
-                sf.write(self.session)
+            await self.post('bind', {'sessionKey': self.session, 'qq': self.account})
 
             return self.session
 

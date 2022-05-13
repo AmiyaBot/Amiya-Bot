@@ -5,7 +5,7 @@ import asyncio
 from core.database.messages import WeiboRecord
 from core.config import config
 from core.util import TimeRecorder
-from core import bot, websocket, http, custom_chain, Message, Chain
+from core import bot, accounts, custom_chain, Message, Chain
 
 from .helper import WeiboUser, weibo_conf, enables_group_list
 
@@ -70,17 +70,6 @@ async def _():
         if record:
             continue
 
-        if config.test.enable:
-            target = config.test.group
-        else:
-            group_list = [item['group_id'] for item in await http.get_group_list()]
-            enables_list = await enables_group_list()
-            target = list(
-                set(group_list).intersection(
-                    set(enables_list)
-                )
-            )
-
         WeiboRecord.create(
             user_id=user,
             blog_id=new_id,
@@ -90,24 +79,36 @@ async def _():
         time_rec = TimeRecorder()
         result = await weibo.get_weibo_content(0)
 
-        if not result:
-            async with websocket.send_to_admin() as chain:
-                chain.text(f'微博获取失败\nUSER: {user}\nID: {new_id}')
-            return
+        for item in accounts.list():
+            if not result:
+                async with item.websocket.send_to_admin() as chain:
+                    chain.text(f'微博获取失败\nUSER: {user}\nID: {new_id}')
+                continue
 
-        async with websocket.send_to_admin() as chain:
-            chain.text(f'开始推送微博\nUSER: {result.user_name}\nID: {new_id}\n目标群数: {len(target)}')
+            if config.test.enable:
+                target = config.test.group
+            else:
+                group_list = [item['group_id'] for item in await item.http.get_group_list()]
+                enables_list = await enables_group_list()
+                target = list(
+                    set(group_list).intersection(
+                        set(enables_list)
+                    )
+                )
 
-        for group_id in target:
-            data = custom_chain(group_id=group_id)
+            async with item.websocket.send_to_admin() as chain:
+                chain.text(f'开始推送微博\nUSER: {result.user_name}\nID: {new_id}\n目标群数: {len(target)}')
 
-            data.text(f'来自 {result.user_name} 的最新微博', enter=True)
-            data.text(result.html_text, enter=True)
-            data.text(result.detail_url)
-            data.image(result.pics_list)
+            for group_id in target:
+                data = custom_chain(item.account, group_id=group_id)
 
-            await websocket.send_message(data)
-            await asyncio.sleep(0.5)
+                data.text(f'来自 {result.user_name} 的最新微博', enter=True)
+                data.text(result.html_text, enter=True)
+                data.text(result.detail_url)
+                data.image(result.pics_list)
 
-        async with websocket.send_to_admin() as chain:
-            chain.text(f'微博推送结束:\n{new_id}\n耗时{time_rec.total()}')
+                await item.websocket.send_message(data)
+                await asyncio.sleep(0.5)
+
+            async with item.websocket.send_to_admin() as chain:
+                chain.text(f'微博推送结束:\n{new_id}\n耗时{time_rec.total()}')

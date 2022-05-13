@@ -10,6 +10,12 @@ class BotBaseModel(ModelClass):
 
 
 @table
+class Session(BotBaseModel):
+    account: str = CharField(primary_key=True)
+    session: str = CharField(null=True)
+
+
+@table
 class FunctionUsed(BotBaseModel):
     function_id: str = CharField(primary_key=True)
     use_num: int = IntegerField(default=1)

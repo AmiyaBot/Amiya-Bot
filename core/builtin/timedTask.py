@@ -1,13 +1,11 @@
 import asyncio
 
-from typing import *
-from core.network import WSOperation
+from typing import Coroutine, Callable, Any, List
 from core.control import StateControl
-from core.builtin.messageChain import Chain
 from core.help import Helper
 from core import log
 
-TASK_CORO = Callable[[], Coroutine[Any, Any, Optional[Chain]]]
+TASK_CORO = Callable[[], Coroutine[Any, Any, None]]
 CUSTOM_CHECK = Callable[[int], Coroutine[Any, Any, bool]]
 
 
@@ -46,7 +44,7 @@ class TasksControl:
         return register
 
     @classmethod
-    async def run_tasks(cls, client: WSOperation, step: int = 1):
+    async def run_tasks(cls, step: int = 1):
         try:
             t = 0
             while StateControl.alive:
@@ -58,10 +56,8 @@ class TasksControl:
                 t += step
                 for task in cls.timed_tasks:
                     if await task.check(t):
-                        async with log.catch('TimedTask Error:', handler=client.handle_error):
-                            chain = await task.task()
-                            if chain:
-                                await client.send_message(chain)
+                        async with log.catch('TimedTask Error:'):
+                            await task.task()
 
         except KeyboardInterrupt:
             pass

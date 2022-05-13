@@ -9,7 +9,7 @@ from core.database.messages import db as messages
 from core.network import response
 from core.network.server.loader import interface
 from core.network.server.auth import AuthManager
-from core import http, websocket, custom_chain, log
+from core import custom_chain, log
 
 from .model.group import GroupInfo, GroupTable, GroupStatus, GroupNoticeTable, Notice
 

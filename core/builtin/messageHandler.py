@@ -1,6 +1,6 @@
 from typing import *
 
-from core.network import WSOperation
+from core.network import WSClientDefinition
 from core.builtin.message import Message, Event, Verify, WaitEvent, wait_events
 from core.builtin.messageChain import Chain
 from core.database.messages import MessageStack
@@ -46,7 +46,7 @@ async def choice_handlers(data: Message, handlers: List[Handler]) -> CHOICE:
     return sorted(candidate, key=lambda n: len(n[0]), reverse=True)[0]
 
 
-async def message_handler(data: Union[Message, Event], operation: WSOperation):
+async def message_handler(data: Union[Message, Event], operation: WSClientDefinition):
     if type(data) is Message:
 
         is_test = config.test.enable and data.type == 'group' and data.group_id not in config.test.group

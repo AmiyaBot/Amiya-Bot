@@ -3,7 +3,7 @@ import asyncio
 import functions
 
 from abc import ABC
-from core.network import WSOperation
+from core.network import WSClientDefinition
 from core.builtin.message.mirai import mirai_message_formatter
 from core.builtin.messageHandler import message_handler
 from core.builtin.lib.htmlConverter import ChromiumBrowser
@@ -17,7 +17,7 @@ BotHandlers.add_prefix(
 )
 
 
-class SimulationClient(WSOperation, ABC):
+class SimulationClient(WSClientDefinition, ABC):
     async def send_message(self, reply: Chain):
         for item in reply.chain + reply.voice_list:
             if item['type'] == 'Plain':
@@ -103,7 +103,7 @@ def message(text, _type='group'):
             }
         }
     }
-    return mirai_message_formatter(account=config.miraiApiHttp.account, data=mirai_text, operation=SimulationClient())
+    return mirai_message_formatter(account=config.miraiApiHttp.account, data=mirai_text, websocket=SimulationClient())
 
 
 if __name__ == '__main__':

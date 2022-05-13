@@ -6,7 +6,7 @@ from core.network.server.loader import interface
 from core.network.server.auth import AuthManager
 from core.database.messages import MessageRecord
 from core.database.bot import FunctionUsed
-from core import account
+from core.config import Config
 
 
 def get_last_time(hour=24):
@@ -67,7 +67,7 @@ class Dashboard:
             hour = f'{time.localtime(item.create_time).tm_hour or 24}:00'
             if hour in res:
                 res[hour]['talk'] += 1
-                if item.user_id == account:
+                if item.user_id in Config.miraiApiHttp.account:
                     res[hour]['reply'] += 1
                 if item.classify == 'call':
                     res[hour]['call'] += 1
@@ -94,7 +94,7 @@ class Dashboard:
 
         return response(DashboardCache.set_cache('real_time_data', {
             'reply': MessageRecord.select().where(MessageRecord.create_time >= get_last_time(),
-                                                  MessageRecord.user_id == account).count(),
+                                                  MessageRecord.user_id.in_(Config.miraiApiHttp.account)).count(),
             'speed': MessageRecord.select().where(MessageRecord.create_time >= int(time.time()) - 120,
                                                   MessageRecord.create_time < int(time.time()) - 60,
                                                   MessageRecord.msg_type == 'group').count(),

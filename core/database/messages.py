@@ -16,7 +16,7 @@ class MessageBaseModel(ModelClass):
 @table
 class MessageRecord(MessageBaseModel):
     msg_type: str = CharField()
-    user_id: int = IntegerField()
+    user_id: IntegerField = IntegerField()
     group_id: int = IntegerField(null=True)
     text: str = TextField(null=True)
     face: str = TextField(null=True)

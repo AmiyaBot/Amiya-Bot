@@ -1,16 +1,25 @@
 import abc
+import websockets
 
-from typing import Union
+from typing import Union, Optional
+from contextlib import asynccontextmanager
+from core.network.mirai.httpClient import HttpClient
 
 
-class WSOperation:
+class WSClientDefinition:
+    url: str
+    account: int
+    http_client: HttpClient
+    connect: Optional[websockets.WebSocketClientProtocol]
+    session: Optional[str]
+
     @abc.abstractmethod
     async def connect_websocket(self):
         """
         建立连接
         :return:
         """
-        pass
+        raise NotImplementedError()
 
     @abc.abstractmethod
     async def send_message(self, reply):
@@ -19,7 +28,7 @@ class WSOperation:
         :param reply: Chain 对象
         :return:
         """
-        pass
+        raise NotImplementedError()
 
     @abc.abstractmethod
     async def send_command(self, command: str):
@@ -28,7 +37,7 @@ class WSOperation:
         :param command: 命令内容
         :return:
         """
-        pass
+        raise NotImplementedError()
 
     @abc.abstractmethod
     async def handle_message(self, message: str):
@@ -37,7 +46,7 @@ class WSOperation:
         :param message:
         :return:
         """
-        pass
+        raise NotImplementedError()
 
     @abc.abstractmethod
     async def handle_error(self, message: str):
@@ -46,7 +55,11 @@ class WSOperation:
         :param message:
         :return:
         """
-        pass
+        raise NotImplementedError()
+
+    @asynccontextmanager
+    async def send_to_admin(self):
+        raise NotImplementedError()
 
 
 def response(data: Union[str, int, float, bool, dict, list] = None,

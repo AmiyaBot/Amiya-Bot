@@ -4,7 +4,7 @@ import asyncio
 import collections
 
 from typing import *
-from core.network import WSOperation
+from core.network import WSClientDefinition
 from core.database.user import User
 
 equal = collections.namedtuple('equal', ['content'])  # 全等对象，接受一个字符串，表示消息文本完全匹配该值
@@ -34,16 +34,16 @@ class Verify:
 
 
 class Message:
-    def __init__(self, message=None, operation: WSOperation = None):
+    def __init__(self, message=None, websocket: WSClientDefinition = None):
         """
         消息的处理接口类
 
         type 只允许赋值为 'friend'（好友消息）、'group'（群组消息）或 'temp'（临时聊天）
 
-        :param message:  原消息对象
-        :param operation: Websocket 操作接口
+        :param message:   原消息对象
+        :param websocket: Websocket 操作接口
         """
-        self.operation = operation
+        self.websocket = websocket
         self.message = message
 
         self.type = None
@@ -96,7 +96,7 @@ class Message:
         return f'<Message, {self.message}>'
 
     async def send(self, reply):
-        await self.operation.send_message(reply)
+        await self.websocket.send_message(reply)
 
     async def waiting(self, reply=None, max_time: int = 30, force: bool = False, target: str = 'user'):
         if target == 'group':
@@ -110,7 +110,7 @@ class Message:
         wid = await wait_events.set_wait(target_id, force, target)
 
         if reply:
-            await self.operation.send_message(reply)
+            await self.websocket.send_message(reply)
 
         while max_time:
             await asyncio.sleep(0.5)
@@ -158,14 +158,16 @@ class MessageMatch:
 
 
 class Event:
-    def __init__(self, event_name, data):
+    def __init__(self, event_name, data, websocket: WSClientDefinition):
         """
         事件处理
 
         :param event_name: 事件名
         :param data:       事件数据
+        :param websocket:  Websocket 操作接口
         """
         self.event_name = event_name
+        self.websocket = websocket
         self.data = data
 
     def __str__(self):

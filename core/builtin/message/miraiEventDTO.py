@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from core.config import config
-
 
 @dataclass
 class Friend:
@@ -31,14 +29,11 @@ class Client:
 
 class GroupMember:
     def __init__(self, data):
-        if data is None:
-            self.id = config.miraiApiHttp.account
-        else:
-            self.id = data['id']
-            self.memberName = data['memberName']
-            self.specialTitle = data['specialTitle']
-            self.permission = data['permission']
-            self.joinTimestamp = data['joinTimestamp']
-            self.lastSpeakTimestamp = data['lastSpeakTimestamp']
-            self.muteTimeRemaining = data['muteTimeRemaining']
-            self.group = Group(**data['group'])
+        self.id = data['id']
+        self.memberName = data['memberName']
+        self.specialTitle = data['specialTitle']
+        self.permission = data['permission']
+        self.joinTimestamp = data['joinTimestamp']
+        self.lastSpeakTimestamp = data['lastSpeakTimestamp']
+        self.muteTimeRemaining = data['muteTimeRemaining']
+        self.group = Group(**data['group'])

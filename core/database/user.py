@@ -44,6 +44,7 @@ class OperatorBox(UserBaseModel):
 @table
 class Intellect(UserBaseModel):
     user_id: str = CharField(primary_key=True)
+    belong_id: str = CharField(null=True)
     cur_num: int = IntegerField()
     full_num: int = IntegerField()
     full_time: int = IntegerField()

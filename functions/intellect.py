@@ -2,7 +2,7 @@ import re
 import time
 
 from typing import List
-from core import bot, websocket, Message, Chain, custom_chain
+from core import bot, accounts, Message, Chain, custom_chain
 from core.database.user import Intellect
 
 
@@ -32,6 +32,7 @@ async def _(data: Message):
         Intellect.insert_or_update(
             insert={
                 'user_id': data.user_id,
+                'belong_id': data.websocket.account,
                 'cur_num': cur_num,
                 'full_num': full_num,
                 'full_time': full_time,
@@ -41,6 +42,7 @@ async def _(data: Message):
                 'status': 0
             },
             preserve=[
+                Intellect.belong_id,
                 Intellect.cur_num,
                 Intellect.full_num,
                 Intellect.full_time,
@@ -81,9 +83,12 @@ async def _():
     if results:
         Intellect.update(status=1).where(*conditions).execute()
         for item in results:
+            if not item.belong_id:
+                continue
+
             text = f'博士！博士！您的理智已经满 {item.full_num} 了，快点上线查看吧～'
 
             data = custom_chain(int(item.user_id), int(item.group_id), item.message_type)
             data.at(enter=True).text(text)
 
-            await websocket.send_message(data)
+            await accounts(item.belong_id).websocket.send_message(data)

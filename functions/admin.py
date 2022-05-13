@@ -3,7 +3,7 @@ import json
 import time
 
 from typing import Union
-from core import bot, websocket, http, Message, Chain, Mirai
+from core import bot, Message, Chain, Mirai
 from core.util import TimeRecorder, random_code, any_match, extract_time
 from core.network.mirai import WebsocketAdapter
 from core.network.download import download_async
@@ -108,10 +108,10 @@ async def _(data: Message):
             else:
                 mute_time = extract_time(params[2], to_time_point=False)
 
-        return await websocket.send_command(WebsocketAdapter.mute(websocket.session,
-                                                                  data.group_id,
-                                                                  target_id,
-                                                                  int(mute_time)))
+        return await data.websocket.send_command(WebsocketAdapter.mute(data.websocket.session,
+                                                                       data.group_id,
+                                                                       target_id,
+                                                                       int(mute_time)))
 
 
 @bot.on_private_message(keywords=['屏蔽'])
@@ -158,7 +158,7 @@ async def _(data: Message):
 @bot.on_private_message(keywords=bot.equal('同步群'))
 async def _(data: Message):
     if data.is_admin:
-        group_list = await http.get_group_list()
+        group_list = await data.websocket.http_client.get_group_list()
         Group.truncate_table()
         Group.batch_insert(group_list)
         await data.send(Chain(data).text(f'同步完成，共 {len(group_list)} 个群。'))
@@ -205,8 +205,8 @@ async def _(data: Union[Mirai.BotMuteEvent, Mirai.BotLeaveEventKick]):
     else:
         group_id = data.group.id
 
-    await http.leave_group(group_id, flag)
-    async with websocket.send_to_admin() as chain:
+    await data.websocket.http_client.leave_group(group_id, flag)
+    async with data.websocket.send_to_admin() as chain:
         chain.text(f'已退出群{group_id}，原因：{data}')
 
 

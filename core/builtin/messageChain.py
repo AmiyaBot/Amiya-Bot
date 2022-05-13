@@ -156,14 +156,16 @@ class Chain:
                 if item['type'] == 'Image':
                     chain_data.append({
                         'type': 'Image',
-                        'imageId': await ResourceManager.get_image_id(item['path'], self.data.type)
+                        'imageId': await ResourceManager.get_image_id(self.data.websocket.http_client, item['path'],
+                                                                      self.data.type)
                     })
                     continue
 
                 if item['type'] == 'Voice':
                     chain_data.append({
                         'type': 'Voice',
-                        'voiceId': await ResourceManager.get_voice_id(item['path'], self.data.type)
+                        'voiceId': await ResourceManager.get_voice_id(self.data.websocket.http_client, item['path'],
+                                                                      self.data.type)
                     })
                     continue
 
@@ -172,6 +174,9 @@ class Chain:
                         browser = ChromiumBrowser()
                         page = await browser.open_page(item['template'], is_file=item['is_file'])
 
+                        if not page:
+                            continue
+
                         if item['data']:
                             await page.init_data(item['data'])
 
@@ -179,7 +184,8 @@ class Chain:
 
                         chain_data.append({
                             'type': 'Image',
-                            'imageId': await ResourceManager.get_image_id(await page.make_image(), self.data.type)
+                            'imageId': await ResourceManager.get_image_id(self.data.websocket.http_client,
+                                                                          await page.make_image(), self.data.type)
                         })
                         await page.close()
                     continue
