@@ -7,7 +7,7 @@ from core import bot, websocket, http, account, custom_chain, Message, Chain, Mi
 from core.database.user import User, UserInfo, UserGachaInfo, game
 from core.database.group import check_group_active
 from core.database.messages import MessageRecord
-from core.builtin.baiduCloud import BaiduCloud
+from core.builtin.lib.baiduCloud import BaiduCloud
 from core.util import read_yaml, check_sentence_by_re
 
 from functions.arknights.gacha.box import get_user_gacha_detail

@@ -6,8 +6,8 @@ from contextlib import asynccontextmanager
 
 from core.util import read_yaml
 from core.builtin.message import Message
-from core.builtin.imageCreator import create_image, ImageElem, IMAGES_TYPE
-from core.builtin.htmlConverter import ChromiumBrowser
+from core.builtin.lib.imageCreator import create_image, ImageElem, IMAGES_TYPE
+from core.builtin.lib.htmlConverter import ChromiumBrowser
 from core.builtin.resourceManager import ResourceManager
 from core.network.mirai import WebsocketAdapter
 from core import log

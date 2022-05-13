@@ -1,6 +1,6 @@
 from core.network.mirai.websocketClient import WebsocketClient, account
 from core.network.mirai.httpClient import HttpClient
-from core.builtin.htmlConverter import ChromiumBrowser
+from core.builtin.lib.htmlConverter import ChromiumBrowser
 from core.builtin.timedTask import TasksControl
 from core.database.messages import MessageStack
 

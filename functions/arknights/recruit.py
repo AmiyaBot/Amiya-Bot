@@ -7,11 +7,12 @@ from PIL import Image
 from jieba import posseg
 from typing import List
 from itertools import combinations
+
 from core import exec_before_init, log, bot, Message, Chain
-from core.builtin.localOcr import LocalOCR
 from core.config import config
 from core.util import all_match, read_yaml
-from core.builtin.baiduCloud import BaiduCloud
+from core.builtin.lib.baiduCloud import BaiduCloud
+from core.builtin.lib.localOcr import LocalOCR
 from core.network.download import download_async
 from core.resource.arknightsGameData import ArknightsGameData
 

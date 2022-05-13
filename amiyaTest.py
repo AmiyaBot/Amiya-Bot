@@ -6,7 +6,7 @@ from abc import ABC
 from core.network import WSOperation
 from core.builtin.message.mirai import mirai_message_formatter
 from core.builtin.messageHandler import message_handler
-from core.builtin.htmlConverter import ChromiumBrowser
+from core.builtin.lib.htmlConverter import ChromiumBrowser
 from core.config import config
 from core.util import read_yaml, create_dir, argv
 from core.bot import BotHandlers, Chain

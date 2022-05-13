@@ -3,7 +3,7 @@ import copy
 
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
 from core.resource.arknightsGameData.operatorBuilder import ArknightsConfig, parse_template
-from core.builtin.imageCreator import TextParser
+from core.builtin.lib.imageCreator import TextParser
 from core.builtin.messageChain import MAX_SEAT
 from core.util import integer, snake_case_to_pascal_case
 
