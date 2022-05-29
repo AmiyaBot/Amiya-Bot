@@ -55,8 +55,10 @@ class MultipleAccounts(metaclass=Singleton):
             yield example
 
     async def connect_all_accounts(self):
+        account_coros = []
         for item in self.list():
-            await item.init()
+            account_coros.append(item.init())
+        await asyncio.wait(account_coros)
 
 
 init_task = []

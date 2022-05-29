@@ -82,8 +82,9 @@ class Message:
         face = ''.join([f'[face:{n}]' for n in self.face])
         image = '[image]' * len(self.image)
 
-        return 'Type:{type:7}Group:{group:<12}User:{user:<12}{username}: {message}'.format(
+        return 'Bot:{bot:<12}Type:{type:<7}Group:{group:<12}User:{user:<12}{username}: {message}'.format(
             **{
+                'bot': self.websocket.account,
                 'type': self.type,
                 'user': self.user_id,
                 'group': self.group_id or 'None',
