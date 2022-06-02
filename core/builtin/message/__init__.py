@@ -77,6 +77,12 @@ class Message:
         self.verify: Optional[Verify] = None
         self.user: Optional[User] = None
 
+    def __hash__(self):
+        return hash(self.message)
+
+    def __eq__(self, other):
+        return self.message == other.message
+
     def __str__(self):
         text = self.text_origin.replace('\n', ' ')
         face = ''.join([f'[face:{n}]' for n in self.face])
@@ -170,6 +176,12 @@ class Event:
         self.event_name = event_name
         self.websocket = websocket
         self.data = data
+
+    def __hash__(self):
+        return hash((self.event_name, self.data))
+
+    def __eq__(self, other):
+        return (self.event_name, self.data) == (other.event_name, other.data)
 
     def __str__(self):
         return self.event_name

@@ -5,7 +5,7 @@ import random
 
 from core import bot, accounts, custom_chain, Message, Chain, Mirai
 from core.util import read_yaml, check_sentence_by_re
-from core.config import Config
+from core.config import config
 from core.database.user import User, UserInfo, UserGachaInfo, game
 from core.database.group import check_group_active
 from core.database.messages import MessageRecord
@@ -292,7 +292,7 @@ async def _(data: Mirai.BotJoinGroupEvent):
 
 @bot.on_event(Mirai.NudgeEvent)
 async def _(data: Mirai.NudgeEvent):
-    if int(data.fromId) in Config.miraiApiHttp.account or int(data.target) not in Config.miraiApiHttp.account:
+    if int(data.fromId) in config.miraiApiHttp.account or int(data.target) not in config.miraiApiHttp.account:
         return False
 
     if not check_group_active(data.subject.id):

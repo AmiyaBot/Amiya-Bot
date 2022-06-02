@@ -85,4 +85,15 @@ class HttpAdapter(GeneralDefinition):
                 sub_command: str = None,
                 content: dict = None,
                 options: dict = None):
-        return content
+        req = f'{command}'
+        if sub_command is not None:
+            req += f'/{sub_command}'
+        params = {
+            **(content or {}),
+            **(options or {})
+        }
+        if params is not None:
+            req += '?'
+            for key in params:
+                req += f'{key}={params[key]}'
+        return req
