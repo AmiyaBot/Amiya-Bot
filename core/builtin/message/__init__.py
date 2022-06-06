@@ -77,13 +77,20 @@ class Message:
         self.verify: Optional[Verify] = None
         self.user: Optional[User] = None
 
+    def __hash__(self):
+        return hash(self.message)
+
+    def __eq__(self, other):
+        return self.message == other.message
+
     def __str__(self):
         text = self.text_origin.replace('\n', ' ')
         face = ''.join([f'[face:{n}]' for n in self.face])
         image = '[image]' * len(self.image)
 
-        return 'Type:{type:7}Group:{group:<12}User:{user:<12}{username}: {message}'.format(
+        return 'Bot:{bot:<12}Type:{type:<7}Group:{group:<12}User:{user:<12}{username}: {message}'.format(
             **{
+                'bot': self.websocket.account,
                 'type': self.type,
                 'user': self.user_id,
                 'group': self.group_id or 'None',
@@ -169,6 +176,12 @@ class Event:
         self.event_name = event_name
         self.websocket = websocket
         self.data = data
+
+    def __hash__(self):
+        return hash((self.event_name, self.data))
+
+    def __eq__(self, other):
+        return (self.event_name, self.data) == (other.event_name, other.data)
 
     def __str__(self):
         return self.event_name

@@ -6,6 +6,7 @@ from core.network.httpRequests import http_requests
 from core.database.group import Group, GroupActive, GroupSetting
 from core.database.bot import Session
 from core.config import config
+from core.vars import Status
 
 
 class HttpClient:
@@ -13,6 +14,7 @@ class HttpClient:
         self.host = f'{config.miraiApiHttp.host}:{config.miraiApiHttp.port.http}'
         self.account = account
         self.session = None
+        self.status = Status.DEAD
 
     @staticmethod
     def __json(interface, res):
@@ -71,7 +73,7 @@ class HttpClient:
                 Session.create(session=self.session, account=self.account)
 
             await self.post('bind', {'sessionKey': self.session, 'qq': self.account})
-
+            self.status = Status.ALIVE
             return self.session
 
     async def get_group_list(self):

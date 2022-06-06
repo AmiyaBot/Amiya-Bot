@@ -11,6 +11,7 @@ from core.config import config
 from core.util import read_yaml
 from core.bot import BotHandlers, Handler
 from core.log import info
+from core.vars import dispatch_events, tasks
 
 bot_conf = read_yaml('config/private/bot.yaml')
 speed = SpeedControl(bot_conf.speedSetting.maxsize,
@@ -95,47 +96,12 @@ async def message_handler(data: Union[Message, Event], operation: WSClientDefini
 
         MessageStack.insert(data, bool(choice))
 
-        # 执行选中的功能
+        # 将选中的功能添加到任务队列中
         if choice:
-            handler = choice[1]
-            data.verify = choice[0]
-
-            # 检查超限
-            exceed = speed.check_user(data.user_id)
-
-            if exceed == 1:
-                if BotHandlers.overspeed_handler:
-                    reply: Chain = await BotHandlers.overspeed_handler(data)
-                    if reply:
-                        await operation.send_message(reply)
-                return
-            elif exceed == 2:
-                return
-
-            # 执行前置处理函数
-            flag = True
-            if BotHandlers.before_reply_handlers:
-                for action in BotHandlers.before_reply_handlers:
-                    res = await action(data)
-                    if not res:
-                        flag = False
-            if not flag:
-                return
-
-            # 记录使用数
-            if handler.function_id:
-                FunctionUsed.insert_or_update(
-                    insert={'function_id': handler.function_id},
-                    update={FunctionUsed.use_num: FunctionUsed.use_num + 1},
-                    conflict_target=[FunctionUsed.function_id]
-                )
-
-            # 执行功能并取消等待
-            reply: Chain = await handler.action(data)
-            if reply:
-                await operation.send_message(reply)
-                if waiting:
-                    waiting.cancel()
+            if data.type == 'group':
+                tasks.add((data.group_id, execute_function(data, choice, waiting)))
+            else:
+                await execute_function(data, choice, waiting)(operation)
 
         # 未选中任何功能或功能无法返回时，进入等待事件（若存在）
         if waiting:
@@ -146,6 +112,62 @@ async def message_handler(data: Union[Message, Event], operation: WSClientDefini
 
         if data.event_name in BotHandlers.event_handlers:
             for handler in BotHandlers.event_handlers[data.event_name]:
-                reply: Chain = await handler(data)
+                if data.event_name in dispatch_events.keys():
+                    tasks.add((dispatch_events[data.event_name](data), handle_event(data, handler)))
+                else:
+                    await handle_event(data, handler)(operation)
+
+
+def handle_event(data: Union[Message, Event], handler: Callable):
+    async def _(operation: WSClientDefinition):
+        reply: Chain = await handler(data)
+        if reply:
+            await operation.send_message(reply)
+
+    return _
+
+
+def execute_function(data: Union[Message, Event], choice: CHOICE,
+                     waiting: Optional[WaitEvent]):
+    async def _(operation: WSClientDefinition):
+        handler = choice[1]
+        data.verify = choice[0]
+
+        # 检查超限
+        exceed = speed.check_user(data.user_id)
+
+        if exceed == 1:
+            if BotHandlers.overspeed_handler:
+                reply: Chain = await BotHandlers.overspeed_handler(data)
                 if reply:
                     await operation.send_message(reply)
+            return
+        elif exceed == 2:
+            return
+
+        # 执行前置处理函数
+        flag = True
+        if BotHandlers.before_reply_handlers:
+            for action in BotHandlers.before_reply_handlers:
+                res = await action(data)
+                if not res:
+                    flag = False
+        if not flag:
+            return
+
+        # 记录使用数
+        if handler.function_id:
+            FunctionUsed.insert_or_update(
+                insert={'function_id': handler.function_id},
+                update={FunctionUsed.use_num: FunctionUsed.use_num + 1},
+                conflict_target=[FunctionUsed.function_id]
+            )
+
+        # 执行功能并取消等待
+        reply: Chain = await handler.action(data)
+        if reply:
+            await operation.send_message(reply)
+            if waiting:
+                waiting.cancel()
+
+    return _

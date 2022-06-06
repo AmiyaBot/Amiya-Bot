@@ -15,6 +15,7 @@ from core.control import StateControl
 from core.config import config
 from core.bot import BotHandlers
 from core import log
+from core.vars import Status
 
 host = config.miraiApiHttp.host
 port = config.miraiApiHttp.port.ws
@@ -28,6 +29,7 @@ class WebsocketClient(WSClientDefinition):
         self.account = account
         self.connect = None
         self.session = None
+        self.status = Status.DEAD
 
     async def connect_websocket(self):
         try:
@@ -46,7 +48,7 @@ class WebsocketClient(WSClientDefinition):
                     )
 
                 await websocket.close()
-
+                self.status = Status.DEAD
                 log.error(f'{self.account} connection closed.')
 
         except websockets.ConnectionClosedOK as e:
@@ -98,6 +100,7 @@ class WebsocketClient(WSClientDefinition):
             if 'session' in data:
                 self.session = data['session']
                 log.info(f'{self.account} handshake successful. session: ' + self.session)
+                self.status = Status.ALIVE
                 async with self.send_to_admin() as chain:
                     chain.text('启动完毕')
                 return False

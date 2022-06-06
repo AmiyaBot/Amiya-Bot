@@ -6,6 +6,13 @@ from core.database.user import User
 from core.config import config
 
 from .miraiEventDTO import Friend, Group, Subject, Client, GroupMember
+from ...vars import dispatch_events
+
+
+class DispatchEvent(Event):
+    def __init__(self, event_name, data, websocket: WSClientDefinition, group_get):
+        super().__init__(event_name, data, websocket)
+        dispatch_events[str(self)] = group_get
 
 
 class BotEvents:
@@ -213,10 +220,9 @@ class GroupEvents:
             self.group = Group(**data['group'])
             self.operator = GroupMember(data['operator'])
 
-    class MemberJoinEvent(Event):
+    class MemberJoinEvent(DispatchEvent):
         def __init__(self, data, ws: WSClientDefinition):
-            super().__init__(data['type'], data, ws)
-
+            super().__init__(data['type'], data, ws, lambda x: x.member.group.id)
             self.member = GroupMember(data['member'])
 
     class MemberLeaveEventKick(Event):
