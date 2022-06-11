@@ -163,12 +163,12 @@ async def _(data: Message):
     if info.name not in ArknightsGameData().operators:
         return Chain(data).text(f'博士，没有找到干员"{info.name}"')
 
-    result = OperatorData.find_operator_module(info, '故事' in data.text)
-
-    if type(result) is tuple:
-        return Chain(data).text_image(*result)
+    if '故事' in data.text:
+        result = OperatorData.find_operator_module(info, True)
+        return Chain(data).text_image(result)
     else:
-        return Chain(data).text(result)
+        result = OperatorData.find_operator_module(info, False)
+        return Chain(data).html('operator/operatorModule.html', result)
 
 
 @bot.on_group_message(function_id='checkOperator', keywords=['语音'], level=2)
