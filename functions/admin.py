@@ -88,32 +88,35 @@ async def _(data: Message):
         return await mute(data)
 
 
-@bot.on_group_message(function_id='admin', keywords='禁言', check_prefix=False)
-async def _(data: Message):
-    if data.is_admin or data.is_group_admin:
-        if data.at_target:
-            target_id = data.at_target[0]
-            mute_time = extract_time(data.text.split('禁言')[1], to_time_point=False) \
-                if data.text.split('禁言')[1] \
-                else mute_time_default
-        else:
-            params = data.text.split(' ')
-            if len(params) < 2:
-                return Chain(data).text(f'禁言格式如下：禁言 <目标qq号> <禁言时间>'
-                                        f'\n或 禁言 <@目标> <禁言时间>'
-                                        f'\n禁言时间可选，默认{mute_time_default}s')
-            target_id = params[1]
-            if len(params) == 2:
-                mute_time = mute_time_default
-            else:
-                mute_time = extract_time(params[2], to_time_point=False)
-
-        return await websocket.send_command(WebsocketAdapter.mute(websocket.session,
-                                                                  data.group_id,
-                                                                  target_id,
-                                                                  int(mute_time)))
-
-
+# 这应是一个用于测试的功能，不建议用于生产环境！
+#
+#
+#@bot.on_group_message(function_id='admin', keywords='禁言', check_prefix=False)
+#async def _(data: Message):
+#    if data.is_admin or data.is_group_admin:
+#        if data.at_target:
+#            target_id = data.at_target[0]
+#            mute_time = extract_time(data.text.split('禁言')[1], to_time_point=False) \
+#                if data.text.split('禁言')[1] \
+#                else mute_time_default
+#        else:
+#            params = data.text.split(' ')
+#            if len(params) < 2:
+#                return Chain(data).text(f'禁言格式如下：禁言 <目标qq号> <禁言时间>'
+#                                        f'\n或 禁言 <@目标> <禁言时间>'
+#                                        f'\n禁言时间可选，默认{mute_time_default}s')
+#            target_id = params[1]
+#            if len(params) == 2:
+#                mute_time = mute_time_default
+#            else:
+#                mute_time = extract_time(params[2], to_time_point=False)
+#
+#        return await websocket.send_command(WebsocketAdapter.mute(websocket.session,
+#                                                                  data.group_id,
+#                                                                  target_id,
+#                                                                  int(mute_time)))
+#
+#
 @bot.on_private_message(keywords=['屏蔽'])
 async def _(data: Message):
     if data.is_admin:
