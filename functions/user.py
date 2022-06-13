@@ -279,13 +279,13 @@ async def _(data: Mirai.MemberJoinEvent):
         return False
 
     chain = custom_chain(data.member.id, data.member.group.id)
-    await websocket.send_message(chain.text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦'))
+    await websocket.send_message(chain.text(f'欢迎新博士{data.member.memberName}~，我是阿米娅，请多多指教哦~\n提示：发送【阿米娅功能】来获取帮助。'))
 
 
 @bot.on_event(Mirai.BotJoinGroupEvent)
 async def _(data: Mirai.BotJoinGroupEvent):
     chain = custom_chain(group_id=data.group.id)
-    await websocket.send_message(chain.text('博士，初次见面，这里是阿米娅，请大家多多指教哦~\n发送【阿米娅功能】来获取功能清单。'))
+    await websocket.send_message(chain.text('博士，初次见面，这里是阿米娅，请大家多多指教哦~\n提示：发送【阿米娅功能】来获取帮助。'))
 
 
 @bot.on_event(Mirai.NudgeEvent)
