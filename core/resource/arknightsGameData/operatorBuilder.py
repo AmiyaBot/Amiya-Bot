@@ -65,6 +65,8 @@ class Operator:
     def __init__(self, code, data, voice_list, skins_list, is_recruit=False):
         sub_classes = JsonData.get_json_data('uniequip_table')['subProfDict']
         range_data = JsonData.get_json_data('range_table')
+        nation_id = JsonData.get_json_data('character_table')
+        drawer_id = JsonData.get_json_data('skin_table')['charSkins']
         range_id = data['phases'][-1]['rangeId']
         range_map = '无范围'
         if range_id in range_data:
@@ -83,7 +85,8 @@ class Operator:
         self.tags = data['tagList']
         self.range = range_map
         self.birthday = ''
-
+        self.nation = nation_id[code]["nationId"]
+        self.drawer_name = drawer_id[code+'#1' if code != 'char_1001_amiya2' else code + '#2']["displaySkin"]["drawerName"]
         self.limit = self.name in ArknightsConfig.limit
         self.unavailable = self.name in ArknightsConfig.unavailable
 
