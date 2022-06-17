@@ -8,3 +8,52 @@ guess:
         golden: 3000
         silver: 2000
         copper: 1000
+
+wordle:
+    questions: 5
+    finish_min: 2
+    rewards:
+        bingo: 300
+        golden: 3000
+        silver: 2000
+        copper: 1000
+
+nations:
+    laterano:
+        - 拉特兰
+    kazimierz:
+        - 卡西米尔
+    columbia:
+        - 哥伦比亚    
+    lungmen:
+        - 龙门    
+    higashi:
+        - 东国    
+    victoria:
+        - 维多利亚    
+    sargon:
+        - 萨尔贡    
+    rhodes:
+        - 罗德岛    
+    yan:
+        - 炎国    
+    iberia:
+        - 伊比利亚    
+    ursus:
+        - 乌萨斯    
+    siracusa:
+        - 叙拉古    
+    kjerag:
+        - 谢拉格    
+    egir:
+        - 阿戈尔    
+    rim:
+        - 雷姆必拓    
+    minos:
+        - 米诺斯    
+    bolivar:
+        - 玻利瓦尔    
+    sami:
+        - 萨米    
+    leithanien:
+        - 莱塔尼亚    

@@ -12,7 +12,7 @@ from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameData
 from core import Message, Chain
 
 guess_config = read_yaml('config/private/game.yaml').guess
-
+nations_config = read_yaml('config/private/game.yaml').nations
 
 class GuessStatus:
     systemSkip = 0
@@ -170,16 +170,24 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
         ask.text(story, auto_convert=False)
 
     await data.send(ask)
-
+    
+    building_skill = operator.building_skills
     tips = [
         f'TA是{operator.rarity}星干员',
-        f'TA的职业是{operator.classes}',
-        f'TA的分支职业是{operator.classes_sub}',
+        # f'TA的职业是{operator.classes}',
+        f'TA的子职业是{operator.classes_sub}',
         f'TA的标签是%s' % ','.join(operator.tags),
-        f'TA%s可以公招获得' % ('不' if not operator.is_recruit else '')
+        # f'TA%s可以公招获得' % ('不' if not operator.is_recruit else ''),
+        f'TA的英文名首字母是大写的{operator.en_name[0]}'
+        
     ]
-    if len(operator.name) > 1:
-        tips.append(f'TA的代号里有一个字是"{random.choice(operator.name)}"')
+    if operator.nation:
+        nation_name = nations_config[operator.nation]
+        tips.append(f'TA的阵营是{nation_name[0]}')
+    if operator.drawer_name:
+        tips.append(f'TA的画师是{operator.drawer_name}')
+    # if len(operator.name) > 1:
+    #     tips.append(f'TA的代号里有一个字是"{random.choice(operator.name)}"')
     if operator.limit:
         tips.append('TA是限定干员')
 
@@ -223,7 +231,7 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
             rewards = int(guess_config.rewards.bingo * level_rate * (100 + result.total_point) / 100)
 
             await data.send(Chain(answer, at=False).text(f'回答正确！分数+1，合成玉+{rewards}'))
-
+            
             result.answer = answer
             result.status = GuessStatus.bingo
             return result

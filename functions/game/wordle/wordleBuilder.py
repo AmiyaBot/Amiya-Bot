@@ -13,6 +13,7 @@ wordle_config = read_yaml('config/private/game.yaml').wordle
 nations_config = read_yaml('config/private/game.yaml').nations
 
 
+
 class WordleStatus:
     systemSkip = 0
     userSkip = 1
