@@ -20,9 +20,9 @@ init_task = [
 
 
 async def initialization():
-    BotResource.download_bot_resource()
-    BotResource.download_amiya_bot_console()
-    ArknightsGameDataResource.download_gamedata_files()
+    # BotResource.download_bot_resource()
+    # BotResource.download_amiya_bot_console()
+    # ArknightsGameDataResource.download_gamedata_files()
 
     for coro in init_task:
         await coro()

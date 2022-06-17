@@ -270,19 +270,11 @@ class ArknightsGameDataResource:
     @classmethod
     async def get_skin_file(cls, operator: Operator, skin_data: dict):
         skin_file = f'{operator.id}_%s.png' % skin_data['skin_key']
-        skin_path = f'resource/skin/{operator.id}/{skin_file}'
+        skin_path = f'resource/skins/{operator.id}/{skin_file}'
 
         if not os.path.exists(skin_path):
-            create_dir(skin_path, is_file=True)
-
-            cos_url = f'{resource_config.remote.cos}/resource/images/skins/{operator.id}/{skin_file}'
-
-            res = await download_async(cos_url)
-            if res:
-                with open(skin_path, mode='wb+') as f:
-                    f.write(res)
-            else:
-                return None
+            log.error(f'can not found skin {skin_path}')
+            return None
         return skin_path
 
     @classmethod

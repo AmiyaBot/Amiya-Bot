@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="styleSheet" href="../font.css"/>
+    <link type="text/css" rel="styleSheet" href="operatorModule.css"/>
+    <title>template</title>
+</head>
+<body>
+<div id="template">
+    <div>
+        <div class="equip" v-for="equip in data">
+            <div class="header">
+                <span class="title">{{ equip.uniEquipName }}</span>
+                <span class="type">
+                    {{ equip.typeName2 ? [equip.typeName1, equip.typeName2].join('-').toUpperCase() : equip.typeName1 }}
+                </span>
+            </div>
+            <div class="detail" v-if="equip.detail">
+                <div class="sub-title h1"><span>解锁任务</span></div>
+                <div class="missions">
+                    <div>
+                        1. 干员到达精英
+                        <span class="mark">{{ equip.unlockEvolvePhase }}</span>
+                        等级
+                        <span class="mark">{{ equip.unlockLevel }}</span>
+                        信赖值
+                        <span class="mark">{{ parseInt(equip.unlockFavorPoint / 100) }}%</span>
+                    </div>
+                    <div v-for="(mission, index) in equip.missions">
+                        {{ index + 2 }}. {{ mission.desc }}
+                    </div>
+                </div>
+                <div class="sub-title h1"><span>属性提升</span></div>
+                <div class="stageInfo">
+                    <div class="stage" v-for="stage in equip.detail.phases">
+                        <div class="shadow">
+                            <div style="font-size: 60px">LV0{{ stage.equipLevel }}</div>
+                        </div>
+                        <div>
+                            <div class="sub-title"><span>基础属性更新</span></div>
+                            <div v-for="attr in stage.attributeBlackboard" v-if="attr.key in attrsDict" class="option">
+                                <span>{{ attrsDict[attr.key] }}</span>
+                                <span class="mark">{{ ('+' + attr.value).replace('+-', '-') }}</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px">
+                            <div class="sub-title"><span>分支特性更新</span></div>
+                            <template v-for="part in stage.parts">
+                                <template v-for="item in part.overrideTraitDataBundle.candidates || []">
+                                    <div class="option" v-if="item.additionalDescription"
+                                         v-html="colorSpan(item.additionalDescription)"></div>
+                                    <div class="option" v-if="item.overrideDescripton"
+                                         v-html="colorSpan(item.overrideDescripton)"></div>
+                                </template>
+                            </template>
+                        </div>
+                        <div style="margin-top: 20px" v-if="hasTalent(stage.parts)">
+                            <div class="sub-title"><span>天赋更新</span></div>
+                            <template v-for="part in stage.parts">
+                                <template v-for="(item, name) in talents(part.addOrOverrideTalentDataBundle.candidates)"
+                                          v-if="item.name">
+                                    <div class="option">
+                                        <div class="sub-title h4"><span>{{ name }}</span></div>
+                                        <span v-html="colorSpan(item.upgradeDescription)"></span>
+                                    </div>
+                                </template>
+                            </template>
+                        </div>
+                        <div style="margin-top: 20px">
+                            <div class="sub-title"><span>升级材料消耗</span></div>
+                            <div class="materiel-costs">
+                                <div class="materiel" :use="count(item.count)"
+                                     v-for="item in equip.itemCost[stage.equipLevel]">
+                                    <img :src="'../../resource/gamedata/item/' + item.info.material_icon + '.png'"
+                                         :alt="item.info.material_name">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail" style="color: black" v-else>{{ equip.uniEquipDesc }}</div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../vue.min.js"></script>
+<script>
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init (data) {
+                this.$set(this, 'data', data)
+            },
+            colorSpan (text, tag = true) {
+                text = text.replace(/\s/g, '')
+                text = text.replace(/\[cl/g, tag ? '<span class="mark">' : '')
+                text = text.replace(/@#174CC6cle]/g, tag ? '</span>' : '')
+                text = text.replace(/\n/g, '<br/>')
+
+                return '<span>' + text + '</span>'
+            },
+            hasTalent (parts) {
+                for (let part of parts) {
+                    if (part.addOrOverrideTalentDataBundle.candidates) {
+                        return true
+                    }
+                }
+                return false
+            },
+            talents (candidates) {
+                let data = {}
+                for (let item of candidates || []) {
+                    data[item.name] = item
+                }
+                return data
+            },
+            count (num) {
+                if (num >= 1000) {
+                    num = (num / 1000).toFixed(0) + 'k'
+                }
+                return num
+            }
+        },
+        data () {
+            return {
+                data: {},
+                attrsDict: {
+                    atk: '攻击力',
+                    attackSpeed: '攻击速度',
+                    baseAttackTime: '攻击间隔',
+                    blockCnt: '阻挡数',
+                    cost: '部署费用',
+                    def: '防御力',
+                    magicResistance: '魔法抗性',
+                    maxHp: '最大生命值',
+                    respawnTime: '再部署时间',
+                    attack_speed: '攻击速度',
+                    base_attack_time: '攻击间隔',
+                    block_cnt: '阻挡数',
+                    magic_resistance: '魔法抗性',
+                    max_hp: '最大生命值',
+                    respawn_time: '再部署时间'
+                }
+            }
+        },
+        mounted () {
+            window.init = this.init
+        }
+    })
+</script>
+</html>

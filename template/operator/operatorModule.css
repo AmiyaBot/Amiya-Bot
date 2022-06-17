@@ -1,0 +1,140 @@
+* {
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#template {
+    width: 1280px;
+    min-height: 720px;
+    padding: 20px;
+    color: #fff;
+    background: url(../assets/pc_bg.jpeg) center / cover no-repeat;
+    position: relative;
+}
+
+.equip {
+    margin-bottom: 30px;
+}
+
+.header {
+    display: flex;
+    padding: 5px 20px 5px 5px;
+    align-items: center;
+    border-left: 15px solid #ff9800;
+    background: linear-gradient(to right, #3a3a3a, #171717);
+}
+
+.title {
+    font-size: 30px;
+    margin: 0 10px;
+}
+
+.type {
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #ff5722;
+}
+
+.detail {
+    padding: 15px;
+    background: linear-gradient(to bottom right, #888888, #d4d4d4);
+}
+
+.missions {
+    margin-bottom: 20px;
+    padding-left: 20px;
+    color: #1a1a1a;
+    font-weight: bold;
+}
+
+.stageInfo {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.stage {
+    width: calc(100% / 3 - 10px);
+    margin: 5px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 10px 75px;
+}
+
+.shadow {
+    opacity: 0.5;
+    position: absolute;
+    right: 10px;
+    bottom: 0;
+}
+
+.shadow > div {
+    text-align: right;
+}
+
+.sub-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.sub-title:before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    display: block;
+    margin-right: 10px;
+    background: #9c27b0;
+}
+
+.sub-title.h1:before {
+    background: #b71c1c;
+}
+
+.sub-title.h4:before {
+    background: #3f51b5;
+}
+
+.option {
+    padding-left: 20px;
+    color: #202020;
+    font-size: 0;
+}
+
+.talent {
+    background: #f44336;
+}
+
+.mark {
+    color: #9c27b0;
+}
+
+.materiel-costs {
+    display: flex;
+}
+
+.materiel {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.materiel:after {
+    content: attr(use);
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    background: rgb(0 0 0 / 80%);
+    padding: 0 8px;
+    border-radius: 6px;
+}
+
+.materiel > img {
+    width: 70px;
+}
