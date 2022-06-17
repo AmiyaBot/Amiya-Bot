@@ -231,7 +231,7 @@ async def guess_start(data: Message, operator: Operator, level: str, title: str,
             rewards = int(guess_config.rewards.bingo * level_rate * (100 + result.total_point) / 100)
 
             if level == '初级':
-                await data.send(Chain(answer, at=False).text(f'回答正确！分数+1，合成玉+{rewards}').image(skin_path))
+                await data.send(Chain(answer, at=False).text(f'回答正确！分数+1，合成玉+{rewards}'))
             else:
                 await data.send(Chain(answer, at=False).text(f'回答正确！分数+1，合成玉+{rewards}'))
             
