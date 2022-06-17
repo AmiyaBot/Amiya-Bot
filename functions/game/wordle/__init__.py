@@ -1,26 +1,26 @@
-import copy
 import asyncio
+import random
 
 from core import bot
 from core.database.user import UserInfo
 from functions.game.wordle.wordleBuilder import *
 
 
-@bot.on_group_message(function_id='wordle', keywords=['猜猜乐', '干员猜猜乐'])
+@bot.on_group_message(function_id='wordle', keywords=['猜字谜', '字谜', '字谜猜猜乐'])
 async def _(data: Message):
     if not data.is_group_admin and not data.is_admin:
-        return Chain(data).text('抱歉博士，干员猜猜乐游戏暂时只能由管理员发起哦')
+        return Chain(data).text('抱歉博士，字谜猜猜乐游戏暂时只能由管理员发起哦')
 
     level = {
         '简单': '简单',
         '困难': '困难'
     }
-    level_text = '\n'.join([f'【{lv}】{ct}猜猜乐' for lv, ct in level.items()])
+    level_text = '\n'.join([f'【{lv}】{ct}猜字谜' for lv, ct in level.items()])
 
     select_level = f'博士，请选择难度：\n\n{level_text}\n\n' \
                    '请回复【难度等级】开始游戏。\n' \
                    '所有群员均可参与游戏，游戏一旦开始，将暂停其他功能的使用哦。如果取消请无视本条消息。\n' \
-                   '请使用形如“凯尔希”的格式来进行回复，正确将获得积分，错误将获得提示。\n'\
+                   '请回复干员名称参与作答，正确将获得积分，错误将获得提示。\n' \
                    '输入“跳过”或“下一题”将公布答案并跳过本题，输入“结束”或“不玩了”提前结束游戏。\n'
 
     choice = await data.waiting(Chain(data).text(select_level))
@@ -55,7 +55,7 @@ async def _(data: Message):
                     r = re.search(r'\n【种族】.*?(\S+).*?\n', story['story_text'])
                     if r:
                         race = str(r.group(1))
-        
+
         if curr != referee.count:
             curr = referee.count
 
@@ -66,7 +66,7 @@ async def _(data: Message):
             await data.send(text)
             await asyncio.sleep(2)
 
-        result = await wordle_start(data, operator, choice.text, level[choice.text], level_rate)
+        result = await wordle_start(data, operator, choice.text, level_rate)
         end = False
         skip = False
 

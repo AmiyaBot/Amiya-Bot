@@ -1,20 +1,18 @@
-import os
-import random
 import copy
 import re
-
-from io import BytesIO
-from PIL import Image
-from typing import Dict, Union
-from operator import itemgetter
-from itertools import groupby
 from dataclasses import dataclass, field
-from core.util import any_match, random_pop, read_yaml
-from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource, Operator
+from itertools import groupby
+from operator import itemgetter
+from typing import Dict, Union
+
 from core import Message, Chain
+from core.resource.arknightsGameData import ArknightsGameData, Operator
+from core.util import any_match, read_yaml
 
 wordle_config = read_yaml('config/private/game.yaml').wordle
 nations_config = read_yaml('config/private/game.yaml').nations
+
+
 
 class WordleStatus:
     systemSkip = 0
@@ -51,6 +49,7 @@ def set_point(cls: Union[WordleResult, WordleReferee], user_id: int, point: int)
 
 def set_rank(cls: WordleReferee, answer: Message, point: int):
     user_id = int(answer.user_id)
+
     if user_id not in cls.user_ranking:
         cls.user_num += 1
         cls.user_ranking[user_id] = {
@@ -80,14 +79,18 @@ def calc_rank(cls: WordleReferee):
 
     text = '排行榜：\n'
     no_rank = True
+
     for wordle, items in group:
+
         if group_index in group_index_map:
             text += f'\n{group_index_map[group_index]}：\n'
+
         elif no_rank:
             no_rank = False
             text += '\n未上榜：\n'
 
         for item in items:
+
             if group_index in reward_list:
                 reward_list[group_index].append(item['user_id'])
             text += ' -- {nickname} （{point}分）\n'.format(nickname=item['nickname'], point=item['point'])
@@ -97,8 +100,7 @@ def calc_rank(cls: WordleReferee):
     return text, reward_list
 
 
-async def wordle_start(data: Message, operator: Operator, level: str, title: str, level_rate: int):
-    
+async def wordle_start(data: Message, operator: Operator, level: str, level_rate: int):
     rarity_ans = 'XXX'
     classes_ans = 'XXX'
     classes_sub_ans = 'XXX'
@@ -107,33 +109,50 @@ async def wordle_start(data: Message, operator: Operator, level: str, title: str
     drawer_ans = 'XXX'
     match = 0
     ans_list = '目前猜过的干员有：'
+
     if level == '简单':
         max_count = 12
-
-    if level == '困难':
+    else:
         max_count = 8
-    
-    ask = Chain(data, at=False).text(f'博士，我已经想好一个干员了，快猜猜是谁吧！\n（{level}模式共有{max_count}次猜测机会）\n\n稀有度：{rarity_ans}星\n职业：{classes_ans}\n子职业：{classes_sub_ans}\n阵营：{nation_ans}\n种族：{race_ans}\n画师：{drawer_ans}\n')
+
+    text = [
+        '博士，快来猜猜这是谁吧！',
+        f'（{level}模式共有{max_count}次猜测机会）',
+        '',
+        f'稀有度：{rarity_ans}星',
+        f'职业：{classes_ans}',
+        f'子职业：{classes_sub_ans}',
+        f'阵营：{nation_ans}',
+        f'种族：{race_ans}',
+        f'画师：{drawer_ans}',
+    ]
+    ask = Chain(data).text('\n'.join(text), auto_convert=False)
     result = WordleResult()
     count = 0
+    race = ''
 
     await data.send(ask)
-    
+
     for story in operator.stories():
+
         if story['story_title'] == '基础档案':
             r = re.search(r'\n【种族】.*?(\S+).*?\n', story['story_text'])
+
             if r:
                 race = str(r.group(1))
+
                 if race == '卡特斯/奇美拉':
                     race = '卡特斯'
-                
+
     while True:
         answer = await data.waiting(force=True, target='group', max_time=120)
+        race_guess = ''
+
         if not answer:
             await data.send(Chain(data, at=False).text(f'答案是{operator.name}，没有博士回答吗？那游戏结束咯~'))
             result.status = WordleStatus.systemClose
             return result
-        
+
         if any_match(answer.text, ['下一题', '跳过']):
             await data.send(Chain(data, at=False).text(f'答案是{operator.name}，结算奖励-10%'))
             set_point(result, answer.user_id, -10)
@@ -145,7 +164,7 @@ async def wordle_start(data: Message, operator: Operator, level: str, title: str
             await data.send(Chain(answer, at=False).text(f'答案是{operator.name}，游戏结束~'))
             result.status = WordleStatus.userClose
             return result
-        
+
         if answer.text not in ArknightsGameData().operators.keys():
             continue
 
@@ -153,7 +172,7 @@ async def wordle_start(data: Message, operator: Operator, level: str, title: str
             rewards = int(wordle_config.rewards.bingo * level_rate * (100 + result.total_point) / 100)
 
             await data.send(Chain(answer, at=False).text(f'回答正确！分数+1，合成玉+{rewards}'))
-            
+
             result.answer = answer
             result.status = WordleStatus.bingo
             return result
@@ -166,41 +185,63 @@ async def wordle_start(data: Message, operator: Operator, level: str, title: str
             else:
                 operator_list = copy.deepcopy(ArknightsGameData().operators)
                 operator_guess = operator_list.pop(answer.text)
+
                 for story in operator_guess.stories():
+
                     if story['story_title'] == '基础档案':
                         r = re.search(r'\n【种族】.*?(\S+).*?\n', story['story_text'])
+
                         if r:
                             race_guess = str(r.group(1))
+
                             if race_guess == '卡特斯/奇美拉':
                                 race_guess = '卡特斯'
-                
+
                 if operator.rarity == operator_guess.rarity and rarity_ans == 'XXX':
                     match = match + 1
                     rarity_ans = operator.rarity
+
                 if operator.classes == operator_guess.classes and classes_ans == 'XXX':
                     match = match + 1
                     classes_ans = operator.classes
+
                 if operator.classes_sub == operator_guess.classes_sub and classes_sub_ans == 'XXX':
                     match = match + 1
                     classes_sub_ans = operator.classes_sub
+
                 if operator.nation == operator_guess.nation and nation_ans == 'XXX':
                     match = match + 1
                     nation_ans = nations_config[operator.nation][0]
+
                 if race == race_guess and race_ans == 'XXX':
                     match = match + 1
                     race_ans = race_guess
+
                 if operator.drawer_name == operator_guess.drawer_name and drawer_ans == 'XXX':
                     match = match + 1
                     drawer_ans = operator.drawer_name
-                if match == 0:
-                    reply_text = '博士，所有的线索都对不上噢'
-                elif match == 1 or match == 2:
-                    reply_text = '博士，已经跟答案沾点边了'
+
+                if match == 1 or match == 2:
+                    reply_text = '博士的猜测离答案不远了~'
+
                 elif match == 3 or match == 4:
-                    reply_text = '博士的猜测离答案不远了噢~'
-                elif match == 5:
-                    reply_text = '博士！就快要猜对了噢'
+                    reply_text = '博士的猜测离答案非常接近了~'
+
+                elif match == 5 or match == 6:
+                    reply_text = '博士！就快要猜对了哦！'
+
+                else:
+                    reply_text = '博士，所有的线索都对不上哦~'
+
                 ans_list += ' ' + answer.text
-                await data.send(Chain(answer, at=False).text(f'{reply_text}（{count}/{max_count}）\n\n稀有度：{rarity_ans}星\n职业：{classes_ans}\n子职业：{classes_sub_ans}\n阵营：{nation_ans}\n种族：{race_ans}\n画师：{drawer_ans}\n\n{ans_list}'))
-        
-            
+                text = [
+                    f'{reply_text}（{count}/{max_count}）',
+                    f'稀有度：{rarity_ans}星',
+                    f'职业：{classes_ans}',
+                    f'子职业：{classes_sub_ans}',
+                    f'阵营：{nation_ans}',
+                    f'种族：{race_ans}',
+                    f'画师：{drawer_ans}',
+                    f'{ans_list}',
+                ]
+                await data.send(Chain(answer, at=False).text('\n'.join(text), auto_convert=False))
