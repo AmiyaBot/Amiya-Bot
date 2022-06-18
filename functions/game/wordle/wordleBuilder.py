@@ -126,7 +126,7 @@ async def wordle_start(data: Message, operator: Operator, level: str, level_rate
         f'种族：{race_ans}',
         f'画师：{drawer_ans}',
     ]
-    ask = Chain(data).text('\n'.join(text), auto_convert=False)
+    ask = Chain(data, at=False).text('\n'.join(text), auto_convert=False)
     result = WordleResult()
     count = 0
     race = ''
