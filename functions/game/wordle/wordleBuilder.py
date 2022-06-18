@@ -164,8 +164,9 @@ async def wordle_start(data: Message, operator: Operator, level: str, level_rate
             await data.send(Chain(answer, at=False).text(f'答案是{operator.name}，游戏结束~'))
             result.status = WordleStatus.userClose
             return result
+        
         if answer.text in ans_names:
-            await data.send(Chain(answer, at=False).text(f'博士，{answer.text}已经猜过啦，不要浪费机会噢~'))
+            await data.send(Chain(answer, at=False).text(f'博士，{answer.text}已经被猜过了，换个干员试试吧~'))
             continue
 
         if answer.text not in ArknightsGameData().operators.keys():
