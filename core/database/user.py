@@ -62,6 +62,7 @@ class UserInfo(UserBaseModel):
     sign_times: int = IntegerField(default=0)
     jade_point: int = IntegerField(default=0)
     jade_point_max: int = IntegerField(default=0)
+    times_report: int = IntegerField(default=0)
 
     @classmethod
     def get_user(cls, user_id):
