@@ -157,6 +157,9 @@ async def wordle_start(data: Message, operator: Operator, level: str, level_rate
 
         times_report = UserInfo.get_or_none(UserInfo.user_id == answer.user_id)
 
+        if times_report is None:
+            continue
+
         if any_match(answer.text, ['下一题', '跳过']):
             await data.send(Chain(data, at=False).text(f'答案是{operator.name}，结算奖励-10%'))
             set_point(result, answer.user_id, -10)
