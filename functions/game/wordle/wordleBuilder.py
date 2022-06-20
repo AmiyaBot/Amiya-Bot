@@ -1,11 +1,13 @@
 import copy
 import re
+
 from dataclasses import dataclass, field
 from itertools import groupby
 from operator import itemgetter
 from typing import Dict, Union
 
 from core import Message, Chain
+from core.database.user import UserInfo
 from core.resource.arknightsGameData import ArknightsGameData, Operator
 from core.util import any_match, read_yaml
 
@@ -153,6 +155,11 @@ async def wordle_start(data: Message, operator: Operator, level: str, level_rate
             result.status = WordleStatus.systemClose
             return result
 
+        times_report = UserInfo.get_or_none(UserInfo.user_id == answer.user_id)
+
+        if times_report is None:
+            continue
+
         if any_match(answer.text, ['下一题', '跳过']):
             await data.send(Chain(data, at=False).text(f'答案是{operator.name}，结算奖励-10%'))
             set_point(result, answer.user_id, -10)
@@ -164,8 +171,16 @@ async def wordle_start(data: Message, operator: Operator, level: str, level_rate
             await data.send(Chain(answer, at=False).text(f'答案是{operator.name}，游戏结束~'))
             result.status = WordleStatus.userClose
             return result
-        
+
         if answer.text in ans_names:
+
+            if times_report.times_report > wordle_config.report.times:
+
+                if level_rate >= wordle_config.report.level:
+                    await data.send(Chain(data, at=False).text(f'您被举报的次数过多，不允许参与该难度游戏，请联系管理员。'))
+
+                    continue
+
             await data.send(Chain(answer, at=False).text(f'博士，{answer.text}已经被猜过了，换个干员试试吧~'))
             continue
 
@@ -173,6 +188,14 @@ async def wordle_start(data: Message, operator: Operator, level: str, level_rate
             continue
 
         if answer.text == operator.index_name:
+
+            if times_report.times_report > wordle_config.report.times:
+
+                if level_rate >= wordle_config.report.level:
+                    await data.send(Chain(data, at=False).text(f'您被举报的次数过多，不允许参与该难度游戏，请联系管理员。'))
+
+                    continue
+
             rewards = int(wordle_config.rewards.bingo * level_rate * (100 + result.total_point) / 100)
 
             await data.send(Chain(answer, at=False).text(f'回答正确！分数+1，合成玉+{rewards}'))
@@ -181,6 +204,14 @@ async def wordle_start(data: Message, operator: Operator, level: str, level_rate
             result.status = WordleStatus.bingo
             return result
         else:
+
+            if times_report.times_report > wordle_config.report.times:
+
+                if level_rate >= wordle_config.report.level:
+                    await data.send(Chain(data, at=False).text(f'您被举报的次数过多，不允许参与该难度游戏，请联系管理员。'))
+
+                    continue
+
             count += 1
             if count >= max_count:
                 await data.send(Chain(data, at=False).text(f'机会耗尽，答案是{operator.name}，结算奖励-5%'))

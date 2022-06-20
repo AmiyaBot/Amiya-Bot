@@ -10,13 +10,16 @@ guess:
         copper: 1000
 
 wordle:
-    questions: 5
-    finish_min: 2
+    questions: 20
+    finish_min: 15
     rewards:
         bingo: 300
         golden: 3000
         silver: 2000
         copper: 1000
+    report:
+        times: 20
+        level: 2
 
 nations:
     laterano:
