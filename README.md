@@ -53,13 +53,13 @@ Amiya-Bot 的所有说明均可查阅本项目的官方网站（[https://www.ami
 ## 贡献
 
 - 本项目欢迎 dalao 加入，拯救萌新，刻不容缓！
-- 如果有更多的建议或 BUG 反馈，请提交到 [issues](../../issues) 或加入官方QQ群 [362165038](https://jq.qq.com/?_wv=1027&k=4HKMpUZL) 反馈
-- 如果你遇到项目部署问题，可以加入开发群 [852191455](https://jq.qq.com/?_wv=1027&k=YWVA0NFX) 反馈
+- 如果有更多的建议或 BUG 反馈，请提交到 [issues](../../issues) 或加入官方 QQ 频道 [Amiya的测试工坊](https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W4sJux&appChannel=share&businessType=9&from=181074&biz=ka&shareSource=5) 反馈
+- 如果你遇到项目部署问题，可以前往官方 QQ 频道的 `办公室` 子频道反馈
 - 你的 `star` 将会成为 Amiya 成长的经验值
 
 ## 鸣谢
 
-精彩的项目背后总有强大的项目支撑，没有以下项目的支持，Amiya-Bot 将变得难以实现
+精彩的工程背后总有强大的项目支撑，没有以下项目的支持，Amiya-Bot 将变得难以实现
 
 - 底层支持
     - [mirai-console](https://github.com/mamoe/mirai-console)
