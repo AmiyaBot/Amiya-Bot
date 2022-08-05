@@ -236,7 +236,8 @@ async def _(data: Message):
     text += f'阿米娅的心情：{int(user.user_mood / 15 * 100)}%\n\n'
 
     text += f'合成玉：{user.jade_point}\n'
-    text += f'今日已获得：{user.jade_point_max}/{game.jade_point_max}\n\n'
+    text += f'今日已获得：{user.jade_point_max}/{game.jade_point_max}\n'
+    text += f'猜字谜被举报次数：{user.times_report}\n\n'
 
     gacha = get_user_gacha_detail(data.user_id)
     if gacha:

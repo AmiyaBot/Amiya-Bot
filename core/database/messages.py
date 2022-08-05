@@ -58,3 +58,10 @@ class WeiboRecord(MessageBaseModel):
     user_id: int = IntegerField()
     blog_id: str = CharField()
     record_time: int = IntegerField()
+
+
+@table
+class ReportRecord(MessageBaseModel):
+    source_id: str = TextField()
+    target_id: str = TextField()
+    date: str = TextField()

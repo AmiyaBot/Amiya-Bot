@@ -1,1 +1,3 @@
-from . import (guess)
+from . import (guess,
+              wordle
+              )
