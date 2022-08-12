@@ -162,7 +162,10 @@ async def _(data: Message):
 
     if info.name not in ArknightsGameData().operators:
         return Chain(data).text(f'博士，没有找到干员"{info.name}"')
-
+    
+    if OperatorData.find_operator_module(info, False) == []:
+        return Chain(data).text(f'博士，干员"{info.name}"还没有模组')
+    
     if '故事' in data.text:
         result = OperatorData.find_operator_module(info, True)
         return Chain(data).text_image(result)
