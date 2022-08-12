@@ -341,7 +341,7 @@ async def _(data: Message):
     else:
         result = await OperatorData.get_skills_detail(info)
         
-        if result['skills'] == []:
+        if result['skills_desc'] == {}:
             return Chain(data).text(f'博士，干员{info.name}没有技能哦')
         
         template = 'operator/skillsDetail.html'
@@ -365,10 +365,6 @@ async def _(data: Message):
         template = 'operator/skillsDetail.html'
     else:
         result = await OperatorData.get_operator_detail(info)
-        
-        if result['skills'] == []:
-            return Chain(data).text(f'博士，干员{info.name}没有技能哦')
-        
         template = 'operator/operatorInfo.html'
 
     if not result:
