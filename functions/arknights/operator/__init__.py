@@ -333,9 +333,17 @@ async def _(data: Message):
 
     if '材料' in data.text:
         result = await OperatorData.get_level_up_cost(info)
+        
+        if result['skills'] == []:
+            return Chain(data).text(f'博士，干员{info.name}没有技能哦')
+        
         template = 'operator/operatorCost.html'
     else:
         result = await OperatorData.get_skills_detail(info)
+        
+        if result['skills'] == []:
+            return Chain(data).text(f'博士，干员{info.name}没有技能哦')
+        
         template = 'operator/skillsDetail.html'
 
     if not result:
@@ -350,9 +358,17 @@ async def _(data: Message):
 
     if '技能' in data.text:
         result = await OperatorData.get_skills_detail(info)
+        
+        if result['skills'] == []:
+            return Chain(data).text(f'博士，干员{info.name}没有技能哦')
+        
         template = 'operator/skillsDetail.html'
     else:
         result = await OperatorData.get_operator_detail(info)
+        
+        if result['skills'] == []:
+            return Chain(data).text(f'博士，干员{info.name}没有技能哦')
+        
         template = 'operator/operatorInfo.html'
 
     if not result:
