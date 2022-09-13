@@ -1,6 +1,7 @@
 from amiyabot.database import select_for_paginate, query_to_list
 from core import app
 from core.database.bot import OperatorIndex, OperatorConfig
+from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 
 from .__model__ import QueryData, BaseModel
 
@@ -43,4 +44,10 @@ class Operator:
         else:
             OperatorConfig.create(operator_name=data.name, operator_type=data.operator_type)
 
+        return app.response(message='更新成功')
+
+    @app.route(method='get')
+    async def update_setting(self):
+        ArknightsConfig.initialize()
+        ArknightsGameData.initialize()
         return app.response(message='更新成功')

@@ -16,12 +16,19 @@ class ArknightsConfig:
     limit = []
     unavailable = []
 
-    for item in OperatorConfig.select():
-        item: OperatorConfig
-        if item.operator_type in [0, 1]:
-            limit.append(item.operator_name)
-        else:
-            unavailable.append(item.operator_name)
+    @classmethod
+    def initialize(cls):
+        limit = []
+        unavailable = []
+        for item in OperatorConfig.select():
+            item: OperatorConfig
+            if item.operator_type in [0, 1]:
+                limit.append(item.operator_name)
+            else:
+                unavailable.append(item.operator_name)
+
+        cls.limit = limit
+        cls.unavailable = unavailable
 
 
 class JsonData:

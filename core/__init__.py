@@ -10,7 +10,7 @@ from amiyabot.network.httpRequests import http_requests
 from core.database.bot import BotAccounts
 from core.resource import remote_config
 from core.resource.botResource import BotResource
-from core.resource.arknightsGameData import ArknightsGameData
+from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.resource.arknightsGameData.penguin import save_penguin_data
 from core.lib.gitAutomation import GitAutomation
 from core.lib.timedTask import TasksControl
@@ -31,6 +31,7 @@ tasks_control = TasksControl()
 def load_task():
     gamedata_repo.update()
     BotResource.download_bot_resource()
+    ArknightsConfig.initialize()
     ArknightsGameData.initialize()
 
 
