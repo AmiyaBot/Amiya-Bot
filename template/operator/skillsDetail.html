@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="styleSheet" href="../assets/font/font.css"/>
+    <link type="text/css" rel="styleSheet" href="skillsDetail.css"/>
+    <title>template</title>
+</head>
+<body>
+<div id="template">
+    <div class="skill-item" v-for="item in data.skills">
+        <div style="display: flex;align-items: center">
+            <img style="width: 80px;margin-right: 20px"
+                 :src="'../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
+            <div class="skill-title">
+                <div style="font-size: 26px">{{ item.skill_name }}</div>
+                <div class="skill-type">
+                    <div :class="'t' + skillItem(item).sp_type">
+                        {{ spType[skillItem(item).sp_type] }}
+                    </div>
+                    <div>{{ skillType[skillItem(item).skill_type] }}</div>
+                </div>
+            </div>
+            <div style="margin-left: 20px" v-html="range(skillItem(item).range)"></div>
+        </div>
+        <div style="margin-top: 20px">
+            <table>
+                <tr>
+                    <th>等级</th>
+                    <th>描述</th>
+                    <th>技力消耗</th>
+                    <th>持续时间（秒）</th>
+                    <th>攻击范围更新</th>
+                </tr>
+                <tr v-for="skill in data.skills_desc[item.skill_no]">
+                    <td style="text-align: center">
+                        <div v-if="skill.skill_level >= 8" class="mastery-icon"
+                             :style="{backgroundImage: 'url(../../resource/images/level/master' + (skill.skill_level - 7) + '.png)'}"></div>
+                        <span v-else>{{ skill.skill_level }}</span>
+                    </td>
+                    <td v-html="colorSpan(skill.description)"></td>
+                    <td style="text-align: center">{{ skill.sp_init }}/{{ skill.sp_cost }}</td>
+                    <td style="text-align: center">{{ skill.duration > 0 ? skill.duration : '无' }}</td>
+                    <td>
+                        <div v-if="skill.range !== skillItem(item).range" v-html="range(skill.range)"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../vue.min.js"></script>
+<script>
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init(data) {
+                this.$set(this, 'data', data)
+            },
+            skillItem(item, index = 0) {
+                return this.data.skills_desc[item.skill_no][index]
+            },
+            range(text) {
+                let lines = []
+                for (let line of text.split('\n')) {
+                    let items = []
+                    for (let char of line) {
+                        switch (char) {
+                            case '　':
+                                items.push('<div class="block"></div>')
+                                break
+                            case '□':
+                                items.push('<div class="block r"></div>')
+                                break
+                            case '■':
+                                items.push('<div class="block s"></div>')
+                                break
+                        }
+                    }
+                    lines.push(`<div class="block-group">${items.join('')}</div>`)
+                }
+                return lines.join('')
+            },
+            colorSpan(text, tag = true) {
+                text = text.replace(/\s/g, '')
+                text = text.replace(/\[cl/g, tag ? '<span class="mark">' : '')
+                text = text.replace(/@#174CC6cle]/g, tag ? '</span>' : '')
+                text = text.replace(/\n/g, '<br/>')
+
+                return text
+            }
+        },
+        data() {
+            return {
+                data: {},
+                spType: {
+                    1: '自动回复',
+                    2: '攻击回复',
+                    4: '受击回复',
+                    8: '被动'
+                },
+                skillType: {
+                    0: '被动',
+                    1: '手动触发',
+                    2: '自动触发'
+                },
+                skillLevel: {
+                    8: '专精一',
+                    9: '专精二',
+                    10: '专精三'
+                }
+            }
+        },
+        mounted() {
+            window.init = this.init
+        }
+    })
+</script>
+</html>

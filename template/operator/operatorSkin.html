@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="styleSheet" href="../assets/font/font.css"/>
+    <link type="text/css" rel="styleSheet" href="operatorSkin.css"/>
+    <title>template</title>
+</head>
+<body>
+<div id="template">
+    <div class="opt-skin" v-if="Object.keys(data).length">
+        <div class="skin-info">
+            <div class="skin-name">{{ data.name }} - {{ data.data.skin_name }}</div>
+            <br>
+            <template v-if="data.data.skin_source">
+                <div>获得途径：{{ data.data.skin_source }}</div>
+                <br>
+            </template>
+            <div>{{ data.data.skin_group }}系列</div>
+            <div>{{ data.data.skin_usage }}</div>
+            <br>
+            <div>{{ data.data.skin_content }}</div>
+            <br>
+            <i v-if="data.data.skin_desc">「{{ data.data.skin_desc }}」</i>
+        </div>
+        <div class="skin-image" :style="{backgroundImage: `url('../../${data.path}')`}"></div>
+    </div>
+</div>
+</body>
+<script src="../vue.min.js"></script>
+<script>
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init(data) {
+                this.$set(this, 'data', data)
+            }
+        },
+        data() {
+            return {
+                data: {}
+            }
+        },
+        mounted() {
+            window.init = this.init
+        }
+    })
+</script>
+</html>

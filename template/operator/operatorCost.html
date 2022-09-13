@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="styleSheet" href="../assets/font/font.css"/>
+    <link type="text/css" rel="styleSheet" href="operatorCost.css"/>
+    <title>template</title>
+</head>
+<body>
+<div id="template">
+    <div class="background" :style="{backgroundImage: `url('../../${data.skin}')`}"></div>
+    <div style="position: relative;z-index: 1">
+        <div class="title">精英化</div>
+        <div class="evolve-block">
+            <div class="evolve-detail" v-for="(costs, level) in data.evolve_costs">
+                <div style="display: flex">
+                    <img class="evolve-icon" :src="'../../resource/images/level/evolve' + level + '.png'"
+                         alt="evolve">
+                    精英{{ {1: '一', 2: '二'}[level] }}
+                </div>
+                <div class="evolve-costs">
+                    <div class="materiel" :use="item.use_number" v-for="item in costs">
+                        <img :src="'../../resource/gamedata/item/' + item.material_icon + '.png'"
+                             :alt="item.material_name">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="title">技能升级</div>
+        <div class="skills-level-up">
+            <div class="skills_cost">
+                <div v-for="(items, level) in data.skills_cost.common" class="common-items">
+                    <div>等级{{ level }}</div>
+                    <div class="materiel" :use="item.use_number" v-for="item in items">
+                        <img :src="'../../resource/gamedata/item/' + item.material_icon + '.png'"
+                             :alt="item.material_name">
+                    </div>
+                </div>
+            </div>
+            <div class="skills_mastery">
+                <div v-for="item in data.skills" style="margin: 0 10px">
+                    <div>
+                        <img style="width: 70px;margin-right: 20px"
+                             :src="'../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
+                        {{ item.skill_name }}
+                    </div>
+                    <div class="cost-items" v-for="(cost, level) in data.skills_cost[item.skill_no]">
+                        <div class="mastery-icon"
+                             :style="{backgroundImage: 'url(../../resource/images/level/master' + (level - 7) + '.png)'}"></div>
+                        <div class="materiel" :use="item.use_number" v-for="item in cost">
+                            <img :src="'../../resource/gamedata/item/' + item.material_icon + '.png'"
+                                 :alt="item.material_name">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../vue.min.js"></script>
+<script>
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init(data) {
+                this.$set(this, 'data', data)
+            }
+        },
+        data() {
+            return {
+                data: {}
+            }
+        },
+        mounted() {
+            window.init = this.init
+        }
+    })
+</script>
+</html>

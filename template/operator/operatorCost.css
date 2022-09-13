@@ -1,0 +1,131 @@
+* {
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#template {
+    width: 1280px;
+    height: 720px;
+    padding: 0 30px;
+    color: #fff;
+    text-shadow: 1px 2px 2px black;
+    overflow: hidden;
+    position: relative;
+}
+
+.background {
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+    background: #000 center / 100% no-repeat;
+    filter: blur(4px);
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    z-index: 0;
+}
+
+.evolve-block {
+    display: flex;
+    align-items: center;
+}
+
+.evolve-detail {
+    display: flex;
+    margin-right: 100px;
+}
+
+.evolve-detail > div:first-child {
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 20px;
+}
+
+.evolve-icon {
+    width: 100px;
+}
+
+.evolve-costs {
+    display: flex;
+    align-items: center;
+}
+
+.skills-level-up {
+    display: flex;
+}
+
+.skills-level-up img {
+    width: 65px !important;
+}
+
+.skills_cost {
+    display: flex;
+    flex-direction: column;
+    margin-right: 40px;
+}
+
+.common-items {
+    display: flex;
+    align-items: center;
+}
+
+.common-items > div:first-child {
+    font-size: 20px;
+    padding-right: 20px;
+}
+
+.skills_mastery {
+    display: flex;
+}
+
+.skills_mastery > div > div:first-child {
+    display: flex;
+    align-items: center;
+}
+
+.cost-items {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+}
+
+
+.mastery-icon {
+    width: 70px;
+    height: 70px;
+    background: center / 70px no-repeat;
+    margin-right: 10px;
+}
+
+.title {
+    border-bottom: 1px solid rgb(255, 255, 255);
+    padding: 10px 0;
+    margin: 20px 0 10px 0;
+    font-size: 30px;
+}
+
+.materiel {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.materiel:after {
+    content: attr(use);
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    background: rgb(0 0 0 / 80%);
+    padding: 0 8px;
+    border-radius: 6px;
+}
+
+.materiel > img {
+    width: 80px;
+}

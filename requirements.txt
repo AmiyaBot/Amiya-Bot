@@ -1,0 +1,16 @@
+amiyabot
+attrdict~=2.0.1
+baidu-aip
+dhash~=1.3
+fastapi~=0.79.0
+gitpython
+jieba~=0.42.1
+jinja2~=3.1.2
+jionlp~=1.3.58
+pillow~=9.1.1
+pypinyin~=0.46.0
+pyyaml~=6.0
+requests-html
+srsly~=2.4.3
+starlette~=0.19.1
+zhon~=1.1.5

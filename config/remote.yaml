@@ -1,0 +1,14 @@
+remote:
+    cos: https://cos.amiyabot.com
+    wiki: https://static.prts.wiki
+    console: http://console.amiyabot.com
+    penguin: https://penguin-stats.io/PenguinStats/api/v2/result/matrix
+    gamedata: https://gitee.com/vivien8261/Arknights-Bot-Resource.git
+    resource: http://119.29.87.110:8000
+
+bucket:
+    enabled: false
+    region:
+    secret_id:
+    secret_key:
+    bucket_name:

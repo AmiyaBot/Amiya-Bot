@@ -1,0 +1,16 @@
+jade_point_max: 30000
+
+guess:
+    questions: 30
+    finish_min: 15
+    rewards:
+        bingo: 300
+        golden: 3000
+        silver: 2000
+        copper: 1000
+
+
+keyword:
+    skip: [ '下一题', '放弃', '跳过' ]
+    tips: [ '不知道', '提示' ]
+    over: [ '不玩了', '结束' ]

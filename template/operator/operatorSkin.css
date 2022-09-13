@@ -1,0 +1,37 @@
+* {
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#template {
+    width: 1280px;
+    height: 720px;
+    padding: 20px;
+    color: #fff;
+    background: url(../assets/pc_bg.jpeg) center / cover no-repeat;
+    position: relative;
+}
+
+.opt-skin {
+    height: 100%;
+    padding: 20px;
+    display: flex;
+}
+
+.skin-info {
+    width: 35%;
+    padding-right: 20px;
+}
+
+.skin-name {
+    font-size: 30px;
+}
+
+.skin-image {
+    width: 65%;
+    background: center / 90% no-repeat;
+}
