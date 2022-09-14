@@ -41,7 +41,8 @@ VSVersionInfo(
 )
 '''
 data_files = [
-    (os.path.abspath('venv/Lib/site-packages/amiyabot/assets'), 'amiyabot/assets')
+    (os.path.abspath(f'{venv}/amiyabot/assets'), 'amiyabot/assets'),
+    (os.path.abspath(f'{venv}/amiyabot/network/httpServer'), 'amiyabot/network/httpServer')
 ]
 
 
