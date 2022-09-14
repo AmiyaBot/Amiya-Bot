@@ -254,6 +254,16 @@ async def _(data: Chain):
     ).where(UserInfo.user_id == user_id).execute()
 
 
+@bot.on_message(group_id='user', keywords=['维护'])
+async def _(data: Message):
+    if data.is_admin and data.is_direct:
+
+        UserInfo.update(sign_in=0, user_mood=15, jade_point_max=0).execute()
+        await save_penguin_data()
+
+        return Chain(data).text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+
+
 @tasks_control.timed_task(each=60)
 async def _():
     now = time.localtime(time.time())
