@@ -16,12 +16,9 @@ from core.lib.gitAutomation import GitAutomation
 from core.lib.timedTask import TasksControl
 from core.util import read_yaml
 
-auth_key = None
-if os.path.exists('authKey.txt'):
-    with open('authKey.txt', mode='r', encoding='utf-8') as ak:
-        auth_key = ak.read().strip('\n')
+serve_conf = read_yaml('config/server.yaml')
 
-app = HttpServer('0.0.0.0', 8088, auth_key=auth_key)
+app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
 bot = MultipleAccounts(BotAccounts.get_all_account())
 
 gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata)
