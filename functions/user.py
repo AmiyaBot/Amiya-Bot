@@ -7,8 +7,9 @@ import random
 from amiyabot.network.download import download_async
 from amiyabot import GroupConfig
 
-from core import bot, tasks_control, Message, Chain
+from core import bot, send_to_console_channel, tasks_control, Message, Chain, Equal
 from core.util import read_yaml, check_sentence_by_re, any_match
+from core.database.bot import Admin
 from core.database.user import User, UserInfo, UserGachaInfo
 from core.resource.arknightsGameData.penguin import save_penguin_data
 
@@ -108,6 +109,15 @@ async def only_name(data: Message):
     text = re.sub(r'\W', '', text).strip()
 
     return text == '', 2
+
+
+async def reset():
+    UserInfo.update(sign_in=0, user_mood=15, jade_point_max=0).execute()
+
+    await save_penguin_data()
+    await send_to_console_channel(
+        Chain().text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    )
 
 
 # async def direct_check(data: Message):
@@ -211,6 +221,12 @@ async def _(data: Message):
     return await user_info(data)
 
 
+@bot.on_message(group_id='user', keywords=Equal('手动维护'))
+async def _(data: Message):
+    if Admin.get_or_none(account=data.user_id):
+        await reset()
+
+
 @bot.before_bot_reply
 async def _(data: Message):
     user: UserInfo = UserInfo.get_user(data.user_id)
@@ -261,7 +277,4 @@ async def _():
     mint = now.tm_min
 
     if hour == 4 and mint == 0:
-        # 重置用户每日信息
-        UserInfo.update(sign_in=0, user_mood=15, jade_point_max=0).execute()
-        # 刷新企鹅物流数据
-        await save_penguin_data()
+        await reset()

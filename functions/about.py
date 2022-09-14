@@ -10,4 +10,8 @@ async def _(data: Message):
 
 @bot.on_message(keywords=['频道信息'])
 async def _(data: Message):
-    return Chain(data, at=False).text(f'频道ID：{data.guild_id}\n子频道ID：{data.channel_id}')
+    return Chain(data, at=False).text(
+        f'用户ID：{data.user_id}\n'
+        f'频道ID：{data.guild_id}\n'
+        f'子频道ID：{data.channel_id}'
+    )

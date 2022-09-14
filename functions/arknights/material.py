@@ -55,7 +55,8 @@ class MaterialData:
         material = game_data.materials[game_data.materials_map[name]]
         material_id = material['material_id']
 
-        select_sql = f'SELECT stageId, quantity / times AS rate FROM penguin_data WHERE itemId = "{material_id}" ORDER BY rate DESC LIMIT 10'
+        select_sql = f'SELECT stageId, (quantity * 1.0) / (times * 1.0) AS rate ' \
+                     f'FROM penguin_data WHERE itemId = "{material_id}" ORDER BY rate DESC LIMIT 10'
         penguin_data = db.execute_sql(select_sql).fetchall()
 
         result = {

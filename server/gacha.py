@@ -1,3 +1,4 @@
+from typing import Optional
 from amiyabot.database import select_for_paginate
 from core import app
 from core.database.bot import Pool
@@ -10,10 +11,10 @@ from .__model__ import QueryData, BaseModel
 class PoolModel(BaseModel):
     id: int = None
     pool_name: str
-    pickup_6: str = ''
-    pickup_5: str = ''
-    pickup_4: str = ''
-    pickup_s: str = ''
+    pickup_6: Optional[str] = ''
+    pickup_5: Optional[str] = ''
+    pickup_4: Optional[str] = ''
+    pickup_s: Optional[str] = ''
     limit_pool: int
 
 

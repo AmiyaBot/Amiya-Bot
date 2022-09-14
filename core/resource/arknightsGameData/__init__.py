@@ -1,7 +1,7 @@
 import os
 import re
 
-from typing import List, Dict
+from typing import List, Dict, Any
 from core.database.bot import OperatorIndex
 from core.util import remove_xml_tag, remove_punctuation, sorted_dict
 from core import log
@@ -10,7 +10,7 @@ from .common import ArknightsConfig, JsonData
 from .operatorBuilder import Operator, Token, Collection
 from .wiki import PRTS
 
-STR_DICT = Dict[str, str]
+STR_DICT = Dict[str, Any]
 STR_DICT_MAP = Dict[str, STR_DICT]
 
 gamedata_path = 'resource/gamedata'
