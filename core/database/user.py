@@ -22,7 +22,7 @@ class User(UserBaseModel):
 
 @table
 class UserInfo(UserBaseModel):
-    user_id: Union[ForeignKeyField, str] = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
+    user_id: Union[ForeignKeyField, User, str] = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
     user_feeling: int = IntegerField(default=0)
     user_mood: int = IntegerField(default=15)
     sign_in: int = IntegerField(default=0)

@@ -4,11 +4,11 @@ import server
 import asyncio
 import functions
 
-from core import app, bot, init_task, load_task
+from core import app, bot, init_task, load_resource
 
 if __name__ == '__main__':
     try:
-        load_task()
+        load_resource()
         asyncio.run(
             asyncio.wait(
                 [

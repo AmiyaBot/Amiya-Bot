@@ -32,19 +32,6 @@ class GroupSetting(GroupBaseModel):
     send_weibo: int = IntegerField(default=0, null=True)
 
 
-@table
-class GroupNotice(GroupBaseModel):
-    content = CharField()
-    send_time = BigIntegerField()
-    send_user = CharField()
-
-
 def check_group_active(group_id):
-    if config.test.enable:
-        if int(group_id) not in config.test.group:
-            return False
-
     group: GroupActive = GroupActive.get_or_none(group_id=group_id)
-    if group and group.active == 0:
-        return False
-    return True
+    return not (group and group.active == 0)

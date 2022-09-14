@@ -214,6 +214,10 @@ async def _(data: Message):
 @bot.before_bot_reply
 async def _(data: Message):
     user: UserInfo = UserInfo.get_user(data.user_id)
+
+    if user.user_id.black == 1:
+        return False
+
     if user.user_mood <= 0 and not any_match(data.text, ['我错了', '对不起', '抱歉']):
         await data.send(Chain(data).text('哼~阿米娅生气了！不理博士！[face:38]'))
         return False

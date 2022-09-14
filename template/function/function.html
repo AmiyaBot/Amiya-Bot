@@ -6,136 +6,55 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link type="text/css" rel="styleSheet" href="../assets/font/font.css"/>
-    <link type="text/css" rel="styleSheet" href="../assets/style/github-markdown-light.css"/>
-    <link type="text/css" rel="styleSheet" href="function.css"/>
+    <link type="text/css" rel="styleSheet" href="./style/github-markdown-light.css"/>
     <title>template</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        #template {
+            width: 1280px;
+            padding: 20px;
+            position: relative;
+        }
+
+        h2 {
+            color: #009688;
+        }
+
+        code {
+            color: #0d47a1;
+        }
+    </style>
 </head>
 <body>
 <div id="template">
-    <div class="markdown-body">
-        <h2 id="互动">互动</h2>
-        <ul>
-            <li>发送 <code>兔兔</code> AmiyaBot 会随机回复表情包</li>
-            <li>发送 <code>兔兔签到</code> 可以进行每日签到</li>
-        </ul>
-        <h2 id="查看个人信息">查看个人信息</h2>
-        <ul>
-            <li>发送 <code>兔兔查看我的信息</code> 查看你的个人记录</li>
-        </ul>
-        <h2 id="模拟抽卡">模拟抽卡</h2>
-        <ul>
-            <li>抽卡
-                <ul>
-                    <li>发送 <code>兔兔 N 连抽</code> 或 <code>兔兔抽卡 N 次</code></li>
-                </ul>
-            </li>
-            <li>切换卡池
-                <ul>
-                    <li>发送 <code>兔兔卡池列表</code> 可以查看卡池列表</li>
-                    <li>发送 <code>兔兔卡池切换 [卡池名称]</code> 可以切换卡池</li>
-                    <li>发送 <code>兔兔剩余多少寻访凭证</code> 可以查看寻访凭证余额</li>
-                    <li>发送 <code>兔兔box</code> 可以查看寻访获得的干员列表</li>
-                </ul>
-            </li>
-        </ul>
-        <h2 id="干员相关功能">干员相关功能</h2>
-        <ul>
-            <li>查询干员基础资料
-                <ul>
-                    <li>发送 <code>兔兔查看 [干员名]</code></li>
-                </ul>
-            </li>
-            <li>查询干员精英化及技能升级材料
-                <ul>
-                    <li>发送 <code>兔兔查看 [干员名] 材料</code></li>
-                </ul>
-            </li>
-            <li>查询干员技能数据
-                <ul>
-                    <li>发送 <code>兔兔查看 [干员名] 技能</code></li>
-                </ul>
-            </li>
-            <li>查询干员模组信息
-                <ul>
-                    <li>发送 <code>兔兔查看 [干员名] 模组</code></li>
-                    <li>发送 <code>兔兔查看 [干员名] 模组故事</code></li>
-                </ul>
-            </li>
-            <li>查询干员档案
-                <ul>
-                    <li>发送 <code>兔兔查看 [干员名] 档案</code>，然后根据指引完成操作</li>
-                </ul>
-            </li>
-            <li>查询干员立绘资料
-                <ul>
-                    <li>发送 <code>兔兔查看 [干员名] 立绘</code>，然后根据指引完成操作</li>
-                </ul>
-            </li>
-        </ul>
-        <h2 id="敌方单位相关功能">敌方单位相关功能</h2>
-        <blockquote>
-            <p>敌方单位模块启用了模糊匹配，如果不记得敌方单位的准确名字，可以输入 <code>相似的单词</code>，指令内必须带有 <code>敌人</code> 关键词</p>
-        </blockquote>
-        <ul>
-            <li>查询敌方单位资料
-                <ul>
-                    <li>发送 <code>兔兔查看敌人 [敌人名]</code></li>
-                </ul>
-            </li>
-        </ul>
-        <h2 id="物品相关功能">物品相关功能</h2>
-        <blockquote>
-            <p>物品模块启用了模糊匹配，如果不记得物品的准确名字，可以输入 <code>相似的单词</code>，指令内必须带有 <code>材料</code> 或 <code>物品</code> 关键词</p>
-        </blockquote>
-        <ul>
-            <li>查询材料或物品
-                <ul>
-                    <li>发送 <code>兔兔查看材料 [材料/物品名]</code></li>
-                </ul>
-            </li>
-        </ul>
-        <h2 id="查询关卡地图信息">查询关卡地图信息</h2>
-        <ul>
-            <li>查询材料或物品
-                <ul>
-                    <li>发送 <code>兔兔查看地图 [地图编号]</code></li>
-                    <li>发送 <code>兔兔查看地图 [地图编号][难度]</code></li>
-                </ul>
-            </li>
-        </ul>
-        <p>比如：<code>兔兔查看地图9-19突袭</code>、<code>兔兔查看地图10-17磨难</code></p>
-        <h2 id="公招查询">公招查询</h2>
-        <ul>
-            <li>普通查询
-                <ul>
-                    <li>发送 <code>兔兔公招生存防护</code></li>
-                </ul>
-            </li>
-            <li>图片识别
-                <ul>
-                    <li>发送 <code>兔兔公招</code> 同时附带图片</li>
-                    <li>发送 <code>兔兔公招</code> 后，再发送图片</li>
-                </ul>
-            </li>
-            <li>直接发送 <code>与游戏公招界面相似的图片</code>，可跳过以上步骤。若无法识别请按上述步骤操作。</li>
-        </ul>
-        <h2 id="合成玉计算">合成玉计算</h2>
-        <ul>
-            <li>发送 <code>兔兔 [日期描述] 可得到多少玉</code> ，日期描述指的是口语上的日期，可以是节日名，也可以是详细日期。<br>
-                这里使用自然语言处理智能识别日期，可随心所欲描述。<br>
-                示例：<code>兔兔国庆节前可得到多少玉</code>，<code>兔兔两个星期后可得到多少玉</code>，<code>兔兔8月15日可得到多少玉</code> 等...
-            </li>
-        </ul>
-        <h2 id="小游戏">小游戏</h2>
-        <ul>
-            <li>猜干员
-                <ul>
-                    <li>发送 <code>兔兔猜干员</code></li>
-                </ul>
-            </li>
-        </ul>
-
-    </div>
+    <div class="markdown-body" v-html="content"></div>
 </div>
 </body>
+<script src="style/marked.min.js"></script>
+<script src="../vue.min.js"></script>
+<script>
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init(data) {
+                this.$set(this, 'content', marked.parse(data['doc']))
+            }
+        },
+        data() {
+            return {
+                content: ''
+            }
+        },
+        mounted() {
+            window.init = this.init
+        }
+    })
+</script>
 </html>

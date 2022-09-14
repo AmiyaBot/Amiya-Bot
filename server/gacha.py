@@ -1,6 +1,6 @@
 from amiyabot.database import select_for_paginate
 from core import app
-from core.database.bot import Pool, PoolSpOperator, OperatorConfig
+from core.database.bot import Pool
 
 from functions.arknights.gacha import sync_pool
 

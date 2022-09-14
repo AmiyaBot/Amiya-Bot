@@ -1,8 +1,7 @@
-import os
 import traceback
 
 from typing import List
-from amiyabot import MultipleAccounts, HttpServer, Message, Chain, ChainBuilder, log
+from amiyabot import MultipleAccounts, HttpServer, Message, Chain, ChainBuilder, Equal, log
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
@@ -25,7 +24,7 @@ gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata
 tasks_control = TasksControl()
 
 
-def load_task():
+def load_resource():
     gamedata_repo.update()
     BotResource.download_bot_resource()
     ArknightsConfig.initialize()
