@@ -32,7 +32,7 @@
         <div>
             <div style="margin: 10px 0"><i style="font-size: 20px">「{{ data.info.description }}」</i></div>
             <div class="title">能力</div>
-            <div v-html="ability(data.info.ability)"></div>
+            <div v-html="data.info.ability ? ability(data.info.ability) : '无'"></div>
             <div class="title">属性</div>
             <div class="attrs-content">
                 <div v-for="(item, level) in data.attrs">
