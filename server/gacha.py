@@ -6,6 +6,7 @@ from functions.arknights.gacha import sync_pool
 
 from .__model__ import QueryData, BaseModel
 
+from typing import Optional
 
 class PoolModel(BaseModel):
     id: int = None
@@ -13,7 +14,7 @@ class PoolModel(BaseModel):
     pickup_6: str = ''
     pickup_5: str = ''
     pickup_4: str = ''
-    pickup_s: str = ''
+    pickup_s: Optional[str] = ''
     limit_pool: int
 
 
