@@ -154,6 +154,7 @@ class WeiboUser:
         html_text = re.sub('<br />', '\n', html_text)
         html_text = remove_xml_tag(html_text)
         html_text = html_text.strip('\n')
+        html_text = html_text.replace('&lt;','<').replace('&gt;','>')
 
         # 获取静态图片列表
         pics_list = []
