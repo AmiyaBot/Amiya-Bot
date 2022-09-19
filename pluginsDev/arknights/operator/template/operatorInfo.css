@@ -10,7 +10,7 @@ body {
 #template {
     width: 1280px;
     height: 800px;
-    background: url(./operator_bg.png) center / cover no-repeat;
+    background: url(./img/operator_bg.png) center / cover no-repeat;
     overflow: hidden;
     position: relative;
 }
