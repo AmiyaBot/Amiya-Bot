@@ -5,8 +5,10 @@
 /dist/
 /view/
 /log/
+/plugins/
 /database/
 /resource/
+/* - 副本/
 
 .DS_Store
 
@@ -14,5 +16,5 @@
 *.spec
 *.zip
 *.whl
-
-authKey.txt
+*.png
+*.ttf

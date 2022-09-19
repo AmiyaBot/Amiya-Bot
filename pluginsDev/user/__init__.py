@@ -3,24 +3,42 @@ import re
 import time
 import base64
 import random
+import zipfile
 
 from amiyabot.network.download import download_async
-from amiyabot import GroupConfig
+from amiyabot import GroupConfig, PluginInstance
 
-from core import bot, send_to_console_channel, tasks_control, Message, Chain, Equal
-from core.util import read_yaml, check_sentence_by_re, any_match
+from core import send_to_console_channel, tasks_control, Message, Chain, Equal
+from core.util import read_yaml, check_sentence_by_re, any_match, create_dir
 from core.database.bot import Admin
 from core.database.user import User, UserInfo, UserGachaInfo
 from core.resource.arknightsGameData.penguin import save_penguin_data
 
-talking = read_yaml('config/talking.yaml')
+curr_dir = os.path.dirname(__file__)
+resource_path = 'resource/plugins/user'
 
+if curr_dir.endswith('.zip'):
+    create_dir(resource_path)
+    pack = zipfile.ZipFile(curr_dir)
+    for pack_file in pack.namelist():
+        if pack_file.endswith('.py'):
+            continue
+        pack.extract(pack_file, resource_path)
+else:
+    resource_path = curr_dir
+
+talking = read_yaml(f'{resource_path}/talking.yaml')
+bot = PluginInstance(
+    name='用户模块',
+    version='1.0',
+    plugin_id='amiyabot-user'
+)
 bot.set_group_config(GroupConfig('user', allow_direct=True))
 
 
 def get_face():
     images = []
-    for root, dirs, files in os.walk('resource/images/face'):
+    for root, dirs, files in os.walk(f'{resource_path}/face'):
         images += [os.path.join(root, file) for file in files if file != '.gitkeep']
 
     return images
@@ -93,7 +111,7 @@ async def user_info(data: Message):
         **UserInfo.get_user_info(data.user_id)
     }
 
-    return Chain(data).html('template/user/userInfo.html', info, width=700, height=300)
+    return Chain(data).html(f'{resource_path}/template/userInfo.html', info, width=700, height=300)
 
 
 async def only_name(data: Message):
@@ -118,15 +136,6 @@ async def reset():
     await send_to_console_channel(
         Chain().text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
     )
-
-
-# async def direct_check(data: Message):
-#     return data.is_direct, 0
-#
-#
-# @bot.on_message(group_id='user', verify=direct_check)
-# async def _(data: Message):
-#     return Chain(data).text('博士，阿米娅暂时不理解您表达的意思呢，请再清楚描述一下吧~')
 
 
 @bot.on_message(group_id='user', verify=only_name)

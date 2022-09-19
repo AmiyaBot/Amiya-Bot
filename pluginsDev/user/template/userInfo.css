@@ -16,7 +16,7 @@ body {
 .background {
     width: calc(100% + 20px);
     height: calc(100% + 20px);
-    background: url(../assets/user_info.jpeg) center / 200% no-repeat;
+    background: url(user_info.jpeg) center / 200% no-repeat;
     filter: blur(20px);
     position: absolute;
     top: -10px;
@@ -46,7 +46,7 @@ body {
     width: 90px;
     height: 90px;
     padding: 10px;
-    background: url(../../resource/gamedata/item_rarity_img/sprite_item_r6.png) center / 100% no-repeat;
+    background: url(../../../resource/gamedata/item_rarity_img/sprite_item_r6.png) center / 100% no-repeat;
 }
 
 .avatar .avatar-image img {

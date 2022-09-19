@@ -1,3 +1,4 @@
+import os
 import traceback
 
 from typing import List
@@ -13,12 +14,14 @@ from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.resource.arknightsGameData.penguin import save_penguin_data
 from core.lib.gitAutomation import GitAutomation
 from core.lib.timedTask import TasksControl
-from core.util import read_yaml
+from core.util import read_yaml, create_dir
 
 serve_conf = read_yaml('config/server.yaml')
 
 app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
-bot = MultipleAccounts(BotAccounts.get_all_account())
+bot = MultipleAccounts(*BotAccounts.get_all_account())
+
+bot.set_prefix_keywords(list(read_yaml('config/bot.yaml').callName))
 
 gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata)
 tasks_control = TasksControl()
@@ -31,12 +34,24 @@ def load_resource():
     ArknightsGameData.initialize()
 
 
+def load_plugins():
+    create_dir('plugins')
+    count = 0
+    for root, dirs, files in os.walk('plugins'):
+        for file in files:
+            if file.endswith('.zip'):
+                res = bot.install_plugin(os.path.join(root, file))
+                if res:
+                    count += 1
+
+    if count:
+        log.info(f'successfully loaded {count} plugin(s).')
+
+
 init_task = [
     save_penguin_data(),
     tasks_control.run_tasks()
 ]
-
-bot.prefix_keywords = read_yaml('config/talking.yaml').call.positive
 
 
 class SourceServer(ChainBuilder):
