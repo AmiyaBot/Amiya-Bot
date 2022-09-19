@@ -3,31 +3,25 @@ import re
 import time
 import base64
 import random
-import zipfile
 
 from amiyabot.network.download import download_async
 from amiyabot import GroupConfig, PluginInstance
 
 from core import send_to_console_channel, tasks_control, Message, Chain, Equal
-from core.util import read_yaml, check_sentence_by_re, any_match, create_dir
+from core.util import read_yaml, check_sentence_by_re, any_match, extract_plugin
 from core.database.bot import Admin
 from core.database.user import User, UserInfo, UserGachaInfo
 from core.resource.arknightsGameData.penguin import save_penguin_data
 
 curr_dir = os.path.dirname(__file__)
-resource_path = 'resource/plugins/user'
+user_plugin = 'resource/plugins/user'
 
 if curr_dir.endswith('.zip'):
-    create_dir(resource_path)
-    pack = zipfile.ZipFile(curr_dir)
-    for pack_file in pack.namelist():
-        if pack_file.endswith('.py'):
-            continue
-        pack.extract(pack_file, resource_path)
+    extract_plugin(curr_dir, user_plugin)
 else:
-    resource_path = curr_dir
+    user_plugin = curr_dir
 
-talking = read_yaml(f'{resource_path}/talking.yaml')
+talking = read_yaml(f'{user_plugin}/talking.yaml')
 bot = PluginInstance(
     name='用户模块',
     version='1.0',
@@ -38,7 +32,7 @@ bot.set_group_config(GroupConfig('user', allow_direct=True))
 
 def get_face():
     images = []
-    for root, dirs, files in os.walk(f'{resource_path}/face'):
+    for root, dirs, files in os.walk(f'{user_plugin}/face'):
         images += [os.path.join(root, file) for file in files if file != '.gitkeep']
 
     return images
@@ -111,7 +105,7 @@ async def user_info(data: Message):
         **UserInfo.get_user_info(data.user_id)
     }
 
-    return Chain(data).html(f'{resource_path}/template/userInfo.html', info, width=700, height=300)
+    return Chain(data).html(f'{user_plugin}/template/userInfo.html', info, width=700, height=300)
 
 
 async def only_name(data: Message):

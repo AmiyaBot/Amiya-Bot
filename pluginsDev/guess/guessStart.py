@@ -1,29 +1,23 @@
 import os
 import random
-import zipfile
 
 from io import BytesIO
 from PIL import Image
-from core.util import any_match, random_pop, read_yaml, create_dir
+from core.util import any_match, random_pop, read_yaml, extract_plugin
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource, Operator
 from core import Chain
 
 from guessBuilder import *
 
 curr_dir = os.path.dirname(__file__)
-resource_path = 'resource/plugins/guess'
+gacha_plugin = 'resource/plugins/guess'
 
 if curr_dir.endswith('.zip'):
-    create_dir(resource_path)
-    pack = zipfile.ZipFile(curr_dir)
-    for pack_file in pack.namelist():
-        if pack_file.endswith('.py'):
-            continue
-        pack.extract(pack_file, resource_path)
+    extract_plugin(curr_dir, gacha_plugin)
 else:
-    resource_path = curr_dir
+    gacha_plugin = curr_dir
 
-game_config = read_yaml(f'{resource_path}/guess.yaml')
+game_config = read_yaml(f'{gacha_plugin}/guess.yaml')
 guess_config = game_config.guess
 guess_keyword = game_config.keyword
 

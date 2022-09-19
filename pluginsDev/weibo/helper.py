@@ -2,28 +2,22 @@ import re
 import os
 import time
 import json
-import zipfile
 
 from dataclasses import dataclass
 from fake_useragent import UserAgent
 from amiyabot.network.download import download_async
 from amiyabot.network.httpRequests import http_requests
-from core.util import remove_xml_tag, char_seat, read_yaml, create_dir
+from core.util import remove_xml_tag, char_seat, read_yaml, extract_plugin, create_dir
 
 curr_dir = os.path.dirname(__file__)
-resource_path = 'resource/plugins/weibo'
+weibo_plugin = 'resource/plugins/weibo'
 
 if curr_dir.endswith('.zip'):
-    create_dir(resource_path)
-    pack = zipfile.ZipFile(curr_dir)
-    for pack_file in pack.namelist():
-        if pack_file.endswith('.py'):
-            continue
-        pack.extract(pack_file, resource_path)
+    extract_plugin(curr_dir, weibo_plugin)
 else:
-    resource_path = curr_dir
+    weibo_plugin = curr_dir
 
-weibo_conf = read_yaml(f'{resource_path}/weibo.yaml')
+weibo_conf = read_yaml(f'{weibo_plugin}/weibo.yaml')
 ua = UserAgent()
 
 

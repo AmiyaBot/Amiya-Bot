@@ -11,6 +11,7 @@ import string
 import random
 import difflib
 import asyncio
+import zipfile
 import datetime
 import pypinyin
 
@@ -403,3 +404,12 @@ def create_test_data(data, path):
         file.write(
             'const testData = ' + json.dumps(data, ensure_ascii=False)
         )
+
+
+def extract_plugin(curr_dir, resource_path):
+    create_dir(resource_path)
+    pack = zipfile.ZipFile(curr_dir)
+    for pack_file in pack.namelist():
+        if pack_file.endswith('.py'):
+            continue
+        pack.extract(pack_file, resource_path)

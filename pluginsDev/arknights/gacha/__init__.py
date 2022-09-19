@@ -12,7 +12,7 @@ from core.resource import remote_config
 from core.database.user import UserInfo, UserGachaInfo
 from core.database.bot import Pool, OperatorConfig
 
-from gacha import GachaForUser, resource_path
+from gacha import GachaForUser, gacha_plugin
 from box import get_user_box
 
 bot = PluginInstance(
@@ -50,7 +50,7 @@ def change_pool(item: Pool, user_id=None):
     task.execute()
 
     pic = []
-    for root, dirs, files in os.walk(f'{resource_path}/pool'):
+    for root, dirs, files in os.walk(f'{gacha_plugin}/pool'):
         for file in files:
             if item.pool_name in file:
                 pic.append(os.path.join(root, file))

@@ -1,6 +1,5 @@
 import os
 import random
-import zipfile
 
 from io import BytesIO
 from PIL import Image, ImageDraw
@@ -8,21 +7,16 @@ from typing import List
 from core import Message, Chain
 from core.database.user import OperatorBox, UserGachaInfo, UserInfo
 from core.database.bot import Pool, PoolSpOperator
-from core.util import insert_empty, create_dir
+from core.util import insert_empty, extract_plugin
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
-resource_path = 'resource/plugins/gacha'
+gacha_plugin = 'resource/plugins/gacha'
 
 if curr_dir.endswith('.zip'):
-    create_dir(resource_path)
-    pack = zipfile.ZipFile(curr_dir)
-    for pack_file in pack.namelist():
-        if pack_file.endswith('.py'):
-            continue
-        pack.extract(pack_file, resource_path)
+    extract_plugin(curr_dir, gacha_plugin)
 else:
-    resource_path = curr_dir
+    gacha_plugin = curr_dir
 
 line_height = 16
 side_padding = 10
@@ -105,7 +99,7 @@ class GachaForUser:
         for item in sp:
             operators[item.operator_name] = {
                 'portraits': '',
-                'temp_portraits': f'{resource_path}/temp/{item.image}' if item.image else None,
+                'temp_portraits': f'{gacha_plugin}/temp/{item.image}' if item.image else None,
                 'rarity': item.rarity,
                 'class': item.classes
             }
@@ -226,7 +220,7 @@ class GachaForUser:
 
                 operators_info[name] = {
                     'portraits': opt.id,
-                    'temp_portraits': f'{resource_path}/temp/{opt.name}',
+                    'temp_portraits': f'{gacha_plugin}/temp/{opt.name}',
                     'rarity': opt.rarity,
                     'class': opt.classes_code.lower()
                 }
@@ -363,7 +357,7 @@ class GachaForUser:
 
 
 def create_gacha_image(result: list):
-    image = Image.open(f'{resource_path}/gacha/bg.png')
+    image = Image.open(f'{gacha_plugin}/gacha/bg.png')
     draw = ImageDraw.ImageDraw(image)
 
     x = 78
@@ -372,7 +366,7 @@ def create_gacha_image(result: list):
             x += 82
             continue
 
-        rarity = f'{resource_path}/gacha/%s.png' % item['rarity']
+        rarity = f'{gacha_plugin}/gacha/%s.png' % item['rarity']
         if os.path.exists(rarity):
             img = Image.open(rarity).convert('RGBA')
             image.paste(img, box=(x, 0), mask=img)
@@ -398,7 +392,7 @@ def create_gacha_image(result: list):
             image.paste(img, box=(x, 112), mask=img)
 
         draw.rectangle((x + 10, 321, x + 70, 381), fill='white')
-        class_img = f'{resource_path}/classify/%s.png' % item['class']
+        class_img = f'{gacha_plugin}/classify/%s.png' % item['class']
         if os.path.exists(class_img):
             img = Image.open(class_img).convert('RGBA')
             img = img.resize(size=(59, 59))

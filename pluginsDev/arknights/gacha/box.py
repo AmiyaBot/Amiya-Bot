@@ -4,7 +4,7 @@ from core.database.user import OperatorBox
 from core.resource.arknightsGameData import ArknightsGameData, Operator
 from amiyabot.builtin.lib.imageCreator import ImageElem, create_image
 
-from gacha import resource_path
+from gacha import gacha_plugin
 
 
 def get_user_box(user_id):
@@ -33,7 +33,7 @@ def get_user_box(user_id):
                 collect[operator.rarity].append(
                     {
                         'avatar': f'resource/gamedata/avatar/{operator.id}.png',
-                        'rank': f'{resource_path}/rank/{count if int(count) <= 6 else 6}.png'
+                        'rank': f'{gacha_plugin}/rank/{count if int(count) <= 6 else 6}.png'
                     }
                 )
 
