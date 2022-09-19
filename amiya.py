@@ -4,6 +4,7 @@ import srsly
 import frozen
 import server
 import asyncio
+import functions
 
 from core import app, bot, init_task, load_resource, load_plugins
 
