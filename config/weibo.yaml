@@ -1,7 +1,0 @@
-setting:
-    checkRate: 30
-    sendGIF: false
-    imagesCache: log/weibo
-
-listen:
-    - 6279793937

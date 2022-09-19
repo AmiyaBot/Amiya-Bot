@@ -21,7 +21,7 @@ serve_conf = read_yaml('config/server.yaml')
 app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
 bot = MultipleAccounts(*BotAccounts.get_all_account())
 
-bot.set_prefix_keywords(list(read_yaml('config/bot.yaml').callName))
+bot.set_prefix_keywords(['阿米娅', '阿米兔', '兔兔', '兔子', '小兔子', 'Amiya', 'amiya'])
 
 gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata)
 tasks_control = TasksControl()

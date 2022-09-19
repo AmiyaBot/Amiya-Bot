@@ -3,7 +3,7 @@ from amiyabot.database import select_for_paginate
 from core import app
 from core.database.bot import Pool
 
-from functions.arknights.gacha import sync_pool
+# from functions.arknights.gacha import sync_pool
 
 from .__model__ import QueryData, BaseModel
 
@@ -65,9 +65,9 @@ class Gacha:
 
         return app.response(message=f'删除成功')
 
-    @app.route(method='get')
-    async def sync_pool(self):
-        res = await sync_pool(force=True)
-        if res:
-            return app.response(message=f'同步成功')
-        return app.response(code=500, message=f'同步失败')
+    # @app.route(method='get')
+    # async def sync_pool(self):
+    #     res = await sync_pool(force=True)
+    #     if res:
+    #         return app.response(message=f'同步成功')
+    #     return app.response(code=500, message=f'同步失败')

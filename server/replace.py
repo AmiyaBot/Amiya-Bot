@@ -4,7 +4,7 @@ from amiyabot.database import select_for_paginate, query_to_list
 from core import app
 from core.database.bot import TextReplace, TextReplaceSetting
 
-from functions.replace import sync_replace
+# from functions.replace import sync_replace
 
 from .__model__ import QueryData, BaseModel
 
@@ -94,9 +94,9 @@ class Replace:
 
         return app.response(message='删除成功')
 
-    @app.route(method='get')
-    async def sync_replace(self):
-        res = await sync_replace(force=True)
-        if res:
-            return app.response(message=f'同步成功')
-        return app.response(code=500, message=f'同步失败')
+    # @app.route(method='get')
+    # async def sync_replace(self):
+    #     res = await sync_replace(force=True)
+    #     if res:
+    #         return app.response(message=f'同步成功')
+    #     return app.response(code=500, message=f'同步失败')

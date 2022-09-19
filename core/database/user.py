@@ -3,7 +3,6 @@ from core.database import config, is_mysql
 from core.util import read_yaml
 from typing import Union
 
-game = read_yaml('config/game.yaml')
 db = connect_database('amiya_user' if is_mysql else 'database/amiya_user.db', is_mysql, config)
 
 
@@ -52,6 +51,8 @@ class UserInfo(UserBaseModel):
     @classmethod
     def add_jade_point(cls, user_id, point):
         user: UserInfo = cls.get_user(user_id)
+
+        game = read_yaml('resource/plugins/guess/guess.yaml')
 
         surplus = game.jade_point_max - user.jade_point_max
         if surplus <= 0:
