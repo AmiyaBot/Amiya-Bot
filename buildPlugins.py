@@ -6,9 +6,11 @@ import importlib
 
 from amiyabot import PluginInstance
 
+dist = 'plugins'
+
 if __name__ == '__main__':
-    if not os.path.exists('dist'):
-        os.makedirs('dist')
+    if not os.path.exists(dist):
+        os.makedirs(dist)
 
     profiles = []
     for root, dirs, _ in os.walk('./pluginsDev'):
@@ -38,7 +40,7 @@ if __name__ == '__main__':
                 'description': instance.description
             })
 
-            package = f'dist/{instance.plugin_id}-{instance.version}.zip'
+            package = f'{dist}/{instance.plugin_id}-{instance.version}.zip'
 
             with zipfile.ZipFile(package, 'w') as pack:
                 for plugin_root, _, files in os.walk(plugin):
@@ -53,5 +55,5 @@ if __name__ == '__main__':
 
             print(f'\t --> {package}')
 
-    with open('dist/plugins.json', mode='w', encoding='utf-8') as file:
+    with open(f'{dist}/plugins.json', mode='w', encoding='utf-8') as file:
         file.write(json.dumps(profiles, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': ')))

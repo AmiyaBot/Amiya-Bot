@@ -21,28 +21,32 @@ else:
     replace_plugin = curr_dir
 
 baidu = BaiduCloud(read_yaml(f'{replace_plugin}/baiduCloud.yaml'))
-bot = PluginInstance(
+
+
+class ReplacePluginInstance(PluginInstance):
+    @staticmethod
+    @exec_before_init
+    async def sync_replace(force: bool = False):
+        if not force:
+            if TextReplace.get_or_none():
+                return False
+
+        res = await http_requests.get(remote_config.remote.console + '/replace/getReplace')
+        if res:
+            async with log.catch('replace sync error:'):
+                res = json.loads(res)
+
+                TextReplace.truncate_table()
+                TextReplace.batch_insert(res['data'])
+
+                return True
+
+
+bot = ReplacePluginInstance(
     name='词语替换',
     version='1.0',
     plugin_id='amiyabot-replace'
 )
-
-
-@exec_before_init
-async def sync_replace(force: bool = False):
-    if not force:
-        if TextReplace.get_or_none():
-            return False
-
-    res = await http_requests.get(remote_config.remote.console + '/replace/getReplace')
-    if res:
-        async with log.catch('replace sync error:'):
-            res = json.loads(res)
-
-            TextReplace.truncate_table()
-            TextReplace.batch_insert(res['data'])
-
-            return True
 
 
 @bot.handler_middleware

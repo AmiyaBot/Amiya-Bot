@@ -3,19 +3,8 @@ import zipfile
 
 from amiyabot.network.download import download_sync
 from core.resource import remote_config
-from core.util import create_dir
+from core.util import create_dir, support_gbk
 from core import log
-
-
-def support_gbk(zip_file: zipfile.ZipFile):
-    name_to_info = zip_file.NameToInfo
-    for name, info in name_to_info.copy().items():
-        real_name = name.encode('cp437').decode('gbk')
-        if real_name != name:
-            info.filename = real_name
-            del name_to_info[name]
-            name_to_info[real_name] = info
-    return zip_file
 
 
 class BotResource:

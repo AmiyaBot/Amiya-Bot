@@ -94,6 +94,7 @@ class Replace:
 
     @app.route(method='get')
     async def sync_replace(self):
+        sync_replace = getattr(bot.plugins['amiyabot-replace'], 'sync_replace')
         res = await sync_replace(force=True)
         if res:
             return app.response(message=f'同步成功')

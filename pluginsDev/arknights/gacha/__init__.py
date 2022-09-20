@@ -15,7 +15,31 @@ from core.database.bot import OperatorConfig
 from gachaHelper import GachaForUser, gacha_plugin, Pool
 from box import get_user_box
 
-bot = PluginInstance(
+
+class GachaPluginInstance(PluginInstance):
+    @staticmethod
+    @exec_before_init
+    async def sync_pool(force: bool = False):
+        if not force:
+            if Pool.get_or_none():
+                return False
+
+        res = await http_requests.get(remote_config.remote.console + '/pool/getPool')
+        if res:
+            async with log.catch('pool sync error:'):
+                res = json.loads(res)['data']
+
+                Pool.delete().execute()
+                Pool.truncate_table()
+                Pool.batch_insert(res['Pool'])
+
+                OperatorConfig.truncate_table()
+                OperatorConfig.batch_insert(res['OperatorConfig'])
+
+                return True
+
+
+bot = GachaPluginInstance(
     name='明日方舟模拟抽卡',
     version='1.0',
     plugin_id='amiyabot-arknights-gacha'
@@ -66,27 +90,6 @@ def change_pool(item: Pool, user_id=None):
         text.append('[[cl ☆☆☆☆@#A288B5 cle]　　] %s' % item.pickup_4.replace(',', '、'))
 
     return '\n'.join(text), pic[-1] if pic else ''
-
-
-@exec_before_init
-async def sync_pool(force: bool = False):
-    if not force:
-        if Pool.get_or_none():
-            return False
-
-    res = await http_requests.get(remote_config.remote.console + '/pool/getPool')
-    if res:
-        async with log.catch('pool sync error:'):
-            res = json.loads(res)['data']
-
-            Pool.delete().execute()
-            Pool.truncate_table()
-            Pool.batch_insert(res['Pool'])
-
-            OperatorConfig.truncate_table()
-            OperatorConfig.batch_insert(res['OperatorConfig'])
-
-            return True
 
 
 @bot.on_message(group_id='gacha', keywords=['抽', '连', '寻访'], level=3)

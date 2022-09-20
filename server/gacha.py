@@ -65,7 +65,7 @@ class Gacha:
 
     @app.route(method='get')
     async def sync_pool(self):
-        sync_pool = bot.plugins['amiyabot-arknights-gacha']
+        sync_pool = getattr(bot.plugins['amiyabot-arknights-gacha'], 'sync_pool')
         res = await sync_pool(force=True)
         if res:
             return app.response(message=f'同步成功')
