@@ -14,7 +14,7 @@
     <div class="skill-item" v-for="item in data.skills">
         <div style="display: flex;align-items: center">
             <img style="width: 80px;margin-right: 20px"
-                 :src="'../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
+                 :src="'../../../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
             <div class="skill-title">
                 <div style="font-size: 26px">{{ item.skill_name }}</div>
                 <div class="skill-type">
@@ -38,7 +38,7 @@
                 <tr v-for="skill in data.skills_desc[item.skill_no]">
                     <td style="text-align: center">
                         <div v-if="skill.skill_level >= 8" class="mastery-icon"
-                             :style="{backgroundImage: 'url(../../resource/images/level/master' + (skill.skill_level - 7) + '.png)'}"></div>
+                             :style="{backgroundImage: 'url(..//level/master' + (skill.skill_level - 7) + '.png)'}"></div>
                         <span v-else>{{ skill.skill_level }}</span>
                     </td>
                     <td v-html="colorSpan(skill.description)"></td>

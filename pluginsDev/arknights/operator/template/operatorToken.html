@@ -12,13 +12,13 @@
 <body>
 <div id="template" v-if="Object.keys(data).length">
     <div class="title" v-if="data.id">
-        <img :src="'../../resource/gamedata/avatar/' + data.id + '.png'" :alt="data.id">
+        <img :src="'../../../../resource/gamedata/avatar/' + data.id + '.png'" :alt="data.id">
         {{ data.name }} 的召唤物
     </div>
     <div v-for="item in data.tokens" class="tokenItem">
         <div class="tokenInfo">
             <div style="margin-right: 20px" :class="item.id">
-                <img :src="'../../resource/gamedata/avatar/' + item.id + '.png'" :alt="item.id" :id="item.id"
+                <img :src="'../../../../resource/gamedata/avatar/' + item.id + '.png'" :alt="item.id" :id="item.id"
                      onerror="hideImage(this)">
             </div>
             <div>

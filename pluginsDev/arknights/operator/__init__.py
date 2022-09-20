@@ -248,8 +248,6 @@ async def _(data: Message):
 
     reply = Chain(data)
 
-    print(operator_plugin)
-
     if '技能' in data.text:
         result = await OperatorData.get_skills_detail(info)
         if result:

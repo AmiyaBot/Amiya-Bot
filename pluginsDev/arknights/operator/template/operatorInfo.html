@@ -11,7 +11,7 @@
 </head>
 <body>
 <div id="template">
-    <div :style="{backgroundImage: `url('../../${data.skin}')`}" v-if="Object.keys(data).length"
+    <div :style="{backgroundImage: `url('../../../../${data.skin}')`}" v-if="Object.keys(data).length"
          class="background">
         <div class="left">
             <div>
@@ -30,7 +30,7 @@
                     <div class="title" style="width: 120px">潜能提升</div>
                     <div class="potential" v-for="item in data.potential">
                         <img style="width: 25px;margin-right: 10px"
-                             :src="'../../resource/images/rank/' + (item.potential_rank + 1) + '.png'"
+                             :src="'../rank/' + (item.potential_rank + 1) + '.png'"
                              alt="rank">
                         {{ item.potential_desc }}
                     </div>
@@ -52,7 +52,7 @@
                 <div class="class-info">
                     <div style="width: 60px;padding: 5px;background: #000">
                         <img style="width: 100%"
-                             :src="'../../resource/images/classify/' + classesIcons[data.info.classes]"
+                             :src="'../classify/' + classesIcons[data.info.classes]"
                              alt="classify">
                     </div>
                     <div class="rarity">
@@ -80,7 +80,7 @@
                 <div class="exInfo bs" v-for="item in data.building_skills">
                     <div style="width: 60px">精英{{ item.bs_unlocked }}</div>
                     <div class="bs-icon"
-                         :style="{backgroundImage: `url('../../resource/gamedata/building_skill/${item.bs_icon}.png')`}">
+                         :style="{backgroundImage: `url('../../../../resource/gamedata/building_skill/${item.bs_icon}.png')`}">
                     </div>
                     <div style="width: 100px">{{ item.bs_name }}</div>
                     <div style="width: calc(100% - 160px);padding-left: 10px">{{ item.bs_desc }}</div>
@@ -91,7 +91,7 @@
                     <div style="width: 120px;text-align: center">
                         <div>
                             <img style="width: 80px"
-                                 :src="'../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
+                                 :src="'../../../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
                         </div>
                         <div>{{ item.skill_name }}</div>
                     </div>
