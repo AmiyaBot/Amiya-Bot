@@ -119,14 +119,3 @@ class TextReplace(BotBaseModel):
 class TextReplaceSetting(BotBaseModel):
     text: str = CharField(unique=True)
     status: int = IntegerField()
-
-
-@table
-class PenguinData(BotBaseModel):
-    stageId: str = CharField(null=True)
-    itemId: str = CharField(null=True)
-    times: int = IntegerField(null=True)
-    quantity: int = IntegerField(null=True)
-    stdDev: float = FloatField(null=True)
-    start: int = BigIntegerField(null=True)
-    end: int = BigIntegerField(null=True)

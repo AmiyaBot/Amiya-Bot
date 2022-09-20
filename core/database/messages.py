@@ -20,10 +20,3 @@ class MessageRecord(MessageBaseModel):
     message: str = TextField(null=True)
     classify: str = CharField(null=True)
     create_time: int = IntegerField()
-
-
-@table
-class WeiboRecord(MessageBaseModel):
-    user_id: int = IntegerField()
-    blog_id: str = CharField()
-    record_time: int = IntegerField()

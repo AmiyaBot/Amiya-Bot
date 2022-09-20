@@ -11,7 +11,6 @@ from core import send_to_console_channel, tasks_control, Message, Chain, Equal
 from core.util import read_yaml, check_sentence_by_re, any_match, extract_plugin
 from core.database.bot import Admin
 from core.database.user import User, UserInfo, UserGachaInfo
-from core.resource.arknightsGameData.penguin import save_penguin_data
 
 curr_dir = os.path.dirname(__file__)
 user_plugin = 'resource/plugins/user'
@@ -23,7 +22,7 @@ else:
 
 talking = read_yaml(f'{user_plugin}/talking.yaml')
 bot = PluginInstance(
-    name='用户模块',
+    name='兔兔互动',
     version='1.0',
     plugin_id='amiyabot-user'
 )
@@ -126,7 +125,6 @@ async def only_name(data: Message):
 async def reset():
     UserInfo.update(sign_in=0, user_mood=15, jade_point_max=0).execute()
 
-    await save_penguin_data()
     await send_to_console_channel(
         Chain().text(f'维护完成：%s' % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
     )

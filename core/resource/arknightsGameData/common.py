@@ -2,9 +2,32 @@ import os
 import json
 
 from core.database.bot import OperatorConfig
-from core.util import read_yaml
 
-config = read_yaml('config/arknights.yaml', _dict=True)['operatorSetting']
+config = {
+    'classes': {
+        'CASTER': '术师',
+        'MEDIC': '医疗',
+        'PIONEER': '先锋',
+        'SNIPER': '狙击',
+        'SPECIAL': '特种',
+        'SUPPORT': '辅助',
+        'TANK': '重装',
+        'WARRIOR': '近卫'
+    },
+    'token_classes': {
+        'TOKEN': '召唤物',
+        'TRAP': '装置'
+    },
+    'high_star': {
+        '5': '资深干员',
+        '6': '高级资深干员'
+    },
+    'types': {
+        'ALL': '不限部署位',
+        'MELEE': '近战位',
+        'RANGED': '远程位'
+    }
+}
 
 
 class ArknightsConfig:

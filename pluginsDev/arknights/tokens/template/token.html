@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="styleSheet" href="font.css"/>
+    <link type="text/css" rel="styleSheet" href="token.css"/>
+    <title>template</title>
+</head>
+<body>
+<div id="template" v-if="Object.keys(data).length">
+    <div class="title" v-if="data.id">
+        <img :src="'../../../../resource/gamedata/avatar/' + data.id + '.png'" :alt="data.id">
+        {{ data.name }} 的召唤物
+    </div>
+    <div v-for="item in data.tokens" class="tokenItem">
+        <div class="tokenInfo">
+            <div style="margin-right: 20px" :class="item.id">
+                <img :src="'../../../../resource/gamedata/avatar/' + item.id + '.png'" :alt="item.id" :id="item.id"
+                     onerror="hideImage(this)">
+            </div>
+            <div>
+                <div>
+                    <span style="font-size: 30px">{{ item.name }}</span>
+                    <span style="padding: 0 10px">{{ item.en_name }}</span>
+                    <span style="padding: 3px 10px; border-radius: 4px"
+                          :style="{ backgroundColor: type[item.type] }">{{ item.type }}</span>
+                </div>
+                <div style="margin-top: 10px">{{ item.description }}</div>
+            </div>
+            <div style="margin-left: 20px" v-html="range(item.attr[0].range)"></div>
+        </div>
+        <div>
+            <table>
+                <tr>
+                    <th v-if="data.id">阶段</th>
+                    <th>等级</th>
+                    <th v-for="(title, key) in attrsDict">{{ title }}</th>
+                </tr>
+                <template v-for="n in item.attr">
+                    <tr v-for="attr in n.attr">
+                        <td v-if="data.id">精英{{ n.evolve }}</td>
+                        <td>{{ attr.level }}</td>
+                        <td v-for="(title, key) in attrsDict">{{ attr.data[key] }}</td>
+                    </tr>
+                </template>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+<script src="js/vue.min.js"></script>
+<script>
+    function hideImage(e) {
+        document.querySelector('.' + e.id).style.display = 'none'
+    }
+
+    const template = new Vue({
+        el: '#template',
+        methods: {
+            init(data) {
+                this.$set(this, 'data', data)
+            },
+            range(text) {
+                let lines = []
+                for (let line of text.split('\n')) {
+                    let items = []
+                    for (let char of line) {
+                        switch (char) {
+                            case '　':
+                                items.push('<div class="block"></div>')
+                                break
+                            case '□':
+                                items.push('<div class="block r"></div>')
+                                break
+                            case '■':
+                                items.push('<div class="block s"></div>')
+                                break
+                        }
+                    }
+                    lines.push(`<div class="block-group">${items.join('')}</div>`)
+                }
+                return lines.join('')
+            }
+        },
+        data() {
+            return {
+                data: {},
+                attrsDict: {
+                    atk: '攻击力',
+                    def: '防御力',
+                    magicResistance: '魔法抗性',
+                    maxHp: '最大生命值',
+                    attackSpeed: '攻击速度',
+                    baseAttackTime: '攻击间隔',
+                    blockCnt: '阻挡数',
+                    cost: '部署费用',
+                    respawnTime: '再部署时间'
+                },
+                type: {
+                    '远程位': '#4caf50',
+                    '近战位': '#f44336',
+                    '不限部署位': '#9c27b0'
+                }
+            }
+        },
+        mounted() {
+            window.init = this.init
+        }
+    })
+</script>
+</html>

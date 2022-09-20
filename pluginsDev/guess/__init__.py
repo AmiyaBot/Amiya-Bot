@@ -8,7 +8,7 @@ from amiyabot.adapters.mirai import MiraiBotInstance
 from guessStart import *
 
 bot = PluginInstance(
-    name='猜干员游戏模块',
+    name='猜干员游戏',
     version='1.0',
     plugin_id='amiyabot-guess'
 )

@@ -11,7 +11,6 @@ from core.database.bot import BotAccounts
 from core.resource import remote_config
 from core.resource.botResource import BotResource
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
-from core.resource.arknightsGameData.penguin import save_penguin_data
 from core.lib.gitAutomation import GitAutomation
 from core.lib.timedTask import TasksControl
 from core.util import read_yaml, create_dir
@@ -49,7 +48,6 @@ def load_plugins():
 
 
 init_task = [
-    save_penguin_data(),
     tasks_control.run_tasks()
 ]
 

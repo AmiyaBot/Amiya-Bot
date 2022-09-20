@@ -6,15 +6,23 @@ from amiyabot import PluginInstance
 from amiyabot.adapters.convert import text_convert
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
-from core.database.group import *
-from core.database.bot import TextReplace, TextReplaceSetting, Admin
+from core.database.bot import *
 from core.lib.baiduCloud import BaiduCloud
 from core.resource import remote_config
+from core.util import read_yaml, extract_plugin
 from core import log, exec_before_init, Message, Chain
 
-baidu = BaiduCloud()
+curr_dir = os.path.dirname(__file__)
+replace_plugin = 'resource/plugins/replace'
+
+if curr_dir.endswith('.zip'):
+    extract_plugin(curr_dir, replace_plugin)
+else:
+    replace_plugin = curr_dir
+
+baidu = BaiduCloud(read_yaml(f'{replace_plugin}/baiduCloud.yaml'))
 bot = PluginInstance(
-    name='词语替换模块',
+    name='词语替换',
     version='1.0',
     plugin_id='amiyabot-replace'
 )
@@ -134,12 +142,11 @@ async def _(data: Message):
 
 
 def show_replace_by_replace(data: Message, replace):
-    replace_list = TextReplace.select().where(TextReplace.group_id == data.guild_id,
-                                              TextReplace.origin == replace)
+    replace_list: List[TextReplace] = TextReplace.select().where(TextReplace.group_id == data.guild_id,
+                                                                 TextReplace.origin == replace)
     if replace_list:
         text = f'找到 [{replace}] 在本频道生效的别名:\n'
         for item in replace_list:
-            item: TextReplace
             text += f'{item.replace}{"（审核通过）" if item.is_active else "（未审核通过）"}\n'
         return Chain(data).text(text.strip('、'))
     else:

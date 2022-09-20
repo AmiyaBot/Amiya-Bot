@@ -10,13 +10,13 @@ from core import log, exec_before_init, Message, Chain
 from core.util import any_match
 from core.resource import remote_config
 from core.database.user import UserInfo, UserGachaInfo
-from core.database.bot import Pool, OperatorConfig
+from core.database.bot import OperatorConfig
 
-from gacha import GachaForUser, gacha_plugin
+from gachaHelper import GachaForUser, gacha_plugin, Pool
 from box import get_user_box
 
 bot = PluginInstance(
-    name='明日方舟模拟抽卡模块',
+    name='明日方舟模拟抽卡',
     version='1.0',
     plugin_id='amiyabot-arknights-gacha'
 )

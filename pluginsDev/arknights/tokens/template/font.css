@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'Harmony';
+    src: url('./HarmonyOS_Sans_SC.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    font-family: 'Harmony', serif !important
+}

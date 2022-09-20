@@ -1,0 +1,82 @@
+* {
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#template {
+    width: 1280px;
+    min-height: 720px;
+    padding: 20px;
+    color: #fff;
+    background: url(./img/pc_bg.jpeg) center / cover no-repeat;
+    position: relative;
+}
+
+.title {
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.title > img {
+    width: 80px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.tokenItem:not(:last-child) {
+    margin-bottom: 30px;
+}
+
+.tokenInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.tokenInfo img {
+    width: 100px;
+}
+
+.block-group {
+    display: flex;
+}
+
+.block-group {
+    display: flex;
+}
+
+.block {
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+}
+
+.block.r {
+    border: 1px solid #fff;
+}
+
+.block.s {
+    background: #fff;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+table th,
+table td {
+    padding: 5px 10px;
+    border: 1px solid #5c5c5c;
+}
+
+table th {
+    white-space: nowrap;
+    text-align: left;
+}

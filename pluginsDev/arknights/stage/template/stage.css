@@ -1,0 +1,99 @@
+* {
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#template {
+    width: 1280px;
+    min-height: 720px;
+    padding: 20px;
+    color: #fff;
+    background: url(../../../../template/assets/pc_bg.jpeg) center / cover no-repeat;
+    position: relative;
+}
+
+.stage-title {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.stage-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.stage-info > div:first-child {
+    padding: 10px 0;
+}
+
+.stage-map {
+    padding: 0 50px;
+    display: flex;
+    align-items: center;
+}
+
+.stage-map > img {
+    height: 250px;
+    box-shadow: 0 0 20px 5px #000000;
+}
+
+.section-title {
+    font-size: 25px;
+    margin: 20px 0 15px 0;
+}
+
+.enemy-info {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.enemy-item {
+    width: 25%;
+    padding-right: 15px;
+    display: flex;
+}
+
+.enemy-avatar {
+    width: 80px;
+    height: 80px;
+    background: center / 100% no-repeat;
+    position: relative;
+}
+
+.drop-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.drop-info > div:first-child {
+    padding-right: 20px;
+}
+
+.item-icon {
+    width: 60px;
+}
+
+.tag {
+    padding: 0 5px;
+    border-radius: 4px;
+    position: absolute;
+    top: -5px;
+    left: -5px;
+}
+
+.tag.NORMAL {
+    background: #3cb300;
+}
+
+.tag.ELITE {
+    background: #6f00b3;
+}
+
+.tag.BOSS {
+    background: #c30000;
+}

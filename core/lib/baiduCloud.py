@@ -1,14 +1,12 @@
 from typing import Union
 from aip import AipNlp, AipOcr, AipContentCensor
 from amiyabot.network.download import download_async
-from core.util import read_yaml, run_in_thread_pool, Singleton
+from core.util import run_in_thread_pool
 from core import log
 
-conf = read_yaml('config/baiduCloud.yaml')
 
-
-class BaiduCloud(metaclass=Singleton):
-    def __init__(self):
+class BaiduCloud:
+    def __init__(self, conf):
         self.enable = False
         self.__nlp = None
         self.__ocr = None

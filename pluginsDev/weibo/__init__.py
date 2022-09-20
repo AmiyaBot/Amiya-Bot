@@ -1,22 +1,28 @@
-import re
 import time
 import asyncio
 
-from typing import List
 from amiyabot import PluginInstance
 
 from core.database.group import GroupSetting
-from core.database.messages import WeiboRecord
+from core.database.messages import *
 from core.util import TimeRecorder
-from core import send_to_console_channel, tasks_control, Message, Chain, SourceServer, TencentBotInstance
+from core import send_to_console_channel, tasks_control, Message, Chain, SourceServer, TencentBotInstance, \
+    bot as main_bot
 
 from helper import WeiboUser, weibo_conf
 
 bot = PluginInstance(
-    name='微博推送模块',
+    name='微博自动推送',
     version='1.0',
     plugin_id='amiyabot-weibo'
 )
+
+
+@table
+class WeiboRecord(MessageBaseModel):
+    user_id: int = IntegerField()
+    blog_id: str = CharField()
+    record_time: int = IntegerField()
 
 
 async def send_by_index(index: int, weibo: WeiboUser, data: Message):
@@ -128,7 +134,7 @@ async def _():
         for item in target:
             data = Chain()
 
-            instance = bot[item.bot_id]
+            instance = main_bot[item.bot_id]
 
             if not instance:
                 continue
