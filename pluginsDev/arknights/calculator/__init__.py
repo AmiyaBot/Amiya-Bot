@@ -13,7 +13,12 @@ weekly_battle = 1800
 bot = PluginInstance(
     name='明日方舟合成玉计算',
     version='1.0',
-    plugin_id='amiyabot-arknights-jade'
+    plugin_id='amiyabot-arknights-jade',
+    document='''
+    - 发送 `兔兔 [日期描述] 可得到多少玉` ，日期描述指的是口语上的日期，可以是节日名，也可以是详细日期。<br>
+      这里使用自然语言处理智能识别日期，可随心所欲描述。<br>
+      示例：`兔兔国庆节前可得到多少玉`，`兔兔两个星期后可得到多少玉`，`兔兔8月15日可得到多少玉` 等...
+    '''
 )
 
 

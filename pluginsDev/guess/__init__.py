@@ -10,7 +10,8 @@ from guessStart import *
 bot = PluginInstance(
     name='猜干员游戏',
     version='1.0',
-    plugin_id='amiyabot-guess'
+    plugin_id='amiyabot-guess',
+    document=f'{guess_plugin}/README.md'
 )
 
 

@@ -10,14 +10,14 @@ from core import Chain
 from guessBuilder import *
 
 curr_dir = os.path.dirname(__file__)
-gacha_plugin = 'resource/plugins/guess'
+guess_plugin = 'resource/plugins/guess'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, gacha_plugin)
+    extract_plugin(curr_dir, guess_plugin)
 else:
-    gacha_plugin = curr_dir
+    guess_plugin = curr_dir
 
-game_config = read_yaml(f'{gacha_plugin}/guess.yaml')
+game_config = read_yaml(f'{guess_plugin}/guess.yaml')
 guess_config = game_config.guess
 guess_keyword = game_config.keyword
 

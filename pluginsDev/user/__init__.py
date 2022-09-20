@@ -24,7 +24,8 @@ talking = read_yaml(f'{user_plugin}/talking.yaml')
 bot = PluginInstance(
     name='兔兔互动',
     version='1.0',
-    plugin_id='amiyabot-user'
+    plugin_id='amiyabot-user',
+    document=f'{user_plugin}/README.md'
 )
 bot.set_group_config(GroupConfig('user', allow_direct=True))
 

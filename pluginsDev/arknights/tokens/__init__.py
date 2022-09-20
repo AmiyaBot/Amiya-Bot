@@ -16,9 +16,10 @@ else:
     tokens_plugin = curr_dir
 
 bot = PluginInstance(
-    name='明日方舟关卡查询',
+    name='明日方舟召唤物查询',
     version='1.0',
-    plugin_id='amiyabot-arknights-tokens'
+    plugin_id='amiyabot-arknights-tokens',
+    document=f'{tokens_plugin}/README.md'
 )
 
 

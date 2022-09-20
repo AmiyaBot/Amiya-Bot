@@ -42,7 +42,8 @@ class GachaPluginInstance(PluginInstance):
 bot = GachaPluginInstance(
     name='明日方舟模拟抽卡',
     version='1.0',
-    plugin_id='amiyabot-arknights-gacha'
+    plugin_id='amiyabot-arknights-gacha',
+    document=f'{gacha_plugin}/README.md'
 )
 
 re_list = [

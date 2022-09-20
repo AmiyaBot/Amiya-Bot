@@ -30,7 +30,8 @@ discern = recruit_config.autoDiscern
 bot = PluginInstance(
     name='明日方舟公招查询',
     version='1.0',
-    plugin_id='amiyabot-arknights-recruit'
+    plugin_id='amiyabot-arknights-recruit',
+    document=f'{recruit_plugin}/README.md'
 )
 
 

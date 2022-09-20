@@ -18,7 +18,8 @@ else:
 bot = PluginInstance(
     name='明日方舟关卡查询',
     version='1.0',
-    plugin_id='amiyabot-arknights-stages'
+    plugin_id='amiyabot-arknights-stages',
+    document=f'{stages_plugin}/README.md'
 )
 
 

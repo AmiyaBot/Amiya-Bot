@@ -26,9 +26,10 @@ line_height = 16
 side_padding = 10
 
 bot = PluginInstance(
-    name='明日方舟材料查询',
+    name='明日方舟材料物品查询',
     version='1.0',
-    plugin_id='amiyabot-arknights-material'
+    plugin_id='amiyabot-arknights-material',
+    document=f'{material_plugin}/README.md'
 )
 
 

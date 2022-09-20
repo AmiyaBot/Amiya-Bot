@@ -45,7 +45,8 @@ class ReplacePluginInstance(PluginInstance):
 bot = ReplacePluginInstance(
     name='词语替换',
     version='1.0',
-    plugin_id='amiyabot-replace'
+    plugin_id='amiyabot-replace',
+    document=f'{replace_plugin}/README.md'
 )
 
 

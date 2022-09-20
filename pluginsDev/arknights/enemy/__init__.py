@@ -21,7 +21,8 @@ side_padding = 10
 bot = PluginInstance(
     name='明日方舟敌方单位查询',
     version='1.0',
-    plugin_id='amiyabot-arknights-enemy'
+    plugin_id='amiyabot-arknights-enemy',
+    document=f'{enemy_plugin}/README.md'
 )
 
 

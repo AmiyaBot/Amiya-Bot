@@ -13,7 +13,8 @@ from initData import OperatorSearchInfo, InitData
 bot = PluginInstance(
     name='明日方舟干员资料',
     version='1.0',
-    plugin_id='amiyabot-arknights-operator'
+    plugin_id='amiyabot-arknights-operator',
+    document=f'{operator_plugin}/README.md'
 )
 bot.set_group_config(GroupConfig('operator', allow_direct=True))
 

@@ -9,12 +9,13 @@ from core.util import TimeRecorder
 from core import send_to_console_channel, tasks_control, Message, Chain, SourceServer, TencentBotInstance, \
     bot as main_bot
 
-from helper import WeiboUser, weibo_conf
+from helper import WeiboUser, weibo_conf, weibo_plugin
 
 bot = PluginInstance(
     name='微博自动推送',
     version='1.0',
-    plugin_id='amiyabot-weibo'
+    plugin_id='amiyabot-weibo',
+    document=f'{weibo_plugin}/README.md'
 )
 
 
