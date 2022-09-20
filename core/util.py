@@ -426,3 +426,23 @@ def extract_plugin(curr_dir, resource_path):
         if os.path.exists(os.path.join(resource_path, pack_file)):
             continue
         pack.extract(pack_file, resource_path)
+
+
+def read_tail(path: str, lines: int = 1, _buffer: int = 4098):
+    f = open(path, mode='r', encoding='utf-8')
+
+    lines_found: List[str] = []
+    block_counter = -1
+
+    while len(lines_found) <= lines:
+        try:
+            f.seek(block_counter * _buffer, os.SEEK_END)
+        except IOError:
+            f.seek(0)
+            lines_found = f.readlines()
+            break
+
+        lines_found = f.readlines()
+        block_counter -= 1
+
+    return lines_found[-lines:]

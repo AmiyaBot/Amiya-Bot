@@ -1,1 +1,7 @@
-from . import (bot, user, admin, replace, gacha, opterator)
+from . import (bot,
+               user,
+               admin,
+               gacha,
+               replace,
+               dashboard,
+               opterator)
