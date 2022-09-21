@@ -39,6 +39,7 @@ bot = StagePluginInstance(
     name='明日方舟关卡查询',
     version='1.0',
     plugin_id='amiyabot-arknights-stages',
+    description='查询明日方舟关卡资料',
     document=f'{stages_plugin}/README.md'
 )
 

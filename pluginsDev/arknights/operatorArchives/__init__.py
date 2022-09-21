@@ -23,6 +23,7 @@ bot = OperatorPluginInstance(
     name='明日方舟干员资料',
     version='1.0',
     plugin_id='amiyabot-arknights-operator',
+    description='查询明日方舟干员资料',
     document=f'{operator_plugin}/README.md'
 )
 bot.set_group_config(GroupConfig('operator', allow_direct=True))

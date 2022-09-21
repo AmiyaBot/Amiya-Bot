@@ -14,6 +14,7 @@ bot = PluginInstance(
     name='明日方舟合成玉计算',
     version='1.0',
     plugin_id='amiyabot-arknights-jade',
+    description='计算给定的日期前可以通过各种途径获得的合成玉数量',
     document='''
     - 发送 `兔兔 [日期描述] 可得到多少玉` ，日期描述指的是口语上的日期，可以是节日名，也可以是详细日期。<br>
       这里使用自然语言处理智能识别日期，可随心所欲描述。<br>

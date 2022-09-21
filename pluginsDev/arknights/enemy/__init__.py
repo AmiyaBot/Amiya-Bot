@@ -102,6 +102,7 @@ bot = EnemyPluginInstance(
     name='明日方舟敌方单位查询',
     version='1.0',
     plugin_id='amiyabot-arknights-enemy',
+    description='查询明日方舟敌方单位资料',
     document=f'{enemy_plugin}/README.md'
 )
 

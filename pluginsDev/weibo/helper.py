@@ -22,7 +22,9 @@ ua = UserAgent()
 
 
 async def get_result(url, headers):
-    return json.loads(await http_requests.get(url, headers=headers))
+    res = await http_requests.get(url, headers=headers)
+    if res:
+        return json.loads(res)
 
 
 @dataclass

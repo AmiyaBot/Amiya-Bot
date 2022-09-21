@@ -1,4 +1,6 @@
 from amiyabot.database import select_for_paginate
+from fastapi.responses import HTMLResponse
+
 from core import app
 from core.database.bot import Admin as AdminAccount
 
@@ -12,6 +14,16 @@ class AdminModel(BaseModel):
 
 @app.controller
 class Admin:
+    @app.route(method='get', router_path='/', response_class=HTMLResponse)
+    async def doc(self):
+        return '''
+        <html>
+            <script>
+                location.href = '/docs'
+            </script>
+        </html>
+        '''
+
     @app.route()
     async def get_admin(self, data: QueryData):
         select = AdminAccount.select()

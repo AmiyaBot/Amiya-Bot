@@ -46,6 +46,7 @@ bot = GachaPluginInstance(
     name='明日方舟模拟抽卡',
     version='1.0',
     plugin_id='amiyabot-arknights-gacha',
+    description='明日方舟抽卡模拟，可自由切换卡池',
     document=f'{gacha_plugin}/README.md'
 )
 

@@ -11,6 +11,7 @@ bot = PluginInstance(
     name='猜干员游戏',
     version='1.0',
     plugin_id='amiyabot-guess',
+    description='干员竞猜小游戏，可获得合成玉',
     document=f'{guess_plugin}/README.md'
 )
 

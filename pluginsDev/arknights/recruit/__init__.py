@@ -130,6 +130,7 @@ bot = RecruitPluginInstance(
     name='明日方舟公招查询',
     version='1.0',
     plugin_id='amiyabot-arknights-recruit',
+    description='可通过指令或图像识别规划公招标签组合',
     document=f'{recruit_plugin}/README.md'
 )
 
