@@ -15,6 +15,7 @@ bot = PluginInstance(
     name='微博自动推送',
     version='1.0',
     plugin_id='amiyabot-weibo',
+    plugin_type='official',
     description='可在微博更新时自动推送到群/频道',
     document=f'{weibo_plugin}/README.md'
 )

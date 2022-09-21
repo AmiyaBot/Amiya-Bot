@@ -156,6 +156,7 @@ bot = MaterialPluginInstance(
     name='明日方舟材料物品查询',
     version='1.0',
     plugin_id='amiyabot-arknights-material',
+    plugin_type='official',
     description='查询明日方舟材料和物品资料',
     document=f'{material_plugin}/README.md'
 )

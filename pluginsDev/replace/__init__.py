@@ -49,6 +49,7 @@ bot = ReplacePluginInstance(
     name='词语替换',
     version='1.0',
     plugin_id='amiyabot-replace',
+    plugin_type='official',
     description='自动替换指令中的关键词，更易于触发常用功能',
     document=f'{replace_plugin}/README.md'
 )

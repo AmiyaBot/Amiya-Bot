@@ -25,6 +25,7 @@ bot = PluginInstance(
     name='兔兔互动',
     version='1.0',
     plugin_id='amiyabot-user',
+    plugin_type='official',
     description='包含签到、问候和好感等日常互动',
     document=f'{user_plugin}/README.md'
 )

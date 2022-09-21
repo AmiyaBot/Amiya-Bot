@@ -38,6 +38,7 @@ bot = TokenPluginInstance(
     name='明日方舟召唤物查询',
     version='1.0',
     plugin_id='amiyabot-arknights-tokens',
+    plugin_type='official',
     description='查询明日方舟召唤物资料',
     document=f'{tokens_plugin}/README.md'
 )
