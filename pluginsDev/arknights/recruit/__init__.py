@@ -1,6 +1,7 @@
 import os
 import dhash
 import jieba
+import asyncio
 
 from io import BytesIO
 from PIL import Image
@@ -10,8 +11,8 @@ from itertools import combinations
 from amiyabot import PluginInstance
 from amiyabot.network.download import download_async
 
-from core import exec_before_init, log, Message, Chain
-from core.util import all_match, read_yaml, extract_plugin
+from core import log, Message, Chain
+from core.util import all_match, read_yaml, extract_zip_plugin
 from core.lib.baiduCloud import BaiduCloud
 from core.resource.arknightsGameData import ArknightsGameData
 
@@ -19,7 +20,7 @@ curr_dir = os.path.dirname(__file__)
 recruit_plugin = 'resource/plugins/recruit'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, recruit_plugin)
+    extract_zip_plugin(curr_dir, recruit_plugin)
 else:
     recruit_plugin = curr_dir
 
@@ -27,77 +28,11 @@ baidu = BaiduCloud(read_yaml(f'{recruit_plugin}/baiduCloud.yaml'))
 recruit_config = read_yaml(f'{recruit_plugin}/recruit.yaml')
 discern = recruit_config.autoDiscern
 
-bot = PluginInstance(
-    name='明日方舟公招查询',
-    version='1.0',
-    plugin_id='amiyabot-arknights-recruit',
-    document=f'{recruit_plugin}/README.md'
-)
-
-
-def find_operator_tags_by_tags(tags, max_rarity):
-    res = []
-    for name, item in ArknightsGameData.operators.items():
-        if not item.is_recruit or item.rarity > max_rarity:
-            continue
-        for tag in item.tags:
-            if tag in tags:
-                res.append(
-                    {
-                        'operator_id': item.id,
-                        'operator_name': name,
-                        'operator_rarity': item.rarity,
-                        'operator_tags': tag
-                    }
-                )
-
-    return sorted(res, key=lambda n: -n['operator_rarity'])
-
-
-def find_combinations(_list):
-    result = []
-    for i in range(3):
-        for n in combinations(_list, i + 1):
-            n = list(n)
-            if n and not ('高级资深干员' in n and '资深干员' in n):
-                result.append(n)
-    result.reverse()
-    return result
-
-
-async def auto_discern(data: Message):
-    for item in data.image:
-        img = await download_async(item)
-        if img:
-            try:
-                hash_value = dhash.dhash_int(Image.open(BytesIO(img)))
-                diff = dhash.get_num_bits_different(hash_value, discern.templateHash)
-            except OSError:
-                return False
-
-            if diff <= discern.maxDifferent:
-                data.image = [img]
-                return True
-    return False
-
-
-async def get_ocr_result(image):
-    if baidu.enable:
-        res = await baidu.basic_accurate(image)
-        if not res:
-            res = await baidu.basic_general(image)
-
-        if res and 'words_result' in res:
-            return ''.join([item['words'] for item in res['words_result']])
-
-    return ''
-
 
 class Recruit:
     tags_list: List[str] = []
 
     @staticmethod
-    @exec_before_init
     async def init_tags_list():
         log.info('building operator tags keywords dict...')
 
@@ -184,6 +119,77 @@ class Recruit:
 
         if ocr:
             return reply.text('博士，没有在图内找到标签信息')
+
+
+class RecruitPluginInstance(PluginInstance):
+    def install(self):
+        asyncio.create_task(Recruit.init_tags_list())
+
+
+bot = RecruitPluginInstance(
+    name='明日方舟公招查询',
+    version='1.0',
+    plugin_id='amiyabot-arknights-recruit',
+    document=f'{recruit_plugin}/README.md'
+)
+
+
+def find_operator_tags_by_tags(tags, max_rarity):
+    res = []
+    for name, item in ArknightsGameData.operators.items():
+        if not item.is_recruit or item.rarity > max_rarity:
+            continue
+        for tag in item.tags:
+            if tag in tags:
+                res.append(
+                    {
+                        'operator_id': item.id,
+                        'operator_name': name,
+                        'operator_rarity': item.rarity,
+                        'operator_tags': tag
+                    }
+                )
+
+    return sorted(res, key=lambda n: -n['operator_rarity'])
+
+
+def find_combinations(_list):
+    result = []
+    for i in range(3):
+        for n in combinations(_list, i + 1):
+            n = list(n)
+            if n and not ('高级资深干员' in n and '资深干员' in n):
+                result.append(n)
+    result.reverse()
+    return result
+
+
+async def auto_discern(data: Message):
+    for item in data.image:
+        img = await download_async(item)
+        if img:
+            try:
+                hash_value = dhash.dhash_int(Image.open(BytesIO(img)))
+                diff = dhash.get_num_bits_different(hash_value, discern.templateHash)
+            except OSError:
+                return False
+
+            if diff <= discern.maxDifferent:
+                data.image = [img]
+                return True
+    return False
+
+
+async def get_ocr_result(image):
+    if baidu.enable:
+        res = await baidu.basic_accurate(image)
+        if not res:
+            res = await baidu.basic_general(image)
+
+        if res and 'words_result' in res:
+            return ''.join([item['words'] for item in res['words_result']])
+
+    return ''
 
 
 @bot.on_message(keywords=['公招', '公开招募'], allow_direct=True, level=10)

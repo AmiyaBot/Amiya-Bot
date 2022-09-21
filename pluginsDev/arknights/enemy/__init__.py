@@ -1,29 +1,23 @@
 import os
 import re
 import jieba
+import asyncio
 
 from amiyabot import PluginInstance
-from core import log, Message, Chain, exec_before_init
-from core.util import integer, any_match, get_index_from_text, extract_plugin
+from core import log, Message, Chain
+from core.util import integer, any_match, get_index_from_text, extract_zip_plugin
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
 enemy_plugin = 'resource/plugins/enemy'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, enemy_plugin)
+    extract_zip_plugin(curr_dir, enemy_plugin)
 else:
     enemy_plugin = curr_dir
 
 line_height = 16
 side_padding = 10
-
-bot = PluginInstance(
-    name='明日方舟敌方单位查询',
-    version='1.0',
-    plugin_id='amiyabot-arknights-enemy',
-    document=f'{enemy_plugin}/README.md'
-)
 
 
 def get_value(key, source):
@@ -35,7 +29,6 @@ def get_value(key, source):
 
 class Enemy:
     @staticmethod
-    @exec_before_init
     async def init_enemies():
         log.info('building enemies names keywords dict...')
 
@@ -98,6 +91,19 @@ class Enemy:
             **enemies[name],
             'attrs': attrs
         }
+
+
+class EnemyPluginInstance(PluginInstance):
+    def install(self):
+        asyncio.create_task(Enemy.init_enemies())
+
+
+bot = EnemyPluginInstance(
+    name='明日方舟敌方单位查询',
+    version='1.0',
+    plugin_id='amiyabot-arknights-enemy',
+    document=f'{enemy_plugin}/README.md'
+)
 
 
 async def verify(data: Message):

@@ -17,13 +17,13 @@ sys.path += [
 if __name__ == '__main__':
     try:
         load_resource()
-        load_plugins()
         asyncio.run(
             asyncio.wait(
                 [
                     *init_task,
                     bot.start(enable_chromium=True),
-                    app.serve()
+                    app.serve(),
+                    load_plugins()
                 ]
             )
         )

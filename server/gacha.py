@@ -65,6 +65,9 @@ class Gacha:
 
     @app.route(method='get')
     async def sync_pool(self):
+        if 'amiyabot-arknights-gacha' not in bot.plugins:
+            return app.response(code=500, message='尚未安装此插件')
+
         sync_pool = getattr(bot.plugins['amiyabot-arknights-gacha'], 'sync_pool')
         res = await sync_pool(force=True)
         if res:

@@ -1,12 +1,13 @@
 import os
 import json
 import jieba
+import asyncio
 
 from amiyabot import PluginInstance
 from amiyabot.network.httpRequests import http_requests
 
-from core import log, Message, Chain, exec_before_init, tasks_control
-from core.util import any_match, find_similar_list, extract_plugin
+from core import log, Message, Chain, tasks_control
+from core.util import any_match, find_similar_list, extract_zip_plugin
 from core.resource import remote_config
 from core.database.bot import *
 from core.database.bot import db as bot_db
@@ -16,7 +17,7 @@ curr_dir = os.path.dirname(__file__)
 material_plugin = 'resource/plugins/material'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, material_plugin)
+    extract_zip_plugin(curr_dir, material_plugin)
 else:
     material_plugin = curr_dir
 
@@ -24,13 +25,6 @@ material_images_source = 'resource/gamedata/item/'
 icon_size = 34
 line_height = 16
 side_padding = 10
-
-bot = PluginInstance(
-    name='明日方舟材料物品查询',
-    version='1.0',
-    plugin_id='amiyabot-arknights-material',
-    document=f'{material_plugin}/README.md'
-)
 
 
 @table
@@ -48,7 +42,6 @@ class MaterialData:
     materials: List[str] = []
 
     @staticmethod
-    @exec_before_init
     async def save_penguin_data():
         async with log.catch('penguin data save error:'):
             res = await http_requests.get(remote_config.remote.penguin)
@@ -60,7 +53,6 @@ class MaterialData:
             log.info('penguin data save successful.')
 
     @staticmethod
-    @exec_before_init
     async def init_materials():
         log.info('building materials names keywords dict...')
 
@@ -152,6 +144,20 @@ class MaterialData:
             result['recommend'] = sorted(recommend, key=lambda n: n['desired'])
 
         return result
+
+
+class MaterialPluginInstance(PluginInstance):
+    def install(self):
+        asyncio.create_task(MaterialData.save_penguin_data())
+        asyncio.create_task(MaterialData.init_materials())
+
+
+bot = MaterialPluginInstance(
+    name='明日方舟材料物品查询',
+    version='1.0',
+    plugin_id='amiyabot-arknights-material',
+    document=f'{material_plugin}/README.md'
+)
 
 
 async def verify(data: Message):

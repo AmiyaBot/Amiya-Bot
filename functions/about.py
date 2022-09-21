@@ -6,7 +6,9 @@ from core.util import get_index_from_text
 
 @bot.on_message(keywords=['功能', '帮助', '说明', 'help'], allow_direct=True)
 async def _(data: Message):
-    content = "# 功能清单\n\n管理员发送 `兔兔上班/下班` 即可开启或关闭兔兔\n\n回复下列的【序号】，可查询详细的功能描述。\n\n"
+    content = "# 功能清单\n\n" \
+              "频道/群管理员发送 `兔兔上班/下班` 即可开启或关闭兔兔\n\n" \
+              "回复下列功能的【序号】，可查询详细的功能描述。\n\n"
 
     index = 1
     funcs = []

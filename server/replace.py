@@ -94,6 +94,9 @@ class Replace:
 
     @app.route(method='get')
     async def sync_replace(self):
+        if 'amiyabot-replace' not in bot.plugins:
+            return app.response(code=500, message='尚未安装此插件')
+
         sync_replace = getattr(bot.plugins['amiyabot-replace'], 'sync_replace')
         res = await sync_replace(force=True)
         if res:

@@ -1,4 +1,5 @@
 import copy
+import asyncio
 
 from amiyabot import GroupConfig, PluginInstance
 
@@ -10,7 +11,15 @@ from operatorInfo import OperatorInfo, operator_plugin
 from operatorData import OperatorData
 from initData import OperatorSearchInfo, InitData
 
-bot = PluginInstance(
+
+class OperatorPluginInstance(PluginInstance):
+    def install(self):
+        asyncio.create_task(OperatorInfo.init_operator())
+        asyncio.create_task(OperatorInfo.init_skins_table())
+        asyncio.create_task(OperatorInfo.init_stories_titles())
+
+
+bot = OperatorPluginInstance(
     name='明日方舟干员资料',
     version='1.0',
     plugin_id='amiyabot-arknights-operator',

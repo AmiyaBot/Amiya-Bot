@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import asyncio
 
 from amiyabot import PluginInstance
 from amiyabot.adapters.convert import text_convert
@@ -9,14 +10,14 @@ from amiyabot.network.httpRequests import http_requests
 from core.database.bot import *
 from core.lib.baiduCloud import BaiduCloud
 from core.resource import remote_config
-from core.util import read_yaml, extract_plugin
-from core import log, exec_before_init, Message, Chain
+from core.util import read_yaml, extract_zip_plugin
+from core import log, Message, Chain, Equal
 
 curr_dir = os.path.dirname(__file__)
 replace_plugin = 'resource/plugins/replace'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, replace_plugin)
+    extract_zip_plugin(curr_dir, replace_plugin)
 else:
     replace_plugin = curr_dir
 
@@ -25,7 +26,6 @@ baidu = BaiduCloud(read_yaml(f'{replace_plugin}/baiduCloud.yaml'))
 
 class ReplacePluginInstance(PluginInstance):
     @staticmethod
-    @exec_before_init
     async def sync_replace(force: bool = False):
         if not force:
             if TextReplace.get_or_none():
@@ -40,6 +40,9 @@ class ReplacePluginInstance(PluginInstance):
                 TextReplace.batch_insert(res['data'])
 
                 return True
+
+    def install(self):
+        asyncio.create_task(self.sync_replace())
 
 
 bot = ReplacePluginInstance(
@@ -144,6 +147,19 @@ async def _(data: Message):
                 return save_replace(data, origin, replace)
 
         return save_replace(data, origin, replace)
+
+
+@bot.on_message(keywords=Equal('同步词语替换'))
+async def _(data: Message):
+    if Admin.get_or_none(account=data.user_id):
+        confirm = await data.wait(Chain(data).text('同步将使用官方DEMO的数据覆盖现有设置，回复"确认"开始同步。'))
+        if confirm is not None and confirm.text == '确认':
+            await data.send(Chain(data).text(f'开始同步...'))
+
+            if await ReplacePluginInstance.sync_replace(force=True):
+                await data.send(Chain(data).text(f'同步成功。'))
+            else:
+                await data.send(Chain(data).text(f'同步失败，数据请求失败。'))
 
 
 def show_replace_by_replace(data: Message, replace):

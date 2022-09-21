@@ -6,14 +6,14 @@ from PIL import Image, ImageDraw
 from core import Message, Chain
 from core.database.user import OperatorBox, UserGachaInfo, UserInfo
 from core.database.bot import *
-from core.util import insert_empty, extract_plugin
+from core.util import insert_empty, extract_zip_plugin
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
 gacha_plugin = 'resource/plugins/gacha'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, gacha_plugin)
+    extract_zip_plugin(curr_dir, gacha_plugin)
 else:
     gacha_plugin = curr_dir
 
@@ -30,7 +30,7 @@ color = {
 }
 
 
-class GachaForUser:
+class GachaBuilder:
     def __init__(self, data: Message):
         self.data = data
         self.user_gacha: UserGachaInfo = UserGachaInfo.get_or_create(user_id=data.user_id)[0]

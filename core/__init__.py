@@ -33,7 +33,7 @@ def load_resource():
     ArknightsGameData.initialize()
 
 
-def load_plugins():
+async def load_plugins():
     create_dir('plugins')
     count = 0
     for root, dirs, files in os.walk('plugins'):

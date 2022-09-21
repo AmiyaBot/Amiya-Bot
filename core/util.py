@@ -417,7 +417,7 @@ def support_gbk(zip_file: zipfile.ZipFile):
     return zip_file
 
 
-def extract_plugin(curr_dir, resource_path):
+def extract_zip_plugin(curr_dir, resource_path):
     create_dir(resource_path)
     pack = zipfile.ZipFile(curr_dir)
     for pack_file in support_gbk(pack).namelist():

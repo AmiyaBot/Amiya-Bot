@@ -7,13 +7,13 @@ from dataclasses import dataclass
 from fake_useragent import UserAgent
 from amiyabot.network.download import download_async
 from amiyabot.network.httpRequests import http_requests
-from core.util import remove_xml_tag, char_seat, read_yaml, extract_plugin, create_dir
+from core.util import remove_xml_tag, char_seat, read_yaml, extract_zip_plugin, create_dir
 
 curr_dir = os.path.dirname(__file__)
 weibo_plugin = 'resource/plugins/weibo'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, weibo_plugin)
+    extract_zip_plugin(curr_dir, weibo_plugin)
 else:
     weibo_plugin = curr_dir
 

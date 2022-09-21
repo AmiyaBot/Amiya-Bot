@@ -4,7 +4,7 @@ from core.database.user import OperatorBox
 from core.resource.arknightsGameData import ArknightsGameData, Operator
 from amiyabot.builtin.lib.imageCreator import ImageElem, create_image
 
-from gachaHelper import gacha_plugin
+from gachaBuilder import gacha_plugin
 
 
 def get_user_box(user_id):

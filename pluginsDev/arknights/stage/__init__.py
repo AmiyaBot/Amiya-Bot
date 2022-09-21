@@ -1,31 +1,24 @@
 import os
 import jieba
+import asyncio
 
 from amiyabot import PluginInstance
 
-from core import log, Message, Chain, exec_before_init
-from core.util import any_match, remove_punctuation, extract_plugin
+from core import log, Message, Chain
+from core.util import any_match, remove_punctuation, extract_zip_plugin
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
 stages_plugin = 'resource/plugins/stages'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, stages_plugin)
+    extract_zip_plugin(curr_dir, stages_plugin)
 else:
     stages_plugin = curr_dir
-
-bot = PluginInstance(
-    name='明日方舟关卡查询',
-    version='1.0',
-    plugin_id='amiyabot-arknights-stages',
-    document=f'{stages_plugin}/README.md'
-)
 
 
 class Stage:
     @staticmethod
-    @exec_before_init
     async def init_stages():
         log.info('building stages keywords dict...')
 
@@ -35,6 +28,19 @@ class Stage:
             file.write('\n'.join([f'{name} 500 n' for name in stages]))
 
         jieba.load_userdict(f'{stages_plugin}/stages.txt')
+
+
+class StagePluginInstance(PluginInstance):
+    def install(self):
+        asyncio.create_task(Stage.init_stages())
+
+
+bot = StagePluginInstance(
+    name='明日方舟关卡查询',
+    version='1.0',
+    plugin_id='amiyabot-arknights-stages',
+    document=f'{stages_plugin}/README.md'
+)
 
 
 @bot.on_message(keywords=['地图', '关卡'], allow_direct=True, level=5)

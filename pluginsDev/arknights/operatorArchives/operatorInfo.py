@@ -2,8 +2,8 @@ import os
 import re
 import jieba
 
-from core import log, exec_before_init
-from core.util import chinese_to_digits, remove_punctuation, extract_plugin
+from core import log
+from core.util import chinese_to_digits, remove_punctuation, extract_zip_plugin
 from core.resource.arknightsGameData import ArknightsGameData
 
 from initData import InitData
@@ -12,7 +12,7 @@ curr_dir = os.path.dirname(__file__)
 operator_plugin = 'resource/plugins/operator'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, operator_plugin)
+    extract_zip_plugin(curr_dir, operator_plugin)
 else:
     operator_plugin = curr_dir
 
@@ -32,7 +32,6 @@ class OperatorInfo:
     operator_one_char_list = []
 
     @staticmethod
-    @exec_before_init
     async def init_operator():
         log.info('building operator info and skills keywords dict...')
 
@@ -75,7 +74,6 @@ class OperatorInfo:
         jieba.load_userdict(f'{operator_plugin}/operators.txt')
 
     @staticmethod
-    @exec_before_init
     async def init_stories_titles():
         log.info('building operator stories keywords dict...')
         stories_title = {}
@@ -99,7 +97,6 @@ class OperatorInfo:
         jieba.load_userdict(f'{operator_plugin}/stories.txt')
 
     @staticmethod
-    @exec_before_init
     async def init_skins_table():
         log.info('building operator skins keywords dict...')
         skins_table = {}

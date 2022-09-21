@@ -8,7 +8,7 @@ from amiyabot.network.download import download_async
 from amiyabot import GroupConfig, PluginInstance
 
 from core import send_to_console_channel, tasks_control, Message, Chain, Equal
-from core.util import read_yaml, check_sentence_by_re, any_match, extract_plugin
+from core.util import read_yaml, check_sentence_by_re, any_match, extract_zip_plugin
 from core.database.bot import Admin
 from core.database.user import User, UserInfo, UserGachaInfo
 
@@ -16,7 +16,7 @@ curr_dir = os.path.dirname(__file__)
 user_plugin = 'resource/plugins/user'
 
 if curr_dir.endswith('.zip'):
-    extract_plugin(curr_dir, user_plugin)
+    extract_zip_plugin(curr_dir, user_plugin)
 else:
     user_plugin = curr_dir
 

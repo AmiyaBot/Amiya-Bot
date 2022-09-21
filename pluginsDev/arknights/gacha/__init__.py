@@ -1,24 +1,24 @@
 import re
 import os
 import json
+import asyncio
 
 from typing import List
 from amiyabot import PluginInstance
 from amiyabot import TencentBotInstance, GroupConfig
 from amiyabot.network.httpRequests import http_requests
-from core import log, exec_before_init, Message, Chain
+from core import log, Message, Chain, Equal
 from core.util import any_match
 from core.resource import remote_config
 from core.database.user import UserInfo, UserGachaInfo
-from core.database.bot import OperatorConfig
+from core.database.bot import OperatorConfig, Admin
 
-from gachaHelper import GachaForUser, gacha_plugin, Pool
+from gachaBuilder import GachaBuilder, gacha_plugin, Pool
 from box import get_user_box
 
 
 class GachaPluginInstance(PluginInstance):
     @staticmethod
-    @exec_before_init
     async def sync_pool(force: bool = False):
         if not force:
             if Pool.get_or_none():
@@ -37,6 +37,9 @@ class GachaPluginInstance(PluginInstance):
                 OperatorConfig.batch_insert(res['OperatorConfig'])
 
                 return True
+
+    def install(self):
+        asyncio.create_task(self.sync_pool())
 
 
 bot = GachaPluginInstance(
@@ -96,7 +99,7 @@ def change_pool(item: Pool, user_id=None):
 @bot.on_message(group_id='gacha', keywords=['抽', '连', '寻访'], level=3)
 async def _(data: Message):
     try:
-        gc = GachaForUser(data)
+        gc = GachaBuilder(data)
     except Exception as e:
         log.error(e)
         return Chain(data).text('无法初始化卡池')
@@ -239,3 +242,16 @@ async def _(data: Message):
         return Chain(data).text(res)
 
     return Chain(data).image(res)
+
+
+@bot.on_message(keywords=Equal('同步卡池'))
+async def _(data: Message):
+    if Admin.get_or_none(account=data.user_id):
+        confirm = await data.wait(Chain(data).text('同步将使用官方DEMO的数据覆盖现有设置，回复"确认"开始同步。'))
+        if confirm is not None and confirm.text == '确认':
+            await data.send(Chain(data).text(f'开始同步...'))
+
+            if await GachaPluginInstance.sync_pool(force=True):
+                await data.send(Chain(data).text(f'同步成功。'))
+            else:
+                await data.send(Chain(data).text(f'同步失败，数据请求失败。'))
