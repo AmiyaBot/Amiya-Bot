@@ -138,6 +138,8 @@ def build(version, folder, branch):
 
     os.remove(f'{folder}/version.txt')
 
+    upload_pack('.github/latest.txt', path, pack_name)
+
 
 def upload_pack(ver_file, package_file, package_name):
     from qcloud_cos import CosConfig
