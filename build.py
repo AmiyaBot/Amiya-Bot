@@ -43,8 +43,7 @@ VSVersionInfo(
 )
 '''
 data_files = [
-    (os.path.abspath(f'{venv}/amiyabot/assets'), 'amiyabot/assets'),
-    (os.path.abspath(f'{venv}/amiyabot/network/httpServer'), 'amiyabot/network/httpServer')
+    (os.path.abspath(f'{venv}/amiyabot/_assets'), 'amiyabot/_assets'),
 ]
 
 
@@ -66,13 +65,9 @@ def build(version, folder, branch):
     dist = f'{folder}/dist'
     local = '/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.'
 
-    setup_name = f'AmiyaBot-{version}'
-    if branch:
-        setup_name += '-' + branch.split('-')[-1]
-
     try:
         latest = str(
-            request.urlopen('https://cos.amiyabot.com/package/release/latest.txt').read(),
+            request.urlopen(f'https://cos.amiyabot.com/package/release/latest-{branch}.txt').read(),
             encoding='utf-8').strip('\n')
     except error.HTTPError:
         latest = ''
@@ -84,6 +79,10 @@ def build(version, folder, branch):
     if latest == version:
         print('not new release.')
         return None
+
+    setup_name = f'AmiyaBot-{version}'
+    if branch:
+        setup_name += '-' + branch.split('-')[-1]
 
     if os.path.exists(dist):
         shutil.rmtree(dist)
@@ -140,10 +139,10 @@ def build(version, folder, branch):
 
     os.remove(f'{folder}/version.txt')
 
-    upload_pack('.github/latest.txt', path, pack_name)
+    upload_pack('.github/latest.txt', branch, path, pack_name)
 
 
-def upload_pack(ver_file, package_file, package_name):
+def upload_pack(ver_file, branch, package_file, package_name):
     from qcloud_cos import CosConfig
     from qcloud_cos import CosS3Client
 
@@ -164,7 +163,7 @@ def upload_pack(ver_file, package_file, package_name):
     client.put_object_from_local_file(
         Bucket=bucket,
         LocalFilePath=ver_file,
-        Key='package/release/latest.txt',
+        Key=f'package/release/latest-{branch}.txt',
     )
     client.put_object_from_local_file(
         Bucket=bucket,
