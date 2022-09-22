@@ -6,6 +6,7 @@ import server
 import asyncio
 import functions
 
+from core.lib import baiduCloud
 from core import app, bot, init_task, load_resource, load_plugins
 
 sys.path += [

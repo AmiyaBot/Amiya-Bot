@@ -61,7 +61,7 @@ def argv(name, formatter=str):
             return formatter(sys.argv[index])
 
 
-def build(version, folder, branch):
+def build(version, folder, branch, force):
     dist = f'{folder}/dist'
     local = '/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.'
 
@@ -76,7 +76,7 @@ def build(version, folder, branch):
         with open('.github/latest.txt', mode='r', encoding='utf-8') as ver:
             version = ver.read().strip('\r\n')
 
-    if latest == version:
+    if latest == version and not force:
         print('not new release.')
         return None
 
@@ -176,5 +176,6 @@ if __name__ == '__main__':
     build(
         argv('version'),
         argv('folder') or '.',
-        argv('branch')
+        argv('branch'),
+        argv('force')
     )
