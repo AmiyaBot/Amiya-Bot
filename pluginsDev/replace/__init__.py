@@ -219,7 +219,7 @@ def check_permissible(text):
 def save_replace(data: Message, origin, replace, is_global=0):
     TextReplace.create(
         user_id=data.user_id,
-        group_id=data.guild_id,
+        group_id=data.guild_id or data.channel_id,
         origin=origin,
         replace=replace,
         in_time=int(time.time()),
