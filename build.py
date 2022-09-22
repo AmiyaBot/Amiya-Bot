@@ -4,7 +4,9 @@ import sys
 import shutil
 import zipfile
 import pathlib
+import logging
 
+from urllib import request
 from jionlp.util.zip_file import ZIP_FILE_LIST
 
 venv = 'venv/Lib/site-packages'
@@ -46,9 +48,39 @@ data_files = [
 ]
 
 
-def build(version, folder):
+def argv(name, formatter=str):
+    key = f'--{name}'
+    if key in sys.argv:
+        index = sys.argv.index(key) + 1
+
+        if index >= len(sys.argv):
+            return True
+
+        if sys.argv[index].startswith('--'):
+            return True
+        else:
+            return formatter(sys.argv[index])
+
+
+def build(version, folder, branch):
     dist = f'{folder}/dist'
     local = '/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.'
+
+    setup_name = f'AmiyaBot-{version}'
+    if branch:
+        setup_name += '-' + branch.split('-')[-1]
+
+    latest = str(
+        request.urlopen('https://cos.amiyabot.com/package/release/latest.txt').read(),
+        encoding='utf-8').strip('\n')
+
+    if not version:
+        with open('.github/latest.txt', mode='r', encoding='utf-8') as ver:
+            version = ver.read().strip('\n')
+
+    if latest == version:
+        print('not new release.')
+        return None
 
     if os.path.exists(dist):
         shutil.rmtree(dist)
@@ -57,7 +89,6 @@ def build(version, folder):
 
     shutil.copy(f'{venv}/jieba/dict.txt', f'{dist}/dict.txt')
     shutil.copytree('config', f'{dist}/config', dirs_exist_ok=True)
-    shutil.copytree('template', f'{dist}/template', dirs_exist_ok=True)
 
     for item in ZIP_FILE_LIST:
         if not os.path.exists(f'{dist}/dictionary'):
@@ -84,10 +115,10 @@ def build(version, folder):
     cmd += [
         f'set PLAYWRIGHT_BROWSERS_PATH=0',
         f'playwright install chromium',
-        f'pyi-makespec -F -n AmiyaBot-{version} -i {local}/amiya.ico'
+        f'pyi-makespec -F -n {setup_name} -i {local}/amiya.ico'
         f' --version-file={folder}/version.txt {local}/amiya.py' +
         ''.join([' --add-data=%s;%s' % df for df in data_files]),
-        f'pyinstaller AmiyaBot-{version}.spec'
+        f'pyinstaller {setup_name}.spec'
     ]
 
     msg = os.popen('&'.join(cmd)).readlines()
@@ -95,7 +126,7 @@ def build(version, folder):
     for item in msg:
         print(item)
 
-    pack_name = f'AmiyaBot-{version}.zip'
+    pack_name = f'{setup_name}.zip'
     path = pathlib.Path(f'{folder}/{pack_name}')
 
     with zipfile.ZipFile(path, 'w') as pack:
@@ -108,8 +139,39 @@ def build(version, folder):
     os.remove(f'{folder}/version.txt')
 
 
-if __name__ == '__main__':
-    v = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] != 'null' else input('version: ')
-    f = sys.argv[2] if len(sys.argv) > 2 else '.'
+def upload_pack(ver_file, package_file, package_name):
+    from qcloud_cos import CosConfig
+    from qcloud_cos import CosS3Client
 
-    build(v, f)
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+
+    secret_id = os.environ.get('SECRETID')
+    secret_key = os.environ.get('SECRETKEY')
+
+    config = CosConfig(
+        Region='ap-guangzhou',
+        SecretId=secret_id,
+        SecretKey=secret_key
+    )
+    client = CosS3Client(config)
+
+    bucket = client.list_buckets()['Buckets']['Bucket'][0]['Name']
+
+    client.put_object_from_local_file(
+        Bucket=bucket,
+        LocalFilePath=ver_file,
+        Key='package/release/latest.txt',
+    )
+    client.put_object_from_local_file(
+        Bucket=bucket,
+        LocalFilePath=package_file,
+        Key=f'package/release/{package_name}',
+    )
+
+
+if __name__ == '__main__':
+    build(
+        argv('version'),
+        argv('folder') or '.',
+        argv('branch')
+    )
