@@ -11,11 +11,20 @@ jobs:
         runs-on: windows-latest
         steps:
             -   uses: actions/checkout@v2
+
             -   name: Set up Python 3.8.10 amd64
                 uses: actions/setup-python@v4
                 with:
                     python-version: 3.8.10
                     architecture: x64
+
+            -   name: Get branch name
+                id: branch-name
+                uses: tj-actions/branch-names@v5.1
+
+            -   name: Branch name
+                run: |
+                    echo "Running on default: ${{ steps.branch-name.outputs.current_branch }}"
 
             -   name: Install dependencies
                 run: |
@@ -32,4 +41,4 @@ jobs:
                     SECRETKEY: ${{ secrets.SECRETKEY }}
                 run: |
                     venv\Scripts\Activate.ps1
-                    venv\Scripts\python build.py --branch ${GITHUB_REF##*/}
+                    venv\Scripts\python build.py --branch ${{ steps.branch-name.outputs.current_branch }}
