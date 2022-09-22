@@ -17,11 +17,6 @@ jobs:
                     python-version: 3.8.10
                     architecture: x64
 
-            -   name: Set vars
-                id: vars
-                run: |
-                    echo ::set-output name=branch_name::${GITHUB_REF#refs/heads/}
-
             -   name: Install dependencies
                 run: |
                     python -m pip install --upgrade pip
@@ -37,4 +32,4 @@ jobs:
                     SECRETKEY: ${{ secrets.SECRETKEY }}
                 run: |
                     venv\Scripts\Activate.ps1
-                    venv\Scripts\python build.py --branch ${{steps.vars.outputs.branch_name}}
+                    venv\Scripts\python build.py --branch ${GITHUB_REF##*/}
