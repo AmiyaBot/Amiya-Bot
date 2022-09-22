@@ -6,7 +6,7 @@ import zipfile
 import pathlib
 import logging
 
-from urllib import request
+from urllib import request, error
 from jionlp.util.zip_file import ZIP_FILE_LIST
 
 venv = 'venv/Lib/site-packages'
@@ -70,9 +70,12 @@ def build(version, folder, branch):
     if branch:
         setup_name += '-' + branch.split('-')[-1]
 
-    latest = str(
-        request.urlopen('https://cos.amiyabot.com/package/release/latest.txt').read(),
-        encoding='utf-8').strip('\n')
+    try:
+        latest = str(
+            request.urlopen('https://cos.amiyabot.com/package/release/latest.txt').read(),
+            encoding='utf-8').strip('\n')
+    except error.HTTPError:
+        latest = ''
 
     if not version:
         with open('.github/latest.txt', mode='r', encoding='utf-8') as ver:
@@ -133,8 +136,7 @@ def build(version, folder, branch):
         for root, dirs, files in os.walk(dist):
             for index, filename in enumerate(files):
                 target = os.path.join(root, filename)
-                path = target.replace(dist + '\\', '')
-                pack.write(target, path)
+                pack.write(target, target.replace(dist + '\\', ''))
 
     os.remove(f'{folder}/version.txt')
 
