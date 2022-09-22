@@ -68,13 +68,13 @@ def build(version, folder, branch):
     try:
         latest = str(
             request.urlopen(f'https://cos.amiyabot.com/package/release/latest-{branch}.txt').read(),
-            encoding='utf-8').strip('\n')
+            encoding='utf-8').strip('\r\n')
     except error.HTTPError:
         latest = ''
 
     if not version:
         with open('.github/latest.txt', mode='r', encoding='utf-8') as ver:
-            version = ver.read().strip('\n')
+            version = ver.read().strip('\r\n')
 
     if latest == version:
         print('not new release.')
@@ -162,13 +162,13 @@ def upload_pack(ver_file, branch, package_file, package_name):
 
     client.put_object_from_local_file(
         Bucket=bucket,
-        LocalFilePath=ver_file,
-        Key=f'package/release/latest-{branch}.txt',
+        LocalFilePath=package_file,
+        Key=f'package/release/{package_name}',
     )
     client.put_object_from_local_file(
         Bucket=bucket,
-        LocalFilePath=package_file,
-        Key=f'package/release/{package_name}',
+        LocalFilePath=ver_file,
+        Key=f'package/release/latest-{branch}.txt',
     )
 
 
