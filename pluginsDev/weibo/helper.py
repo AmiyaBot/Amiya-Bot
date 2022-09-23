@@ -4,10 +4,18 @@ import time
 import json
 
 from dataclasses import dataclass
-from fake_useragent import UserAgent
 from amiyabot.network.download import download_async
 from amiyabot.network.httpRequests import http_requests
 from core.util import remove_xml_tag, char_seat, read_yaml, extract_zip_plugin, create_dir
+from core import log
+
+ua = None
+try:
+    from fake_useragent import UserAgent
+
+    ua = UserAgent()
+except Exception as e:
+    log.error(e)
 
 curr_dir = os.path.dirname(__file__)
 weibo_plugin = 'resource/plugins/weibo'
@@ -18,7 +26,6 @@ else:
     weibo_plugin = curr_dir
 
 weibo_conf = read_yaml(f'{weibo_plugin}/weibo.yaml')
-ua = UserAgent()
 
 
 async def get_result(url, headers):
@@ -38,7 +45,7 @@ class WeiboContent:
 class WeiboUser:
     def __init__(self, weibo_id: int):
         self.headers = {
-            'User-Agent': ua.random,
+            'User-Agent': ua.random if ua else None,
             'Content-Type': 'application/json; charset=utf-8',
             'Referer': f'https://m.weibo.cn/u/{weibo_id}',
             'Accept-Language': 'zh-CN,zh;q=0.9'

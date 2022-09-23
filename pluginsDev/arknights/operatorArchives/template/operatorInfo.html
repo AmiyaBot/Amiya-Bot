@@ -154,6 +154,7 @@
                 return lines.join('')
             },
             colorSpan(text, tag = true) {
+                text = text.replace('<', '&lt;').replace('>', '&gt;')
                 text = text.replace(/\s/g, '')
                 text = text.replace(/\[cl/g, tag ? '<span class="mark">' : '')
                 text = text.replace(/@#174CC6cle]/g, tag ? '</span>' : '')
