@@ -2,9 +2,9 @@ name: Windows binary package
 
 on:
     push:
-        branches: [ V6-dev, V6-master ]
+        branches: [ V6-master ]
     pull_request:
-        branches: [ V6-dev, V6-master ]
+        branches: [ V6-master ]
 
 jobs:
     build-win-amd64:

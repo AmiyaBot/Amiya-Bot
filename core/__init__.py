@@ -1,4 +1,6 @@
 import os
+import copy
+import time
 import traceback
 
 from typing import List
@@ -7,6 +9,7 @@ from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
 
+from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
 from core.resource import remote_config
 from core.resource.botResource import BotResource
@@ -24,6 +27,8 @@ bot.set_prefix_keywords(['阿米娅', '阿米兔', '兔兔', '兔子', '小兔�
 
 gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata)
 tasks_control = TasksControl()
+
+message_record = []
 
 
 def load_resource():
@@ -84,3 +89,21 @@ async def _(err: Exception, instance: BotAdapterProtocol):
     content = chain.text(f'{str(instance)} Bot: {instance.appid}').text_image(traceback.format_exc())
 
     await send_to_console_channel(content)
+
+
+@bot.before_bot_reply
+async def _(data: Message):
+    message_record.append({
+        'msg_type': data.message_type or 'channel',
+        'user_id': data.user_id,
+        'group_id': data.channel_id,
+        'classify': 'call',
+        'create_time': int(time.time())
+    })
+
+
+@tasks_control.timed_task(each=60)
+async def _():
+    global message_record
+    MessageRecord.batch_insert(copy.deepcopy(message_record))
+    message_record = []
