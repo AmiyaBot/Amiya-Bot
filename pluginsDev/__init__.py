@@ -61,5 +61,6 @@ class ScriptModulesFinder:
 
 finder = ScriptModulesFinder(
     'resource/env/python-standard-lib.zip',
-    'resource/env/python-dlls'
+    'resource/env/python-dlls',
+    'resource/../'
 )

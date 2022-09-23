@@ -1,10 +1,10 @@
 import os
-import sys
 import json
 import zipfile
 import importlib
 
 from amiyabot import PluginInstance
+from amiyabot.util import temp_sys_path
 
 dist = 'plugins'
 
@@ -25,10 +25,9 @@ if __name__ == '__main__':
             path_split = plugin.replace('\\', '/').split('/')
             parent_dir = os.path.abspath('/'.join(path_split[:-1]))
 
-            sys.path.append(parent_dir)
-            sys.path.append(plugin)
-
-            module = importlib.import_module(path_split[-1])
+            with temp_sys_path(parent_dir):
+                with temp_sys_path(plugin):
+                    module = importlib.import_module(path_split[-1])
 
             instance: PluginInstance = getattr(module, 'bot')
 
@@ -49,9 +48,6 @@ if __name__ == '__main__':
                         if '__pycache__' in target:
                             continue
                         pack.write(target, target.replace(plugin + '\\', ''))
-
-            sys.path.remove(parent_dir)
-            sys.path.remove(plugin)
 
             print(f'\t --> {package}')
 
