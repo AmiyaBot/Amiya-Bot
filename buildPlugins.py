@@ -28,8 +28,7 @@ if __name__ == '__main__':
             with temp_sys_path(parent_dir):
                 with temp_sys_path(plugin):
                     module = importlib.import_module(path_split[-1])
-
-            instance: PluginInstance = getattr(module, 'bot')
+                    instance: PluginInstance = getattr(module, 'bot')
 
             profiles.append({
                 'name': instance.name,
@@ -47,7 +46,7 @@ if __name__ == '__main__':
                         target = os.path.join(plugin_root, filename)
                         if '__pycache__' in target:
                             continue
-                        pack.write(target, target.replace(plugin + '\\', ''))
+                        pack.write(target, target.replace(plugin, '').strip('\\'))
 
             print(f'\t --> {package}')
 
