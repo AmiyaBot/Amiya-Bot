@@ -9,7 +9,7 @@ from core.util import TimeRecorder
 from core import send_to_console_channel, tasks_control, Message, Chain, SourceServer, TencentBotInstance, \
     bot as main_bot
 
-from helper import WeiboUser, weibo_conf, weibo_plugin
+from .helper import WeiboUser, weibo_conf, curr_dir
 
 bot = PluginInstance(
     name='微博自动推送',
@@ -17,7 +17,7 @@ bot = PluginInstance(
     plugin_id='amiyabot-weibo',
     plugin_type='official',
     description='可在微博更新时自动推送到群/频道',
-    document=f'{weibo_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 

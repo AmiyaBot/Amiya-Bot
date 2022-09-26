@@ -44,7 +44,7 @@ async def load_plugins():
     for root, dirs, files in os.walk('plugins'):
         for file in files:
             if file.endswith('.zip'):
-                res = bot.install_plugin(os.path.join(root, file))
+                res = bot.install_plugin(os.path.join(root, file), extract_plugin=True)
                 if res:
                     count += 1
 

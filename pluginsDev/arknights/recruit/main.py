@@ -12,20 +12,14 @@ from amiyabot import PluginInstance
 from amiyabot.network.download import download_async
 
 from core import log, Message, Chain
-from core.util import all_match, read_yaml, extract_zip_plugin
+from core.util import all_match, read_yaml
 from core.lib.baiduCloud import BaiduCloud
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
-recruit_plugin = 'resource/plugins/recruit'
 
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, recruit_plugin)
-else:
-    recruit_plugin = curr_dir
-
-baidu = BaiduCloud(read_yaml(f'{recruit_plugin}/baiduCloud.yaml'))
-recruit_config = read_yaml(f'{recruit_plugin}/recruit.yaml')
+baidu = BaiduCloud(read_yaml(f'{curr_dir}/baiduCloud.yaml'))
+recruit_config = read_yaml(f'{curr_dir}/recruit.yaml')
 discern = recruit_config.autoDiscern
 
 
@@ -42,10 +36,10 @@ class Recruit:
                 if tag not in tags:
                     tags.append(tag)
 
-        with open(f'{recruit_plugin}/tags.txt', mode='w+', encoding='utf-8') as file:
+        with open(f'{curr_dir}/tags.txt', mode='w+', encoding='utf-8') as file:
             file.write('\n'.join([item + ' 500 n' for item in tags]))
 
-        jieba.load_userdict(f'{recruit_plugin}/tags.txt')
+        jieba.load_userdict(f'{curr_dir}/tags.txt')
 
         Recruit.tags_list = tags
 
@@ -132,7 +126,7 @@ bot = RecruitPluginInstance(
     plugin_id='amiyabot-arknights-recruit',
     plugin_type='official',
     description='可通过指令或图像识别规划公招标签组合',
-    document=f'{recruit_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 

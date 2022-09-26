@@ -5,16 +5,10 @@ import asyncio
 from amiyabot import PluginInstance
 
 from core import log, Message, Chain
-from core.util import any_match, remove_punctuation, extract_zip_plugin
+from core.util import any_match, remove_punctuation
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
-stages_plugin = 'resource/plugins/stages'
-
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, stages_plugin)
-else:
-    stages_plugin = curr_dir
 
 
 class Stage:
@@ -24,10 +18,10 @@ class Stage:
 
         stages = list(ArknightsGameData.stages_map.keys())
 
-        with open(f'{stages_plugin}/stages.txt', mode='w', encoding='utf-8') as file:
+        with open(f'{curr_dir}/stages.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([f'{name} 500 n' for name in stages]))
 
-        jieba.load_userdict(f'{stages_plugin}/stages.txt')
+        jieba.load_userdict(f'{curr_dir}/stages.txt')
 
 
 class StagePluginInstance(PluginInstance):
@@ -41,7 +35,7 @@ bot = StagePluginInstance(
     plugin_id='amiyabot-arknights-stages',
     plugin_type='official',
     description='查询明日方舟关卡资料',
-    document=f'{stages_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 
@@ -77,6 +71,6 @@ async def _(data: Message):
             **stage_data,
             'name': stage_data['name'] + level_str
         }
-        return Chain(data).html(f'{stages_plugin}/template/stage.html', res)
+        return Chain(data).html(f'{curr_dir}/template/stage.html', res)
     else:
         return Chain(data).text('抱歉博士，没有查询到相关地图信息')

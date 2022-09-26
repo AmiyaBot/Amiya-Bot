@@ -28,7 +28,7 @@
                 <div v-html="description(data.description)"></div>
             </div>
             <div class="stage-map">
-                <img :src="`../../../../resource/gamedata/map/${data.stageId.replace(/#f#/g, '')}.png`"
+                <img :src="`../../../resource/gamedata/map/${data.stageId.replace(/#f#/g, '')}.png`"
                      :alt="data.stageId"
                      onerror="hideImage(this)">
             </div>
@@ -38,7 +38,7 @@
             <div class="enemy-info">
                 <div class="enemy-item" v-for="(item, enemyId) in enemies">
                     <div class="enemy-avatar"
-                         :style="{backgroundImage: `url('../../../../resource/gamedata/enemy/${enemyId}.png')`}">
+                         :style="{backgroundImage: `url('../../../resource/gamedata/enemy/${enemyId}.png')`}">
                         <span class="tag" :class="item.enemyLevel">{{ level[item.enemyLevel] }}</span>
                     </div>
                     <div style="padding: 10px 5px">
@@ -54,11 +54,11 @@
             <div class="drop-info" v-for="(name, type) in dropType" v-if="displayDetailRewards(type).length">
                 <div>{{ name }}</div>
                 <template v-if="type === 't2'">
-                    <img class="item-icon" src="../../../../resource/gamedata/item/EXP_PLAYER.png" alt="exp">
-                    <img class="item-icon" src="../../../../resource/gamedata/item/GOLD.png" alt="exp">
+                    <img class="item-icon" src="../../../resource/gamedata/item/EXP_PLAYER.png" alt="exp">
+                    <img class="item-icon" src="../../../resource/gamedata/item/GOLD.png" alt="exp">
                 </template>
                 <img class="item-icon" v-for="item in displayDetailRewards(type)" v-if="item.detail"
-                     :src="'../../../../resource/gamedata/item/' + item.detail.iconId + '.png'"
+                     :src="'../../../resource/gamedata/item/' + item.detail.iconId + '.png'"
                      :alt="item.detail.name">
             </div>
         </template>

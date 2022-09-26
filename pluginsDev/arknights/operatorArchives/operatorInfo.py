@@ -3,18 +3,12 @@ import re
 import jieba
 
 from core import log
-from core.util import chinese_to_digits, remove_punctuation, extract_zip_plugin
+from core.util import chinese_to_digits, remove_punctuation
 from core.resource.arknightsGameData import ArknightsGameData
 
-from initData import InitData
+from .initData import InitData
 
 curr_dir = os.path.dirname(__file__)
-operator_plugin = 'resource/plugins/operator'
-
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, operator_plugin)
-else:
-    operator_plugin = curr_dir
 
 
 class OperatorInfo:
@@ -69,9 +63,9 @@ class OperatorInfo:
                 OperatorInfo.skill_map[skl_name] = skl['skill_name']
                 OperatorInfo.skill_operator[skl['skill_name']] = name
 
-        with open(f'{operator_plugin}/operators.txt', mode='w', encoding='utf-8') as file:
+        with open(f'{curr_dir}/operators.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join(keywords))
-        jieba.load_userdict(f'{operator_plugin}/operators.txt')
+        jieba.load_userdict(f'{curr_dir}/operators.txt')
 
     @staticmethod
     async def init_stories_titles():
@@ -92,9 +86,9 @@ class OperatorInfo:
 
         OperatorInfo.stories_title = list(stories_title.keys()) + [i for k, i in stories_title.items()]
 
-        with open(f'{operator_plugin}/stories.txt', mode='w', encoding='utf-8') as file:
+        with open(f'{curr_dir}/stories.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join(stories_keyword))
-        jieba.load_userdict(f'{operator_plugin}/stories.txt')
+        jieba.load_userdict(f'{curr_dir}/stories.txt')
 
     @staticmethod
     async def init_skins_table():
@@ -110,6 +104,6 @@ class OperatorInfo:
         OperatorInfo.skins_table = skins_table
         OperatorInfo.skins_keywords = skins_keywords
 
-        with open(f'{operator_plugin}/skins.txt', mode='w', encoding='utf-8') as file:
+        with open(f'{curr_dir}/skins.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([n + ' 500 n' for n in skins_keywords]))
-        jieba.load_userdict(f'{operator_plugin}/skins.txt')
+        jieba.load_userdict(f'{curr_dir}/skins.txt')

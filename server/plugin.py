@@ -54,7 +54,7 @@ class Plugin:
             with open(plugin, mode='wb+') as src:
                 src.write(res)
 
-            if bot.install_plugin(plugin):
+            if bot.install_plugin(plugin, extract_plugin=True):
                 return app.response(message='插件安装成功')
             else:
                 return app.response(code=500, message='插件安装失败')
@@ -69,7 +69,7 @@ class Plugin:
                 src.write(res)
 
             bot.uninstall_plugin(data.plugin_id, remove=True)
-            if bot.install_plugin(plugin):
+            if bot.install_plugin(plugin, extract_plugin=True):
                 return app.response(message='插件更新成功')
             else:
                 return app.response(code=500, message='插件安装失败')

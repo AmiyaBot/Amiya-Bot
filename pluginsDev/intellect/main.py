@@ -1,3 +1,4 @@
+import os
 import re
 import time
 
@@ -7,16 +8,15 @@ from amiyabot import PluginInstance
 from core import bot as main_bot, tasks_control, Message, Chain
 from core.database.user import Intellect
 
+curr_dir = os.path.dirname(__file__)
+
 bot = PluginInstance(
     name='理智恢复提醒',
     version='1.1',
     plugin_id='amiyabot-intellect',
     plugin_type='official',
     description='可以记录理智量并在回复满时发送提醒',
-    document='''
-- 发送 `兔兔理智（当前理智）满（目标理智）告诉我`
-- 记录提醒后发送 `兔兔理智回复了多少` 查看进度，当回复到目标理智时兔兔将会通知你
-    '''
+    document=f'{curr_dir}/README.md'
 )
 
 

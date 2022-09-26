@@ -7,9 +7,9 @@ from core import Message, Chain
 from core.util import find_similar_list, any_match, get_index_from_text
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource
 
-from operatorInfo import OperatorInfo, operator_plugin
-from operatorData import OperatorData
-from initData import OperatorSearchInfo, InitData
+from .operatorInfo import OperatorInfo, curr_dir
+from .operatorData import OperatorData
+from .initData import OperatorSearchInfo, InitData
 
 
 class OperatorPluginInstance(PluginInstance):
@@ -25,7 +25,7 @@ bot = OperatorPluginInstance(
     plugin_id='amiyabot-arknights-operator',
     plugin_type='official',
     description='查询明日方舟干员资料',
-    document=f'{operator_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 bot.set_group_config(GroupConfig('operator', allow_direct=True))
 
@@ -157,7 +157,7 @@ async def _(data: Message):
             'path': await ArknightsGameDataResource.get_skin_file(skin_item, encode_url=True)
         }
 
-        return Chain(data).html(f'{operator_plugin}/template/operatorSkin.html', skin_data)
+        return Chain(data).html(f'{curr_dir}/template/operatorSkin.html', skin_data)
 
 
 @bot.on_message(group_id='operator', keywords=['模组'], level=2)
@@ -181,7 +181,7 @@ async def _(data: Message):
     if is_story:
         return Chain(data).text_image(result)
     else:
-        return Chain(data).html(f'{operator_plugin}/template/operatorModule.html', result)
+        return Chain(data).html(f'{curr_dir}/template/operatorModule.html', result)
 
 
 @bot.on_message(group_id='operator', keywords=['语音'], level=2)
@@ -243,10 +243,10 @@ async def _(data: Message):
 
     if '材料' in data.text:
         result = await OperatorData.get_level_up_cost(info)
-        template = f'{operator_plugin}/template/operatorCost.html'
+        template = f'{curr_dir}/template/operatorCost.html'
     else:
         result = await OperatorData.get_skills_detail(info)
-        template = f'{operator_plugin}/template/skillsDetail.html'
+        template = f'{curr_dir}/template/skillsDetail.html'
 
     if not result:
         return Chain(data).text('博士，请仔细描述想要查询的信息哦')
@@ -263,16 +263,16 @@ async def _(data: Message):
     if '技能' in data.text:
         result = await OperatorData.get_skills_detail(info)
         if result:
-            return reply.html(f'{operator_plugin}/template/skillsDetail.html', result)
+            return reply.html(f'{curr_dir}/template/skillsDetail.html', result)
     else:
         result, tokens = await OperatorData.get_operator_detail(info)
         if result:
             if '召唤物' not in data.text:
-                reply = reply.html(f'{operator_plugin}/template/operatorInfo.html', result)
+                reply = reply.html(f'{curr_dir}/template/operatorInfo.html', result)
             elif not tokens['tokens']:
                 return Chain(data).text('博士，干员%s未拥有召唤物' % result['info']['name'])
             if tokens['tokens']:
-                reply = reply.html(f'{operator_plugin}/template/operatorToken.html', tokens)
+                reply = reply.html(f'{curr_dir}/template/operatorToken.html', tokens)
             return reply
 
     return Chain(data).text('博士，请仔细描述想要查询的信息哦')

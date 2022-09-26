@@ -11,7 +11,7 @@
 </head>
 <body>
 <div id="template">
-    <div class="background" :style="{backgroundImage: `url('../../../../${data.skin}')`}"></div>
+    <div class="background" :style="{backgroundImage: `url('../../../${data.skin}')`}"></div>
     <div style="position: relative;z-index: 1">
         <div class="title">精英化</div>
         <div class="evolve-block">
@@ -23,7 +23,7 @@
                 </div>
                 <div class="evolve-costs">
                     <div class="materiel" :use="item.use_number" v-for="item in costs">
-                        <img :src="'../../../../resource/gamedata/item/' + item.material_icon + '.png'"
+                        <img :src="'../../../resource/gamedata/item/' + item.material_icon + '.png'"
                              :alt="item.material_name">
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                 <div v-for="(items, level) in data.skills_cost.common" class="common-items">
                     <div>等级{{ level }}</div>
                     <div class="materiel" :use="item.use_number" v-for="item in items">
-                        <img :src="'../../../../resource/gamedata/item/' + item.material_icon + '.png'"
+                        <img :src="'../../../resource/gamedata/item/' + item.material_icon + '.png'"
                              :alt="item.material_name">
                     </div>
                 </div>
@@ -44,14 +44,14 @@
                 <div v-for="item in data.skills" style="margin: 0 10px">
                     <div>
                         <img style="width: 70px;margin-right: 20px"
-                             :src="'../../../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
+                             :src="'../../../resource/gamedata/skill/' + item.skill_icon + '.png'" alt="skill">
                         {{ item.skill_name }}
                     </div>
                     <div class="cost-items" v-for="(cost, level) in data.skills_cost[item.skill_no]">
                         <div class="mastery-icon"
                              :style="{backgroundImage: 'url(..//level/master' + (level - 7) + '.png)'}"></div>
                         <div class="materiel" :use="item.use_number" v-for="item in cost">
-                            <img :src="'../../../../resource/gamedata/item/' + item.material_icon + '.png'"
+                            <img :src="'../../../resource/gamedata/item/' + item.material_icon + '.png'"
                                  :alt="item.material_name">
                         </div>
                     </div>

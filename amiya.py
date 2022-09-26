@@ -1,12 +1,8 @@
 import os
 import sys
-import srsly
-import frozen
-import server
 import asyncio
-import functions
+import core.frozen
 
-from core.lib import baiduCloud
 from core import app, bot, init_task, load_resource, load_plugins
 
 sys.path += [

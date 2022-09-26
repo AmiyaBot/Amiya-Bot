@@ -5,16 +5,10 @@ import asyncio
 from amiyabot import PluginInstance
 
 from core import log, Message, Chain
-from core.util import find_similar_list, extract_zip_plugin
+from core.util import find_similar_list
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
-tokens_plugin = 'resource/plugins/tokens'
-
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, tokens_plugin)
-else:
-    tokens_plugin = curr_dir
 
 
 class InitToken:
@@ -24,9 +18,9 @@ class InitToken:
 
         keywords = [f'{code} 500 n' for code in ArknightsGameData.tokens.keys()]
 
-        with open(f'{tokens_plugin}/tokens.txt', mode='w', encoding='utf-8') as file:
+        with open(f'{curr_dir}/tokens.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join(keywords))
-        jieba.load_userdict(f'{tokens_plugin}/tokens.txt')
+        jieba.load_userdict(f'{curr_dir}/tokens.txt')
 
 
 class TokenPluginInstance(PluginInstance):
@@ -40,7 +34,7 @@ bot = TokenPluginInstance(
     plugin_id='amiyabot-arknights-tokens',
     plugin_type='official',
     description='查询明日方舟召唤物资料',
-    document=f'{tokens_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 
@@ -58,7 +52,7 @@ async def _(data: Message):
             continue
         tokens += [ArknightsGameData.tokens[item] for item in l]
 
-    return Chain(data).html(f'{tokens_plugin}/template/token.html', {
+    return Chain(data).html(f'{curr_dir}/template/token.html', {
         'tokens': [
             {
                 'id': item.id,

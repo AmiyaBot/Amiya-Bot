@@ -66,10 +66,11 @@ def build(version, folder, branch, force):
     local = '/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.'
 
     try:
+        cos_url = f'https://cos.amiyabot.com/package/release/latest-{branch}.txt'
         latest = str(
-            request.urlopen(f'https://cos.amiyabot.com/package/release/latest-{branch}.txt').read(),
+            request.urlopen(cos_url).read(),
             encoding='utf-8').strip('\r\n')
-    except error.HTTPError:
+    except Exception:
         latest = ''
 
     if not version:
@@ -139,7 +140,7 @@ def build(version, folder, branch, force):
 
     os.remove(f'{folder}/version.txt')
 
-    upload_pack('.github/latest.txt', branch, path, pack_name)
+    # upload_pack('.github/latest.txt', branch, path, pack_name)
 
 
 def upload_pack(ver_file, branch, package_file, package_name):

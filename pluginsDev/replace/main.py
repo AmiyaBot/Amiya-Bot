@@ -10,18 +10,12 @@ from amiyabot.network.httpRequests import http_requests
 from core.database.bot import *
 from core.lib.baiduCloud import BaiduCloud
 from core.resource import remote_config
-from core.util import read_yaml, extract_zip_plugin
+from core.util import read_yaml
 from core import log, Message, Chain, Equal
 
 curr_dir = os.path.dirname(__file__)
-replace_plugin = 'resource/plugins/replace'
 
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, replace_plugin)
-else:
-    replace_plugin = curr_dir
-
-baidu = BaiduCloud(read_yaml(f'{replace_plugin}/baiduCloud.yaml'))
+baidu = BaiduCloud(read_yaml(f'{curr_dir}/baiduCloud.yaml'))
 
 
 class ReplacePluginInstance(PluginInstance):
@@ -51,7 +45,7 @@ bot = ReplacePluginInstance(
     plugin_id='amiyabot-replace',
     plugin_type='official',
     description='自动替换指令中的关键词，更易于触发常用功能',
-    document=f'{replace_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 

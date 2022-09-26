@@ -5,7 +5,7 @@ from core.database.user import UserInfo
 from amiyabot import PluginInstance
 from amiyabot.adapters.mirai import MiraiBotInstance
 
-from guessStart import *
+from .guessStart import *
 
 bot = PluginInstance(
     name='猜干员游戏',
@@ -13,7 +13,7 @@ bot = PluginInstance(
     plugin_id='amiyabot-guess',
     plugin_type='official',
     description='干员竞猜小游戏，可获得合成玉',
-    document=f'{guess_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 

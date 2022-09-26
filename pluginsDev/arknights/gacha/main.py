@@ -13,8 +13,8 @@ from core.resource import remote_config
 from core.database.user import UserInfo, UserGachaInfo
 from core.database.bot import OperatorConfig, Admin
 
-from gachaBuilder import GachaBuilder, gacha_plugin, Pool
-from box import get_user_box
+from .gachaBuilder import GachaBuilder, curr_dir, Pool
+from .box import get_user_box
 
 
 class GachaPluginInstance(PluginInstance):
@@ -48,7 +48,7 @@ bot = GachaPluginInstance(
     plugin_id='amiyabot-arknights-gacha',
     plugin_type='official',
     description='明日方舟抽卡模拟，可自由切换卡池',
-    document=f'{gacha_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 re_list = [
@@ -80,7 +80,7 @@ def change_pool(item: Pool, user_id=None):
     task.execute()
 
     pic = []
-    for root, dirs, files in os.walk(f'{gacha_plugin}/pool'):
+    for root, dirs, files in os.walk(f'{curr_dir}/pool'):
         for file in files:
             if item.pool_name in file:
                 pic.append(os.path.join(root, file))

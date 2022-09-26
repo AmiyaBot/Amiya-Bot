@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from amiyabot.network.download import download_async
 from amiyabot.network.httpRequests import http_requests
-from core.util import remove_xml_tag, char_seat, read_yaml, extract_zip_plugin, create_dir
+from core.util import remove_xml_tag, char_seat, read_yaml, create_dir
 from core import log
 
 ua = None
@@ -18,14 +18,8 @@ except Exception as e:
     log.error(e)
 
 curr_dir = os.path.dirname(__file__)
-weibo_plugin = 'resource/plugins/weibo'
 
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, weibo_plugin)
-else:
-    weibo_plugin = curr_dir
-
-weibo_conf = read_yaml(f'{weibo_plugin}/weibo.yaml')
+weibo_conf = read_yaml(f'{curr_dir}/weibo.yaml')
 
 
 async def get_result(url, headers):

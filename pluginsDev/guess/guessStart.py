@@ -3,21 +3,15 @@ import random
 
 from io import BytesIO
 from PIL import Image
-from core.util import any_match, random_pop, read_yaml, extract_zip_plugin
+from core.util import any_match, random_pop, read_yaml
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsGameDataResource, Operator
 from core import Chain
 
-from guessBuilder import *
+from .guessBuilder import *
 
 curr_dir = os.path.dirname(__file__)
-guess_plugin = 'resource/plugins/guess'
 
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, guess_plugin)
-else:
-    guess_plugin = curr_dir
-
-game_config = read_yaml(f'{guess_plugin}/guess.yaml')
+game_config = read_yaml(f'{curr_dir}/guess.yaml')
 guess_config = game_config.guess
 guess_keyword = game_config.keyword
 

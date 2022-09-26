@@ -7,19 +7,13 @@ from amiyabot import PluginInstance
 from amiyabot.network.httpRequests import http_requests
 
 from core import log, Message, Chain, tasks_control
-from core.util import any_match, find_similar_list, extract_zip_plugin
+from core.util import any_match, find_similar_list
 from core.resource import remote_config
 from core.database.bot import *
 from core.database.bot import db as bot_db
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
-material_plugin = 'resource/plugins/material'
-
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, material_plugin)
-else:
-    material_plugin = curr_dir
 
 material_images_source = 'resource/gamedata/item/'
 icon_size = 34
@@ -59,10 +53,10 @@ class MaterialData:
         for name in ArknightsGameData.materials_map.keys():
             MaterialData.materials.append(name)
 
-        with open(f'{material_plugin}/materials.txt', mode='w', encoding='utf-8') as file:
+        with open(f'{curr_dir}/materials.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([f'{name} 500 n' for name in MaterialData.materials]))
 
-        jieba.load_userdict(f'{material_plugin}/materials.txt')
+        jieba.load_userdict(f'{curr_dir}/materials.txt')
 
     @classmethod
     def find_material_children(cls, material_id):
@@ -158,7 +152,7 @@ bot = MaterialPluginInstance(
     plugin_id='amiyabot-arknights-material',
     plugin_type='official',
     description='查询明日方舟材料和物品资料',
-    document=f'{material_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 
@@ -196,7 +190,7 @@ async def _(data: Message):
     if name:
         result = MaterialData.check_material(name)
         if result:
-            return Chain(data).html(f'{material_plugin}/template/material.html', result)
+            return Chain(data).html(f'{curr_dir}/template/material.html', result)
 
 
 @tasks_control.timed_task(each=3600)

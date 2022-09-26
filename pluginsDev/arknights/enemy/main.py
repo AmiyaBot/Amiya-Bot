@@ -5,16 +5,10 @@ import asyncio
 
 from amiyabot import PluginInstance
 from core import log, Message, Chain
-from core.util import integer, any_match, get_index_from_text, extract_zip_plugin
+from core.util import integer, any_match, get_index_from_text
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
-enemy_plugin = 'resource/plugins/enemy'
-
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, enemy_plugin)
-else:
-    enemy_plugin = curr_dir
 
 line_height = 16
 side_padding = 10
@@ -34,10 +28,10 @@ class Enemy:
 
         enemies = list(ArknightsGameData.enemies.keys())
 
-        with open(f'{enemy_plugin}/enemies.txt', mode='w', encoding='utf-8') as file:
+        with open(f'{curr_dir}/enemies.txt', mode='w', encoding='utf-8') as file:
             file.write('\n'.join([f'{name} 500 n' for name in enemies]))
 
-        jieba.load_userdict(f'{enemy_plugin}/enemies.txt')
+        jieba.load_userdict(f'{curr_dir}/enemies.txt')
 
     @classmethod
     def find_enemies(cls, name: str):
@@ -104,7 +98,7 @@ bot = EnemyPluginInstance(
     plugin_id='amiyabot-arknights-enemy',
     plugin_type='official',
     description='查询明日方舟敌方单位资料',
-    document=f'{enemy_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 
 
@@ -124,7 +118,7 @@ async def _(data: Message):
 
     for item in words:
         if item in ArknightsGameData.enemies:
-            return Chain(data).html(f'{enemy_plugin}/template/enemy.html', Enemy.get_enemy(item))
+            return Chain(data).html(f'{curr_dir}/template/enemy.html', Enemy.get_enemy(item))
 
     enemy_name = ''
     for reg in ['敌人(资料)?(.*)', '敌方(资料)?(.*)']:
@@ -142,7 +136,7 @@ async def _(data: Message):
         result = Enemy.find_enemies(enemy_name)
         if result:
             if len(result) == 1:
-                return Chain(data).html(f'{enemy_plugin}/template/enemy.html', Enemy.get_enemy(result[0][0]))
+                return Chain(data).html(f'{curr_dir}/template/enemy.html', Enemy.get_enemy(result[0][0]))
 
             init_data = {
                 'search': enemy_name,
@@ -150,12 +144,12 @@ async def _(data: Message):
             }
 
             wait = await data.wait(
-                Chain(data).html(f'{enemy_plugin}/template/enemyIndex.html', init_data).text('回复【序号】查询对应的敌方单位资料')
+                Chain(data).html(f'{curr_dir}/template/enemyIndex.html', init_data).text('回复【序号】查询对应的敌方单位资料')
             )
 
             if wait:
                 index = get_index_from_text(wait.text_digits, result)
                 if index is not None:
-                    return Chain(data).html(f'{enemy_plugin}/template/enemy.html', Enemy.get_enemy(result[index][0]))
+                    return Chain(data).html(f'{curr_dir}/template/enemy.html', Enemy.get_enemy(result[index][0]))
         else:
             return Chain(data).text('博士，没有找到敌方单位%s的资料呢 >.<' % enemy_name)

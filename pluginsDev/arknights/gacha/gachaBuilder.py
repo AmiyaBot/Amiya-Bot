@@ -6,16 +6,10 @@ from PIL import Image, ImageDraw
 from core import Message, Chain
 from core.database.user import OperatorBox, UserGachaInfo, UserInfo
 from core.database.bot import *
-from core.util import insert_empty, extract_zip_plugin
+from core.util import insert_empty
 from core.resource.arknightsGameData import ArknightsGameData
 
 curr_dir = os.path.dirname(__file__)
-gacha_plugin = 'resource/plugins/gacha'
-
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, gacha_plugin)
-else:
-    gacha_plugin = curr_dir
 
 line_height = 16
 side_padding = 10
@@ -98,7 +92,7 @@ class GachaBuilder:
         for item in sp:
             operators[item.operator_name] = {
                 'portraits': '',
-                'temp_portraits': f'{gacha_plugin}/temp/{item.image}' if item.image else None,
+                'temp_portraits': f'{curr_dir}/temp/{item.image}' if item.image else None,
                 'rarity': item.rarity,
                 'class': item.classes
             }
@@ -219,7 +213,7 @@ class GachaBuilder:
 
                 operators_info[name] = {
                     'portraits': opt.id,
-                    'temp_portraits': f'{gacha_plugin}/temp/{opt.name}',
+                    'temp_portraits': f'{curr_dir}/temp/{opt.name}',
                     'rarity': opt.rarity,
                     'class': opt.classes_code.lower()
                 }
@@ -363,7 +357,7 @@ class GachaBuilder:
 
 
 def create_gacha_image(result: list):
-    image = Image.open(f'{gacha_plugin}/gacha/bg.png')
+    image = Image.open(f'{curr_dir}/gacha/bg.png')
     draw = ImageDraw.ImageDraw(image)
 
     x = 78
@@ -372,7 +366,7 @@ def create_gacha_image(result: list):
             x += 82
             continue
 
-        rarity = f'{gacha_plugin}/gacha/%s.png' % item['rarity']
+        rarity = f'{curr_dir}/gacha/%s.png' % item['rarity']
         if os.path.exists(rarity):
             img = Image.open(rarity).convert('RGBA')
             image.paste(img, box=(x, 0), mask=img)
@@ -398,7 +392,7 @@ def create_gacha_image(result: list):
             image.paste(img, box=(x, 112), mask=img)
 
         draw.rectangle((x + 10, 321, x + 70, 381), fill='white')
-        class_img = f'{gacha_plugin}/classify/%s.png' % item['class']
+        class_img = f'{curr_dir}/classify/%s.png' % item['class']
         if os.path.exists(class_img):
             img = Image.open(class_img).convert('RGBA')
             img = img.resize(size=(59, 59))

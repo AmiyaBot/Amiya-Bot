@@ -8,33 +8,27 @@ from amiyabot.network.download import download_async
 from amiyabot import GroupConfig, PluginInstance
 
 from core import send_to_console_channel, tasks_control, Message, Chain, Equal
-from core.util import read_yaml, check_sentence_by_re, any_match, extract_zip_plugin
+from core.util import read_yaml, check_sentence_by_re, any_match
 from core.database.bot import Admin
 from core.database.user import User, UserInfo, UserGachaInfo
 
 curr_dir = os.path.dirname(__file__)
-user_plugin = 'resource/plugins/user'
 
-if curr_dir.endswith('.zip'):
-    extract_zip_plugin(curr_dir, user_plugin)
-else:
-    user_plugin = curr_dir
-
-talking = read_yaml(f'{user_plugin}/talking.yaml')
+talking = read_yaml(f'{curr_dir}/talking.yaml')
 bot = PluginInstance(
     name='兔兔互动',
     version='1.1',
     plugin_id='amiyabot-user',
     plugin_type='official',
     description='包含签到、问候和好感等日常互动',
-    document=f'{user_plugin}/README.md'
+    document=f'{curr_dir}/README.md'
 )
 bot.set_group_config(GroupConfig('user', allow_direct=True))
 
 
 def get_face():
     images = []
-    for root, dirs, files in os.walk(f'{user_plugin}/face'):
+    for root, dirs, files in os.walk(f'{curr_dir}/face'):
         images += [os.path.join(root, file) for file in files if file != '.gitkeep']
 
     return images
@@ -107,7 +101,7 @@ async def user_info(data: Message):
         **UserInfo.get_user_info(data.user_id)
     }
 
-    return Chain(data).html(f'{user_plugin}/template/userInfo.html', info, width=700, height=300)
+    return Chain(data).html(f'{curr_dir}/template/userInfo.html', info, width=700, height=300)
 
 
 async def only_name(data: Message):

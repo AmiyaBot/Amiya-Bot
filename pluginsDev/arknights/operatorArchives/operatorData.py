@@ -5,7 +5,7 @@ from core.resource.arknightsGameData.wiki import PRTS
 from core.resource.arknightsGameData.operatorBuilder import parse_template
 from core.util import integer, snake_case_to_pascal_case
 
-from initData import OperatorSearchInfo
+from .initData import OperatorSearchInfo
 
 
 class OperatorData:
