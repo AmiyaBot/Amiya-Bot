@@ -100,14 +100,24 @@ class Operator:
     def __init__(self, code: str, data: dict, is_recruit: bool = False):
         sub_classes = JsonData.get_json_data('uniequip_table')['subProfDict']
         range_data = JsonData.get_json_data('range_table')
+
         range_id = data['phases'][-1]['rangeId']
         range_map = '无范围'
         if range_id in range_data:
             range_map = build_range(range_data[range_id]['grids'])
 
+        cv_list = {}
+        word_data = JsonData.get_json_data('charword_table')
+        if code in word_data['voiceLangDict']:
+            voice_lang = word_data['voiceLangDict'][code]['dict']
+            cv_list = {
+                word_data['voiceLangTypeDict'][name]['name']: item['cvName'] for name, item in voice_lang.items()
+            }
+
         data['name'] = data['name'].strip()
 
         self.id = code
+        self.cv = cv_list
         self.name = data['name']
         self.en_name = data['appellation']
         self.wiki_name = data['name']

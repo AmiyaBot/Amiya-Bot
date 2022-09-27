@@ -11,12 +11,6 @@ sys.path += [
     os.path.dirname('resource/env/python-standard-lib.zip'),
 ]
 
-# async def plugin_test():
-#     from pluginsDev.arknights.operatorArchives import bot as plugin
-#
-#     bot.install_plugin(plugin)
-
-
 if __name__ == '__main__':
     try:
         load_resource()
@@ -26,8 +20,7 @@ if __name__ == '__main__':
                     *init_task,
                     bot.start(enable_chromium=True),
                     app.serve(),
-                    load_plugins(),
-                    # plugin_test()
+                    load_plugins()
                 ]
             )
         )

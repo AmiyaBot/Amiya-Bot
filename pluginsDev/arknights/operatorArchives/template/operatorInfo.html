@@ -46,6 +46,13 @@
                     </template>
                     <div v-else>未知</div>
                 </div>
+                <div>
+                    <div class="title" style="width: 120px;margin-top: 5px">CV</div>
+                    <template v-if="Object.keys(data.info.cv).length">
+                        <div v-for="(item, lang) in data.info.cv">{{ lang }}：{{ item }}</div>
+                    </template>
+                    <div v-else>未知</div>
+                </div>
             </div>
             <div class="operator-name">
                 <div class="range" style="margin: 15px 0" v-html="range(data.info.range)"></div>

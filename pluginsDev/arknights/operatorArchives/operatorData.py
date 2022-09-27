@@ -35,6 +35,7 @@ class OperatorData:
         operator_info = {
             'info': {
                 'id': operator.id,
+                'cv': operator.cv,
                 'name': operator.name,
                 'en_name': operator.en_name,
                 'real_name': real_name,
