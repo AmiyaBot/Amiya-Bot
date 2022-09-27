@@ -21,7 +21,7 @@ class OperatorPluginInstance(PluginInstance):
 
 bot = OperatorPluginInstance(
     name='明日方舟干员资料',
-    version='1.1',
+    version='1.2',
     plugin_id='amiyabot-arknights-operator',
     plugin_type='official',
     description='查询明日方舟干员资料',
@@ -137,12 +137,12 @@ async def _(data: Message):
 
     opt = operators[info.name]
     skins = opt.skins()
-    index = get_index_from_text(data.text, skins)
+    index = get_index_from_text(data.text_digits, skins)
 
     if index is None:
         text = f'博士，这是干员{info.name}的立绘列表\n\n'
-        for index, item in enumerate(skins):
-            text += f'[{index + 1}] %s\n' % item['skin_name']
+        for i, item in enumerate(skins):
+            text += f'[{i + 1}] %s\n' % item['skin_name']
         text += '\n回复【序号】查询对应的立绘资料'
 
         wait = await data.wait(Chain(data).text(text))
@@ -186,7 +186,70 @@ async def _(data: Message):
 
 @bot.on_message(group_id='operator', keywords=['语音'], level=2)
 async def _(data: Message):
-    return Chain(data).text(f'抱歉博士，语音功能暂不可用……')
+    info = search_info(data.text_words, source_keys=['voice_key', 'name'], text=data.text)
+
+    voice_type = ''
+    voice_name = '日文'
+    if '中文' in data.text:
+        voice_type = '_cn'
+        voice_name = '中文'
+    if '英' in data.text:
+        voice_type = '_en'
+        voice_name = '英文'
+    if '韩' in data.text:
+        voice_type = '_kr'
+        voice_name = '韩文'
+    if '方言' in data.text:
+        voice_type = '_custom'
+        voice_name = '方言'
+
+    if not info.name:
+        wait = await data.wait(Chain(data).text('博士，请说明需要查询的干员名'))
+        if not wait or not wait.text:
+            return None
+        info.name = wait.text
+
+    operators = ArknightsGameData.operators
+
+    if info.name not in operators:
+        return Chain(data).text(f'博士，没有找到干员"{info.name}"')
+
+    opt = operators[info.name]
+    voices = opt.voices()
+    voices_map = {item['voice_title']: item for item in voices}
+    index = get_index_from_text(data.text_digits, voices)
+
+    if not info.voice_key and index is None:
+        text = f'博士，这是干员{opt.name}的语音列表\n\n'
+        for i, item in enumerate(voices):
+            text += f'[{i + 1}] %s\n' % item['voice_title']
+        text += '\n回复【序号】查询对应的语音资料'
+
+        wait = await data.wait(Chain(data).text(text))
+        if wait:
+            index = get_index_from_text(wait.text_digits, voices)
+
+    if index is not None:
+        info.voice_key = voices[index]['voice_title']
+
+    if not info.voice_key:
+        return None
+
+    if info.voice_key in voices_map:
+        text = f'博士，为您找到干员{info.name}的语音档案：\n\n【{info.voice_key}】\n\n' + voices_map[info.voice_key]['voice_text']
+        text = text.replace('{@nickname}', data.nickname)
+
+        reply = Chain(data).text(text)
+
+        file = await ArknightsGameDataResource.get_voice_file(opt, info.voice_key, voice_type)
+        if file:
+            reply.voice(file)
+        else:
+            reply.text(f'{opt.wiki_name}《{info.voice_key}》{voice_name}语音文件下载失败...>.<')
+
+        return reply
+    else:
+        return Chain(data).text(f'博士，没有找到干员{info.name}《{info.voice_key}》的语音档案')
 
 
 @bot.on_message(group_id='operator', keywords=['档案', '资料'], level=2)
@@ -207,12 +270,12 @@ async def _(data: Message):
     opt = operators[info.name]
     stories = opt.stories()
     stories_map = {item['story_title']: item['story_text'] for item in stories}
-    index = get_index_from_text(data.text, stories)
+    index = get_index_from_text(data.text_digits, stories)
 
     if not info.story_key and index is None:
         text = f'博士，这是干员{opt.name}的档案列表\n\n'
-        for index, item in enumerate(stories):
-            text += f'[{index + 1}] %s\n' % item['story_title']
+        for i, item in enumerate(stories):
+            text += f'[{i + 1}] %s\n' % item['story_title']
         text += '\n回复【序号】查询对应的档案资料'
 
         wait = await data.wait(Chain(data).text(text))

@@ -277,10 +277,12 @@ class ArknightsGameDataResource:
         return skin_path
 
     @classmethod
-    async def get_voice_file(cls, operator: Operator, voice_key: str, cn: bool = False):
-        file = await PRTS.check_exists(operator.wiki_name, voice_key, cn)
-        if not file:
-            file = await PRTS.download_operator_voices(operator.id, operator.wiki_name, voice_key, cn)
+    async def get_voice_file(cls, operator: Operator, voice_key: str, voice_type: str = ''):
+        file = PRTS.get_voice_path(PRTS.voices_source, operator.id, operator.wiki_name, voice_key, voice_type)
+
+        if not os.path.exists(file):
+            file = await PRTS.download_operator_voices(file, operator, voice_key, voice_type)
             if not file:
                 return None
+
         return file
