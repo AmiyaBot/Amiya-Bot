@@ -105,7 +105,7 @@ class Recruit:
 
                 if groups:
                     groups = sorted(groups, key=lambda n: (-len(n['tags']), -n['max_rarity']))
-                    return reply.html('template/operator/operatorRecruit.html', {'groups': groups, 'tags': tags})
+                    return reply.html(f'{curr_dir}/template/operatorRecruit.html', {'groups': groups, 'tags': tags})
                 else:
                     return reply.text('博士，没有找到可以锁定稀有干员的组合')
             else:
@@ -122,7 +122,7 @@ class RecruitPluginInstance(PluginInstance):
 
 bot = RecruitPluginInstance(
     name='明日方舟公招查询',
-    version='1.1',
+    version='1.2',
     plugin_id='amiyabot-arknights-recruit',
     plugin_type='official',
     description='可通过指令或图像识别规划公招标签组合',

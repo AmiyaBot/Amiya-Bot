@@ -12,7 +12,7 @@ body {
     min-height: 720px;
     padding: 20px;
     color: #fff;
-    background: url(./img/pc_bg.jpeg) center / cover no-repeat;
+    background: url(img/pc_bg.jpeg) center / cover no-repeat;
     overflow: hidden;
     position: relative;
 }
