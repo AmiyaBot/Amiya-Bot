@@ -11,7 +11,7 @@ body:
 
         在反馈前, 请确认你已经做了下面这些事情且符合条件（如果有）
         - 搜索了已有的 [issues](https://github.com/AmiyaBot/Amiya-Bot/issues) 列表，其中没有相关的信息
-        - 阅读了 [Amiya-Bot 的相关文档](https://github.com/mamoe/mirai/tree/dev/docs)
+        - 阅读了 [Amiya-Bot 的相关文档](https://www.amiyabot.com/guide/deploy/)
 
   - type: textarea
     id: issue-description
