@@ -27,6 +27,11 @@ Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
 
     「博士，能再见到您……真是太好了。今后我们同行的路还很长，所以，请您多多关照！」 -- 阿米娅
 
+## 提示
+
+**我们已经决定停止对 v5 版本的一切维护。**
+若您想获得来自我们的技术支持或后续更新，请转至 [V6-dev](https://github.com/AmiyaBot/Amiya-Bot/tree/V6-dev)。
+
 ## 声明
 
 - Amiya-Bot 是在 [《明日方舟》](https://ak.hypergryph.com/) 爱好者群体中诞生的以便捷娱乐功能为主的聊天机器人，一切行为的目的旨在交流学习
