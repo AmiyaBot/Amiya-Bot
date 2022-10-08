@@ -5,6 +5,7 @@ import shutil
 import zipfile
 import pathlib
 import logging
+import subprocess
 
 from urllib import request
 from jionlp.util.zip_file import ZIP_FILE_LIST
@@ -54,7 +55,7 @@ data_files = [
 
 def build(version, folder, branch, force, upload=False):
     dist = f'{folder}/dist'
-    local = '/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.'
+    local = os.path.abspath('/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.')
 
     try:
         cos_url = f'https://cos.amiyabot.com/package/release/latest-{branch}.txt'
@@ -118,10 +119,10 @@ def build(version, folder, branch, force, upload=False):
     for cm in cmd:
         print('execute:', cm)
 
-    msg = os.popen('&'.join(cmd)).readlines()
+    build_process = subprocess.Popen('&'.join(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    for item in msg:
-        print(item)
+    for line in build_process.stdout.readlines():
+        print(str(line, encoding='utf-8').strip('\r\n'))
 
     if not os.path.exists(f'{dist}/{setup_name}.exe'):
         print(f'no built {dist}/{setup_name}.exe.')
