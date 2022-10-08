@@ -2,9 +2,9 @@ name: Windows binary package
 
 on:
     push:
-        branches: [ V6-master ]
+        branches: [ V6-dev, V6-master ]
     pull_request:
-        branches: [ V6-master ]
+        branches: [ V6-dev, V6-master ]
 
 jobs:
     build-win-amd64:
@@ -41,4 +41,4 @@ jobs:
                     SECRETKEY: ${{ secrets.SECRETKEY }}
                 run: |
                     venv\Scripts\Activate.ps1
-                    venv\Scripts\python build.py --type package --branch ${{ steps.branch-name.outputs.current_branch }}
+                    venv\Scripts\python build.py --type package --branch ${{ steps.branch-name.outputs.current_branch }} --upload

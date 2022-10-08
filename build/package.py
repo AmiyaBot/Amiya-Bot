@@ -134,8 +134,7 @@ def build(version, folder, branch, force, upload=False):
 
 
 def upload_pack(ver_file, branch, package_file, package_name):
-    from qcloud_cos import CosConfig
-    from qcloud_cos import CosS3Client
+    from qcloud_cos import CosConfig, CosS3Client, CosClientError, CosServiceError
 
     logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -151,11 +150,17 @@ def upload_pack(ver_file, branch, package_file, package_name):
 
     bucket = client.list_buckets()['Buckets']['Bucket'][0]['Name']
 
-    client.put_object_from_local_file(
-        Bucket=bucket,
-        LocalFilePath=package_file,
-        Key=f'package/release/{package_name}',
-    )
+    for i in range(0, 10):
+        try:
+            client.upload_file(
+                Bucket=bucket,
+                LocalFilePath=package_file,
+                Key=f'package/release/{package_name}',
+            )
+            break
+        except CosClientError or CosServiceError as e:
+            print(e)
+
     client.put_object_from_local_file(
         Bucket=bucket,
         LocalFilePath=ver_file,
