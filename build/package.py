@@ -9,9 +9,11 @@ import logging
 from urllib import request
 from jionlp.util.zip_file import ZIP_FILE_LIST
 
-venv = 'venv/Lib/site-packages'
+venv = 'venv\\Lib\\site-packages'
+scripts = 'venv\\Scripts'
 if sys.platform == 'darwin':
-    venv = 'venv/lib/python3.8/site-packages'
+    venv = 'venv\\lib\\python3.8\\site-packages'
+    scripts = 'venv\\bin'
 
 version_file = '''# UTF-8
 VSVersionInfo(
@@ -105,12 +107,12 @@ def build(version, folder, branch, force, upload=False):
         cmd.append(disc[0] + ':')
 
     cmd += [
-        f'set PLAYWRIGHT_BROWSERS_PATH=0',
-        f'playwright install chromium',
         f'pyi-makespec -F -n {setup_name} -i {local}/amiya.ico'
         f' --version-file={folder}/version.txt {local}/amiya.py' +
         ''.join([' --add-data=%s;%s' % df for df in data_files]),
-        f'pyinstaller {setup_name}.spec'
+        f'set PLAYWRIGHT_BROWSERS_PATH=0',
+        f'{scripts} playwright install chromium',
+        f'{scripts} pyinstaller {setup_name}.spec'
     ]
 
     for cm in cmd:
