@@ -12,7 +12,7 @@ def build(dist):
         os.makedirs(dist)
 
     profiles = []
-    for root, dirs, _ in os.walk('./pluginsDev'):
+    for root, dirs, _ in os.walk('./Amiya-Bot-plugins'):
         for item in dirs:
             plugin = os.path.join(root, item)
 

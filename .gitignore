@@ -6,10 +6,11 @@
 /view/
 /log/
 /plugins/
-/pluginsDev/
 /database/
 /resource/
 /* - 副本/
+
+/Amiya-Bot-plugins/
 
 .DS_Store
 
