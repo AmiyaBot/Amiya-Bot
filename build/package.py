@@ -122,7 +122,7 @@ def build(version, folder, branch, force, upload=False):
     build_process = subprocess.Popen('&'.join(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     for line in build_process.stdout.readlines():
-        print(str(line, encoding='utf-8').strip('\r\n'))
+        print(line)
 
     if not os.path.exists(f'{dist}/{setup_name}.exe'):
         print(f'no built {dist}/{setup_name}.exe.')
