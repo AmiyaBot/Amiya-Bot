@@ -113,10 +113,17 @@ def build(version, folder, branch, force, upload=False):
         f'pyinstaller {setup_name}.spec'
     ]
 
+    for cm in cmd:
+        print('execute:', cm)
+
     msg = os.popen('&'.join(cmd)).readlines()
 
     for item in msg:
         print(item)
+
+    if not os.path.exists(f'{dist}/{setup_name}.exe'):
+        print(f'no built {dist}/{setup_name}.exe.')
+        return None
 
     pack_name = f'{setup_name}.zip'
     path = pathlib.Path(f'{folder}/{pack_name}')
