@@ -24,7 +24,7 @@ jobs:
 
             -   name: Branch name
                 run: |
-                    echo "Running on default: ${{ steps.branch-name.outputs.current_branch }}"
+                    echo "Running on branch: ${{ steps.branch-name.outputs.current_branch }}"
 
             -   name: Install dependencies
                 run: |
@@ -32,13 +32,13 @@ jobs:
                     python -m venv venv
                     venv\Scripts\python -m pip install --upgrade pip wheel setuptools
                     venv\Scripts\python -m pip install -r requirements.txt
-                    venv\Scripts\python -m pip install pyinstaller
                     venv\Scripts\python -m pip install cos-python-sdk-v5
+                    venv\Scripts\python -m pip install pyinstaller
 
-            -   name: Publish package
+            -   name: Build and publish package
                 env:
                     SECRETID: ${{ secrets.SECRETID }}
                     SECRETKEY: ${{ secrets.SECRETKEY }}
                 run: |
                     venv\Scripts\Activate.ps1
-                    venv\Scripts\python build.py --branch ${{ steps.branch-name.outputs.current_branch }}
+                    venv\Scripts\python build.py --type package --branch ${{ steps.branch-name.outputs.current_branch }}

@@ -6,9 +6,8 @@ import importlib
 from amiyabot import PluginInstance
 from amiyabot.util import temp_sys_path
 
-dist = 'plugins'
 
-if __name__ == '__main__':
+def build(dist):
     if not os.path.exists(dist):
         os.makedirs(dist)
 

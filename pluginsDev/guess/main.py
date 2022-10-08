@@ -9,7 +9,7 @@ from .guessStart import *
 
 bot = PluginInstance(
     name='猜干员游戏',
-    version='1.1',
+    version='1.2',
     plugin_id='amiyabot-guess',
     plugin_type='official',
     description='干员竞猜小游戏，可获得合成玉',
@@ -85,7 +85,7 @@ async def _(data: Message):
         if result.state in [GameState.userSkip, GameState.systemSkip]:
             skip = True
         if result.state == GameState.bingo:
-            UserInfo.add_jade_point(result.answer.user_id, result.rewards)
+            UserInfo.add_jade_point(result.answer.user_id, result.rewards, game_config.jade_point_max)
             referee.set_rank(result.answer, result.point)
 
         if result.user_rate:
@@ -125,7 +125,7 @@ async def _(data: Message):
         text += f'获得{rewards}合成玉\n'
 
         for uid in l:
-            UserInfo.add_jade_point(uid, rewards)
+            UserInfo.add_jade_point(uid, rewards, game_config.jade_point_max)
 
     if result.event:
         result.event.close_event()

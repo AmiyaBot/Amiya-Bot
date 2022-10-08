@@ -49,12 +49,10 @@ class UserInfo(UserBaseModel):
         }
 
     @classmethod
-    def add_jade_point(cls, user_id, point):
+    def add_jade_point(cls, user_id, point, point_max):
         user: UserInfo = cls.get_user(user_id)
 
-        game = read_yaml('resource/plugins/guess/guess.yaml')
-
-        surplus = game.jade_point_max - user.jade_point_max
+        surplus = point_max - user.jade_point_max
         if surplus <= 0:
             return None
 

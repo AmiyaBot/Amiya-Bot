@@ -6,10 +6,13 @@ import zipfile
 import pathlib
 import logging
 
-from urllib import request, error
+from urllib import request
 from jionlp.util.zip_file import ZIP_FILE_LIST
 
 venv = 'venv/Lib/site-packages'
+if sys.platform == 'darwin':
+    venv = 'venv/lib/python3.8/site-packages'
+
 version_file = '''# UTF-8
 VSVersionInfo(
     ffi=FixedFileInfo(
@@ -30,7 +33,7 @@ VSVersionInfo(
                         StringStruct(u'CompanyName', u'AmiyaBot'),
                         StringStruct(u'ProductName', u'《明日方舟》QQ机器人'),
                         StringStruct(u'ProductVersion', u'{file_version}'),
-                        StringStruct(u'FileDescription', u'《明日方舟》QQ机器人，内置游戏资料查询，模拟抽卡，公招识别等多种功能'),
+                        StringStruct(u'FileDescription', u'《明日方舟》QQ机器人，https://www.amiyabot.com'),
                         StringStruct(u'FileVersion', u'{file_version}'),
                         StringStruct(u'OriginalFilename', u'AmiyaBot.exe'),
                         StringStruct(u'LegalCopyright', u'Github AmiyaBot 组织版权所有'),
@@ -43,25 +46,11 @@ VSVersionInfo(
 )
 '''
 data_files = [
-    (os.path.abspath(f'{venv}/amiyabot/_assets'), 'amiyabot/_assets'),
+    (os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), 'amiyabot/_assets'),
 ]
 
 
-def argv(name, formatter=str):
-    key = f'--{name}'
-    if key in sys.argv:
-        index = sys.argv.index(key) + 1
-
-        if index >= len(sys.argv):
-            return True
-
-        if sys.argv[index].startswith('--'):
-            return True
-        else:
-            return formatter(sys.argv[index])
-
-
-def build(version, folder, branch, force):
+def build(version, folder, branch, force, upload=False):
     dist = f'{folder}/dist'
     local = '/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.'
 
@@ -140,7 +129,8 @@ def build(version, folder, branch, force):
 
     os.remove(f'{folder}/version.txt')
 
-    # upload_pack('.github/latest.txt', branch, path, pack_name)
+    if upload:
+        upload_pack('.github/latest.txt', branch, path, pack_name)
 
 
 def upload_pack(ver_file, branch, package_file, package_name):
@@ -170,13 +160,4 @@ def upload_pack(ver_file, branch, package_file, package_name):
         Bucket=bucket,
         LocalFilePath=ver_file,
         Key=f'package/release/latest-{branch}.txt',
-    )
-
-
-if __name__ == '__main__':
-    build(
-        argv('version'),
-        argv('folder') or '.',
-        argv('branch'),
-        argv('force')
     )
