@@ -109,7 +109,7 @@ def build(version, folder, branch, force, upload=False):
 
     cmd += [
         f'pyi-makespec -F -n {setup_name} -i {local}/amiya.ico'
-        f' --version-file={folder}/version.txt {local}/amiya.py' +
+        f' --version-file=version.txt {local}/amiya.py' +
         ''.join([' --add-data=%s;%s' % df for df in data_files]),
         f'set PLAYWRIGHT_BROWSERS_PATH=0',
         f'{os.path.abspath(scripts)}\\playwright install chromium',
