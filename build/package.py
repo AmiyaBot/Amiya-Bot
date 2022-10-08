@@ -111,8 +111,8 @@ def build(version, folder, branch, force, upload=False):
         f' --version-file={folder}/version.txt {local}/amiya.py' +
         ''.join([' --add-data=%s;%s' % df for df in data_files]),
         f'set PLAYWRIGHT_BROWSERS_PATH=0',
-        f'{scripts} playwright install chromium',
-        f'{scripts} pyinstaller {setup_name}.spec'
+        f'{os.path.abspath(scripts)}\\playwright install chromium',
+        f'{os.path.abspath(scripts)}\\pyinstaller {setup_name}.spec'
     ]
 
     for cm in cmd:
