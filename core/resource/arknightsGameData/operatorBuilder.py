@@ -101,6 +101,9 @@ class Operator:
         sub_classes = JsonData.get_json_data('uniequip_table')['subProfDict']
         range_data = JsonData.get_json_data('range_table')
 
+        self.__voice_list = Collection.get_voice_list(code)
+        self.__skins_list = sorted(Collection.get_skins_list(code), key=lambda n: n['displaySkin']['getTime'])
+
         range_id = data['phases'][-1]['rangeId']
         range_map = '无范围'
         if range_id in range_data:
@@ -114,6 +117,11 @@ class Operator:
                 word_data['voiceLangTypeDict'][name]['name']: item['cvName'] for name, item in voice_lang.items()
             }
 
+        drawer = '未知'
+        skins_list = self.skins()
+        if skins_list:
+            drawer = skins_list[0]['skin_drawer']
+
         data['name'] = data['name'].strip()
 
         self.id = code
@@ -122,6 +130,7 @@ class Operator:
         self.en_name = data['appellation']
         self.wiki_name = data['name']
         self.index_name = remove_punctuation(data['name'])
+        self.drawer = drawer
         self.rarity = data['rarity'] + 1
         self.classes = ArknightsConfig.classes[data['profession']]
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']
@@ -135,9 +144,6 @@ class Operator:
         self.unavailable = self.name in ArknightsConfig.unavailable
 
         self.is_recruit = is_recruit
-
-        self.voice_list = Collection.get_voice_list(code)
-        self.skins_list = sorted(Collection.get_skins_list(code), key=lambda n: n['displaySkin']['getTime'])
 
         self.__tags()
         self.__extra()
@@ -349,7 +355,7 @@ class Operator:
 
     def voices(self):
         voices = []
-        for item in self.voice_list:
+        for item in self.__voice_list:
             voices.append({
                 'voice_title': item['voiceTitle'],
                 'voice_text': item['voiceText'],
@@ -373,7 +379,7 @@ class Operator:
         skins = []
         skin_sort = 0
 
-        for item in self.skins_list:
+        for item in self.__skins_list:
             skin_data = item['displaySkin']
             skin_id = item['skinId']
             skin_lvl = {
