@@ -18,7 +18,7 @@ if __name__ == '__main__':
             asyncio.wait(
                 [
                     *init_task,
-                    bot.start(enable_chromium=True),
+                    bot.start(launch_browser=True),
                     app.serve(),
                     load_plugins()
                 ]
