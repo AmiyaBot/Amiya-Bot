@@ -1,6 +1,7 @@
 from amiyabot import AmiyaBot
 from amiyabot.database import *
 from amiyabot.adapters.mirai import mirai_api_http
+from amiyabot.adapters.cqhttp import cq_http
 from core.database import config, is_mysql
 from typing import Union
 
@@ -30,6 +31,9 @@ class BotAccounts(BotBaseModel):
     mah_host: str = CharField(null=True)
     mah_ws_port: int = IntegerField(null=True)
     mah_http_port: int = IntegerField(null=True)
+    cq_host: str = CharField(null=True)
+    cq_ws_port: int = IntegerField(null=True)
+    cq_http_port: int = IntegerField(null=True)
 
     @classmethod
     def get_all_account(cls):
@@ -49,6 +53,10 @@ class BotAccounts(BotBaseModel):
                 conf['adapter'] = mirai_api_http(host=item.mah_host,
                                                  ws_port=item.mah_ws_port,
                                                  http_port=item.mah_http_port)
+            if item.adapter == 'cq_http':
+                conf['adapter'] = cq_http(host=item.cq_host,
+                                          ws_port=item.cq_ws_port,
+                                          http_port=item.cq_http_port)
 
             account.append(AmiyaBot(**conf))
 

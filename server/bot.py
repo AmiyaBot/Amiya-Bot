@@ -3,6 +3,7 @@ from typing import Optional
 from core import app, bot
 from core.database.bot import BotAccounts, query_to_list
 from amiyabot.adapters.mirai import mirai_api_http
+from amiyabot.adapters.cqhttp import cq_http
 from amiyabot.network.httpServer import BaseModel
 from amiyabot import AmiyaBot
 
@@ -22,6 +23,9 @@ class BotAccountModel(BotAppId):
     mah_host: Optional[str] = None
     mah_ws_port: Optional[int] = None
     mah_http_port: Optional[int] = None
+    cq_host: Optional[str] = None
+    cq_ws_port: Optional[int] = None
+    cq_http_port: Optional[int] = None
 
     start: int = 0
 
@@ -91,6 +95,11 @@ class Bot:
             conf['adapter'] = mirai_api_http(host=data.mah_host,
                                              ws_port=data.mah_ws_port,
                                              http_port=data.mah_http_port)
+        if data.adapter == 'cq_http':
+            conf['adapter'] = cq_http(host=data.cq_host,
+                                      ws_port=data.cq_ws_port,
+                                      http_port=data.cq_http_port)
+
         bot.append(AmiyaBot(**conf))
 
         return app.response(message=f'正在启动 AppId {data.appid}')
