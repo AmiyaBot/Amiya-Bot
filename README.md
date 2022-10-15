@@ -31,6 +31,34 @@ Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
   用于任何商业用途，不得在未经授权的情况下使用本项目仓库名称及 logo 进行任何形式的宣传
 - 用户的个人行为与本项目无关，本项目不承担用户因侵权、违反该声明内容或其他在法律及道德上不被支持的行为所带来的一切后果
 
+## 新版本改动
+
+AmiyaBot 自 2019 年立项以来已发布 5 个主版本号更新，这是第 6 个版本，也是最新的生产版本。
+
+欢迎您使用 Amiya-Bot 来部署自己的 Amiya/开发自己的 Bot，但在这之前，如果您是老用户，应了解我们在 V6 版本做出的影响你操作的改动，若你是新用户，可跳过本节。
+
+以下是改动简述：
+
+对于一般用户：
+
+- 项目变更为 [AmiyaBot](https://www.amiyabot.com/) 的一个插件开发 Demo 项目，且将功能拆分为 N 个插件，方便用户选用。
+
+对于开发者：
+
+- 本项目中作为框架的部分拆分为独立的项目：[AmiyaBot](https://www.amiyabot.com/)。
+
+拆分后的 [AmiyaBot](https://www.amiyabot.com/) 相较于 v5：
+
+- 重构了 core。
+- 添加了对 QQ 频道的支持。
+- 开发时的细节优化。这需要您重新查阅开发文档。
+- 添加了支持热载入/卸载的插件系统。
+- 更改了向用户发布功能的流程。现在我们正在筹建插件商店。
+
+具体的改动细节可以在跟随文档流程进行操作时自行体会。
+
+感谢所有用户的支持，有你 Amiya 更好！
+
 ## 开始使用
 
 部署文档：https://www.amiyabot.com/guide/deploy/ <br>
@@ -44,7 +72,7 @@ Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
 
 ## 贡献
 
-- 如果你想为 Amiya 开发更多功能，可查阅[插件开发文档](https://www.amiyabot.com/develop/plugin/)
+- 如果你想为 Amiya 开发更多功能，可查阅 [插件开发文档](https://www.amiyabot.com/develop/plugin/)
 - 如果有更多的建议或 BUG 反馈，请提交到 [issues](../../issues) 或加入官方 QQ
   频道 [Amiya的测试工坊](https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W4sJux&appChannel=share&businessType=9&from=181074&biz=ka&shareSource=5)
   反馈
