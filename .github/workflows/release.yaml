@@ -7,7 +7,7 @@ on:
         branches: [ V6-dev, V6-master ]
 
 jobs:
-    build-win-amd64:
+    publish-packages:
         runs-on: windows-latest
         steps:
             -   uses: actions/checkout@v2
@@ -42,3 +42,12 @@ jobs:
                 run: |
                     venv\Scripts\Activate.ps1
                     venv\Scripts\python run_build.py --type package --branch ${{ steps.branch-name.outputs.current_branch }} --upload
+
+            -   name: Build and publish plugins
+                env:
+                    SECRETID: ${{ secrets.SECRETID }}
+                    SECRETKEY: ${{ secrets.SECRETKEY }}
+                run: |
+                    git clone https://github.com/AmiyaBot/Amiya-Bot-plugins.git pluginsDev
+                    venv\Scripts\Activate.ps1
+                    venv\Scripts\python run_build.py --type plugins --upload

@@ -4,7 +4,6 @@ import sys
 import shutil
 import zipfile
 import pathlib
-import logging
 import subprocess
 
 from urllib import request
@@ -144,35 +143,12 @@ def build(version, folder, branch, force, upload=False):
 
 
 def upload_pack(ver_file, branch, package_file, package_name):
-    from qcloud_cos import CosConfig, CosS3Client, CosClientError, CosServiceError
-
-    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+    from .uploadFile import COSUploader
 
     secret_id = os.environ.get('SECRETID')
     secret_key = os.environ.get('SECRETKEY')
 
-    config = CosConfig(
-        Region='ap-guangzhou',
-        SecretId=secret_id,
-        SecretKey=secret_key
-    )
-    client = CosS3Client(config)
+    cos = COSUploader(secret_id, secret_key)
 
-    bucket = client.list_buckets()['Buckets']['Bucket'][0]['Name']
-
-    for i in range(0, 10):
-        try:
-            client.upload_file(
-                Bucket=bucket,
-                LocalFilePath=package_file,
-                Key=f'package/release/{package_name}',
-            )
-            break
-        except CosClientError or CosServiceError as e:
-            print(e)
-
-    client.put_object_from_local_file(
-        Bucket=bucket,
-        LocalFilePath=ver_file,
-        Key=f'package/release/latest-{branch}.txt',
-    )
+    cos.upload_file(package_file, f'package/release/{package_name}')
+    cos.upload_file(ver_file, f'package/release/latest-{branch}.txt')
