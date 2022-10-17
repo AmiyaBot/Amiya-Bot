@@ -63,4 +63,5 @@ class COSUploader:
                 if response['IsTruncated'] == 'false':
                     complete = True
 
-        self.delete_file(file_list)
+        if file_list:
+            self.delete_file(file_list)

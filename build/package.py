@@ -65,7 +65,7 @@ def build(version, folder, branch, force, upload=False):
         latest = ''
 
     if not version:
-        with open('.github/latest.txt', mode='r', encoding='utf-8') as ver:
+        with open('.github/publish.txt', mode='r', encoding='utf-8') as ver:
             version = ver.read().strip('\r\n')
 
     if latest == version and not force:
@@ -139,7 +139,7 @@ def build(version, folder, branch, force, upload=False):
     os.remove(f'{folder}/version.txt')
 
     if upload:
-        upload_pack('.github/latest.txt', branch, path, pack_name)
+        upload_pack('.github/publish.txt', branch, path, pack_name)
 
 
 def upload_pack(ver_file, branch, package_file, package_name):
