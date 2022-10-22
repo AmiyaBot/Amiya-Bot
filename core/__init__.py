@@ -42,6 +42,10 @@ async def load_plugins():
     create_dir('plugins')
     count = 0
     for root, dirs, files in os.walk('plugins'):
+        for dir_name in dirs:
+            req_file = os.path.join(root, f'{dir_name}/requirements.txt')
+            if os.path.exists(req_file):
+                subprocess.call([sys.executable, "-m", "pip", "install", "-r", req_file, "-i","https://pypi.tuna.tsinghua.edu.cn/simple"])
         for file in files:
             if file.endswith('.zip'):
                 res = bot.install_plugin(os.path.join(root, file), extract_plugin=True)
