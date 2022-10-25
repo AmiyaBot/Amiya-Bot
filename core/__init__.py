@@ -62,14 +62,14 @@ async def load_plugins():
     create_dir('plugins')
     count = 0
     for root, dirs, files in os.walk('plugins'):
-        for dir_name in dirs:
-            req_file = os.path.join(root, f'{dir_name}/requirements.txt')
-            if os.path.exists(req_file):
-                log.info(f'installing requirements {req_file}')
-                try:
-                    subprocess.run([sys.executable, "-m", "pip", "install", "-r", req_file, "-i","https://pypi.tuna.tsinghua.edu.cn/simple"])
-                except Exception as e:
-                    log.error(f'install requirements error:{e}')
+#         for dir_name in dirs:
+#             req_file = os.path.join(root, f'{dir_name}/requirements.txt')
+#             if os.path.exists(req_file):
+#                 log.info(f'installing requirements {req_file}')
+#                 try:
+#                     subprocess.run([sys.executable, "-m", "pip", "install", "-r", req_file, "-i","https://pypi.tuna.tsinghua.edu.cn/simple"])
+#                 except Exception as e:
+#                     log.error(f'install requirements error:{e}')
 
         for file in files:
             if file.endswith('.zip'):
