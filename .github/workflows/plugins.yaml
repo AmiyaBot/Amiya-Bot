@@ -1,0 +1,35 @@
+name: AmiyaBot plugins
+
+on:
+    push:
+        branches: [ V6-master ]
+        paths: [ '.github/plugins.txt' ]
+
+jobs:
+    publish-plugins:
+        runs-on: windows-latest
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   name: Set up Python 3.8.10 amd64
+                uses: actions/setup-python@v4
+                with:
+                    python-version: 3.8.10
+                    architecture: x64
+
+            -   name: Install dependencies
+                run: |
+                    python -m pip install --upgrade pip
+                    python -m venv venv
+                    venv\Scripts\python -m pip install --upgrade pip wheel setuptools
+                    venv\Scripts\python -m pip install -r requirements.txt
+                    venv\Scripts\python -m pip install cos-python-sdk-v5
+
+            -   name: Build and publish plugins
+                env:
+                    SECRETID: ${{ secrets.SECRETID }}
+                    SECRETKEY: ${{ secrets.SECRETKEY }}
+                run: |
+                    git clone https://github.com/AmiyaBot/Amiya-Bot-plugins.git pluginsDev
+                    venv\Scripts\Activate.ps1
+                    venv\Scripts\python run_build.py --type plugins --upload

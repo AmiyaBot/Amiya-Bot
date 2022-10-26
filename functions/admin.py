@@ -8,7 +8,7 @@ from core.database.group import GroupActive, check_group_active
 @bot.before_bot_reply
 async def _(data: Message):
     if not check_group_active(data.channel_id):
-        return data.is_admin and any_match(data.text, ['工作', '上班'])
+        return data.is_admin and bool(any_match(data.text, ['工作', '上班']))
     return True
 
 

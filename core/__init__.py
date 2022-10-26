@@ -2,9 +2,11 @@ import os
 import copy
 import time
 import traceback
+import subprocess
+import sys
 
 from typing import List
-from amiyabot import MultipleAccounts, HttpServer, Message, Chain, ChainBuilder, Equal, log
+from amiyabot import MultipleAccounts, HttpServer, Message, Chain, ChainBuilder, Equal, log, PluginInstance
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
@@ -30,6 +32,24 @@ tasks_control = TasksControl()
 
 message_record = []
 
+class LazyLoadPluginInstance(PluginInstance):
+    def __init__(self,
+                 name: str,
+                 version: str,
+                 plugin_id: str,
+                 plugin_type: str = None,
+                 description: str = None,
+                 document: str = None):
+        super().__init__(
+            name,
+            version,
+            plugin_id,
+            plugin_type,
+            description,
+            document
+        )
+    
+    def load(self): ...
 
 def load_resource():
     gamedata_repo.update()
@@ -42,11 +62,32 @@ async def load_plugins():
     create_dir('plugins')
     count = 0
     for root, dirs, files in os.walk('plugins'):
+#         for dir_name in dirs:
+#             req_file = os.path.join(root, f'{dir_name}/requirements.txt')
+#             if os.path.exists(req_file):
+#                 log.info(f'installing requirements {req_file}')
+#                 try:
+#                     subprocess.run([sys.executable, "-m", "pip", "install", "-r", req_file, "-i","https://pypi.tuna.tsinghua.edu.cn/simple"])
+#                 except Exception as e:
+#                     log.error(f'install requirements error:{e}')
+
         for file in files:
             if file.endswith('.zip'):
-                res = bot.install_plugin(os.path.join(root, file), extract_plugin=True)
-                if res:
-                    count += 1
+                log.info(f'installing plugins {file}')
+                try:
+                    res = bot.install_plugin(os.path.join(root, file), extract_plugin=True)
+                    if res:
+                        count += 1
+                except Exception as e:
+                    log.error(f'install plugins error:{e}')
+
+    # 然后对所有插件执行懒加载（如果有的话）
+    
+    for plugin_id, item in bot.plugins.items():
+        # log.info(f'lazy load plugins {plugin_id},{type(item)}')
+        if isinstance(item, LazyLoadPluginInstance):
+            log.info(f'lazy load plugins {plugin_id}')
+            item.load()
 
     if count:
         log.info(f'successfully loaded {count} plugin(s).')
