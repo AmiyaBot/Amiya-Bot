@@ -4,9 +4,6 @@ on:
     push:
         branches: [ V6-dev, V6-master ]
         paths: [ '.github/publish.txt' ]
-    pull_request:
-        branches: [ V6-dev, V6-master ]
-        paths: [ '.github/publish.txt' ]
 
 jobs:
     publish-package:

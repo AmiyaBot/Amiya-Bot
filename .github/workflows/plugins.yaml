@@ -4,9 +4,6 @@ on:
     push:
         branches: [ V6-master ]
         paths: [ '.github/plugins.txt' ]
-    pull_request:
-        branches: [ V6-master ]
-        paths: [ '.github/plugins.txt' ]
 
 jobs:
     publish-plugins:
