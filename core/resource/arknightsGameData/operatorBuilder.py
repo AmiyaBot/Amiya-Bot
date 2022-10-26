@@ -100,6 +100,7 @@ class Operator:
     def __init__(self, code: str, data: dict, is_recruit: bool = False):
         sub_classes = JsonData.get_json_data('uniequip_table')['subProfDict']
         range_data = JsonData.get_json_data('range_table')
+        nation_id = JsonData.get_json_data('character_table')
 
         self.__voice_list = Collection.get_voice_list(code)
         self.__skins_list = sorted(Collection.get_skins_list(code), key=lambda n: n['displaySkin']['getTime'])
@@ -136,6 +137,7 @@ class Operator:
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']
         self.classes_code = data['profession']
         self.type = ArknightsConfig.types.get(data['position'])
+        self.nation = nation_id[code]['nationId']
         self.tags = data['tagList']
         self.range = range_map
         self.birthday = ''
