@@ -137,7 +137,7 @@ class Operator:
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']
         self.classes_code = data['profession']
         self.type = ArknightsConfig.types.get(data['position'])
-        self.nation = nation_id[code]["nationId"]
+        self.nation = nation_id[code]['nationId']
         self.tags = data['tagList']
         self.range = range_map
         self.birthday = ''
