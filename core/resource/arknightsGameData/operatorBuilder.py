@@ -457,7 +457,7 @@ class Operator:
         range_data = JsonData.get_json_data('range_table')
         range_id = self.data['phases'][-1]['rangeId']
         if range_id in range_data:
-            self.range_map = build_range(range_data[range_id]['grids'])
+            self.range = build_range(range_data[range_id]['grids'])
 
     def __extra(self):
         if self.id == 'char_1001_amiya2':

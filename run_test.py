@@ -7,7 +7,7 @@ from amiyabot.handler import BotAdapterProtocol
 from amiyabot.adapters.convert import text_convert
 from amiyabot.builtin.messageChain.element import Text, Html
 
-from amiya import init_task, load_resource, load_plugins
+from amiya import init_task, load_resource
 
 
 class TestInstance(BotAdapterProtocol):
@@ -83,12 +83,12 @@ class TestInstance(BotAdapterProtocol):
 bot = AmiyaBot(appid='', token='', adapter=TestInstance)
 
 if __name__ == '__main__':
-    from pluginsDev.src.game.guess import bot as guess
-
+    # from pluginsDev.src.arknights.operatorArchives import bot as plugin
 
     async def install_plugin():
         # todo 此处可以导入插件
-        bot.install_plugin(guess)
+        # bot.install_plugin(plugin)
+        bot.install_plugin('plugins/amiyabot-arknights-operator-1.5.zip', extract_plugin=True)
 
 
     bot.set_prefix_keywords('兔兔')
