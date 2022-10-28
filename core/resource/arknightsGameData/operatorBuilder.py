@@ -99,58 +99,43 @@ class Token:
 class Operator:
     def __init__(self, code: str, data: dict, is_recruit: bool = False):
         sub_classes = JsonData.get_json_data('uniequip_table')['subProfDict']
-        range_data = JsonData.get_json_data('range_table')
         nation_id = JsonData.get_json_data('character_table')
 
+        self.data = data
         self.__voice_list = Collection.get_voice_list(code)
         self.__skins_list = sorted(Collection.get_skins_list(code), key=lambda n: n['displaySkin']['getTime'])
-
-        range_id = data['phases'][-1]['rangeId']
-        range_map = '无范围'
-        if range_id in range_data:
-            range_map = build_range(range_data[range_id]['grids'])
-
-        cv_list = {}
-        word_data = JsonData.get_json_data('charword_table')
-        if code in word_data['voiceLangDict']:
-            voice_lang = word_data['voiceLangDict'][code]['dict']
-            cv_list = {
-                word_data['voiceLangTypeDict'][name]['name']: item['cvName'] for name, item in voice_lang.items()
-            }
-
-        drawer = '未知'
-        skins_list = self.skins()
-        if skins_list:
-            drawer = skins_list[0]['skin_drawer']
 
         data['name'] = data['name'].strip()
 
         self.id = code
-        self.cv = cv_list
+        self.cv = {}
         self.name = data['name']
         self.en_name = data['appellation']
         self.wiki_name = data['name']
         self.index_name = remove_punctuation(data['name'])
-        self.drawer = drawer
+        self.drawer = '未知'
         self.rarity = data['rarity'] + 1
         self.classes = ArknightsConfig.classes[data['profession']]
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']
         self.classes_code = data['profession']
         self.type = ArknightsConfig.types.get(data['position'])
         self.nation = nation_id[code]['nationId']
+        self.race = '未知'
         self.tags = data['tagList']
-        self.range = range_map
-        self.birthday = ''
+        self.range = '无范围'
+        self.birthday = '未知'
 
         self.limit = self.name in ArknightsConfig.limit
         self.unavailable = self.name in ArknightsConfig.unavailable
 
         self.is_recruit = is_recruit
 
+        self.__cv()
+        self.__race()
         self.__tags()
+        self.__drawer()
+        self.__range()
         self.__extra()
-
-        self.data = data
 
     def __str__(self):
         return f'{self.id}_{self.name}'
@@ -446,6 +431,33 @@ class Operator:
 
         if self.id in ['char_285_medic2', 'char_286_cast3', 'char_376_therex', 'char_4000_jnight']:
             self.tags.append('支援机械')
+
+    def __cv(self):
+        word_data = JsonData.get_json_data('charword_table')
+        if self.id in word_data['voiceLangDict']:
+            voice_lang = word_data['voiceLangDict'][self.id]['dict']
+            self.cv = {
+                word_data['voiceLangTypeDict'][name]['name']: item['cvName'] for name, item in voice_lang.items()
+            }
+
+    def __race(self):
+        for story in self.stories():
+            if story['story_title'] == '基础档案':
+                r = re.search(r'\n【种族】.*?(\S+).*?\n', story['story_text'])
+                if r:
+                    self.race = str(r.group(1))
+                break
+
+    def __drawer(self):
+        skins_list = self.skins()
+        if skins_list:
+            self.drawer = skins_list[0]['skin_drawer']
+
+    def __range(self):
+        range_data = JsonData.get_json_data('range_table')
+        range_id = self.data['phases'][-1]['rangeId']
+        if range_id in range_data:
+            self.range_map = build_range(range_data[range_id]['grids'])
 
     def __extra(self):
         if self.id == 'char_1001_amiya2':
