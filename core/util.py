@@ -62,7 +62,7 @@ class TimeRecorder:
             total += '%d小时' % hour
         if mint:
             total += '%d分钟' % mint
-        if sec and not (day or hour or mint):
+        if sec:
             total += '%d秒' % sec
 
         return total
