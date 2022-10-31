@@ -1,0 +1,4 @@
+# 构建时忽略下列文件
+plugins/
+pluginsDev/
+resource/

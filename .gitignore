@@ -15,6 +15,9 @@
 
 .DS_Store
 
+/config/database.yaml
+/config/server.yaml
+
 *.pyc
 *.spec
 *.zip

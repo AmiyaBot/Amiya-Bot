@@ -14,6 +14,7 @@ import asyncio
 import zipfile
 import datetime
 import pypinyin
+import subprocess
 
 from yaml import SafeDumper
 from typing import List
@@ -316,7 +317,6 @@ def extract_time(text: str, to_time_point: bool = True):
             pass
     return []
 
-
 def chinese_to_digits(text: str):
     character_relation = {
         '零': 0,
@@ -426,7 +426,6 @@ def extract_zip_plugin(curr_dir, resource_path):
         if os.path.exists(os.path.join(resource_path, pack_file)):
             continue
         pack.extract(pack_file, resource_path)
-
 
 def read_tail(path: str, lines: int = 1, _buffer: int = 4098):
     f = open(path, mode='r', encoding='utf-8')
