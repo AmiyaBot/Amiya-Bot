@@ -1,6 +1,7 @@
 import os
 import copy
 import time
+import jieba
 import traceback
 
 from typing import List
@@ -24,6 +25,7 @@ app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
 bot = MultipleAccounts(*BotAccounts.get_all_account())
 
 bot.set_prefix_keywords(['阿米娅', '阿米兔', '兔兔', '兔子', '小兔子', 'Amiya', 'amiya'])
+jieba.del_word('兔子')
 
 gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata)
 tasks_control = TasksControl()

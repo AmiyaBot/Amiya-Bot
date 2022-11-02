@@ -100,7 +100,7 @@ class Bot:
                                       ws_port=data.cq_ws_port,
                                       http_port=data.cq_http_port)
 
-        bot.append(AmiyaBot(**conf))
+        bot.append(AmiyaBot(**conf), launch_browser=True)
 
         return app.response(message=f'正在启动 AppId {data.appid}')
 

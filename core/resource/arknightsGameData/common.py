@@ -29,6 +29,11 @@ config = {
     }
 }
 
+html_symbol = {
+    '<替身>': '&lt;替身&gt;',
+    '<支援装置>': '&lt;支援装置&gt;'
+}
+
 
 class ArknightsConfig:
     classes = config['classes']
