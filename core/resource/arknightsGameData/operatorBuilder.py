@@ -9,7 +9,8 @@ from .common import ArknightsConfig, JsonData, html_symbol
 class Operator:
     def __init__(self, code: str, data: dict, is_recruit: bool = False):
         sub_classes = JsonData.get_json_data('uniequip_table')['subProfDict']
-        nation_id = JsonData.get_json_data('character_table')
+        team_table = JsonData.get_json_data('handbook_team_table')
+        character = JsonData.get_json_data('character_table')
 
         self.data = data
         self.__voice_list = Collection.get_voice_list(code)
@@ -19,32 +20,45 @@ class Operator:
 
         self.id = code
         self.cv = {}
+
+        self.type = ArknightsConfig.types.get(data['position'])
+        self.tags = data['tagList']
+        self.range = '无范围'
+        self.rarity = data['rarity'] + 1
+
         self.name = data['name']
         self.en_name = data['appellation']
         self.wiki_name = data['name']
         self.index_name = remove_punctuation(data['name'])
-        self.drawer = '未知'
-        self.rarity = data['rarity'] + 1
+        self.origin_name = '未知'
+
         self.classes = ArknightsConfig.classes[data['profession']]
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']
         self.classes_code = data['profession']
-        self.type = ArknightsConfig.types.get(data['position'])
-        self.nation = nation_id[code]['nationId']
+
         self.race = '未知'
-        self.tags = data['tagList']
-        self.range = '无范围'
+        self.drawer = '未知'
+        self.group_id = data['groupId']
+        self.group = team_table[self.group_id]['powerName'] if self.group_id in team_table else '未知'
+        self.nation_id = character[code]['nationId']
+        self.nation = team_table[self.nation_id]['powerName'] if self.nation_id in team_table else '未知'
         self.birthday = '未知'
+
+        self.profile = data['itemUsage'] or '无'
+        self.impression = data['itemDesc'] or '无'
 
         self.limit = self.name in ArknightsConfig.limit
         self.unavailable = self.name in ArknightsConfig.unavailable
 
         self.is_recruit = is_recruit
+        self.is_sp = data['isSpChar']
 
         self.__cv()
         self.__race()
         self.__tags()
         self.__drawer()
         self.__range()
+        self.__origin(character)
         self.__extra()
 
     def __str__(self):
@@ -371,11 +385,19 @@ class Operator:
         if range_id in range_data:
             self.range = build_range(range_data[range_id]['grids'])
 
+    def __origin(self, character):
+        sp_char = JsonData.get_json_data('char_meta_table')['spCharGroups']
+        for oid, group in sp_char.items():
+            for item in group:
+                if item == self.id:
+                    self.origin_name = character[oid]['name']
+
     def __extra(self):
         if self.id == 'char_1001_amiya2':
             self.name = '阿米娅近卫'
             self.en_name = 'AmiyaGuard'
             self.wiki_name = '阿米娅(近卫)'
+            self.origin_name = '阿米娅'
 
 
 class Token:
