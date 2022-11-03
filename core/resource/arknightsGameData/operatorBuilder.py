@@ -9,8 +9,9 @@ from .common import ArknightsConfig, JsonData, html_symbol
 class Operator:
     def __init__(self, code: str, data: dict, is_recruit: bool = False):
         sub_classes = JsonData.get_json_data('uniequip_table')['subProfDict']
+        character_table = JsonData.get_json_data('character_table')
         team_table = JsonData.get_json_data('handbook_team_table')
-        character = JsonData.get_json_data('character_table')
+        item_table = JsonData.get_json_data('item_table')['items']
 
         self.data = data
         self.__voice_list = Collection.get_voice_list(code)
@@ -25,6 +26,7 @@ class Operator:
         self.tags = []
         self.range = '无范围'
         self.rarity = data['rarity'] + 1
+        self.number = data['displayNumber']
 
         self.name = data['name']
         self.en_name = data['appellation']
@@ -38,14 +40,20 @@ class Operator:
 
         self.race = '未知'
         self.drawer = '未知'
+        self.team_id = data['teamId']
+        self.team = team_table[self.team_id]['powerName'] if self.team_id in team_table else '未知'
         self.group_id = data['groupId']
         self.group = team_table[self.group_id]['powerName'] if self.group_id in team_table else '未知'
-        self.nation_id = character[code]['nationId']
+        self.nation_id = character_table[code]['nationId']
         self.nation = team_table[self.nation_id]['powerName'] if self.nation_id in team_table else '未知'
         self.birthday = '未知'
 
         self.profile = data['itemUsage'] or '无'
         self.impression = data['itemDesc'] or '无'
+
+        self.potential_item = ''
+        if data['potentialItemId'] in item_table:
+            self.potential_item = item_table[data['potentialItemId']]['description']
 
         self.limit = self.name in ArknightsConfig.limit
         self.unavailable = self.name in ArknightsConfig.unavailable
@@ -58,7 +66,7 @@ class Operator:
         self.__tags()
         self.__drawer()
         self.__range()
-        self.__origin(character)
+        self.__origin(character_table)
         self.__extra()
 
     def __str__(self):
