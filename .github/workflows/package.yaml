@@ -32,7 +32,7 @@ jobs:
                     venv\Scripts\python -m pip install --upgrade pip wheel setuptools
                     venv\Scripts\python -m pip install -r requirements.txt
                     venv\Scripts\python -m pip install cos-python-sdk-v5
-                    venv\Scripts\python -m pip install pyinstaller==5.4.1
+                    venv\Scripts\python -m pip install pyinstaller
 
             -   name: Build and publish package
                 env:
