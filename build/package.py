@@ -80,8 +80,13 @@ def build(version, folder, branch, force, upload=False):
         shutil.rmtree(dist)
 
     os.makedirs(dist)
+    os.makedirs(f'{folder}/jieba')
 
-    shutil.copy(f'{venv}/jieba/dict.txt', f'{dist}/dict.txt')
+    data_files.append(
+        (os.path.abspath(f'{folder}/jieba').replace(' ', '\\ '), 'jieba')
+    )
+
+    shutil.copy(f'{venv}/jieba/dict.txt', f'{folder}/jieba/dict.txt')
     shutil.copytree('config', f'{dist}/config', dirs_exist_ok=True)
 
     for item in ZIP_FILE_LIST:
