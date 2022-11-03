@@ -74,6 +74,7 @@ class TestInstance(BotAdapterProtocol):
         data.user_id = 'test_user'
         data.channel_id = 'test_group'
         data.message_type = 'group'
+        data.nickname = 'admin'
 
         data.is_admin = True
 
@@ -83,12 +84,13 @@ class TestInstance(BotAdapterProtocol):
 bot = AmiyaBot(appid='', token='', adapter=TestInstance)
 
 if __name__ == '__main__':
-    # from pluginsDev.src.arknights.operatorArchives import bot as plugin
+    from pluginsDev.src.arknights.operatorArchives import bot as plugin
+
 
     async def install_plugin():
         # todo 此处可以导入插件
-        # bot.install_plugin(plugin)
-        bot.install_plugin('plugins/amiyabot-arknights-operator-1.5.zip', extract_plugin=True)
+        bot.install_plugin(plugin)
+        # bot.install_plugin('plugins/amiyabot-arknights-operator-1.5.zip', extract_plugin=True)
 
 
     bot.set_prefix_keywords('兔兔')
