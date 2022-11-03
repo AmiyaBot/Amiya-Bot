@@ -22,7 +22,7 @@ class Operator:
         self.cv = {}
 
         self.type = ArknightsConfig.types.get(data['position'])
-        self.tags = data['tagList']
+        self.tags = []
         self.range = '无范围'
         self.rarity = data['rarity'] + 1
 
@@ -356,7 +356,7 @@ class Operator:
         if self.id in ['char_285_medic2', 'char_286_cast3', 'char_376_therex', 'char_4000_jnight']:
             tags.append('支援机械')
 
-        self.tags = tags
+        self.tags = tags + self.data['tagList']
 
     def __cv(self):
         word_data = JsonData.get_json_data('charword_table')
