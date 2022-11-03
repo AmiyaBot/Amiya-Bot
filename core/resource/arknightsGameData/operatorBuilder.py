@@ -26,6 +26,7 @@ class Operator:
         self.tags = []
         self.range = '无范围'
         self.rarity = data['rarity'] + 1
+        self.number = data['displayNumber']
 
         self.name = data['name']
         self.en_name = data['appellation']
