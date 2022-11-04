@@ -1,1 +1,1 @@
-v6.0.6-stable
+v6.0.6-stable2
