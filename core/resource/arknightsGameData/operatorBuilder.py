@@ -358,13 +358,13 @@ class Operator:
     def __tags(self):
         tags = [self.classes, self.type]
 
-        if str(self.rarity) in ArknightsConfig.high_star:
-            tags.append(ArknightsConfig.high_star[str(self.rarity)])
-
         if self.id in ['char_285_medic2', 'char_286_cast3', 'char_376_therex', 'char_4000_jnight']:
             tags.append('支援机械')
 
-        self.tags = tags + self.data['tagList']
+        if str(self.rarity) in ArknightsConfig.high_star:
+            tags.append(ArknightsConfig.high_star[str(self.rarity)])
+
+        self.tags = self.data['tagList'] + tags
 
     def __cv(self):
         word_data = JsonData.get_json_data('charword_table')
