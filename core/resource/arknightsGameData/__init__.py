@@ -16,6 +16,70 @@ STR_DICT_MAP = Dict[str, STR_DICT]
 gamedata_path = 'resource/gamedata'
 
 
+class ArknightsGameData:
+    version: str
+    enemies: Dict[str, Dict[str, dict]]
+    stages: STR_DICT_MAP
+    stages_map: STR_DICT
+    operators: Dict[str, Operator]
+    tokens: Dict[str, Token]
+    birthday: Dict[str, Dict[str, List[Operator]]]
+    materials: STR_DICT_MAP
+    materials_map: STR_DICT
+    materials_made: Dict[str, List[STR_DICT]]
+    materials_source: STR_DICT_MAP
+
+    @classmethod
+    def initialize(cls):
+        with open('resource/gamedata/version', mode='r', encoding='utf-8') as file:
+            cls.version = file.read().strip('\n') or 'none'
+
+        log.info(f'initialize ArknightsGameData@{cls.version}...')
+
+        cls.enemies = init_enemies()
+        cls.stages, cls.stages_map = init_stages()
+        cls.operators, cls.tokens, cls.birthday = init_operators()
+        cls.materials, cls.materials_map, cls.materials_made, cls.materials_source = init_materials()
+
+        OperatorIndex.truncate_table()
+        OperatorIndex.batch_insert([
+            item.dict() for _, item in cls.operators.items()
+        ])
+
+        log.info(f'initialize completed.')
+
+
+class ArknightsGameDataResource:
+    @classmethod
+    async def get_skin_file(cls, skin_data: dict, encode_url: bool = False):
+        skin_id = skin_data['skin_id']
+        if '@' in skin_id:
+            skin_id = skin_id.replace('@', '_')
+        else:
+            skin_id = skin_id.replace('#', '_')
+
+        skin_path = f'resource/gamedata/skin/{skin_id}b.png'
+
+        if not os.path.exists(skin_path):
+            return None
+
+        if encode_url:
+            skin_path = skin_path.replace('#', '%23')
+
+        return skin_path
+
+    @classmethod
+    async def get_voice_file(cls, operator: Operator, voice_key: str, voice_type: str = ''):
+        file = PRTS.get_voice_path(PRTS.voices_source, operator.id, operator.wiki_name, voice_key, voice_type)
+
+        if not os.path.exists(file):
+            file = await PRTS.download_operator_voices(file, operator, voice_key, voice_type)
+            if not file:
+                return None
+
+        return file
+
+
 def init_operators():
     recruit_detail = remove_xml_tag(JsonData.get_json_data('gacha_table')['recruitDetail'])
     recruit_group = re.findall(r'★\\n(.*)', recruit_detail)
@@ -222,67 +286,3 @@ def init_stages():
         stage_map[stage_key_name] = stage_id
 
     return stage_list, stage_map
-
-
-class ArknightsGameData:
-    version: str
-    enemies: Dict[str, Dict[str, dict]]
-    stages: STR_DICT_MAP
-    stages_map: STR_DICT
-    operators: Dict[str, Operator]
-    tokens: Dict[str, Token]
-    birthday: Dict[str, Dict[str, List[Operator]]]
-    materials: STR_DICT_MAP
-    materials_map: STR_DICT
-    materials_made: Dict[str, List[STR_DICT]]
-    materials_source: STR_DICT_MAP
-
-    @classmethod
-    def initialize(cls):
-        with open('resource/gamedata/version', mode='r', encoding='utf-8') as file:
-            cls.version = file.read().strip('\n') or 'none'
-
-        log.info(f'initialize ArknightsGameData@{cls.version}...')
-
-        cls.enemies = init_enemies()
-        cls.stages, cls.stages_map = init_stages()
-        cls.operators, cls.tokens, cls.birthday = init_operators()
-        cls.materials, cls.materials_map, cls.materials_made, cls.materials_source = init_materials()
-
-        OperatorIndex.truncate_table()
-        OperatorIndex.batch_insert([
-            item.dict() for _, item in cls.operators.items()
-        ])
-
-        log.info(f'initialize completed.')
-
-
-class ArknightsGameDataResource:
-    @classmethod
-    async def get_skin_file(cls, skin_data: dict, encode_url: bool = False):
-        skin_id = skin_data['skin_id']
-        if '@' in skin_id:
-            skin_id = skin_id.replace('@', '_')
-        else:
-            skin_id = skin_id.replace('#', '_')
-
-        skin_path = f'resource/gamedata/skin/{skin_id}b.png'
-
-        if not os.path.exists(skin_path):
-            return None
-
-        if encode_url:
-            skin_path = skin_path.replace('#', '%23')
-
-        return skin_path
-
-    @classmethod
-    async def get_voice_file(cls, operator: Operator, voice_key: str, voice_type: str = ''):
-        file = PRTS.get_voice_path(PRTS.voices_source, operator.id, operator.wiki_name, voice_key, voice_type)
-
-        if not os.path.exists(file):
-            file = await PRTS.download_operator_voices(file, operator, voice_key, voice_type)
-            if not file:
-                return None
-
-        return file

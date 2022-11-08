@@ -20,8 +20,14 @@ class PRTS:
                        voice_key: str,
                        voice_type: str,
                        is_url: bool = False):
-        t = '_cn_topolect' if is_url and voice_type == '_custom' else ''
-        return f'{source}/voice{voice_type}/{char_id}{t}/{char_name}_{voice_key}.wav'
+        tail = ''
+        if is_url and voice_type == '_custom':
+            tail = '_cn_topolect'
+        if voice_type == '_ita':
+            voice_type = '_custom'
+            tail = '_ita'
+
+        return f'{source}/voice{voice_type}/{char_id}{tail}/{char_name}_{voice_key}.wav'
 
     @classmethod
     async def download_operator_voices(cls, filepath: str, operator: Operator, voice_key: str, voice_type: str = ''):

@@ -3,103 +3,15 @@ import re
 from typing import Dict
 from core.util import remove_xml_tag, remove_punctuation, integer
 
-from .common import ArknightsConfig, JsonData
-
-
-def parse_template(blackboard, description):
-    formatter = {
-        '0%': lambda v: f'{round(v * 100)}%'
-    }
-    data_dict = {item['key']: item['value'] for index, item in enumerate(blackboard)}
-    desc = remove_xml_tag(description.replace('>-{', '>{'))
-    format_str = re.findall(r'({(\S+?)})', desc)
-    if format_str:
-        for desc_item in format_str:
-            key = desc_item[1].split(':')
-            fd = key[0].lower().strip('-')
-            if fd in data_dict:
-                value = integer(data_dict[fd])
-
-                if len(key) >= 2 and key[1] in formatter:
-                    value = formatter[key[1]](value)
-
-                desc = desc.replace(desc_item[0], f' [cl {value}@#174CC6 cle] ')
-
-    return desc
-
-
-def build_range(grids):
-    _max = [0, 0, 0, 0]
-    for item in [{'row': 0, 'col': 0}] + grids:
-        row = item['row']
-        col = item['col']
-        if row <= _max[0]:
-            _max[0] = row
-        if row >= _max[1]:
-            _max[1] = row
-        if col <= _max[2]:
-            _max[2] = col
-        if col >= _max[3]:
-            _max[3] = col
-
-    width = abs(_max[2]) + _max[3] + 1
-    height = abs(_max[0]) + _max[1] + 1
-
-    empty = '　'
-    block = '□'
-    origin = '■'
-
-    range_map = []
-    for h in range(height):
-        range_map.append([empty for _ in range(width)])
-
-    for item in grids:
-        x = abs(_max[0]) + item['row']
-        y = abs(_max[2]) + item['col']
-        range_map[x][y] = block
-    range_map[abs(_max[0])][abs(_max[2])] = origin
-
-    return ''.join([''.join(item) + '\n' for item in range_map])
-
-
-class Token:
-    def __init__(self, code: str, data: dict):
-        range_data = JsonData.get_json_data('range_table')
-
-        self.id = code
-        self.name = data['name']
-        self.en_name = data['appellation']
-        self.description = remove_xml_tag(data['description'] or '')
-        self.classes = ArknightsConfig.token_classes.get(data['profession'])
-        self.type = ArknightsConfig.types.get(data['position'])
-        self.attr = []
-
-        if data['phases']:
-            for evolve, item in enumerate(data['phases']):
-                range_id = item['rangeId']
-                range_map = '无范围'
-                if range_id in range_data:
-                    range_map = build_range(range_data[range_id]['grids'])
-
-                self.attr.append(
-                    {
-                        'evolve': evolve,
-                        'range': range_map,
-                        'attr': item['attributesKeyFrames']
-                    }
-                )
-
-    def __str__(self):
-        return f'{self.id}_{self.name}'
-
-    def __repr__(self):
-        return f'{self.id}_{self.name}'
+from .common import ArknightsConfig, JsonData, html_symbol
 
 
 class Operator:
     def __init__(self, code: str, data: dict, is_recruit: bool = False):
         sub_classes = JsonData.get_json_data('uniequip_table')['subProfDict']
-        nation_id = JsonData.get_json_data('character_table')
+        character_table = JsonData.get_json_data('character_table')
+        team_table = JsonData.get_json_data('handbook_team_table')
+        item_table = JsonData.get_json_data('item_table')['items']
 
         self.data = data
         self.__voice_list = Collection.get_voice_list(code)
@@ -109,32 +21,52 @@ class Operator:
 
         self.id = code
         self.cv = {}
+
+        self.type = ArknightsConfig.types.get(data['position'])
+        self.tags = []
+        self.range = '无范围'
+        self.rarity = data['rarity'] + 1
+        self.number = data['displayNumber']
+
         self.name = data['name']
         self.en_name = data['appellation']
         self.wiki_name = data['name']
         self.index_name = remove_punctuation(data['name'])
-        self.drawer = '未知'
-        self.rarity = data['rarity'] + 1
+        self.origin_name = '未知'
+
         self.classes = ArknightsConfig.classes[data['profession']]
         self.classes_sub = sub_classes[data['subProfessionId']]['subProfessionName']
         self.classes_code = data['profession']
-        self.type = ArknightsConfig.types.get(data['position'])
-        self.nation = nation_id[code]['nationId']
+
         self.race = '未知'
-        self.tags = data['tagList']
-        self.range = '无范围'
+        self.drawer = '未知'
+        self.team_id = data['teamId']
+        self.team = team_table[self.team_id]['powerName'] if self.team_id in team_table else '未知'
+        self.group_id = data['groupId']
+        self.group = team_table[self.group_id]['powerName'] if self.group_id in team_table else '未知'
+        self.nation_id = character_table[code]['nationId']
+        self.nation = team_table[self.nation_id]['powerName'] if self.nation_id in team_table else '未知'
         self.birthday = '未知'
+
+        self.profile = data['itemUsage'] or '无'
+        self.impression = data['itemDesc'] or '无'
+
+        self.potential_item = ''
+        if data['potentialItemId'] in item_table:
+            self.potential_item = item_table[data['potentialItemId']]['description']
 
         self.limit = self.name in ArknightsConfig.limit
         self.unavailable = self.name in ArknightsConfig.unavailable
 
         self.is_recruit = is_recruit
+        self.is_sp = data['isSpChar']
 
         self.__cv()
         self.__race()
         self.__tags()
         self.__drawer()
         self.__range()
+        self.__origin(character_table)
         self.__extra()
 
     def __str__(self):
@@ -165,7 +97,7 @@ class Operator:
         max_phases = self.data['phases'][-1]
         max_attr = max_phases['attributesKeyFrames'][-1]['data']
 
-        trait = remove_xml_tag(self.data['description'])
+        trait = html_tag_format(self.data['description'])
         if self.data['trait']:
             max_trait = self.data['trait']['candidates'][-1]
             trait = parse_template(max_trait['blackboard'], max_trait['overrideDescripton'] or trait)
@@ -210,7 +142,7 @@ class Operator:
                 max_item = item['candidates'][-1]
                 talents.append({
                     'talents_name': max_item['name'],
-                    'talents_desc': remove_xml_tag(max_item['description'])
+                    'talents_desc': html_tag_format(max_item['description'])
                 })
 
         return talents
@@ -335,7 +267,7 @@ class Operator:
                             'bs_unlocked': item['cond']['phase'],
                             'bs_icon': skill['skillIcon'],
                             'bs_name': skill['buffName'],
-                            'bs_desc': remove_xml_tag(skill['description'])
+                            'bs_desc': html_tag_format(skill['description'])
                         })
 
         return skills
@@ -424,13 +356,15 @@ class Operator:
         return modules
 
     def __tags(self):
-        self.tags.append(self.classes)
-        self.tags.append(self.type)
-        if str(self.rarity) in ArknightsConfig.high_star:
-            self.tags.append(ArknightsConfig.high_star[str(self.rarity)])
+        tags = [self.classes, self.type]
 
         if self.id in ['char_285_medic2', 'char_286_cast3', 'char_376_therex', 'char_4000_jnight']:
-            self.tags.append('支援机械')
+            tags.append('支援机械')
+
+        if str(self.rarity) in ArknightsConfig.high_star:
+            tags.append(ArknightsConfig.high_star[str(self.rarity)])
+
+        self.tags = self.data['tagList'] + tags
 
     def __cv(self):
         word_data = JsonData.get_json_data('charword_table')
@@ -459,11 +393,53 @@ class Operator:
         if range_id in range_data:
             self.range = build_range(range_data[range_id]['grids'])
 
+    def __origin(self, character):
+        sp_char = JsonData.get_json_data('char_meta_table')['spCharGroups']
+        for oid, group in sp_char.items():
+            for item in group:
+                if item == self.id:
+                    self.origin_name = character[oid]['name']
+
     def __extra(self):
         if self.id == 'char_1001_amiya2':
             self.name = '阿米娅近卫'
             self.en_name = 'AmiyaGuard'
             self.wiki_name = '阿米娅(近卫)'
+            self.origin_name = '阿米娅'
+
+
+class Token:
+    def __init__(self, code: str, data: dict):
+        range_data = JsonData.get_json_data('range_table')
+
+        self.id = code
+        self.name = data['name']
+        self.en_name = data['appellation']
+        self.description = html_tag_format(data['description'] or '')
+        self.classes = ArknightsConfig.token_classes.get(data['profession'])
+        self.type = ArknightsConfig.types.get(data['position'])
+        self.attr = []
+
+        if data['phases']:
+            for evolve, item in enumerate(data['phases']):
+                range_id = item['rangeId']
+                range_map = '无范围'
+                if range_id in range_data:
+                    range_map = build_range(range_data[range_id]['grids'])
+
+                self.attr.append(
+                    {
+                        'evolve': evolve,
+                        'range': range_map,
+                        'attr': item['attributesKeyFrames']
+                    }
+                )
+
+    def __str__(self):
+        return f'{self.id}_{self.name}'
+
+    def __repr__(self):
+        return f'{self.id}_{self.name}'
 
 
 class Collection:
@@ -478,3 +454,67 @@ class Collection:
     @classmethod
     def get_skins_list(cls, code):
         return cls.skins_map.get(code, [])
+
+
+def html_tag_format(text):
+    for o, f in html_symbol.items():
+        text = text.replace(o, f)
+
+    return remove_xml_tag(text)
+
+
+def parse_template(blackboard, description):
+    formatter = {
+        '0%': lambda v: f'{round(v * 100)}%'
+    }
+    data_dict = {item['key']: item['value'] for index, item in enumerate(blackboard)}
+
+    desc = html_tag_format(description.replace('>-{', '>{'))
+    format_str = re.findall(r'({(\S+?)})', desc)
+    if format_str:
+        for desc_item in format_str:
+            key = desc_item[1].split(':')
+            fd = key[0].lower().strip('-')
+            if fd in data_dict:
+                value = integer(data_dict[fd])
+
+                if len(key) >= 2 and key[1] in formatter:
+                    value = formatter[key[1]](value)
+
+                desc = desc.replace(desc_item[0], f' [cl {value}@#174CC6 cle] ')
+
+    return desc
+
+
+def build_range(grids):
+    _max = [0, 0, 0, 0]
+    for item in [{'row': 0, 'col': 0}] + grids:
+        row = item['row']
+        col = item['col']
+        if row <= _max[0]:
+            _max[0] = row
+        if row >= _max[1]:
+            _max[1] = row
+        if col <= _max[2]:
+            _max[2] = col
+        if col >= _max[3]:
+            _max[3] = col
+
+    width = abs(_max[2]) + _max[3] + 1
+    height = abs(_max[0]) + _max[1] + 1
+
+    empty = '　'
+    block = '□'
+    origin = '■'
+
+    range_map = []
+    for h in range(height):
+        range_map.append([empty for _ in range(width)])
+
+    for item in grids:
+        x = abs(_max[0]) + item['row']
+        y = abs(_max[2]) + item['col']
+        range_map[x][y] = block
+    range_map[abs(_max[0])][abs(_max[2])] = origin
+
+    return ''.join([''.join(item) + '\n' for item in range_map])
