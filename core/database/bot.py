@@ -71,9 +71,8 @@ class FunctionUsed(BotBaseModel):
 
 @table
 class DisabledFunction(BotBaseModel):
-    function_id: str = CharField()
-    group_id: str = CharField()
-    status: int = IntegerField()
+    function_id: str = CharField(null=True)
+    channel_id: str = CharField(null=True)
 
 
 @table
