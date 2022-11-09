@@ -33,6 +33,9 @@ async def _(data: Chain, factory_name: str):
 
 @bot.on_message(keywords='开启功能', level=5)
 async def _(data: Message):
+    if not data.is_admin:
+        return None
+
     disabled: List[DisabledFunction] = DisabledFunction.select().where(DisabledFunction.channel_id == data.channel_id)
 
     func_ids = set(bot.plugins.keys()) & set([n.function_id for n in disabled])
@@ -65,6 +68,9 @@ async def _(data: Message):
 
 @bot.on_message(keywords='关闭功能', level=5)
 async def _(data: Message):
+    if not data.is_admin:
+        return None
+
     disabled: List[DisabledFunction] = DisabledFunction.select().where(DisabledFunction.channel_id == data.channel_id)
 
     func_ids = set(bot.plugins.keys()) - set([n.function_id for n in disabled])
