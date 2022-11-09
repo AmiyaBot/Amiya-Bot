@@ -9,6 +9,7 @@ from amiyabot import MultipleAccounts, HttpServer, Message, Chain, ChainBuilder,
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
+from amiyabot.builtin.lib.timedTask import tasks_control
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
@@ -16,7 +17,6 @@ from core.resource import remote_config
 from core.resource.botResource import BotResource
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.lib.gitAutomation import GitAutomation
-from core.lib.timedTask import TasksControl
 from core.util import read_yaml, create_dir
 
 serve_conf = read_yaml('config/server.yaml')
@@ -28,7 +28,6 @@ bot.set_prefix_keywords(['阿米娅', '阿米兔', '兔兔', '兔子', '小兔�
 jieba.del_word('兔子')
 
 gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata)
-tasks_control = TasksControl()
 
 message_record = []
 
