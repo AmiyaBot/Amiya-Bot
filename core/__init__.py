@@ -2,6 +2,7 @@ import os
 import copy
 import time
 import jieba
+import datetime
 import traceback
 
 from typing import List
@@ -123,7 +124,7 @@ async def _(err: Exception, instance: BotAdapterProtocol):
 
 
 @bot.before_bot_reply
-async def _(data: Message):
+async def _(data: Message, _):
     message_record.append({
         'msg_type': data.message_type or 'channel',
         'user_id': data.user_id,
@@ -138,3 +139,16 @@ async def _():
     global message_record
     MessageRecord.batch_insert(copy.deepcopy(message_record))
     message_record = []
+
+
+@tasks_control.timed_task(each=3600)
+async def _():
+    timestamp = int(
+        time.mktime(
+            time.strptime(
+                (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y%m%d'),
+                '%Y%m%d'
+            )
+        )
+    )
+    MessageRecord.delete().where(MessageRecord.create_time < timestamp).execute()
