@@ -128,7 +128,7 @@ async def _(data: Message, _):
     message_record.append({
         'msg_type': data.message_type or 'channel',
         'user_id': data.user_id,
-        'group_id': data.channel_id,
+        'channel_id': data.channel_id,
         'classify': 'call',
         'create_time': int(time.time())
     })
