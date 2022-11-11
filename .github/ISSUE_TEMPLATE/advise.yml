@@ -1,4 +1,4 @@
-name: 建议
+name: 一个建议
 description: 提交一个建议，可以是任何方面的，包括优化现有功能，提出文档存在的问题......
 labels:
   - "advise"
