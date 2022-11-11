@@ -1,0 +1,27 @@
+name: 其他的一切
+description: 如果你想提交的内容不在以上选项中，选择此选项了解更多
+labels:
+  - "other"
+  - ""
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎你来到这里。    
+        在开始之前，请注意，无论你准备提交什么，我们对于提交的内容有一些要求：    
+        
+        - 你提交的内容**必须**是友善的。
+        
+        如果你提交的内容不符合以上要求，你的 issue 可能会被关闭。    
+        同样的，我们会关闭一些内容不合理的 issue。我们保留“不合理”的解释权。   
+        你可以选择在下面的内容填入你欲提交的内容，也可以返回上一级页面选择 "Open a blank issue" 以更自由地提交你想提交的内容。     
+        如果你理解并同意这些，那么你可以开始了。    
+ 
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: 内容
+      description: 在此写出你想写的一切
+    validations:
+      required: true
