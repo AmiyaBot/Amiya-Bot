@@ -2,7 +2,7 @@ name: 其他的一切
 description: 如果你想提交的内容不在以上选项中，选择此选项了解更多
 labels:
   - "other"
-  - ""
+  - "question"
 
 body:
   - type: markdown
