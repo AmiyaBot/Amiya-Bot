@@ -6,7 +6,16 @@ import datetime
 import traceback
 
 from typing import List
-from amiyabot import MultipleAccounts, HttpServer, Message, Chain, ChainBuilder, Equal, log, PluginInstance
+from amiyabot import (
+    MultipleAccounts,
+    PluginInstance,
+    HttpServer,
+    Message,
+    Chain,
+    ChainBuilder,
+    Equal,
+    log
+)
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
@@ -126,9 +135,10 @@ async def _(err: Exception, instance: BotAdapterProtocol):
 @bot.before_bot_reply
 async def _(data: Message, _):
     message_record.append({
-        'msg_type': data.message_type or 'channel',
+        'app_id': data.instance.appid,
         'user_id': data.user_id,
         'channel_id': data.channel_id,
+        'msg_type': data.message_type or 'channel',
         'classify': 'call',
         'create_time': int(time.time())
     })
