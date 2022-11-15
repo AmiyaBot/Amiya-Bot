@@ -27,11 +27,11 @@ class UserInfo(UserBaseModel):
     user_id: Union[ForeignKeyField, User, str] = ForeignKeyField(User, db_column='user_id', on_delete='CASCADE')
     user_feeling: int = IntegerField(default=0)
     user_mood: int = IntegerField(default=15)
-    sign_in: int = IntegerField(default=0)
+    sign_date: str = CharField(null=True)
     sign_times: int = IntegerField(default=0)
     jade_point: int = IntegerField(default=0)
     jade_point_max: int = IntegerField(default=0)
-    meta_json: str =  TextField(default='{}')
+    meta_json: str = TextField(default='{}')
 
     @classmethod
     def get_meta_value(cls, user_id, key):
@@ -39,11 +39,9 @@ class UserInfo(UserBaseModel):
 
         user_meta_json: str = user.meta_json
 
-        if user_meta_json is None or user_meta_json == "" :
-            user_meta_json = "{}"
+        if user_meta_json is None or user_meta_json == '':
+            user_meta_json = '{}'
 
-        log.info(f'get_meta for {user.user_id} :{user_meta_json}')
-        
         user_meta: dict = json.loads(user_meta_json)
 
         if key in user_meta.keys():
@@ -57,25 +55,21 @@ class UserInfo(UserBaseModel):
 
         user_meta_json: str = user.meta_json
 
-        if user_meta_json is None or user_meta_json == "" :
-            user_meta_json = "{}"
+        if user_meta_json is None or user_meta_json == '':
+            user_meta_json = '{}'
 
         user_meta: dict = json.loads(user_meta_json)
 
         # 防止爆库，单个用户不可以超过1M数据，单项数据也限制为20K
-
         try_dump = json.dumps(data)
-
-        if len(try_dump) > 20 * 1024 :
-           return None
+        if len(try_dump) > 20 * 1024:
+            return None
 
         user_meta[key] = data
-        user_meta_json = json.dumps(user_meta)  
+        user_meta_json = json.dumps(user_meta)
 
-        if len(user_meta_json) > 1024 * 1024 :
-           return None
-
-        log.info(f'save_meta for {user.user_id} :{user_meta_json}')
+        if len(user_meta_json) > 1024 * 1024:
+            return None
 
         UserInfo.update(
             meta_json=user_meta_json
