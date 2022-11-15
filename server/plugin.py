@@ -1,4 +1,5 @@
 import os
+import base64
 
 from amiyabot.network.download import download_async
 from core import app, bot
@@ -35,13 +36,22 @@ class Plugin:
             else:
                 content = doc
 
+            logo = ''
+            if item.path:
+                item_path = item.path[-1]
+                logo_path = os.path.join(item_path, 'logo.png')
+                if os.path.exists(logo_path):
+                    with open(logo_path, mode='rb') as ico:
+                        logo = 'data:image/png;base64,' + base64.b64encode(ico.read()).decode()
+
             res.append({
                 'name': item.name,
                 'version': item.version,
                 'plugin_id': item.plugin_id,
                 'plugin_type': item.plugin_type,
                 'description': item.description,
-                'document': content
+                'document': content,
+                'logo': logo
             })
 
         return app.response(res)
