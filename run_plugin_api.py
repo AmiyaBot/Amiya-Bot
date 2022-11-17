@@ -10,12 +10,12 @@ from fastapi import File, UploadFile
 from amiyabot import AmiyaBot
 from amiyabot.util import create_dir, random_code
 from amiyabot.network.httpServer import HttpServer, BaseModel
-from amiyabot.database import ModelClass, CharField, TextField, table, connect_database, query_to_list
+from amiyabot.database import ModelClass, MysqlConfig, CharField, TextField, table, connect_database, query_to_list
 
 from amiya import load_resource
 from build.uploadFile import COSUploader
 
-server = HttpServer('0.0.0.0', 8001)
+server = HttpServer('0.0.0.0', 8060)
 uploader = COSUploader('', '',
                        logger_level=logging.FATAL)
 
@@ -34,7 +34,7 @@ class Plugins(ModelClass):
     upload_time: str = CharField(null=True)
 
     class Meta:
-        database = connect_database('database/custom_plugins.db')
+        database = connect_database('custom_plugins', True, MysqlConfig(password=''))
 
 
 class CommitModel(BaseModel):
