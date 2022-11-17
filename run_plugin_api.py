@@ -8,15 +8,29 @@ import asyncio
 
 from fastapi import File, UploadFile
 from amiyabot import AmiyaBot
-from amiyabot.util import create_dir, random_code
+from amiyabot.util import create_dir, random_code, argv
 from amiyabot.network.httpServer import HttpServer, BaseModel
 from amiyabot.database import ModelClass, MysqlConfig, CharField, TextField, table, connect_database, query_to_list
 
 from amiya import load_resource
 from build.uploadFile import COSUploader
 
-server = HttpServer('0.0.0.0', 8060)
-uploader = COSUploader('', '',
+HOST = argv('host') or '0.0.0.0'
+PORT = argv('port', int) or 8020
+SECRET_ID = argv('secret-id')
+SECRET_KEY = argv('secret-key')
+MYSQL_HOST = argv('mysql-host') or '127.0.0.1'
+MYSQL_PORT = argv('mysql-port', int) or 3306
+MYSQL_USER = argv('mysql-user') or 'root'
+MYSQL_PWD = argv('mysql-password')
+SSL_KEY = argv('ssl-keyfile')
+SSL_CERT = argv('ssl-certfile')
+
+server = HttpServer(HOST, PORT, uvicorn_options={
+    'ssl_keyfile': SSL_KEY,
+    'ssl_certfile': SSL_CERT
+})
+uploader = COSUploader(SECRET_ID, SECRET_KEY,
                        logger_level=logging.FATAL)
 
 
@@ -34,7 +48,7 @@ class Plugins(ModelClass):
     upload_time: str = CharField(null=True)
 
     class Meta:
-        database = connect_database('custom_plugins', True, MysqlConfig(password=''))
+        database = connect_database('custom_plugins', True, MysqlConfig(MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PWD))
 
 
 class CommitModel(BaseModel):
