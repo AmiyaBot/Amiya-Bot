@@ -11,12 +11,9 @@ class MessageBaseModel(ModelClass):
 
 @table
 class MessageRecord(MessageBaseModel):
+    app_id: str = CharField(null=True)
+    user_id: str = CharField()
+    channel_id: str = CharField(null=True)
     msg_type: str = CharField()
-    user_id: int = IntegerField()
-    group_id: int = IntegerField(null=True)
-    text: str = TextField(null=True)
-    face: str = TextField(null=True)
-    image: str = TextField(null=True)
-    message: str = TextField(null=True)
     classify: str = CharField(null=True)
     create_time: int = IntegerField()

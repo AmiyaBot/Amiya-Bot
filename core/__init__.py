@@ -2,13 +2,24 @@ import os
 import copy
 import time
 import jieba
+import datetime
 import traceback
 
 from typing import List
-from amiyabot import MultipleAccounts, HttpServer, Message, Chain, ChainBuilder, Equal, log, PluginInstance
+from amiyabot import (
+    MultipleAccounts,
+    PluginInstance,
+    HttpServer,
+    Message,
+    Chain,
+    ChainBuilder,
+    Equal,
+    log
+)
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
+from amiyabot.builtin.lib.timedTask import tasks_control
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
@@ -16,7 +27,6 @@ from core.resource import remote_config
 from core.resource.botResource import BotResource
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.lib.gitAutomation import GitAutomation
-from core.lib.timedTask import TasksControl
 from core.util import read_yaml, create_dir
 
 serve_conf = read_yaml('config/server.yaml')
@@ -28,7 +38,6 @@ bot.set_prefix_keywords(['阿米娅', '阿米兔', '兔兔', '兔子', '小兔�
 jieba.del_word('兔子')
 
 gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata)
-tasks_control = TasksControl()
 
 message_record = []
 
@@ -124,11 +133,12 @@ async def _(err: Exception, instance: BotAdapterProtocol):
 
 
 @bot.before_bot_reply
-async def _(data: Message):
+async def _(data: Message, _):
     message_record.append({
-        'msg_type': data.message_type or 'channel',
+        'app_id': data.instance.appid,
         'user_id': data.user_id,
-        'group_id': data.channel_id,
+        'channel_id': data.channel_id,
+        'msg_type': data.message_type or 'channel',
         'classify': 'call',
         'create_time': int(time.time())
     })
@@ -139,3 +149,16 @@ async def _():
     global message_record
     MessageRecord.batch_insert(copy.deepcopy(message_record))
     message_record = []
+
+
+@tasks_control.timed_task(each=3600)
+async def _():
+    timestamp = int(
+        time.mktime(
+            time.strptime(
+                (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y%m%d'),
+                '%Y%m%d'
+            )
+        )
+    )
+    MessageRecord.delete().where(MessageRecord.create_time < timestamp).execute()
