@@ -109,16 +109,20 @@ async def upload(file: UploadFile = File(...)):
 
     exists: Plugins = Plugins.get_or_none(plugin_id=plugin.plugin_id)
     if exists:
-        data['warning'].append(f'插件【{plugin.plugin_id}】已存在，你需要验证插件密钥。')
+        data['warning'].append(f'插件ID【{plugin.plugin_id}】已存在，你需要验证插件密钥。')
         if exists.version != plugin.version:
             data['warning'].append(f'版本变更：{plugin.version} >> {exists.version}')
         if exists.name != plugin.name:
             data['warning'].append('插件名称更新')
         if exists.description != plugin.description:
             data['warning'].append('插件描述更新')
+        if not document:
+            data['warning'].append('未添加插件文档')
+        if not logo:
+            data['warning'].append('未添加 LOGO（在根目录放置 logo.png）')
 
     if plugin.plugin_type == 'official':
-        data['error'].append('不允许上传标签为【官方】的插件，请修改 plugin_type 属性。')
+        data['error'].append('不允许上传标签为【官方】的插件，请修改 plugin_type 属性，可更改为空。')
         data['ready'] = False
 
     return data
