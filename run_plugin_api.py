@@ -42,6 +42,7 @@ class Plugins(ModelClass):
     plugin_id: str = CharField(null=True)
     plugin_type: str = CharField(null=True)
     description: str = CharField(null=True)
+    document: str = TextField(null=True)
     logo: str = TextField(null=True)
     author: str = CharField(null=True)
     secret_key: str = CharField(null=True)
@@ -58,6 +59,7 @@ class CommitModel(BaseModel):
     plugin_id: str
     plugin_type: str
     description: str
+    document: str
     logo: str
     author: str
     secret_key: str
@@ -76,6 +78,13 @@ async def upload(file: UploadFile = File(...)):
 
     plugin = AmiyaBot.load_plugin(path, extract_plugin=True, extract_plugin_dest=dest)
 
+    doc = plugin.document
+    if doc and os.path.isfile(doc):
+        with open(doc, mode='r', encoding='utf-8') as doc_file:
+            document = doc_file.read()
+    else:
+        document = doc
+
     logo = ''
     if plugin.path:
         logo_path = os.path.join(dest, 'logo.png')
@@ -91,6 +100,7 @@ async def upload(file: UploadFile = File(...)):
         'plugin_id': plugin.plugin_id,
         'plugin_type': plugin.plugin_type,
         'description': plugin.description,
+        'document': document,
         'logo': logo,
         'warning': [],
         'error': [],
@@ -129,7 +139,7 @@ async def commit(data: CommitModel):
     path = os.path.abspath(f'uploads/plugins/{data.file}')
     uploader.upload_file(path, f'plugins/custom/{data.file}')
 
-    Plugins.delete().where(Plugins.file == data.file).execute()
+    Plugins.delete().where(Plugins.plugin_id == data.plugin_id).execute()
     Plugins.create(**{
         **data.dict(),
         'secret_key': key,
