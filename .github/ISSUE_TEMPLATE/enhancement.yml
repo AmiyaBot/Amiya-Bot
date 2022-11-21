@@ -1,45 +1,45 @@
 name: 新功能
 description: 提交一个新功能
 labels:
-  - "enhancement"
+    - "enhancement"
 
 body:
-  - type: markdown
-    attributes:
-      value: |
-        欢迎你提出新功能建议！    
-        在开始之前，请注意，我们对于提交的新功能有一些要求：    
-        
-        - 这个功能**最好**与《明日方舟》有关。
-        - 这个功能**必须**可以使大多数人从中获益。
-        - 这个功能**必须**有详细的描述，包括它将实现什么，有什么用处。
-        - 这个功能**应该**可以实现。
-        
-        如果你提交的功能不符合以上要求，你的 issue 可能会被关闭。    
-        同样的，我们会关闭一些内容不合理的 issue。我们保留“不合理”的解释权。
-        如果你理解并同意这些，那么你可以开始了。
- 
-  - type: textarea
-    id: issue-description
-    attributes:
-      label: 功能描述
-      description: 在此详细描述你想添加的功能
-    validations:
-      required: true
+    -   type: markdown
+        attributes:
+            value: |
+                欢迎你提出新功能建议！
+                在开始之前，请注意，我们对于提交的新功能有一些要求：
 
-  - type: textarea
-    id: advantage
-    attributes:
-      label: 优点
-      description: 在此说明你认为这个新功能有什么好处？
-      placeholder: 例如：更有趣、更实用......
-    validations:
-      required: true
+                - 这个功能**最好**与《明日方舟》有关。
+                - 这个功能**必须**可以使大多数人从中获益。
+                - 这个功能**必须**有详细的描述，包括它将实现什么，有什么用处。
+                - 这个功能**应该**可以实现。
 
-  - type: textarea
-    id: reproduce
-    attributes:
-      label: 实现
-      description: 在这里简略说明你认为应该如何实现这个功能
-    validations:
-      required: false
+                如果你提交的功能不符合以上要求，你的 issue 可能会被关闭。
+                同样的，我们会关闭一些内容不合理的 issue。我们保留“不合理”的解释权。
+                如果你理解并同意这些，那么你可以开始了。
+
+    -   type: textarea
+        id: issue-description
+        attributes:
+            label: 功能描述
+            description: 在此详细描述你想添加的功能
+        validations:
+            required: true
+
+    -   type: textarea
+        id: advantage
+        attributes:
+            label: 优点
+            description: 在此说明你认为这个新功能有什么好处？
+            placeholder: 例如：更有趣、更实用......
+        validations:
+            required: true
+
+    -   type: textarea
+        id: reproduce
+        attributes:
+            label: 实现
+            description: 在这里简略说明你认为应该如何实现这个功能
+        validations:
+            required: false

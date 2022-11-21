@@ -1,25 +1,25 @@
 name: 建议
 description: 提交一个建议，可以是任何方面的，包括优化现有功能，提出文档存在的问题......
 labels:
-  - "advise"
+    - "advise"
 
 body:
-  - type: markdown
-    attributes:
-      value: |
-        欢迎你向我们提出建议！    
-        在开始之前，请注意，我们对于提交的建议有一些要求：    
-        
-        - 你的建议**必须**是友善的。
-        
-        如果你提交的建议不符合以上要求，你的 issue 可能会被关闭。    
-        同样的，我们会关闭一些内容不合理的 issue。我们保留“不合理”的解释权。
-        如果你理解并同意这些，那么你可以开始了。
- 
-  - type: textarea
-    id: issue-description
-    attributes:
-      label: 建议
-      description: 在此详细说明你的建议
-    validations:
-      required: true
+    -   type: markdown
+        attributes:
+            value: |
+                欢迎你向我们提出建议！
+                在开始之前，请注意，我们对于提交的建议有一些要求：
+
+                - 你的建议**必须**是友善的。
+
+                如果你提交的建议不符合以上要求，你的 issue 可能会被关闭。
+                同样的，我们会关闭一些内容不合理的 issue。我们保留“不合理”的解释权。
+                如果你理解并同意这些，那么你可以开始了。
+
+    -   type: textarea
+        id: issue-description
+        attributes:
+            label: 建议
+            description: 在此详细说明你的建议
+        validations:
+            required: true
