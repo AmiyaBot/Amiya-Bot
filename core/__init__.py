@@ -82,6 +82,7 @@ async def load_plugins():
                         count += 1
                 except Exception as e:
                     log.error(e, 'plugin install error:')
+        break
 
     # 然后对所有插件执行懒加载（如果有的话）
     for plugin_id, item in bot.plugins.items():
