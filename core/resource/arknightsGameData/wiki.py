@@ -21,11 +21,16 @@ class PRTS:
                        voice_type: str,
                        is_url: bool = False):
         tail = ''
-        if is_url and voice_type == '_custom':
+
+        if voice_type == '_custom':
             tail = '_cn_topolect'
+
         if voice_type == '_ita':
             voice_type = '_custom'
             tail = '_ita'
+
+        if is_url:
+            return f'{source}/voice{voice_type}/{char_id}{tail}/CN_001.wav?filename={voice_key}.wav'
 
         return f'{source}/voice{voice_type}/{char_id}{tail}/{char_name}_{voice_key}.wav'
 
