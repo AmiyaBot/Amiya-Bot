@@ -24,7 +24,6 @@ RUN sed -i s@/security.ubuntu.com/@/mirrors.ustc.edu.cn/@g /etc/apt/sources.list
 # 可以通过修改这一段来丢弃缓存
 
 RUN apt-get clean
-RUN apt-get clean
 RUN apt-get -y update
 
 # 安装Nginx和设置转发
@@ -44,12 +43,16 @@ RUN python3.8 -m pip install --upgrade pip
 
 # 不管用得上与否，都强制安装playwright，因为这东西的安装非常慢，不适合在启动时执行
 
-RUN python3.8 -m pip install playwright
+RUN pip install playwright -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 RUN playwright install chromium
 
 RUN python3.8 -m playwright install --with-deps
+
+# 适当添加一些安装的比较久的lib
+RUN pip install paddleocr -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUn pip install paddlepaddle -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # 配置Nginx
 
