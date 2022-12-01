@@ -94,11 +94,6 @@ async def load_plugins():
         log.info(f'successfully loaded {count} plugin(s).')
 
 
-init_task = [
-    tasks_control.run_tasks()
-]
-
-
 class SourceServer(ChainBuilder):
     @staticmethod
     async def image_getter_hook(image):
@@ -119,6 +114,11 @@ async def send_to_console_channel(chain: Chain):
     for item in main_bot:
         if item.console_channel:
             await bot[item.appid].send_message(chain, channel_id=item.console_channel)
+
+
+async def heartbeat():
+    for item in bot:
+        await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}')
 
 
 @bot.on_exception()
@@ -147,6 +147,11 @@ async def _(data: Message, _):
 
 @tasks_control.timed_task(each=60)
 async def _():
+    await heartbeat()
+
+
+@tasks_control.timed_task(each=60)
+async def _():
     global message_record
     MessageRecord.batch_insert(copy.deepcopy(message_record))
     message_record = []
@@ -163,3 +168,9 @@ async def _():
         )
     )
     MessageRecord.delete().where(MessageRecord.create_time < timestamp).execute()
+
+
+init_task = [
+    heartbeat(),
+    tasks_control.run_tasks()
+]
