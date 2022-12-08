@@ -43,10 +43,12 @@ class Dashboard:
             hour = f'{time.localtime(item.create_time).tm_hour or 24}:00'
             if hour in res:
                 res[hour]['call'] += 1
+
                 if item.user_id not in res[hour]['user']:
                     res[hour]['user'].append(item.user_id)
-                if item.user_id not in res[hour]['channel']:
-                    res[hour]['channel'].append(item.user_id)
+
+                if item.channel_id not in res[hour]['channel']:
+                    res[hour]['channel'].append(item.channel_id)
 
         for _, item in res.items():
             item['user'] = len(item['user'])
