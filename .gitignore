@@ -8,10 +8,13 @@
 /plugins/
 /database/
 /resource/
+/uploads/
 /* - 副本/
 
 /Amiya-Bot-plugins/
+/Amiya-Bot-plugins-server/
 /pluginsDev/
+/pluginsServer/
 
 .DS_Store
 
