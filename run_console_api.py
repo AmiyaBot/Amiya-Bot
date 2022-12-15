@@ -18,7 +18,8 @@ async def get_gacha_pool():
 
 @server.route(method='get', router_path='/replace/getReplace')
 async def get_replace():
-    return server.response(data=query_to_list(TextReplace.select()))
+    return server.response(
+        data=query_to_list(TextReplace.select().where(TextReplace.is_global == 1, TextReplace.is_active == 1)))
 
 
 asyncio.run(server.serve())
