@@ -7,7 +7,16 @@ import pathlib
 import subprocess
 
 from urllib import request
-from jionlp.util.zip_file import ZIP_FILE_LIST
+
+ZIP_FILE_LIST = [
+    'china_location.zip', 'chinese_char_dictionary.zip',
+    'chinese_idiom.zip', 'chinese_word_dictionary.zip',
+    'idf.zip',
+    'pinyin_phrase.zip', 'sentiment_words.zip',
+    'char_distribution.zip', 'word_distribution.zip',
+    'word_topic_weight.zip', 'topic_word_weight.zip',
+    'phone_location.zip', 'xiehouyu.zip',
+    'pornography.zip']
 
 venv = 'venv\\Lib\\site-packages'
 scripts = 'venv\\Scripts'
