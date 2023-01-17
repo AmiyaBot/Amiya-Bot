@@ -322,7 +322,7 @@ class Operator:
                 'skin_id': skin_id,
                 'skin_key': skin_key,
                 'skin_name': skin_data['skinName'] or skin_name,
-                'skin_drawer': skin_data['drawerName'] or '',
+                'skin_drawer': skin_data['drawerList'][-1] if skin_data['drawerList'] else '',
                 'skin_group': skin_data['skinGroupName'] or '',
                 'skin_content': skin_data['dialog'] or '',
                 'skin_usage': skin_data['usage'] or skin_name + '立绘',
