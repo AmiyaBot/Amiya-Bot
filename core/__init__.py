@@ -5,12 +5,13 @@ import jieba
 import datetime
 import traceback
 
-from typing import List
+from typing import List, Union
 from amiyabot import (
     MultipleAccounts,
     PluginInstance,
     HttpServer,
     Message,
+    Event,
     Chain,
     ChainBuilder,
     Equal,
@@ -122,13 +123,21 @@ async def heartbeat():
 
 
 @bot.on_exception()
-async def _(err: Exception, instance: BotAdapterProtocol):
+async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, Event]):
     chain = Chain()
 
     if type(instance) is TencentBotInstance:
         chain.builder = SourceServer()
 
-    content = chain.text(f'{str(instance)} Bot: {instance.appid}').text_image(traceback.format_exc())
+    info = [
+        'Adapter: ' + str(instance),
+        'Bot: ' + str(instance.appid),
+        'Channel: ' + str(data.channel_id),
+        'User: ' + str(data.user_id),
+        '\n' + data.text
+    ]
+
+    content = chain.text('\n'.join(info)).text_image(traceback.format_exc())
 
     await send_to_console_channel(content)
 

@@ -4,6 +4,7 @@ from typing import List
 
 from core import app
 from core.util import read_tail
+from core.database.bot import FunctionUsed, query_to_list
 from core.database.messages import MessageRecord
 
 
@@ -18,6 +19,10 @@ class Dashboard:
     @app.route(method='get')
     async def get_log(self, lines: int = 200):
         return app.response(data=read_tail('log/running.log', lines=lines))
+
+    @app.route(method='get')
+    async def get_functions_used(self):
+        return app.response(data=query_to_list(FunctionUsed.select()))
 
     @app.route(method='get')
     async def get_message_record(self, appid: str):

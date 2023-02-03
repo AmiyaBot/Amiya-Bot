@@ -1,24 +1,23 @@
 import asyncio
 
 from amiyabot import AmiyaBot
-from amiyabot.adapters.mirai import mirai_api_http
+from amiyabot.adapters.test import test_instance
 
 from amiya import init_task, load_resource
 
-bot = AmiyaBot(appid='2533207617', token='AmiyaBot',
-               adapter=mirai_api_http(host='119.29.87.110', http_port=8080, ws_port=8060))
+bot = AmiyaBot(appid='test', token='', adapter=test_instance('127.0.0.1', 32001))
 
 if __name__ == '__main__':
-    # from pluginsDev.src.user import bot as plugin
+    from pluginsDev.src.arknights.operatorArchives import bot as plugin
 
 
     async def install_plugin():
         # todo 此处可以导入插件
-        # bot.install_plugin(plugin)
-        bot.install_plugin('plugins/amiyabot-arknights-operator-2.3.zip', extract_plugin=True)
+        bot.install_plugin(plugin)
+        # bot.install_plugin('plugins/amiyabot-arknights-operator-2.3.zip', extract_plugin=True)
 
 
-    bot.set_prefix_keywords('兔兔')
+    bot.set_prefix_keywords(['兔兔', '阿米娅', 'amiya'])
     try:
         load_resource()
         asyncio.run(
