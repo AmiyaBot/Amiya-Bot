@@ -99,7 +99,7 @@ class SourceServer(ChainBuilder):
     @staticmethod
     async def image_getter_hook(image):
         if type(image) is bytes:
-            res = await http_requests.upload(f'{remote_config.remote.resource}/upload', image)
+            res = await http_requests.post_upload(f'{remote_config.remote.resource}/upload', image)
             if res:
                 return f'{remote_config.remote.resource}/images?path=' + res.strip('"')
         return image
