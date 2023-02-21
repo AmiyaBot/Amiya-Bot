@@ -17,14 +17,14 @@ ENV TZ=Asia/Shanghai
 
 RUN apt-get -y update
 
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.ori
-RUN sed -i s@/archive.ubuntu.com/@/mirrors.ustc.edu.cn/@g /etc/apt/sources.list
-RUN sed -i s@/security.ubuntu.com/@/mirrors.ustc.edu.cn/@g /etc/apt/sources.list
+# RUN cp /etc/apt/sources.list /etc/apt/sources.list.ori
+# RUN sed -i s@/archive.ubuntu.com/@/mirrors.ustc.edu.cn/@g /etc/apt/sources.list
+# RUN sed -i s@/security.ubuntu.com/@/mirrors.ustc.edu.cn/@g /etc/apt/sources.list
 
 # 可以通过修改这一段来丢弃缓存
 
-RUN apt-get clean
 RUN apt-get -y update
+RUN apt-get clean
 
 # 安装Nginx和设置转发
 RUN apt-get -y install nginx
@@ -53,6 +53,8 @@ RUN python3.8 -m playwright install --with-deps
 # 适当添加一些安装的比较久的lib
 RUN pip install paddleocr -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUn pip install paddlepaddle -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+RUN pip install openai -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # 配置Nginx
 
