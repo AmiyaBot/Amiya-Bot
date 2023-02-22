@@ -1,9 +1,7 @@
 import json
 
 from amiyabot.database import *
-from core import log
 from core.database import config, is_mysql
-from core.util import read_yaml
 from typing import Union
 
 db = connect_database('amiya_user' if is_mysql else 'database/amiya_user.db', is_mysql, config)

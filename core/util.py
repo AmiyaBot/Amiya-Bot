@@ -131,7 +131,7 @@ def check_sentence_by_re(sentence: str, words: list, names: list):
     return False
 
 
-def find_similar_list(text: str, text_list: list, _random: bool = False, _top_only: bool = True):
+def find_similar_list(text: str, text_list: list):
     result = {}
     for item in text_list:
         rate = float(
@@ -142,19 +142,17 @@ def find_similar_list(text: str, text_list: list, _random: bool = False, _top_on
                 result[rate] = []
             result[rate].append(item)
 
-    if not result:
-        return None, 0
+    if result:
+        return result[
+            sorted(result.keys())[-1]
+        ]
+    return []
 
-    if not _top_only:
-        return result, 0
 
-    high = sorted(result.keys())[-1]
-    result = result[high]
-
-    if _random:
-        return random.choice(result), high
-
-    return result, high
+def find_most_similar(text: str, text_list: list):
+    res = find_similar_list(text, text_list)
+    if res:
+        return res[0]
 
 
 def read_yaml(path: str, _dict: bool = False, _refresh=True):
@@ -391,6 +389,10 @@ def is_all_chinese(text: List[str]):
             if not '\u4e00' <= char <= '\u9fff':
                 return False
     return True
+
+
+def is_contain_digit(text: str):
+    return any(n.isdigit() for n in text)
 
 
 def number_with_sign(number: int):
