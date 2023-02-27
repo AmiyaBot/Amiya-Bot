@@ -8,7 +8,7 @@ from amiya import init_task, load_resource
 bot = AmiyaBot(appid='test', token='', adapter=test_instance('127.0.0.1', 32001))
 
 if __name__ == '__main__':
-    from pluginsDev.src.arknights.operatorArchives import bot as plugin
+    from pluginDev.src.arknights.operatorArchives import bot as plugin
 
 
     async def install_plugin():

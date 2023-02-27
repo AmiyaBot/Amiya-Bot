@@ -1,4 +1,5 @@
 import os
+import re
 import copy
 import time
 import jieba
@@ -22,6 +23,7 @@ from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
 from amiyabot.builtin.lib.timedTask import tasks_control
+from amiyabot.util import extract_zip
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
@@ -75,7 +77,13 @@ def load_resource():
             path = submodule.get('path')
             url = submodule.get('url')
             if path:
-                GitAutomation(f'{gamedata_path}/{path}', url).update()
+                folder = f'{gamedata_path}/{path}'
+                GitAutomation(folder, url).update()
+                for root, _, files in os.walk(folder):
+                    for file in files:
+                        r = re.search(r'splice_\d+\.zip', file)
+                        if r:
+                            extract_zip(os.path.join(root, file), folder + '/skin', overwrite=True)
 
     BotResource.download_bot_resource()
     ArknightsConfig.initialize()
