@@ -77,7 +77,10 @@ class PRTS:
     async def download_operator_voices(cls, filepath: str, operator: Operator, voice_key: str, voice_type: str = ''):
         async with log.catch('voices download error:'):
             url = cls.get_voice_path(remote_config.remote.wiki, operator, voice_key, voice_type, is_url=True)
-            res = await download_async(url)
+            res = await download_async(url, headers={
+                'origin': 'https://prts.wiki/',
+                'referer': 'https://prts.wiki/'
+            })
             if res:
                 create_dir(filepath, is_file=True)
                 with open(filepath, mode='wb+') as src:

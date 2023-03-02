@@ -66,8 +66,8 @@ class LazyLoadPluginInstance(PluginInstance):
 
 def load_resource():
     gamedata_path = 'resource/gamedata'
-    gamedata_repo = GitAutomation(gamedata_path, remote_config.remote.gamedata)
-    gamedata_repo.update()
+
+    GitAutomation(gamedata_path, remote_config.remote.gamedata).update()
 
     if os.path.exists(f'{gamedata_path}/.gitmodules'):
         config = configparser.ConfigParser()
