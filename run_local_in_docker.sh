@@ -18,11 +18,22 @@ do
 done
 
 # 创建镜像，在本地配置文件修改完毕的情况下，执行下面的命令打包镜像
-docker build -t amiya-bot --no-cache .
+docker build -t amiya-bot .
 
 rm docker_plugin_requirements.txt
 
-# 然后执行下面的命令来启动阿米娅bot
-docker stop amiya-bot
-docker rm amiya-bot
-docker run -dit --name amiya-bot --restart=always --ip 172.172.0.10 -p 5080:5080 -p 5443:5443 -v /opt/amiya-bot/amiya-bot-v6/plugins:/amiyabot/plugins -v /opt/amiya-bot/amiya-bot-v6/resource:/amiyabot/resource amiya-bot python3.8 /amiyabot/amiya.py
+if [ -e ./v2raya/v2raya_config.json  ];
+then
+    cd ./v2raya/
+    docker build -t amiya-bot-v2raya .
+    docker stop amiya-bot
+    docker rm amiya-bot
+    docker run -dit --name amiya-bot --restart=always --ip 172.172.0.10 -p 5080:5080 -p 5443:5443 -v /opt/amiya-bot/amiya-bot-v6/plugins:/amiyabot/plugins -v /opt/amiya-bot/amiya-bot-v6/resource:/amiyabot/resource amiya-bot-v2raya /amiyabot/docker_start.sh
+else
+    # 然后执行下面的命令来启动阿米娅bot
+    docker stop amiya-bot
+    docker rm amiya-bot
+    docker run -dit --name amiya-bot --restart=always --ip 172.172.0.10 -p 5080:5080 -p 5443:5443 -v /opt/amiya-bot/amiya-bot-v6/plugins:/amiyabot/plugins -v /opt/amiya-bot/amiya-bot-v6/resource:/amiyabot/resource amiya-bot /amiyabot/docker_start.sh
+fi
+
+

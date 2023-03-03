@@ -27,3 +27,7 @@ config/server.yaml
 *.whl
 *.png
 *.ttf
+
+v2raya/v2raya-boltv4.db
+v2raya/v2raya_config.json
+v2raya/monitor.py

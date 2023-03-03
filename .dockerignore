@@ -2,3 +2,8 @@
 plugins/
 pluginsDev/
 resource/
+.github/
+.git/
+
+v2raya/
+Dockerfile
