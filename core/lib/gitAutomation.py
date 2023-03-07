@@ -37,7 +37,7 @@ class GitAutomation:
             print()
 
     def update(self):
-        log.info(f'check update from {self.repo_url}...')
+        log.info(f'fetching repo: {self.repo_url}...')
         if not os.path.exists(self.repo_dir):
             git.Repo.clone_from(self.repo_url, to_path=self.repo_dir, progress=self.progress)
         else:

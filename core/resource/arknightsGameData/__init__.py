@@ -58,7 +58,7 @@ class ArknightsGameDataResource:
         else:
             skin_id = skin_id.replace('#', '_')
 
-        skin_path = f'resource/gamedata/skin/{skin_id}b.png'
+        skin_path = f'resource/gamedata/skin/skin/{skin_id}b.png'
 
         if not os.path.exists(skin_path):
             return None

@@ -1,9 +1,11 @@
 import os
+import re
 import copy
 import time
 import jieba
 import datetime
 import traceback
+import configparser
 
 from typing import List, Union
 from amiyabot import (
@@ -21,6 +23,7 @@ from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
 from amiyabot.builtin.lib.timedTask import tasks_control
+from amiyabot.util import extract_zip
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
@@ -37,8 +40,6 @@ bot = MultipleAccounts(*BotAccounts.get_all_account())
 
 bot.set_prefix_keywords(['阿米娅', '阿米兔', '兔兔', '兔子', '小兔子', 'Amiya', 'amiya'])
 jieba.del_word('兔子')
-
-gamedata_repo = GitAutomation('resource/gamedata', remote_config.remote.gamedata)
 
 message_record = []
 
@@ -64,7 +65,26 @@ class LazyLoadPluginInstance(PluginInstance):
 
 
 def load_resource():
-    gamedata_repo.update()
+    gamedata_path = 'resource/gamedata'
+
+    GitAutomation(gamedata_path, remote_config.remote.gamedata).update()
+
+    if os.path.exists(f'{gamedata_path}/.gitmodules'):
+        config = configparser.ConfigParser()
+        config.read(f'{gamedata_path}/.gitmodules', encoding='utf-8')
+
+        for submodule in config.values():
+            path = submodule.get('path')
+            url = submodule.get('url')
+            if path:
+                folder = f'{gamedata_path}/{path}'
+                GitAutomation(folder, url).update()
+                for root, _, files in os.walk(folder):
+                    for file in files:
+                        r = re.search(r'splice_\d+\.zip', file)
+                        if r:
+                            extract_zip(os.path.join(root, file), folder + '/skin', overwrite=True)
+
     BotResource.download_bot_resource()
     ArknightsConfig.initialize()
     ArknightsGameData.initialize()
@@ -99,7 +119,7 @@ class SourceServer(ChainBuilder):
     @staticmethod
     async def image_getter_hook(image):
         if type(image) is bytes:
-            res = await http_requests.upload(f'{remote_config.remote.resource}/upload', image)
+            res = await http_requests.post_upload(f'{remote_config.remote.resource}/upload', image)
             if res:
                 return f'{remote_config.remote.resource}/images?path=' + res.strip('"')
         return image

@@ -2,7 +2,7 @@ from typing import Dict, List
 from requests_html import HTMLSession, HTML
 from amiyabot.network.download import download_async
 from core.resource import remote_config
-from core.util import create_dir
+from core.util import create_dir, run_in_thread_pool
 from core import log
 
 from .operatorBuilder import Operator
@@ -77,7 +77,10 @@ class PRTS:
     async def download_operator_voices(cls, filepath: str, operator: Operator, voice_key: str, voice_type: str = ''):
         async with log.catch('voices download error:'):
             url = cls.get_voice_path(remote_config.remote.wiki, operator, voice_key, voice_type, is_url=True)
-            res = await download_async(url)
+            res = await download_async(url, headers={
+                'origin': 'https://prts.wiki/',
+                'referer': 'https://prts.wiki/'
+            })
             if res:
                 create_dir(filepath, is_file=True)
                 with open(filepath, mode='wb+') as src:
@@ -89,7 +92,8 @@ class PRTS:
         if not cls.real_name_dist:
             async with log.catch('wiki error:'):
                 url = 'https://prts.wiki/w/%E8%A7%92%E8%89%B2%E7%9C%9F%E5%90%8D'
-                html: HTML = HTMLSession().get(url).html
+                res = await run_in_thread_pool(HTMLSession().get, url)
+                html: HTML = res.html
 
                 data = {}
                 for table in html.find('.wikitable'):
