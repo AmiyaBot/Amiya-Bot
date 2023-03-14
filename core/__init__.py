@@ -139,7 +139,7 @@ async def send_to_console_channel(chain: Chain):
 
 async def heartbeat():
     for item in bot:
-        await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}')
+        await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}', ignore_error=True)
 
 
 @bot.on_exception()
@@ -162,8 +162,8 @@ async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, E
     await send_to_console_channel(content)
 
 
-@bot.before_bot_reply
-async def _(data: Message, _):
+@bot.message_before_handle
+async def _(data: Message, factory_name: str, _):
     message_record.append({
         'app_id': data.instance.appid,
         'user_id': data.user_id,

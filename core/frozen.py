@@ -1,6 +1,5 @@
 import srsly
 import dhash
-import functions
 
 from . import server
 from jieba import posseg
