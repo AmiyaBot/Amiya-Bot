@@ -21,6 +21,7 @@ class ArknightsGameData:
     enemies: Dict[str, Dict[str, dict]]
     stages: STR_DICT_MAP
     stages_map: STR_DICT
+    side_story_map: STR_DICT_MAP
     operators: Dict[str, Operator]
     tokens: Dict[str, Token]
     birthday: Dict[str, Dict[str, List[Operator]]]
@@ -37,7 +38,7 @@ class ArknightsGameData:
         log.info(f'initialize ArknightsGameData@{cls.version}...')
 
         cls.enemies = init_enemies()
-        cls.stages, cls.stages_map = init_stages()
+        cls.stages, cls.stages_map, cls.side_story_map = init_stages()
         cls.operators, cls.tokens, cls.birthday = init_operators()
         cls.materials, cls.materials_map, cls.materials_made, cls.materials_source = init_materials()
 
@@ -45,6 +46,7 @@ class ArknightsGameData:
         OperatorIndex.batch_insert([
             item.dict() for _, item in cls.operators.items()
         ])
+        JsonData.clear_cache()
 
         log.info(f'initialize completed.')
 
@@ -228,13 +230,29 @@ def init_enemies():
 
 
 def init_stages():
+    activity_table = JsonData.get_json_data('activity_table')['basicInfo']
     operators_list = JsonData.get_json_data('character_table')
     enemies_info = JsonData.get_json_data('enemy_handbook_table')
     stage_data = JsonData.get_json_data('stage_table')['stages']
     item_data = JsonData.get_json_data('item_table')['items']
 
+    def is_ss(key, item):
+        if item['isReplicate']:
+            return False
+        if item['type'] == 'MINISTORY':
+            return True
+        return item['type'].endswith('SIDE') or ('displayType' in item and item['displayType'] == 'SIDESTORY')
+
+    side_story = [
+        item for key, item in activity_table.items() if is_ss(key, item)
+    ]
+    side_story.sort(key=lambda n: n['startTime'], reverse=True)
+
     stage_list = {}
     stage_map = {}
+    side_story_map = {
+        n['name']: {} for n in side_story
+    }
 
     for stage_id, item in stage_data.items():
         if not item['name']:
@@ -280,9 +298,23 @@ def init_stages():
 
         stage_list[stage_id] = {
             **item,
-            'levelData': level_data
+            'levelData': level_data,
+            'activity': ''
         }
+
+        if item['code'].startswith('GT'):
+            side_story_map['骑兵与猎人'][stage_id] = stage_list[stage_id]
+        elif item['code'].startswith('OF'):
+            side_story_map['火蓝之心'][stage_id] = stage_list[stage_id]
+        else:
+            for ss_item in side_story:
+                ss_code = ss_item['id']
+                ss_name = ss_item['name']
+
+                if ss_code in stage_id:
+                    side_story_map[ss_name][stage_id] = stage_list[stage_id]
+
         stage_map[stage_key] = stage_id
         stage_map[stage_key_name] = stage_id
 
-    return stage_list, stage_map
+    return stage_list, stage_map, side_story_map

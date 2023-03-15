@@ -24,6 +24,8 @@ from functools import partial
 from zhon.hanzi import punctuation as punctuation_cn
 from concurrent.futures import ThreadPoolExecutor
 
+from amiyabot import PluginInstance
+
 jieba.setLogLevel(jieba.logging.INFO)
 
 yaml_cache = {
@@ -76,6 +78,17 @@ class Singleton(type):
         if cls not in cls.instances:
             cls.instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.instances[cls]
+
+
+def get_doc(func: PluginInstance):
+    doc = func.document
+    if os.path.isfile(doc):
+        with open(doc, mode='r', encoding='utf-8') as file:
+            content = file.read()
+    else:
+        content = doc
+
+    return f'# {func.name}\n\n{content}'
 
 
 def argv(name, formatter=str):

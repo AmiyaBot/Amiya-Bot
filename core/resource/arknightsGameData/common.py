@@ -63,7 +63,7 @@ class JsonData:
     cache = {}
 
     @classmethod
-    def get_json_data(cls, name, folder='excel'):
+    def get_json_data(cls, name: str, folder: str = 'excel'):
         if name not in cls.cache:
             path = f'resource/gamedata/gamedata/{folder}/{name}.json'
             if os.path.exists(path):
@@ -73,3 +73,10 @@ class JsonData:
                 return {}
 
         return cls.cache[name]
+
+    @classmethod
+    def clear_cache(cls, name: str = None):
+        if name:
+            del cls.cache[name]
+        else:
+            cls.cache = {}
