@@ -7,9 +7,9 @@ from .__model__ import QueryData, BaseModel
 
 class UserModel(BaseModel):
     user_id: str
-    coupon: int
-    jade_point: int
     black: int
+    coupon: int = 0
+    jade_point: int = 0
 
 
 @app.controller

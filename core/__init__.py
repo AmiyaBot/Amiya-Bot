@@ -26,7 +26,7 @@ from amiyabot.builtin.lib.timedTask import tasks_control
 from amiyabot.util import extract_zip
 
 from core.database.messages import MessageRecord
-from core.database.bot import BotAccounts
+from core.database.bot import BotAccounts, Admin
 from core.resource import remote_config
 from core.resource.botResource import BotResource
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
@@ -142,6 +142,24 @@ async def heartbeat():
         await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}', ignore_error=True)
 
 
+@bot.message_created
+async def _(data: Message, _):
+    if not data.is_admin:
+        data.is_admin = bool(Admin.get_or_none(account=data.user_id))
+
+
+@bot.message_before_handle
+async def _(data: Message, factory_name: str, _):
+    message_record.append({
+        'app_id': data.instance.appid,
+        'user_id': data.user_id,
+        'channel_id': data.channel_id,
+        'msg_type': data.message_type or 'channel',
+        'classify': 'call',
+        'create_time': int(time.time())
+    })
+
+
 @bot.on_exception()
 async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, Event]):
     chain = Chain()
@@ -160,18 +178,6 @@ async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, E
     content = chain.text('\n'.join(info)).text_image(traceback.format_exc())
 
     await send_to_console_channel(content)
-
-
-@bot.message_before_handle
-async def _(data: Message, factory_name: str, _):
-    message_record.append({
-        'app_id': data.instance.appid,
-        'user_id': data.user_id,
-        'channel_id': data.channel_id,
-        'msg_type': data.message_type or 'channel',
-        'classify': 'call',
-        'create_time': int(time.time())
-    })
 
 
 @tasks_control.timed_task(each=60)
