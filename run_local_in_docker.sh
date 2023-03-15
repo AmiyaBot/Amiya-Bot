@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if [[ "$1" == "no-cache" ]]; then
+    NO_CACHE="--no-cache"
+else
+    NO_CACHE=""
+fi
+
 TZ=Asia/Shanghai
 
 touch docker_plugin_requirements.txt
@@ -18,7 +24,7 @@ do
 done
 
 # 创建镜像，在本地配置文件修改完毕的情况下，执行下面的命令打包镜像
-docker build --no-cache -t amiya-bot .
+docker build ${NO_CACHE} -t amiya-bot .
 
 rm docker_plugin_requirements.txt
 
