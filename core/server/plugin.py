@@ -65,7 +65,7 @@ class Plugin:
 
         return app.response(res)
     
-    @app.route()
+    @app.route(method='get')
     async def get_plugin_default_config(self, data: GetConfigModel):
         plugin = next((item for _, item in bot.plugins.items() if item.plugin_id == data.plugin_id), None)
         if not plugin:
@@ -82,7 +82,7 @@ class Plugin:
             'channel_config_template': channel_template
         })
 
-    @app.route()
+    @app.route(method='get')
     async def get_plugin_config(self, data: GetConfigModel):
         plugin = next((item for _, item in bot.plugins.items() if item.plugin_id == data.plugin_id), None)
         if not plugin:
