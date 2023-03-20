@@ -3,6 +3,7 @@ import sys
 import asyncio
 import core.frozen
 
+import core.lib.pluginExtension
 from core import app, bot, init_task, load_resource, load_plugins
 
 sys.path += [
