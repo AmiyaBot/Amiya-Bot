@@ -7,15 +7,17 @@ from core.database.plugin import PluginConfiguration
 
 from .__model__ import BaseModel
 
+
 class GetConfigModel(BaseModel):
     plugin_id: str
+
 
 class SetConfigModel(BaseModel):
     plugin_id: str
     channel_id: str
     config_json: str
 
-# 这里这里,命名规范!
+
 class InstallModel(BaseModel):
     url: str
     packageName: str
@@ -64,17 +66,18 @@ class Plugin:
             })
 
         return app.response(res)
-    
+
     @app.route(method='get')
     async def get_plugin_default_config(self, data: GetConfigModel):
         plugin = next((item for _, item in bot.plugins.items() if item.plugin_id == data.plugin_id), None)
         if not plugin:
             return app.response(code=500, message='未安装该插件')
-            
+
         global_cfg = getattr(plugin, 'default_global_config', '{}')
         global_template = getattr(plugin, 'global_config_template', '{}')
         channel_cfg = getattr(plugin, 'default_channel_config', '{}')
         channel_template = getattr(plugin, 'channel_config_template', '{}')
+
         return app.response({
             'default_global_config': global_cfg,
             'global_config_template': global_template,

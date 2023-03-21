@@ -102,3 +102,8 @@ class Replace:
         if res:
             return app.response(message=f'同步成功')
         return app.response(code=500, message=f'同步失败')
+
+    @app.route(method='get', allow_unauthorized=True)
+    async def get_global_replace(self):
+        return app.response(
+            data=query_to_list(TextReplace.select().where(TextReplace.is_global == 1, TextReplace.is_active == 1)))

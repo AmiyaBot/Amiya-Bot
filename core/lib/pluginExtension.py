@@ -1,6 +1,7 @@
 from core.database.plugin import PluginConfiguration
 from amiyabot import PluginInstance, log
 
+
 def get_channel_config(self: PluginInstance, channel_id: str):
     if channel_id is None or channel_id == '0':
         log.error(f'{self.plugin_id}: Try get channel config with None channel id!')
@@ -74,6 +75,7 @@ def set_global_config(self: PluginInstance, json: str):
         conf_str.version = self.version
         conf_str.save()
         log.error(f'{self.plugin_id}: Config Update!')
+
 
 PluginInstance.get_channel_config = get_channel_config
 PluginInstance.set_channel_config = set_channel_config
