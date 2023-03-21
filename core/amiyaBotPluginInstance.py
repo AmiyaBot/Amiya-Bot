@@ -7,7 +7,7 @@ from core.database.plugin import PluginConfiguration
 from amiyabot import PluginInstance, log
 
 JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
-CONFIG_TYPE = Optional[Union[str, dict, list]]
+CONFIG_TYPE = Optional[Union[str, dict]]
 
 
 class AmiyaBotPluginInstance(PluginInstance):
@@ -71,23 +71,30 @@ class AmiyaBotPluginInstance(PluginInstance):
             return None
 
         if type(json_input) not in (str, dict, list):
-            raise TypeError(f'The Config value must be str, dict or list, not {type(json_input)}.')
+            raise TypeError(f'The Config value must be str (as json string or filename), dict, not {type(json_input)}.')
 
         # 文本 > 路径 > 对象 ==> 对象
         if isinstance(json_input, str):
             try:
-                return json.loads(json_input)
+                ret_val = json.loads(json_input)
+                if not isinstance(ret_val, dict):
+                    raise TypeError(f'The Config value must be str (as json string or filename), dict, not {type(json_input)}.')
+                return ret_val
             except json.JSONDecodeError:
                 pass
 
         if isinstance(json_input, str):
             try:
                 with open(json_input, 'r') as f:
-                    return json.load(f)
+                    ret_val = json.load(f)
+                    if not isinstance(ret_val, dict):
+                        raise TypeError(f'The Config value must be str (as json string or filename), dict, not {type(json_input)}.')
+                    return ret_val
             except (TypeError, FileNotFoundError):
                 pass
-
-        return copy.deepcopy(json_input)
+        if not isinstance(json_input, dict):
+            raise TypeError(f'The Config value must be str (as json string or filename), dict, not {type(json_input)}.')
+        return json_input
 
     def __get_channel_config(self, channel_id: str) -> dict:
         if channel_id is None or channel_id == '0':
