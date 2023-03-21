@@ -63,7 +63,7 @@ class AmiyaBotPluginInstance(PluginInstance):
             'global_config_schema':json.dumps(self.__global_config_schema),
         }
 
-    def __get_obj_from_str(self, json_input: object) -> dict:
+    def __get_obj_from_str(self, json_input) -> dict:
         if json_input is None:
             return None
 
