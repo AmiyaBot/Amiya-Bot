@@ -6,7 +6,7 @@ from typing import Optional, Union
 from core.database.plugin import PluginConfiguration
 from amiyabot import PluginInstance, log
 
-JSON_VALUE_TYPE = Union[bool, str, int, float, dict, list]
+JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict, list]]
 
 
@@ -159,7 +159,7 @@ class AmiyaBotPluginInstance(PluginInstance):
             conf_str.save()
             log.info(f'{self.plugin_id}: Config Update!')
 
-    def get_config(self, channel_id, config_name):
+    def get_config(self, channel_id, config_name) -> JSON_VALUE_TYPE:
         if channel_id and len(str(channel_id).strip()) > 0:
             json_config = self.__get_channel_config(str(channel_id))
             # 注意这里要判断 None，因为界面上如果用户不填写值，界面会将值设置为 null 而不是缺失该元素，对应到 Python 这边就是 None。
