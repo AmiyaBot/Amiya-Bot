@@ -81,8 +81,8 @@ class AmiyaBotPluginInstance(PluginInstance):
                     return obj
             except (TypeError, FileNotFoundError):
                 pass
-        # 默认返回传入的对象
-        return json_input
+        # 将对象强行转换为dict
+        return json.loads(json.dumps(json_input))
 
     def __get_channel_config(self, channel_id: str) -> dict:
         if channel_id is None or channel_id == '0':
