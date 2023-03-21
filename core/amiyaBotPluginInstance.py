@@ -1,8 +1,13 @@
+import copy
 import json
 import jsonschema
 
+from typing import Optional, Union
 from core.database.plugin import PluginConfiguration
 from amiyabot import PluginInstance, log
+
+JSON_VALUE_TYPE = Union[bool, str, int, float, dict, list]
+CONFIG_TYPE = Optional[Union[str, dict, list]]
 
 
 class AmiyaBotPluginInstance(PluginInstance):
@@ -13,28 +18,24 @@ class AmiyaBotPluginInstance(PluginInstance):
                  plugin_type: str = None,
                  description: str = None,
                  document: str = None,
-                 channel_config_default: object = None,
-                 channel_config_schema: object = None,
-                 global_config_default: object = None,
-                 global_config_schema: object = None):
+                 channel_config_default: CONFIG_TYPE = None,
+                 channel_config_schema: CONFIG_TYPE = None,
+                 global_config_default: CONFIG_TYPE = None,
+                 global_config_schema: CONFIG_TYPE = None):
         super().__init__(name, version, plugin_id,
-                       plugin_type, description, document)
+                         plugin_type, description, document)
 
-        self.__channel_config_default = self.__get_obj_from_str(
-            channel_config_default)
-        self.__channel_config_schema = self.__get_obj_from_str(
-            channel_config_schema)
-        self.__global_config_default = self.__get_obj_from_str(
-            global_config_default)
-        self.__global_config_schema = self.__get_obj_from_str(
-            global_config_schema)
+        self.__channel_config_default = self.__get_obj_from_str(channel_config_default)
+        self.__channel_config_schema = self.__get_obj_from_str(channel_config_schema)
+        self.__global_config_default = self.__get_obj_from_str(global_config_default)
+        self.__global_config_schema = self.__get_obj_from_str(global_config_schema)
 
-        # 提供Template则立即执行校验
+        # 提供 Template 则立即执行校验
         if self.__channel_config_schema is not None:
             if self.__channel_config_default is None:
                 raise ValueError(
                     'If you provide schema, you must also provide default.')
-            # 立即校验JsonSchema是否符合
+            # 立即校验 JsonSchema 是否符合
             try:
                 jsonschema.validate(
                     instance=self.__channel_config_default, schema=self.__channel_config_schema)
@@ -45,44 +46,48 @@ class AmiyaBotPluginInstance(PluginInstance):
             if self.__global_config_default is None:
                 raise ValueError(
                     'If you provide schema, you must also provide default.')
-            # 立即校验JsonSchema是否符合
+            # 立即校验 JsonSchema 是否符合
             try:
                 jsonschema.validate(
                     instance=self.__global_config_default, schema=self.__global_config_schema)
             except jsonschema.ValidationError as e:
                 raise ValueError('Your json default does not fit your schema.')
 
-    # 同时提供LazyLoadPluginInstance的功能
-    def load(self): ...
+    # 同时提供 LazyLoadPluginInstance 的功能
+    def load(self):
+        ...
 
     def get_config_defaults(self):
         return {
-            'channel_config_default':json.dumps(self.__channel_config_default),
-            'channel_config_schema':json.dumps(self.__channel_config_schema),
-            'global_config_default':json.dumps(self.__global_config_default),
-            'global_config_schema':json.dumps(self.__global_config_schema),
+            'channel_config_default': json.dumps(self.__channel_config_default),
+            'channel_config_schema': json.dumps(self.__channel_config_schema),
+            'global_config_default': json.dumps(self.__global_config_default),
+            'global_config_schema': json.dumps(self.__global_config_schema),
         }
 
-    def __get_obj_from_str(self, json_input) -> dict:
+    @staticmethod
+    def __get_obj_from_str(json_input: CONFIG_TYPE) -> CONFIG_TYPE:
         if json_input is None:
             return None
 
-        # 文本>路径>对象 ==> 对象
+        if type(json_input) not in (str, dict, list):
+            raise TypeError(f'The Config value must be str, dict or list, not {type(json_input)}.')
+
+        # 文本 > 路径 > 对象 ==> 对象
         if isinstance(json_input, str):
             try:
-                obj = json.loads(json_input)
-                return obj
+                return json.loads(json_input)
             except json.JSONDecodeError:
                 pass
+
         if isinstance(json_input, str):
             try:
-                with open(json_input, "r") as f:
-                    obj = json.load(f)
-                    return obj
+                with open(json_input, 'r') as f:
+                    return json.load(f)
             except (TypeError, FileNotFoundError):
                 pass
-        # 将对象强行转换为dict
-        return json.loads(json.dumps(json_input))
+
+        return copy.deepcopy(json_input)
 
     def __get_channel_config(self, channel_id: str) -> dict:
         if channel_id is None or channel_id == '0':
@@ -157,7 +162,7 @@ class AmiyaBotPluginInstance(PluginInstance):
     def get_config(self, channel_id, config_name):
         if channel_id and len(str(channel_id).strip()) > 0:
             json_config = self.__get_channel_config(str(channel_id))
-            # 注意这里要判断None，因为界面上如果用户不填写值，界面会将值设置为null而不是缺失该元素，对应到Python这边就是None。
+            # 注意这里要判断 None，因为界面上如果用户不填写值，界面会将值设置为 null 而不是缺失该元素，对应到 Python 这边就是 None。
             if config_name in json_config.keys() and json_config[config_name] is not None:
                 return json_config[config_name]
 
@@ -167,8 +172,8 @@ class AmiyaBotPluginInstance(PluginInstance):
 
         return None
 
-    # 这里确实是期望一个value，因为json的value既可以是基本类型也可以是dict类型。
-    def set_config(self, channel_id: str, config_name: str, config_value: object):
+    # 这里确实是期望一个 value，因为 json 的 value 既可以是基本类型也可以是 dict 类型。
+    def set_config(self, channel_id: str, config_name: str, config_value: JSON_VALUE_TYPE):
         if channel_id and len(str(channel_id).strip()) > 0:
             json_config = self.__get_channel_config(str(channel_id))
         else:
