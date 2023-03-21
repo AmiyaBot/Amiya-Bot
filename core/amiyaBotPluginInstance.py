@@ -63,7 +63,7 @@ class AmiyaBotPluginInstance(PluginInstance):
             'global_config_schema':json.dumps(self.__global_config_schema),
         }
 
-    def __get_obj_from_str(self, json_input: object) -> object:
+    def __get_obj_from_str(self, json_input: object) -> dict:
         if json_input is None:
             return None
 
@@ -84,7 +84,7 @@ class AmiyaBotPluginInstance(PluginInstance):
         # 默认返回传入的对象
         return json_input
 
-    def __get_channel_config(self, channel_id: str) -> object:
+    def __get_channel_config(self, channel_id: str) -> dict:
         if channel_id is None or channel_id == '0':
             raise ValueError('Try set channel config with None channel id!')
 
@@ -101,7 +101,7 @@ class AmiyaBotPluginInstance(PluginInstance):
         except json.JSONDecodeError:
             raise ValueError('The config in database is not a valid json.')
 
-    def __set_channel_config(self, channel_id: str, config_value: object):
+    def __set_channel_config(self, channel_id: str, config_value: dict):
         if channel_id is None or channel_id == '0':
             raise ValueError('Try set channel config with None channel id!')
 
@@ -122,7 +122,7 @@ class AmiyaBotPluginInstance(PluginInstance):
             conf_str.save()
             log.info(f'{self.plugin_id}: Config Update!')
 
-    def __get_global_config(self) -> object:
+    def __get_global_config(self) -> dict:
         conf_str = PluginConfiguration.get_or_none(
             plugin_id=self.plugin_id, channel_id='0')
 
@@ -136,7 +136,7 @@ class AmiyaBotPluginInstance(PluginInstance):
         except json.JSONDecodeError:
             raise ValueError('The config in database is not a valid json.')
 
-    def __set_global_config(self, config_value: object):
+    def __set_global_config(self, config_value: dict):
         conf_str = PluginConfiguration.get_or_none(
             plugin_id=self.plugin_id, channel_id='0')
 
@@ -167,6 +167,7 @@ class AmiyaBotPluginInstance(PluginInstance):
 
         return None
 
+    # 这里确实是期望一个value，因为json的value既可以是基本类型也可以是dict类型。
     def set_config(self, channel_id: str, config_name: str, config_value: object):
         if channel_id and len(str(channel_id).strip()) > 0:
             json_config = self.__get_channel_config(str(channel_id))
