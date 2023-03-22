@@ -33,6 +33,8 @@ from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.lib.gitAutomation import GitAutomation
 from core.util import read_yaml, create_dir
 
+from .amiyaBotPluginInstance import AmiyaBotPluginInstance
+
 serve_conf = read_yaml('config/server.yaml')
 
 app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
