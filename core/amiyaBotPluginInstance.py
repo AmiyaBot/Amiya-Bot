@@ -1,4 +1,3 @@
-import copy
 import json
 import jsonschema
 
@@ -71,14 +70,14 @@ class AmiyaBotPluginInstance(PluginInstance):
             return None
 
         if type(json_input) not in (str, dict, list):
-            raise TypeError(f'The Config value must be str (as json string or filename), dict, not {type(json_input)}.')
+            raise ConfigTypeError(json_input)
 
         # 文本 > 路径 > 对象 ==> 对象
         if isinstance(json_input, str):
             try:
                 ret_val = json.loads(json_input)
                 if not isinstance(ret_val, dict):
-                    raise TypeError(f'The Config value must be str (as json string or filename), dict, not {type(json_input)}.')
+                    raise ConfigTypeError(json_input)
                 return ret_val
             except json.JSONDecodeError:
                 pass
@@ -88,12 +87,14 @@ class AmiyaBotPluginInstance(PluginInstance):
                 with open(json_input, 'r') as f:
                     ret_val = json.load(f)
                     if not isinstance(ret_val, dict):
-                        raise TypeError(f'The Config value must be str (as json string or filename), dict, not {type(json_input)}.')
+                        raise ConfigTypeError(json_input)
                     return ret_val
             except (TypeError, FileNotFoundError):
                 pass
+
         if not isinstance(json_input, dict):
-            raise TypeError(f'The Config value must be str (as json string or filename), dict, not {type(json_input)}.')
+            raise ConfigTypeError(json_input)
+
         return json_input
 
     def __get_channel_config(self, channel_id: str) -> dict:
@@ -194,5 +195,13 @@ class AmiyaBotPluginInstance(PluginInstance):
         else:
             self.__set_channel_config(str(channel_id), json_config)
 
-        # 返回self以供链式调用
+        # 返回 self 以供链式调用
         return self
+
+
+class ConfigTypeError(TypeError):
+    def __init__(self, value):
+        self.value_type = type(value)
+
+    def __str__(self):
+        return f'The Config value must be str (as json string or filename), dict, not {self.value_type}.'
