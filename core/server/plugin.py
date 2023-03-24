@@ -1,10 +1,10 @@
 import os
 import base64
 
-from amiyabot import log
+from typing import List
 from amiyabot.network.download import download_async
 from core import app, bot
-from core.amiyaBotPluginInstance import AmiyaBotPluginInstance
+from core.customPluginInstance.amiyaBotPluginInstance import AmiyaBotPluginInstance
 from core.database.plugin import PluginConfiguration
 
 from .__model__ import BaseModel
@@ -16,10 +16,8 @@ class GetConfigModel(BaseModel):
 
 class SetConfigModel(BaseModel):
     plugin_id: str
-    channel_id: str
     config_json: str
-
-# 这里这里,命名规范!
+    channel_id: str = None
 
 
 class InstallModel(BaseModel):
@@ -57,8 +55,7 @@ class Plugin:
                 logo_path = os.path.join(item_path, 'logo.png')
                 if os.path.exists(logo_path):
                     with open(logo_path, mode='rb') as ico:
-                        logo = 'data:image/png;base64,' + \
-                            base64.b64encode(ico.read()).decode()
+                        logo = 'data:image/png;base64,' + base64.b64encode(ico.read()).decode()
 
             res.append({
                 'name': item.name,
@@ -67,67 +64,62 @@ class Plugin:
                 'plugin_type': item.plugin_type,
                 'description': item.description,
                 'document': content,
-                'logo': logo
+                'logo': logo,
+                'allow_config': isinstance(item, AmiyaBotPluginInstance)
             })
 
         return app.response(res)
 
     @app.route()
     async def get_plugin_default_config(self, data: GetConfigModel):
-        plugin = next((item for _, item in bot.plugins.items()
-                      if item.plugin_id == data.plugin_id), None)
+        plugin = bot.plugins.get(data.plugin_id)
         if not plugin:
             return app.response(code=500, message='未安装该插件')
 
         if isinstance(plugin, AmiyaBotPluginInstance):
-            config_defaults = plugin.get_config_defaults()
-            # 此处执行命名转换来减少对前端的修改，后面可以再改名字没关系的，反正console和兔兔都是内部代码，不影响插件开发者
-            return app.response({
-                'default_global_config': config_defaults['global_config_default'],
-                'global_config_template':config_defaults['global_config_schema'],
-                'default_channel_config': config_defaults['channel_config_default'],
-                'channel_config_template': config_defaults['channel_config_schema'],
-            })
+            return app.response(
+                plugin.get_config_defaults()
+            )
+
         return app.response(code=500, message='该插件不支持控制台配置编辑')
-
-
 
     @app.route()
     async def get_plugin_config(self, data: GetConfigModel):
-        plugin = next((item for _, item in bot.plugins.items()
-                      if item.plugin_id == data.plugin_id), None)
+        plugin = bot.plugins.get(data.plugin_id)
         if not plugin:
             return app.response(code=500, message='未安装该插件')
 
-        configs = PluginConfiguration.select().where(
-            PluginConfiguration.plugin_id == plugin.plugin_id)
+        configs: List[PluginConfiguration] = PluginConfiguration.select().where(
+            PluginConfiguration.plugin_id == plugin.plugin_id
+        )
 
-        config_dict = {}
-        for cfg in configs:
-            if cfg.channel_id:
-                config_dict[cfg.channel_id] = cfg.json_config
+        config_dict = {
+            item.channel_id: item.json_config
+            for item in configs if item.channel_id
+        }
 
         return app.response(config_dict)
 
     @app.route()
     async def set_plugin_config(self, data: SetConfigModel):
-        plugin = next((item for _, item in bot.plugins.items()
-                      if item.plugin_id == data.plugin_id), None)
+        plugin = bot.plugins.get(data.plugin_id)
         if not plugin:
             return app.response(code=500, message='未安装该插件')
 
-        config = PluginConfiguration.get_or_none(
-            plugin_id=plugin.plugin_id, channel_id=data.channel_id)
-        if config is None:
-            PluginConfiguration.create(plugin_id=plugin.plugin_id, channel_id=data.channel_id,
-                                       json_config=data.config_json, version=plugin.version)
-            log.info(f'{plugin.plugin_id}: Remote Config Insert!')
+        config: PluginConfiguration = PluginConfiguration.get_or_none(
+            plugin_id=plugin.plugin_id,
+            channel_id=data.channel_id
+        )
+
+        if not config:
+            PluginConfiguration.create(plugin_id=plugin.plugin_id,
+                                       channel_id=data.channel_id,
+                                       json_config=data.config_json,
+                                       version=plugin.version)
         else:
-            # 需要覆盖插件的当前Version
             config.version = plugin.version
             config.json_config = data.config_json
             config.save()
-            log.info(f'{plugin.plugin_id}: Remote Config Update!')
 
         return app.response(message='配置已保存')
 
@@ -143,7 +135,8 @@ class Plugin:
                 return app.response(message='插件安装成功')
             else:
                 return app.response(code=500, message='插件安装失败')
-        return app.response(code=500, message='插件下载失败')
+
+        return app.response(code=500, message='插件下载失败，请检查网络连接。')
 
     @app.route()
     async def upgrade_plugin(self, data: UpgradeModel):
@@ -153,12 +146,15 @@ class Plugin:
             with open(plugin, mode='wb+') as src:
                 src.write(res)
 
+            # 卸载插件
             bot.uninstall_plugin(data.plugin_id, remove=True)
+
             if bot.install_plugin(plugin, extract_plugin=True):
                 return app.response(message='插件更新成功')
             else:
                 return app.response(code=500, message='插件安装失败')
-        return app.response(code=500, message='插件下载失败')
+
+        return app.response(code=500, message='插件下载失败，请检查网络连接。')
 
     @app.route()
     async def uninstall_plugin(self, data: UninstallModel):

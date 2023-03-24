@@ -4,10 +4,12 @@ from typing import Union
 
 db = connect_database('amiya_plugin' if is_mysql else 'database/amiya_plugin.db', is_mysql, config)
 
+
 class PluginBaseModel(ModelClass):
     class Meta:
         database = db
-        
+
+
 @table
 class PluginConfiguration(PluginBaseModel):
     plugin_id: str = CharField()

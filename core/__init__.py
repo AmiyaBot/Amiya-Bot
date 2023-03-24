@@ -10,13 +10,11 @@ import configparser
 from typing import List, Union
 from amiyabot import (
     MultipleAccounts,
-    PluginInstance,
     HttpServer,
     Message,
     Event,
     Chain,
     ChainBuilder,
-    Equal,
     log
 )
 from amiyabot.adapters import BotAdapterProtocol
@@ -33,7 +31,7 @@ from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.lib.gitAutomation import GitAutomation
 from core.util import read_yaml, create_dir
 
-from .amiyaBotPluginInstance import AmiyaBotPluginInstance
+from core.customPluginInstance import AmiyaBotPluginInstance, LazyLoadPluginInstance
 
 serve_conf = read_yaml('config/server.yaml')
 
@@ -44,26 +42,6 @@ bot.set_prefix_keywords(['阿米娅', '阿米兔', '兔兔', '兔子', '小兔�
 jieba.del_word('兔子')
 
 message_record = []
-
-
-class LazyLoadPluginInstance(PluginInstance):
-    def __init__(self,
-                 name: str,
-                 version: str,
-                 plugin_id: str,
-                 plugin_type: str = None,
-                 description: str = None,
-                 document: str = None):
-        super().__init__(
-            name,
-            version,
-            plugin_id,
-            plugin_type,
-            description,
-            document
-        )
-
-    def load(self): ...
 
 
 def load_resource():

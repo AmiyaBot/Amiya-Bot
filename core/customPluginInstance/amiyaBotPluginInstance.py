@@ -1,0 +1,192 @@
+import json
+import jsonschema
+
+from typing import Optional, Union
+from core.database.plugin import PluginConfiguration
+
+from .lazyLoadPluginInstance import LazyLoadPluginInstance
+
+JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
+CONFIG_TYPE = Optional[Union[str, dict]]
+
+
+class AmiyaBotPluginInstance(LazyLoadPluginInstance):
+    def __init__(self,
+                 name: str,
+                 version: str,
+                 plugin_id: str,
+                 plugin_type: str = None,
+                 description: str = None,
+                 document: str = None,
+                 channel_config_default: CONFIG_TYPE = None,
+                 channel_config_schema: CONFIG_TYPE = None,
+                 global_config_default: CONFIG_TYPE = None,
+                 global_config_schema: CONFIG_TYPE = None):
+
+        super().__init__(name,
+                         version,
+                         plugin_id,
+                         plugin_type,
+                         description,
+                         document)
+
+        self.__channel_config_default = self.__parse_to_json(channel_config_default)
+        self.__channel_config_schema = self.__parse_to_json(channel_config_schema)
+        self.__global_config_default = self.__parse_to_json(global_config_default)
+        self.__global_config_schema = self.__parse_to_json(global_config_schema)
+
+        for default, schema in (
+            (self.__channel_config_default, self.__channel_config_schema),
+            (self.__global_config_default, self.__global_config_schema)
+        ):
+            # 提供 Template 则立即执行校验
+            if schema is not None:
+                if default is None:
+                    raise ValueError('If you provide schema, you must also provide default.')
+
+                # 立即校验 JsonSchema 是否符合
+                try:
+                    jsonschema.validate(
+                        instance=default,
+                        schema=schema
+                    )
+                except jsonschema.ValidationError as e:
+                    raise ValueError('Your json default does not fit your schema.') from e
+
+    def get_config_defaults(self):
+        return {
+            'channel_config_default': json.dumps(self.__channel_config_default),
+            'channel_config_schema': json.dumps(self.__channel_config_schema),
+            'global_config_default': json.dumps(self.__global_config_default),
+            'global_config_schema': json.dumps(self.__global_config_schema)
+        }
+
+    @staticmethod
+    def __parse_to_json(data: CONFIG_TYPE) -> CONFIG_TYPE:
+        if data is None:
+            return None
+
+        if type(data) not in (str, dict, list):
+            raise ConfigTypeError(data)
+
+        # parse json 字符串
+        if isinstance(data, str):
+            try:
+                ret_val = json.loads(data)
+                if not isinstance(ret_val, dict):
+                    raise ConfigTypeError(data)
+                return ret_val
+            except json.JSONDecodeError:
+                pass
+
+        # 读取 json 格式文件
+        if isinstance(data, str):
+            try:
+                with open(data, 'r') as f:
+                    ret_val = json.load(f)
+                    if not isinstance(ret_val, dict):
+                        raise ConfigTypeError(data)
+                    return ret_val
+            except (TypeError, FileNotFoundError):
+                pass
+
+        if not isinstance(data, dict):
+            raise ConfigTypeError(data)
+
+        return data
+
+    def __get_channel_config(self, channel_id: str) -> dict:
+        if not channel_id:
+            raise ValueError('Try set channel config with None channel id!')
+
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=channel_id)
+
+        if not conf_str:
+            return self.__channel_config_default or {}
+
+        try:
+            return json.loads(conf_str.json_config)
+        except json.JSONDecodeError:
+            raise ValueError('The config in database is not a valid json.')
+
+    def __set_channel_config(self, channel_id: str, config_value: dict):
+        if not channel_id:
+            raise ValueError('Try set channel config with None channel id!')
+
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=channel_id)
+
+        if not conf_str:
+            PluginConfiguration.create(
+                plugin_id=self.plugin_id,
+                channel_id=channel_id,
+                json_config=json.dumps(config_value),
+                version=self.version
+            )
+        else:
+            conf_str.json_config = json.dumps(config_value)
+            conf_str.version = self.version
+            conf_str.save()
+
+    def __get_global_config(self) -> dict:
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=None)
+
+        if not conf_str:
+            return self.__global_config_default or {}
+
+        try:
+            return json.loads(conf_str.json_config)
+        except json.JSONDecodeError:
+            raise ValueError('The config in database is not a valid json.')
+
+    def __set_global_config(self, config_value: dict):
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=None)
+
+        if not conf_str:
+            PluginConfiguration.create(
+                plugin_id=self.plugin_id,
+                json_config=json.dumps(config_value),
+                version=self.version
+            )
+        else:
+            conf_str.json_config = json.dumps(config_value)
+            conf_str.version = self.version
+            conf_str.save()
+
+    def get_config(self, config_name: str, channel_id: str = None) -> JSON_VALUE_TYPE:
+        if channel_id:
+            json_config = self.__get_channel_config(str(channel_id))
+
+            # 注意这里要判断 None，因为界面上如果用户不填写值，界面会将值设置为 null 而不是缺失该元素，对应到 Python 这边就是 None。
+            if config_name in json_config and json_config[config_name] is not None:
+                return json_config[config_name]
+
+        json_config = self.__get_global_config()
+
+        if config_name in json_config and json_config[config_name] is not None:
+            return json_config[config_name]
+
+        return None
+
+    def set_config(self, config_name: str, config_value: JSON_VALUE_TYPE, channel_id: str = None):
+        if channel_id:
+            json_config = self.__get_channel_config(str(channel_id))
+        else:
+            json_config = self.__get_global_config()
+
+        json_config[config_name] = config_value
+
+        # 如果 channel_id 为 None，则保存到全局配置
+        if channel_id:
+            self.__set_channel_config(str(channel_id), json_config)
+        else:
+            self.__set_global_config(json_config)
+
+        return self
+
+
+class ConfigTypeError(TypeError):
+    def __init__(self, value):
+        self.value_type = type(value)
+
+    def __str__(self):
+        return f'The Config value must be str (as json string or filename), dict, not {self.value_type}.'
