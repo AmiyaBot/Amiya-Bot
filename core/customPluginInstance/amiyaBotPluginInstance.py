@@ -1,8 +1,10 @@
+import os
 import json
 import jsonschema
 
 from typing import Optional, Union
 from core.database.plugin import PluginConfiguration
+from core.util import read_yaml
 
 from .lazyLoadPluginInstance import LazyLoadPluginInstance
 
@@ -62,38 +64,38 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         }
 
     @staticmethod
-    def __parse_to_json(data: CONFIG_TYPE) -> CONFIG_TYPE:
-        if data is None:
+    def __parse_to_json(value: CONFIG_TYPE) -> CONFIG_TYPE:
+        if not value:
             return None
 
-        if type(data) not in (str, dict, list):
-            raise ConfigTypeError(data)
+        if isinstance(value, dict):
+            return value
 
-        # parse json 字符串
-        if isinstance(data, str):
-            try:
-                ret_val = json.loads(data)
-                if not isinstance(ret_val, dict):
-                    raise ConfigTypeError(data)
-                return ret_val
-            except json.JSONDecodeError:
-                pass
+        if not isinstance(value, str):
+            raise ConfigTypeError(value)
 
-        # 读取 json 格式文件
-        if isinstance(data, str):
-            try:
-                with open(data, 'r') as f:
-                    ret_val = json.load(f)
-                    if not isinstance(ret_val, dict):
-                        raise ConfigTypeError(data)
-                    return ret_val
-            except (TypeError, FileNotFoundError):
-                pass
+        try:
+            res = json.loads(value)
 
-        if not isinstance(data, dict):
-            raise ConfigTypeError(data)
+            if not isinstance(res, dict):
+                raise ConfigTypeError(value)
 
-        return data
+            return res
+        except json.JSONDecodeError:
+            pass
+
+        # json 或 yaml 文件
+        if os.path.exists(value):
+            if value.endswith('yaml'):
+                res = read_yaml(value, _dict=True, _refresh=True)
+            else:
+                with open(value, 'r') as file:
+                    res = json.load(file)
+
+            if not isinstance(res, dict):
+                raise ConfigTypeError(value)
+
+            return res
 
     def __get_channel_config(self, channel_id: str) -> dict:
         if not channel_id:

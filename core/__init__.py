@@ -13,6 +13,7 @@ from amiyabot import (
     HttpServer,
     Message,
     Event,
+    Equal,
     Chain,
     ChainBuilder,
     log
