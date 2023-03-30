@@ -89,7 +89,6 @@ async def load_plugins():
     # 然后对所有插件执行懒加载（如果有的话）
     for plugin_id, item in bot.plugins.items():
         if isinstance(item, LazyLoadPluginInstance):
-            log.info(f'lazy load plugins {plugin_id}')
             item.load()
 
     if count:

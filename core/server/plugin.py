@@ -20,6 +20,11 @@ class SetConfigModel(BaseModel):
     channel_id: str = None
 
 
+class DelConfigModel(BaseModel):
+    plugin_id: str
+    channel_id: str
+
+
 class InstallModel(BaseModel):
     url: str
     packageName: str
@@ -81,7 +86,7 @@ class Plugin:
                 plugin.get_config_defaults()
             )
 
-        return app.response(code=500, message='该插件不支持控制台配置编辑')
+        return app.response()
 
     @app.route()
     async def get_plugin_config(self, data: GetConfigModel):
@@ -95,10 +100,19 @@ class Plugin:
 
         config_dict = {
             item.channel_id: item.json_config
-            for item in configs if item.channel_id
+            for item in configs
         }
 
         return app.response(config_dict)
+
+    @app.route()
+    async def del_plugin_config(self, data: DelConfigModel):
+        PluginConfiguration.delete().where(
+            PluginConfiguration.plugin_id == data.plugin_id,
+            PluginConfiguration.channel_id == data.channel_id
+        ).execute()
+
+        return app.response()
 
     @app.route()
     async def set_plugin_config(self, data: SetConfigModel):

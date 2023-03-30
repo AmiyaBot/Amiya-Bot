@@ -37,6 +37,9 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         self.__global_config_default = self.__parse_to_json(global_config_default)
         self.__global_config_schema = self.__parse_to_json(global_config_schema)
 
+        # self.validate_schema()
+
+    def validate_schema(self):
         for default, schema in (
             (self.__channel_config_default, self.__channel_config_schema),
             (self.__global_config_default, self.__global_config_schema)
@@ -89,7 +92,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             if value.endswith('yaml'):
                 res = read_yaml(value, _dict=True, _refresh=True)
             else:
-                with open(value, 'r') as file:
+                with open(value, 'r', encoding='utf-8') as file:
                     res = json.load(file)
 
             if not isinstance(res, dict):
