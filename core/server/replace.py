@@ -105,5 +105,10 @@ class Replace:
 
     @app.route(method='get', allow_unauthorized=True)
     async def get_global_replace(self):
-        return app.response(
-            data=query_to_list(TextReplace.select().where(TextReplace.is_global == 1, TextReplace.is_active == 1)))
+        res = query_to_list(TextReplace.select().where(TextReplace.is_global == 1, TextReplace.is_active == 1))
+
+        for item in res:
+            item['user_id'] = '0'
+            item['group_id'] = '0'
+
+        return app.response(data=res)

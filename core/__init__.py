@@ -48,7 +48,7 @@ message_record = []
 def load_resource():
     gamedata_path = 'resource/gamedata'
 
-    GitAutomation(gamedata_path, remote_config.remote.gamedata).update()
+    GitAutomation(gamedata_path, remote_config.remote.gamedata).update(['--depth 1'])
 
     if os.path.exists(f'{gamedata_path}/.gitmodules'):
         config = configparser.ConfigParser()
@@ -59,7 +59,7 @@ def load_resource():
             url = submodule.get('url')
             if path:
                 folder = f'{gamedata_path}/{path}'
-                GitAutomation(folder, url).update()
+                GitAutomation(folder, url).update(['--depth 1'])
                 for root, _, files in os.walk(folder):
                     for file in files:
                         r = re.search(r'splice_\d+\.zip', file)
