@@ -1,6 +1,0 @@
-[submodule "pluginDev"]
-	path = pluginDev
-	url = https://github.com/AmiyaBot/Amiya-Bot-plugins.git
-[submodule "pluginServer"]
-	path = pluginServer
-	url = https://github.com/AmiyaBot/Amiya-Bot-plugins-server.git
