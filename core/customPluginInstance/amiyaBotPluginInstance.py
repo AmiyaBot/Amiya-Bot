@@ -11,6 +11,7 @@ from .lazyLoadPluginInstance import LazyLoadPluginInstance
 JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict]]
 
+global_config_channel_key = ""
 
 class AmiyaBotPluginInstance(LazyLoadPluginInstance):
     def __init__(self,
@@ -37,7 +38,14 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         self.__global_config_default = self.__parse_to_json(global_config_default)
         self.__global_config_schema = self.__parse_to_json(global_config_schema)
 
-        # self.validate_schema()
+        self.validate_schema()
+
+        # 如果是插件初次安装初次加载，那么立刻应用global_default
+
+        if self.__global_config_default is not None:
+            global_conf = self.__get_global_config()
+            if global_conf is None:
+                self.__set_global_config(self.__global_config_default)
 
     def validate_schema(self):
         for default, schema in (
@@ -101,7 +109,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             return res
 
     def __get_channel_config(self, channel_id: str) -> dict:
-        if not channel_id:
+        if not channel_id or channel_id == global_config_channel_key:
             raise ValueError('Try set channel config with None channel id!')
 
         conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=channel_id)
@@ -115,7 +123,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             raise ValueError('The config in database is not a valid json.')
 
     def __set_channel_config(self, channel_id: str, config_value: dict):
-        if not channel_id:
+        if not channel_id or channel_id == global_config_channel_key:
             raise ValueError('Try set channel config with None channel id!')
 
         conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=channel_id)
@@ -133,7 +141,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             conf_str.save()
 
     def __get_global_config(self) -> dict:
-        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=None)
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=global_config_channel_key)
 
         if not conf_str:
             return self.__global_config_default or {}
@@ -144,7 +152,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             raise ValueError('The config in database is not a valid json.')
 
     def __set_global_config(self, config_value: dict):
-        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=None)
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=global_config_channel_key)
 
         if not conf_str:
             PluginConfiguration.create(
@@ -158,12 +166,22 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             conf_str.save()
 
     def get_config(self, config_name: str, channel_id: str = None) -> JSON_VALUE_TYPE:
-        if channel_id:
+        if channel_id and channel_id != global_config_channel_key:
             json_config = self.__get_channel_config(str(channel_id))
 
             # 注意这里要判断 None，因为界面上如果用户不填写值，界面会将值设置为 null 而不是缺失该元素，对应到 Python 这边就是 None。
             if config_name in json_config and json_config[config_name] is not None:
-                return json_config[config_name]
+                value = json_config[config_name]
+                
+                # 此处是为了表明逻辑，未来这里会加入可能的诸多检查。
+                # 目前，因为前端界面删除所有条目后，实际存储的是空数组/空字符串。
+                if value == []:
+                    pass
+                if isinstance(value, str):
+                    if value != "":
+                        return value
+                else:
+                    return value
 
         json_config = self.__get_global_config()
 
@@ -173,7 +191,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         return None
 
     def set_config(self, config_name: str, config_value: JSON_VALUE_TYPE, channel_id: str = None):
-        if channel_id:
+        if channel_id and channel_id != global_config_channel_key:
             json_config = self.__get_channel_config(str(channel_id))
         else:
             json_config = self.__get_global_config()

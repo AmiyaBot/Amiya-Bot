@@ -13,7 +13,7 @@ class PluginBaseModel(ModelClass):
 @table
 class PluginConfiguration(PluginBaseModel):
     plugin_id: str = CharField()
-    channel_id: str = CharField(null=True)
+    channel_id: str = CharField()
     json_config: Union[TextField, str] = TextField()
     version: str = CharField()
 
