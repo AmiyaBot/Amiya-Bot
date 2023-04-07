@@ -11,7 +11,8 @@ from .lazyLoadPluginInstance import LazyLoadPluginInstance
 JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict]]
 
-global_config_channel_key = ""
+global_config_channel_key = ''
+
 
 class AmiyaBotPluginInstance(LazyLoadPluginInstance):
     def __init__(self,
@@ -141,7 +142,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             conf_str.save()
 
     def __get_global_config(self) -> dict:
-        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=global_config_channel_key)
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id,
+                                                                        channel_id=global_config_channel_key)
 
         if not conf_str:
             return self.__global_config_default or {}
@@ -152,7 +154,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             raise ValueError('The config in database is not a valid json.')
 
     def __set_global_config(self, config_value: dict):
-        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=global_config_channel_key)
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id,
+                                                                        channel_id=global_config_channel_key)
 
         if not conf_str:
             PluginConfiguration.create(
@@ -172,13 +175,14 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             # 注意这里要判断 None，因为界面上如果用户不填写值，界面会将值设置为 null 而不是缺失该元素，对应到 Python 这边就是 None。
             if config_name in json_config and json_config[config_name] is not None:
                 value = json_config[config_name]
-                
-                # 此处是为了表明逻辑，未来这里会加入可能的诸多检查。
+
+                # todo 此处是为了表明逻辑，未来这里会加入可能的诸多检查。
                 # 目前，因为前端界面删除所有条目后，实际存储的是空数组/空字符串。
-                if value == []:
-                    pass
+                # if value == []:
+                #     ...
+
                 if isinstance(value, str):
-                    if value != "":
+                    if value != '':
                         return value
                 else:
                     return value
