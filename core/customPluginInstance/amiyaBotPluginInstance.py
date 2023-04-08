@@ -115,7 +115,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=channel_id)
 
         if not conf_str:
-            return self.__channel_config_default or {}
+            return None
 
         try:
             return json.loads(conf_str.json_config)
@@ -169,19 +169,20 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         if channel_id and channel_id != global_config_channel_key:
             json_config = self.__get_channel_config(str(channel_id))
 
-            # 注意这里要判断 None，因为界面上如果用户不填写值，界面会将值设置为 null 而不是缺失该元素，对应到 Python 这边就是 None。
-            if config_name in json_config and json_config[config_name] is not None:
-                value = json_config[config_name]
-                
-                # 此处是为了表明逻辑，未来这里会加入可能的诸多检查。
-                # 目前，因为前端界面删除所有条目后，实际存储的是空数组/空字符串。
-                if value == []:
-                    pass
-                if isinstance(value, str):
-                    if value != "":
+            if json_config is not None:
+                # 注意这里要判断 None，因为界面上如果用户不填写值，界面会将值设置为 null 而不是缺失该元素，对应到 Python 这边就是 None。
+                if config_name in json_config and json_config[config_name] is not None:
+                    value = json_config[config_name]
+                    
+                    # 此处是为了表明逻辑，未来这里会加入可能的诸多检查。
+                    # 目前，因为前端界面删除所有条目后，实际存储的是空数组/空字符串。
+                    if value == []:
+                        pass
+                    if isinstance(value, str):
+                        if value != "":
+                            return value
+                    else:
                         return value
-                else:
-                    return value
 
         json_config = self.__get_global_config()
 
@@ -195,6 +196,9 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             json_config = self.__get_channel_config(str(channel_id))
         else:
             json_config = self.__get_global_config()
+
+        if json_config is None:
+            json_config = {}
 
         json_config[config_name] = config_value
 
