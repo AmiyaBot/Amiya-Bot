@@ -11,7 +11,8 @@ from .lazyLoadPluginInstance import LazyLoadPluginInstance
 JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict]]
 
-global_config_channel_key = ""
+global_config_channel_key = ''
+
 
 class AmiyaBotPluginInstance(LazyLoadPluginInstance):
     def __init__(self,
@@ -141,7 +142,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             conf_str.save()
 
     def __get_global_config(self) -> dict:
-        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=global_config_channel_key)
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id,
+                                                                        channel_id=global_config_channel_key)
 
         if not conf_str:
             return self.__global_config_default or {}
@@ -152,7 +154,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             raise ValueError('The config in database is not a valid json.')
 
     def __set_global_config(self, config_value: dict):
-        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id, channel_id=global_config_channel_key)
+        conf_str: PluginConfiguration = PluginConfiguration.get_or_none(plugin_id=self.plugin_id,
+                                                                        channel_id=global_config_channel_key)
 
         if not conf_str:
             PluginConfiguration.create(
@@ -179,7 +182,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     if value == []:
                         pass
                     if isinstance(value, str):
-                        if value != "":
+                        if value != '':
                             return value
                     else:
                         return value
