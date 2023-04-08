@@ -31,6 +31,6 @@ if __name__ == '__main__':
             argv('upload')
         )
     elif build_type == 'plugins':
-        from pluginDev.buildPlugins import build
+        from pluginsDev.buildPlugins import build
 
         build(argv('folder') or 'plugins', argv('upload'))

@@ -102,3 +102,13 @@ class Replace:
         if res:
             return app.response(message=f'同步成功')
         return app.response(code=500, message=f'同步失败')
+
+    @app.route(method='get', allow_unauthorized=True)
+    async def get_global_replace(self):
+        res = query_to_list(TextReplace.select().where(TextReplace.is_global == 1, TextReplace.is_active == 1))
+
+        for item in res:
+            item['user_id'] = '0'
+            item['group_id'] = '0'
+
+        return app.response(data=res)

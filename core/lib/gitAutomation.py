@@ -3,7 +3,7 @@ import sys
 import git
 import shutil
 
-from typing import Union
+from typing import Union, List
 from amiyabot import log
 
 
@@ -36,17 +36,20 @@ class GitAutomation:
         if cur_count >= max_count:
             print()
 
-    def update(self):
+    def update(self, options: List[str] = None):
         log.info(f'fetching repo: {self.repo_url}...')
         if not os.path.exists(self.repo_dir):
-            git.Repo.clone_from(self.repo_url, to_path=self.repo_dir, progress=self.progress)
+            git.Repo.clone_from(self.repo_url,
+                                to_path=self.repo_dir,
+                                progress=self.progress,
+                                multi_options=options or [])
         else:
             try:
                 repo = git.Repo(self.repo_dir)
                 repo.remotes.origin.pull(progress=self.progress)
             except git.InvalidGitRepositoryError:
                 shutil.rmtree(self.repo_dir)
-                self.update()
+                self.update(options)
             except git.GitCommandError as e:
                 log.error(str(e))
             except Exception as e:

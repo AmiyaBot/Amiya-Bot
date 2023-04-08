@@ -10,13 +10,12 @@ import configparser
 from typing import List, Union
 from amiyabot import (
     MultipleAccounts,
-    PluginInstance,
     HttpServer,
     Message,
     Event,
+    Equal,
     Chain,
     ChainBuilder,
-    Equal,
     log
 )
 from amiyabot.adapters import BotAdapterProtocol
@@ -33,6 +32,8 @@ from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.lib.gitAutomation import GitAutomation
 from core.util import read_yaml, create_dir
 
+from core.customPluginInstance import AmiyaBotPluginInstance, LazyLoadPluginInstance
+
 serve_conf = read_yaml('config/server.yaml')
 
 app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
@@ -44,30 +45,10 @@ jieba.del_word('兔子')
 message_record = []
 
 
-class LazyLoadPluginInstance(PluginInstance):
-    def __init__(self,
-                 name: str,
-                 version: str,
-                 plugin_id: str,
-                 plugin_type: str = None,
-                 description: str = None,
-                 document: str = None):
-        super().__init__(
-            name,
-            version,
-            plugin_id,
-            plugin_type,
-            description,
-            document
-        )
-
-    def load(self): ...
-
-
 def load_resource():
     gamedata_path = 'resource/gamedata'
 
-    GitAutomation(gamedata_path, remote_config.remote.gamedata).update()
+    GitAutomation(gamedata_path, remote_config.remote.gamedata).update(['--depth 1'])
 
     if os.path.exists(f'{gamedata_path}/.gitmodules'):
         config = configparser.ConfigParser()
@@ -78,7 +59,7 @@ def load_resource():
             url = submodule.get('url')
             if path:
                 folder = f'{gamedata_path}/{path}'
-                GitAutomation(folder, url).update()
+                GitAutomation(folder, url).update(['--depth 1'])
                 for root, _, files in os.walk(folder):
                     for file in files:
                         r = re.search(r'splice_\d+\.zip', file)
@@ -108,7 +89,6 @@ async def load_plugins():
     # 然后对所有插件执行懒加载（如果有的话）
     for plugin_id, item in bot.plugins.items():
         if isinstance(item, LazyLoadPluginInstance):
-            log.info(f'lazy load plugins {plugin_id}')
             item.load()
 
     if count:
