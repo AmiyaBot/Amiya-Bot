@@ -368,7 +368,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                                                                         channel_id=global_config_channel_key)
 
         if not conf_str:
-            return self.__global_config_default or {}
+            return copy.deepcopy(self.__global_config_default) or {}
 
         try:
             return json.loads(conf_str.json_config)
