@@ -1,15 +1,14 @@
 import os
 import json
-import jsonschema
 import copy
+import jsonschema
 
-from typing import Optional, Union, Tuple, List
+from peewee import *
+from typing import Optional, Union, List
 from core.database.plugin import PluginConfiguration, PluginConfigurationAudit
 from core.util import read_yaml
 from datetime import datetime, timedelta
 from core import log
-
-from peewee import *
 
 from .lazyLoadPluginInstance import LazyLoadPluginInstance
 
@@ -17,75 +16,6 @@ JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict]]
 
 global_config_channel_key = ''
-
-
-def is_empty_value(value: JSON_VALUE_TYPE):
-    # 此处是为了表明逻辑，未来这里会加入可能的诸多检查。
-    # 目前，因为前端界面删除所有条目后，实际存储的是空数组/空字符串。
-    if value == []:
-        return True
-
-    if isinstance(value, str):
-        if value == '':
-            return True
-
-    return False
-
-
-def compare_version_numbers(version1: str, version2: str) -> int:
-    # 将版本号字符串分割成数字列表，忽略空值
-    version1_numbers = [int(num) for num in version1.split('.') if num]
-    version2_numbers = [int(num) for num in version2.split('.') if num]
-
-    # 计算两个版本号列表的长度差
-    length_difference = len(version1_numbers) - len(version2_numbers)
-
-    # 如果一个版本号较短，将其扩展为与较长版本号相同的长度，用0填充
-    if length_difference > 0:
-        version2_numbers.extend([0] * length_difference)
-    elif length_difference < 0:
-        version1_numbers.extend([0] * abs(length_difference))
-
-    # 逐个比较版本号中的数字
-    for num1, num2 in zip(version1_numbers, version2_numbers):
-        if num1 > num2:
-            return 1  # version1 大于 version2
-        elif num1 < num2:
-            return -1  # version1 小于 version2
-
-    return 0  # version1 等于 version2
-
-# 将base中，source没有的元素，copy进source。
-
-
-def merge_extra_items(source: dict, base: dict) -> dict:
-    diff_dict = {key: copy.deepcopy(
-        value) for key, value in base.items() if key not in source}
-    source.update(diff_dict)
-    return source
-
-# 删除source中所有不在base中的元素
-
-
-def remove_uncommon_elements(source: dict, base: dict, schema: dict) -> None:
-
-    if base is None:
-        return
-
-    keys_to_remove = []
-
-    for key in source:
-        if key not in base:
-            keys_to_remove.append(key)
-
-    if schema is not None:
-        if 'properties' in schema.keys():
-            for key in schema['properties'].keys():
-                if key in keys_to_remove:
-                    keys_to_remove.remove(key)
-
-    for key in keys_to_remove:
-        source.pop(key)
 
 
 class AmiyaBotPluginInstance(LazyLoadPluginInstance):
@@ -209,7 +139,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                                            fn.MAX(PluginConfigurationAudit.id).alias('max_id'))
                                    .where((PluginConfigurationAudit.plugin_id == self.plugin_id) &
                                           ((PluginConfigurationAudit.audit_reason == 'Plugin Upgrade') |
-                                           (PluginConfigurationAudit.audit_reason == 'Plugin Configuration Deprecated')))
+                                           (
+                                               PluginConfigurationAudit.audit_reason == 'Plugin Configuration Deprecated')))
                                    .group_by(PluginConfigurationAudit.channel_id))
 
         query = (PluginConfigurationAudit
@@ -218,8 +149,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                          PluginConfigurationAudit.audit_time,
                          PluginConfigurationAudit.audit_reason)
                  .join(max_audit_time_subquery, on=(
-                     (PluginConfigurationAudit.channel_id == max_audit_time_subquery.c.channel_id) &
-                     (PluginConfigurationAudit.id == max_audit_time_subquery.c.max_id)))
+            (PluginConfigurationAudit.channel_id == max_audit_time_subquery.c.channel_id) &
+            (PluginConfigurationAudit.id == max_audit_time_subquery.c.max_id)))
                  .where((PluginConfigurationAudit.plugin_id == self.plugin_id) &
                         (PluginConfigurationAudit.audit_reason == 'Plugin Upgrade')))
 
@@ -329,7 +260,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
 
             return res
 
-    def __get_channel_config(self, channel_id: str) -> dict:
+    def __get_channel_config(self, channel_id: str) -> Optional[dict]:
         if not channel_id or channel_id == global_config_channel_key:
             raise ValueError('Try set channel config with None channel id!')
 
@@ -494,3 +425,84 @@ class ConfigTypeError(TypeError):
 
     def __str__(self):
         return f'The Config value must be str (as json string or filename), dict, not {self.value_type}.'
+
+
+def is_empty_value(value: JSON_VALUE_TYPE):
+    """
+    此处是为了表明逻辑，未来这里会加入可能的诸多检查。
+    目前，因为前端界面删除所有条目后，实际存储的是空数组/空字符串。
+    :param value:
+    :return:
+    """
+    if value == []:
+        return True
+
+    if isinstance(value, str):
+        if value == '':
+            return True
+
+    return False
+
+
+def compare_version_numbers(version1: str, version2: str) -> int:
+    # 将版本号字符串分割成数字列表，忽略空值
+    version1_numbers = [int(num) for num in version1.split('.') if num]
+    version2_numbers = [int(num) for num in version2.split('.') if num]
+
+    # 计算两个版本号列表的长度差
+    length_difference = len(version1_numbers) - len(version2_numbers)
+
+    # 如果一个版本号较短，将其扩展为与较长版本号相同的长度，用0填充
+    if length_difference > 0:
+        version2_numbers.extend([0] * length_difference)
+    elif length_difference < 0:
+        version1_numbers.extend([0] * abs(length_difference))
+
+    # 逐个比较版本号中的数字
+    for num1, num2 in zip(version1_numbers, version2_numbers):
+        if num1 > num2:
+            return 1  # version1 大于 version2
+        elif num1 < num2:
+            return -1  # version1 小于 version2
+
+    return 0  # version1 等于 version2
+
+
+def merge_extra_items(source: dict, base: dict) -> dict:
+    """
+    将 base 中，source 没有的元素，copy 进 source。
+    :param source:
+    :param base:
+    :return:
+    """
+    diff_dict = {key: copy.deepcopy(
+        value) for key, value in base.items() if key not in source}
+    source.update(diff_dict)
+    return source
+
+
+def remove_uncommon_elements(source: dict, base: dict, schema: dict) -> None:
+    """
+    删除 source 中所有不在 base 中的元素
+    :param source:
+    :param base:
+    :param schema:
+    :return:
+    """
+    if base is None:
+        return
+
+    keys_to_remove = []
+
+    for key in source:
+        if key not in base:
+            keys_to_remove.append(key)
+
+    if schema is not None:
+        if 'properties' in schema.keys():
+            for key in schema['properties'].keys():
+                if key in keys_to_remove:
+                    keys_to_remove.remove(key)
+
+    for key in keys_to_remove:
+        source.pop(key)
