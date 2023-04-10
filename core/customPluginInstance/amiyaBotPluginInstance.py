@@ -53,7 +53,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         self.validate_schema()
 
         # 执行一个额外的验证，提供了频道配置的，必须提供全局配置
-        if self.__global_config_default is not None and self.__channel_config_default is None:
+        if self.__global_config_default is None and self.__channel_config_default is not None:
             raise ValueError(
                 'If you provide channel default, you must also provide global default.')
 
