@@ -8,6 +8,7 @@ jieba~=0.42.1
 jinja2~=3.1.2
 jionlp~=1.4.19
 jsonschema~=4.17.3
+peewee~=3.14.10
 pillow~=9.1.1
 pypinyin~=0.46.0
 pyyaml~=6.0
