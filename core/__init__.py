@@ -44,7 +44,7 @@ message_record = []
 
 
 def set_prefix():
-    bot.set_prefix_keywords(prefix_conf.prefix_keywords)
+    bot.set_prefix_keywords(*prefix_conf.prefix_keywords)
 
     for word in prefix_conf.jieba_del_words:
         jieba.del_word(word)
