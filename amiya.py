@@ -3,7 +3,7 @@ import sys
 import asyncio
 import core.frozen
 
-from core import app, bot, init_task, load_resource, load_plugins
+from core import app, bot, init_task, set_prefix, load_resource, load_plugins
 
 sys.path += [
     os.path.dirname(sys.executable),
@@ -13,6 +13,7 @@ sys.path += [
 
 if __name__ == '__main__':
     try:
+        set_prefix()
         load_resource()
         asyncio.run(
             asyncio.wait(

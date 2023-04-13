@@ -35,14 +35,19 @@ from core.util import read_yaml, create_dir
 from core.customPluginInstance import AmiyaBotPluginInstance, LazyLoadPluginInstance
 
 serve_conf = read_yaml('config/server.yaml')
+prefix_conf = read_yaml('config/prefix.yaml')
 
 app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
 bot = MultipleAccounts(*BotAccounts.get_all_account())
 
-bot.set_prefix_keywords(['阿米娅', '阿米兔', '兔兔', '兔子', '小兔子', 'Amiya', 'amiya'])
-jieba.del_word('兔子')
-
 message_record = []
+
+
+def set_prefix():
+    bot.set_prefix_keywords([*prefix_conf.prefix_keywords])
+
+    for word in prefix_conf.jieba_del_words:
+        jieba.del_word(word)
 
 
 def load_resource():

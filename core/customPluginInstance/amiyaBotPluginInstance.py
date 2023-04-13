@@ -313,6 +313,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         if not conf_str:
             PluginConfiguration.create(
                 plugin_id=self.plugin_id,
+                channel_id=global_config_channel_key,
                 json_config=json.dumps(config_value),
                 version=self.version
             )
