@@ -18,6 +18,7 @@ from amiyabot import (
     ChainBuilder,
     log
 )
+from amiyabot import event_bus
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
@@ -74,6 +75,8 @@ def load_resource():
     BotResource.download_bot_resource()
     ArknightsConfig.initialize()
     ArknightsGameData.initialize()
+
+    event_bus.publish('gameDataInitialized')
 
 
 async def load_plugins():

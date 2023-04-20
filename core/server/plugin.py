@@ -1,4 +1,6 @@
 import os
+import copy
+import shutil
 import base64
 
 from typing import List
@@ -161,12 +163,22 @@ class Plugin:
                 src.write(res)
 
             # 卸载插件
-            bot.uninstall_plugin(data.plugin_id, remove=True)
+            old_plugin_path = copy.deepcopy(bot.plugins[data.plugin_id].path)
+            bot.uninstall_plugin(data.plugin_id)
 
             if bot.install_plugin(plugin, extract_plugin=True):
+                # 删除旧插件
+                for item in old_plugin_path:
+                    if os.path.isdir(item):
+                        shutil.rmtree(item)
+                    else:
+                        os.remove(item)
                 return app.response(message='插件更新成功')
             else:
-                return app.response(code=500, message='插件安装失败')
+                # 恢复旧插件
+                os.remove(plugin)
+                bot.install_plugin(old_plugin_path[0], extract_plugin=True)
+                return app.response(code=500, message='插件更新失败')
 
         return app.response(code=500, message='插件下载失败，请检查网络连接。')
 
