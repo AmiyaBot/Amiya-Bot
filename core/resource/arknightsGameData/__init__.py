@@ -2,6 +2,7 @@ import os
 import re
 
 from typing import List, Dict, Any
+from collections import Counter
 from core.database.bot import OperatorIndex
 from core.util import remove_xml_tag, remove_punctuation, sorted_dict
 from core import log
@@ -221,7 +222,16 @@ def init_enemies():
     for item in enemies_data:
         if item['Key'] in enemies_info:
             info = enemies_info[item['Key']]
-            data[info['name'].lower()] = {
+            name = info['name'].lower()
+
+            if name == '-':
+                continue
+
+            counter = Counter(data.keys())
+            if name in counter:
+                name += f'（{counter[name]}）'
+
+            data[name] = {
                 'info': info,
                 'data': item['Value']
             }
