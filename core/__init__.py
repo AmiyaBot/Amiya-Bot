@@ -18,6 +18,7 @@ from amiyabot import (
     ChainBuilder,
     log
 )
+from amiyabot import event_bus
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
@@ -75,6 +76,13 @@ def load_resource():
     ArknightsConfig.initialize()
     ArknightsGameData.initialize()
 
+    event_bus.publish('gameDataInitialized')
+
+
+def exec_before_init(coro):
+    init_task.append(coro())
+    return coro
+
 
 async def load_plugins():
     create_dir('plugins')
@@ -100,21 +108,6 @@ async def load_plugins():
         log.info(f'successfully loaded {count} plugin(s).')
 
 
-class SourceServer(ChainBuilder):
-    @staticmethod
-    async def image_getter_hook(image):
-        if type(image) is bytes:
-            res = await http_requests.post_upload(f'{remote_config.remote.resource}/upload', image)
-            if res:
-                return f'{remote_config.remote.resource}/images?path=' + res.strip('"')
-        return image
-
-
-def exec_before_init(coro):
-    init_task.append(coro())
-    return coro
-
-
 async def send_to_console_channel(chain: Chain):
     main_bot: List[BotAccounts] = BotAccounts.select().where(BotAccounts.is_main == 1)
     for item in main_bot:
@@ -125,6 +118,16 @@ async def send_to_console_channel(chain: Chain):
 async def heartbeat():
     for item in bot:
         await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}', ignore_error=True)
+
+
+class SourceServer(ChainBuilder):
+    @staticmethod
+    async def image_getter_hook(image):
+        if type(image) is bytes:
+            res = await http_requests.post_upload(f'{remote_config.remote.resource}/upload', image)
+            if res:
+                return f'{remote_config.remote.resource}/images?path=' + res.strip('"')
+        return image
 
 
 @bot.message_created
@@ -194,3 +197,4 @@ init_task = [
     heartbeat(),
     tasks_control.run_tasks()
 ]
+set_prefix()

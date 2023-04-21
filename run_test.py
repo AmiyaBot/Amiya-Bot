@@ -3,9 +3,10 @@ import asyncio
 from amiyabot import AmiyaBot
 from amiyabot.adapters.test import test_instance
 
-from amiya import init_task, load_resource, set_prefix
+from amiya import bot as main_bot, init_task, load_resource
 
 bot = AmiyaBot(appid='test', token='', adapter=test_instance('127.0.0.1', 32001))
+bot.combine_factory(main_bot)
 
 if __name__ == '__main__':
     from pluginsDev.src.arknights.operatorArchives import bot as plugin
@@ -18,7 +19,6 @@ if __name__ == '__main__':
 
 
     try:
-        set_prefix()
         load_resource()
         asyncio.run(
             asyncio.wait(

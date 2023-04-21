@@ -59,6 +59,7 @@ class Operator:
         self.unavailable = self.name in ArknightsConfig.unavailable
 
         self.is_recruit = is_recruit
+        self.is_classic = 'classicPotentialItemId' in data and data['classicPotentialItemId']
         self.is_sp = data['isSpChar']
 
         self.__cv()
