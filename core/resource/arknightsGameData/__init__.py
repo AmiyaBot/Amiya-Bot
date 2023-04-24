@@ -98,6 +98,8 @@ def init_operators():
 
     operators_list.update(operators_patch_list)
 
+    Collection.clear_all()
+
     for n, item in voice_data['charWords'].items():
         char_id = item['wordKey']
 
