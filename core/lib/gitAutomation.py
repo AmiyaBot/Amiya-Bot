@@ -37,7 +37,7 @@ class GitAutomation:
             print()
 
     def update(self, options: List[str] = None):
-        log.info(f'fetching repo: {self.repo_url}...')
+        log.info(f'fetching repo to "{self.repo_dir}"...')
         if not os.path.exists(self.repo_dir):
             git.Repo.clone_from(self.repo_url,
                                 to_path=self.repo_dir,
@@ -51,6 +51,7 @@ class GitAutomation:
                 shutil.rmtree(self.repo_dir)
                 self.update(options)
             except git.GitCommandError as e:
-                log.error(str(e))
+                log.error(e)
+                log.warning(f'Git 操作失败，请确保 "git" 命令能够正确执行或删除目录 "{self.repo_dir}" 后重试')
             except Exception as e:
                 log.error(e)

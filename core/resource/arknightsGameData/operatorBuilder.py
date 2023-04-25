@@ -456,6 +456,12 @@ class Collection:
     def get_skins_list(cls, code):
         return cls.skins_map.get(code, [])
 
+    @classmethod
+    def clear_all(cls):
+        cls.voice_map = {}
+        cls.skins_map = {}
+        cls.tokens_map = {}
+
 
 def html_tag_format(text):
     for o, f in html_symbol.items():
