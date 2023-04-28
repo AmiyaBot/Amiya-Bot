@@ -161,7 +161,7 @@ def init_operators():
         birthdays[month] = sorted_dict(days)
     birthdays = sorted_dict(birthdays)
 
-    return {remove_punctuation(item.name): item for item in operators}, Collection.tokens_map, birthdays
+    return {item.name: item for item in operators}, Collection.tokens_map, birthdays
 
 
 def init_materials():
