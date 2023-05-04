@@ -111,7 +111,7 @@ async def load_plugins():
 async def send_to_console_channel(chain: Chain):
     main_bot: List[BotAccounts] = BotAccounts.select().where(BotAccounts.is_main == 1)
     for item in main_bot:
-        if item.console_channel:
+        if item.console_channel and bot[item.appid]:
             await bot[item.appid].send_message(chain, channel_id=item.console_channel)
 
 

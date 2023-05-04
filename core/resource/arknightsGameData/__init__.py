@@ -161,7 +161,7 @@ def init_operators():
         birthdays[month] = sorted_dict(days)
     birthdays = sorted_dict(birthdays)
 
-    return {remove_punctuation(item.name): item for item in operators}, Collection.tokens_map, birthdays
+    return {item.name: item for item in operators}, Collection.tokens_map, birthdays
 
 
 def init_materials():
@@ -218,25 +218,28 @@ def init_materials():
 
 def init_enemies():
     enemies_info = JsonData.get_json_data('enemy_handbook_table')
-    enemies_data = JsonData.get_json_data('enemy_database', folder='levels/enemydata')['enemies']
+    enemies_data = JsonData.get_json_data('enemy_database', folder='levels/enemydata')
+
+    enemies_data_map = {
+        item['Key']: item['Value']
+        for item in enemies_data['enemies']
+    }
 
     data = {}
-    for item in enemies_data:
-        if item['Key'] in enemies_info:
-            info = enemies_info[item['Key']]
-            name = info['name'].lower()
+    for e_id, info in enemies_info.items():
+        name = info['name'].lower()
 
-            if name == '-':
-                continue
+        if name == '-':
+            continue
 
-            counter = Counter(data.keys())
-            if name in counter:
-                name += f'（{counter[name]}）'
+        counter = Counter(data.keys())
+        if name in counter:
+            name += f'（{counter[name]}）'
 
-            data[name] = {
-                'info': info,
-                'data': item['Value']
-            }
+        data[name] = {
+            'info': info,
+            'data': enemies_data_map.get(e_id)
+        }
 
     return data
 

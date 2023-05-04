@@ -118,6 +118,7 @@ class TextReplace(BotBaseModel):
     origin: Union[TextField, str] = TextField()
     replace: Union[TextField, str] = TextField()
     in_time: int = BigIntegerField()
+    is_user_only: int = IntegerField(default=0)
     is_global: int = IntegerField(default=0)
     is_active: int = IntegerField(default=1)
 

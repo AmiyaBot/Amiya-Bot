@@ -230,7 +230,7 @@ class Operator:
                     'range': skill_range
                 })
 
-            for lev, cond in enumerate(item['levelUpCostCond']):
+            for lev, cond in enumerate(item['specializeLevelUpData']):
                 if bool(cond['levelUpCost']) is False:
                     continue
 
@@ -370,7 +370,7 @@ class Operator:
     def __cv(self):
         word_data = JsonData.get_json_data('charword_table')
         if self.id in word_data['voiceLangDict']:
-            voice_lang = word_data['voiceLangDict'][self.id]['dict']
+            voice_lang = word_data['voiceLangDict'][self.id]['voiceLangInfoDataDict']
             self.cv = {
                 word_data['voiceLangTypeDict'][name]['name']: item['cvName'] for name, item in voice_lang.items()
             }
