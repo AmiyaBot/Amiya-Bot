@@ -62,8 +62,8 @@ AmiyaBot 自 2019 年立项以来已发布 5 个主版本号更新，这是第 6
 
 ## 开始使用
 
-部署文档：https://www.amiyabot.com/guide/deploy/ <br>
-开发文档：https://www.amiyabot.com/develop/basic/
+如果想部署 AmiyaBot-demo，请点击 [此处](https://www.amiyabot.com/guide/deploy/) 跳转至部署文档。    
+如果想使用 AmiyaBot 框架进行开发，请点击 [此处](https://www.amiyabot.com/guide/deploy/) 跳转至开发文档。
 
 ## 鸣谢
 
