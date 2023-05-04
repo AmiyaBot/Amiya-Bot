@@ -221,7 +221,7 @@ def init_enemies():
     enemies_data = JsonData.get_json_data('enemy_database', folder='levels/enemydata')
 
     enemies_data_map = {
-        item['Key']: item['Value']
+        item['key']: item['value']
         for item in enemies_data['enemies']
     }
 
