@@ -181,9 +181,10 @@ class Operator:
         skills_cost = []
         skills_desc = {}
 
-        level_up_data = self.data['allSkillLvlup']
-        if level_up_data:
-            for index, item in enumerate(level_up_data):
+        skill_level_up_data = self.data['allSkillLvlup']
+
+        if skill_level_up_data:
+            for index, item in enumerate(skill_level_up_data):
                 if item['lvlUpCost']:
                     for cost in item['lvlUpCost']:
                         skills_cost.append({
@@ -230,7 +231,13 @@ class Operator:
                     'range': skill_range
                 })
 
-            for lev, cond in enumerate(item['specializeLevelUpData']):
+            level_up_cost_data = ''
+            if 'specializeLevelUpData' in item:
+                level_up_cost_data = item['specializeLevelUpData']
+            elif 'levelUpCostCond' in item:
+                level_up_cost_data = item['levelUpCostCond']
+
+            for lev, cond in enumerate(level_up_cost_data):
                 if bool(cond['levelUpCost']) is False:
                     continue
 
