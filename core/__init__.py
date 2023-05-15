@@ -8,6 +8,8 @@ import traceback
 import configparser
 
 from typing import List, Union
+from starlette.staticfiles import StaticFiles
+
 from amiyabot import (
     MultipleAccounts,
     HttpServer,
@@ -35,11 +37,15 @@ from core.util import read_yaml, create_dir
 
 from core.customPluginInstance import AmiyaBotPluginInstance, LazyLoadPluginInstance
 
+create_dir('plugins')
+
 serve_conf = read_yaml('config/server.yaml')
 prefix_conf = read_yaml('config/prefix.yaml')
 
 app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
 bot = MultipleAccounts(*BotAccounts.get_all_account())
+
+app.app.mount('/plugins', StaticFiles(directory='plugins'), name='plugins')
 
 message_record = []
 
@@ -85,7 +91,6 @@ def exec_before_init(coro):
 
 
 async def load_plugins():
-    create_dir('plugins')
     count = 0
     for root, dirs, files in os.walk('plugins'):
         for file in files:

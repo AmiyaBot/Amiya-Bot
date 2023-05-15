@@ -34,11 +34,6 @@ yaml_cache = {
 executor = ThreadPoolExecutor(min(32, (os.cpu_count() or 1) + 4))
 
 
-async def run_in_thread_pool(block_func, *args, **kwargs):
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(executor, partial(block_func, *args, **kwargs))
-
-
 class TimeRecorder:
     def __init__(self):
         self.time = time.time()
@@ -79,15 +74,23 @@ class Singleton(type):
         return cls.instances[cls]
 
 
+async def run_in_thread_pool(block_func, *args, **kwargs):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, partial(block_func, *args, **kwargs))
+
+
 def get_doc(func: PluginInstance):
-    doc = func.document
-    if os.path.isfile(doc):
-        with open(doc, mode='r', encoding='utf-8') as file:
-            content = file.read()
-    else:
-        content = doc
+    content = check_file_content(func.document)
 
     return f'# {func.name}\n\n{content}'
+
+
+def check_file_content(text: str):
+    if text and os.path.isfile(text):
+        with open(text, mode='r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    return text
 
 
 def argv(name, formatter=str):

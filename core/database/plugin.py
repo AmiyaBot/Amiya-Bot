@@ -21,6 +21,7 @@ class PluginConfiguration(PluginBaseModel):
     class Meta:
         primary_key = CompositeKey('plugin_id', 'channel_id')
 
+
 @table
 class PluginConfigurationAudit(PluginBaseModel):
     id: int = AutoField()

@@ -26,6 +26,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                  plugin_type: str = None,
                  description: str = None,
                  document: str = None,
+                 instruction: str = None,
                  channel_config_default: CONFIG_TYPE = None,
                  channel_config_schema: CONFIG_TYPE = None,
                  global_config_default: CONFIG_TYPE = None,
@@ -40,14 +41,11 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                          description,
                          document)
 
-        self.__channel_config_default = self.__parse_to_json(
-            channel_config_default)
-        self.__channel_config_schema = self.__parse_to_json(
-            channel_config_schema)
-        self.__global_config_default = self.__parse_to_json(
-            global_config_default)
-        self.__global_config_schema = self.__parse_to_json(
-            global_config_schema)
+        self.instruction = instruction
+        self.__channel_config_default = self.__parse_to_json(channel_config_default)
+        self.__channel_config_schema = self.__parse_to_json(channel_config_schema)
+        self.__global_config_default = self.__parse_to_json(global_config_default)
+        self.__global_config_schema = self.__parse_to_json(global_config_schema)
         self.__deprecated_config_delete_days = deprecated_config_delete_days
 
         self.validate_schema()
