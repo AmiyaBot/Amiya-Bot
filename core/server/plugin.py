@@ -1,11 +1,11 @@
 import os
 import copy
 import shutil
-import base64
 
 from typing import List
 from amiyabot.network.download import download_async
 from core import app, bot
+from core.util import check_file_content
 from core.customPluginInstance.amiyaBotPluginInstance import AmiyaBotPluginInstance
 from core.database.plugin import PluginConfiguration
 
@@ -49,20 +49,10 @@ class Plugin:
         res = []
 
         for _, item in bot.plugins.items():
-            doc = item.document
-            if os.path.isfile(doc):
-                with open(doc, mode='r', encoding='utf-8') as file:
-                    content = file.read()
-            else:
-                content = doc
-
             logo = ''
             if item.path:
                 item_path = item.path[-1]
-                logo_path = os.path.join(item_path, 'logo.png')
-                if os.path.exists(logo_path):
-                    with open(logo_path, mode='rb') as ico:
-                        logo = 'data:image/png;base64,' + base64.b64encode(ico.read()).decode()
+                logo = '/' + os.path.relpath(os.path.join(item_path, 'logo.png')).replace('\\', '/')
 
             res.append({
                 'name': item.name,
@@ -70,7 +60,8 @@ class Plugin:
                 'plugin_id': item.plugin_id,
                 'plugin_type': item.plugin_type,
                 'description': item.description,
-                'document': content,
+                'document': check_file_content(item.document),
+                'instruction': check_file_content(item.instruction) if hasattr(item, 'instruction') else '',
                 'logo': logo,
                 'allow_config': isinstance(item, AmiyaBotPluginInstance)
             })
