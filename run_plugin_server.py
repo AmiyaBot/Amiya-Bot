@@ -21,7 +21,7 @@ class Mylogger:
 UserLogger.logger = Mylogger()
 
 if __name__ == '__main__':
-    load_resource()
+    load_resource(no_gamedata=True)
     asyncio.run(
         server.server.serve()
     )

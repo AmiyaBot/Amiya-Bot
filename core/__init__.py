@@ -8,7 +8,6 @@ import traceback
 import configparser
 
 from typing import List, Union
-from starlette.staticfiles import StaticFiles
 
 from amiyabot import (
     MultipleAccounts,
@@ -45,7 +44,7 @@ prefix_conf = read_yaml('config/prefix.yaml')
 app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
 bot = MultipleAccounts(*BotAccounts.get_all_account())
 
-app.app.mount('/plugins', StaticFiles(directory='plugins'), name='plugins')
+app.add_static_folder('/plugins', 'plugins')
 
 message_record = []
 
@@ -57,32 +56,34 @@ def set_prefix():
         jieba.del_word(word)
 
 
-def load_resource():
-    gamedata_path = 'resource/gamedata'
-
-    GitAutomation(gamedata_path, remote_config.remote.gamedata).update(['--depth 1'])
-
-    if os.path.exists(f'{gamedata_path}/.gitmodules'):
-        config = configparser.ConfigParser()
-        config.read(f'{gamedata_path}/.gitmodules', encoding='utf-8')
-
-        for submodule in config.values():
-            path = submodule.get('path')
-            url = submodule.get('url')
-            if path:
-                folder = f'{gamedata_path}/{path}'
-                GitAutomation(folder, url).update(['--depth 1'])
-                for root, _, files in os.walk(folder):
-                    for file in files:
-                        r = re.search(r'splice_\d+\.zip', file)
-                        if r:
-                            extract_zip(os.path.join(root, file), folder + '/skin', overwrite=True)
-
+def load_resource(no_gamedata: bool = False):
     BotResource.download_bot_resource()
-    ArknightsConfig.initialize()
-    ArknightsGameData.initialize()
 
-    event_bus.publish('gameDataInitialized')
+    if not no_gamedata:
+        gamedata_path = 'resource/gamedata'
+
+        GitAutomation(gamedata_path, remote_config.remote.gamedata).update(['--depth 1'])
+
+        if os.path.exists(f'{gamedata_path}/.gitmodules'):
+            config = configparser.ConfigParser()
+            config.read(f'{gamedata_path}/.gitmodules', encoding='utf-8')
+
+            for submodule in config.values():
+                path = submodule.get('path')
+                url = submodule.get('url')
+                if path:
+                    folder = f'{gamedata_path}/{path}'
+                    GitAutomation(folder, url).update(['--depth 1'])
+                    for root, _, files in os.walk(folder):
+                        for file in files:
+                            r = re.search(r'splice_\d+\.zip', file)
+                            if r:
+                                extract_zip(os.path.join(root, file), folder + '/skin', overwrite=True)
+
+        ArknightsConfig.initialize()
+        ArknightsGameData.initialize()
+
+        event_bus.publish('gameDataInitialized')
 
 
 def exec_before_init(coro):
