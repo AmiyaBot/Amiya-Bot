@@ -348,16 +348,15 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                         # 检查一下 default，如果存在，就表示确实错了，
                         if config_name in self.__channel_config_default:
                             # ok, 默认配置项存在，那么就直接给出默认值。并且警告用户。
-                            log.warning(
+                            log.debug(
                                 f'配置项{config_name}在该频道的配置项中缺失，现在返回了频道默认值')
                             return copy.deepcopy(self.__channel_config_default[config_name])
 
                     # 注意这里要判断 None，界面是不可能把一个配置项改成None的，因此出现None必是因为插件开发者代码中设置了None
                     # 这里发出警告并降级即可
                     elif json_config[config_name] is None:
-                        log.warning(
+                        log.debug(
                             f'配置项{config_name}在数据库的Json存储中缺失，现在返回了频道默认值')
-
                     else:
                         value = json_config[config_name]
 
@@ -384,7 +383,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     # 这个配置项不在配置里，这不可能，因为启动时应该补过了。
                     # 通过GUI配置配置项的时候，是没法删除项的。
                     # 所以出现不存在的项要么是因为新配置加入了，但是由于某些原因没有补。
-                    log.warning(f'配置项{config_name}在全局配置项中缺失，现在返回了全局默认值')
+                    log.debug(f'配置项{config_name}在全局配置项中缺失，现在返回了全局默认值')
                     if config_name in self.__global_config_default:
                         return copy.deepcopy(self.__global_config_default[config_name])
             return None
