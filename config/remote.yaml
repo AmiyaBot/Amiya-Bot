@@ -4,7 +4,7 @@ remote:
     console: http://106.52.139.57:8000
     penguin: https://penguin-stats.io/PenguinStats/api/v2/result/matrix
     gamedata: https://gitee.com/amiya-bot/arknights-resource.git
-    resource: http://119.29.87.110:8000
+    resource: https://server.amiyabot.com:8000
 
 bucket:
     enabled: false

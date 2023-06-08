@@ -226,7 +226,7 @@ def init_enemies():
     }
 
     data = {}
-    for e_id, info in enemies_info.items():
+    for e_id, info in enemies_info['enemyData'].items():
         name = info['name'].lower()
 
         if name == '-':
