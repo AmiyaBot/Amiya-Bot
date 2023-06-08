@@ -291,11 +291,11 @@ def init_stages():
             for wave in level_data['waves']:
                 for fragment in wave['fragments']:
                     for action in fragment['actions']:
-                        if action['key'] not in enemies_info or action['actionType'] != 0:
+                        if action['key'] not in enemies_info['enemyData'] or action['actionType'] != 0:
                             continue
                         if action['key'] not in enemies:
                             enemies[action['key']] = {
-                                **enemies_info[action['key']],
+                                **enemies_info['enemyData'][action['key']],
                                 'count': 0
                             }
                         enemies[action['key']]['count'] += action['count']
