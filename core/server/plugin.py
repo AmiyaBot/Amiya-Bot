@@ -42,6 +42,11 @@ class UninstallModel(BaseModel):
     plugin_id: str
 
 
+class ReloadModel(BaseModel):
+    plugin_id: str
+    force: bool = False
+
+
 @app.controller
 class Plugin:
     @app.route(method='get')
@@ -178,3 +183,9 @@ class Plugin:
         bot.uninstall_plugin(data.plugin_id, remove=True)
 
         return app.response(message='插件卸载成功')
+
+    @app.route()
+    async def reload_plugin(self, data: ReloadModel):
+        bot.reload_plugin(data.plugin_id, force=data.force)
+
+        return app.response(message='插件重载成功')
