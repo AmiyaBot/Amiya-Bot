@@ -13,6 +13,7 @@ from .wiki import PRTS
 
 STR_DICT = Dict[str, Any]
 STR_DICT_MAP = Dict[str, STR_DICT]
+STR_DICT_LIST = Dict[str, List[str]]
 
 gamedata_path = 'resource/gamedata'
 
@@ -21,7 +22,7 @@ class ArknightsGameData:
     version: str
     enemies: Dict[str, Dict[str, dict]]
     stages: STR_DICT_MAP
-    stages_map: STR_DICT
+    stages_map: STR_DICT_LIST
     side_story_map: STR_DICT_MAP
     operators: Dict[str, Operator]
     tokens: Dict[str, Token]
@@ -263,9 +264,9 @@ def init_stages():
     ]
     side_story.sort(key=lambda n: n['startTime'], reverse=True)
 
-    stage_list = {}
-    stage_map = {}
-    side_story_map = {
+    stage_list: STR_DICT_MAP = {}
+    stage_map: STR_DICT_LIST = {}
+    side_story_map: STR_DICT_MAP = {
         n['name']: {} for n in side_story
     }
 
@@ -329,7 +330,11 @@ def init_stages():
                 if ss_code in stage_id:
                     side_story_map[ss_name][stage_id] = stage_list[stage_id]
 
-        stage_map[stage_key] = stage_id
-        stage_map[stage_key_name] = stage_id
+        for key in [stage_key, stage_key_name]:
+            if key not in stage_map:
+                stage_map[key] = []
+
+            if stage_id not in stage_map[key]:
+                stage_map[key].append(stage_id)
 
     return stage_list, stage_map, side_story_map
