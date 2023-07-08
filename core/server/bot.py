@@ -5,7 +5,7 @@ from core.database.bot import BotAccounts, query_to_list
 from amiyabot.adapters.mirai import mirai_api_http
 from amiyabot.adapters.cqhttp import cq_http
 from amiyabot.network.httpServer import BaseModel
-from amiyabot import AmiyaBot
+from amiyabot import AmiyaBot, KOOKBotInstance
 
 
 class BotAppId(BaseModel):
@@ -99,6 +99,8 @@ class Bot:
             conf['adapter'] = cq_http(host=data.cq_host,
                                       ws_port=data.cq_ws_port,
                                       http_port=data.cq_http_port)
+        if data.adapter == 'kook':
+            conf['adapter'] = KOOKBotInstance
 
         bot.append(AmiyaBot(**conf), launch_browser=True)
 

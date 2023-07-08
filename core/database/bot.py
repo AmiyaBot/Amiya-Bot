@@ -1,4 +1,4 @@
-from amiyabot import AmiyaBot
+from amiyabot import AmiyaBot, KOOKBotInstance
 from amiyabot.database import *
 from amiyabot.adapters.mirai import mirai_api_http
 from amiyabot.adapters.cqhttp import cq_http
@@ -28,9 +28,11 @@ class BotAccounts(BotBaseModel):
     is_main: int = SmallIntegerField(default=0)
     console_channel: str = CharField(null=True)
     adapter: str = CharField(default='tencent')
+
     mah_host: str = CharField(null=True)
     mah_ws_port: int = IntegerField(null=True)
     mah_http_port: int = IntegerField(null=True)
+
     cq_host: str = CharField(null=True)
     cq_ws_port: int = IntegerField(null=True)
     cq_http_port: int = IntegerField(null=True)
@@ -57,6 +59,8 @@ class BotAccounts(BotBaseModel):
                 conf['adapter'] = cq_http(host=item.cq_host,
                                           ws_port=item.cq_ws_port,
                                           http_port=item.cq_http_port)
+            if item.adapter == 'kook':
+                conf['adapter'] = KOOKBotInstance
 
             account.append(AmiyaBot(**conf))
 
