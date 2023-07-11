@@ -5,7 +5,7 @@ from amiyabot.adapters.test import test_instance
 
 from amiya import bot as main_bot, init_task, load_resource
 
-bot = AmiyaBot(appid='test', token='', adapter=test_instance('127.0.0.1', 32001))
+bot = AmiyaBot(appid='102012648', token='VtV9ld3WMhleLhKpeLizvGFGXUmHffC0', private=True)
 bot.combine_factory(main_bot)
 
 if __name__ == '__main__':
