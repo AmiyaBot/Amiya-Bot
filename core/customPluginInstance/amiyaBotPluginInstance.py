@@ -26,6 +26,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                  plugin_type: str = None,
                  description: str = None,
                  document: str = None,
+                 priority: int = 1,
                  instruction: str = None,
                  channel_config_default: CONFIG_TYPE = None,
                  channel_config_schema: CONFIG_TYPE = None,
@@ -39,7 +40,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                          plugin_id,
                          plugin_type,
                          description,
-                         document)
+                         document,
+                         priority)
 
         self.instruction = instruction
         self.__channel_config_default = self.__parse_to_json(channel_config_default)

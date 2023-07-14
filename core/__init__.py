@@ -11,6 +11,7 @@ from typing import List, Union
 
 from amiyabot import (
     MultipleAccounts,
+    PluginInstance,
     HttpServer,
     Message,
     Event,
@@ -80,10 +81,7 @@ def load_resource(no_gamedata: bool = False):
                             if r:
                                 extract_zip(os.path.join(root, file), folder + '/skin', overwrite=True)
 
-        ArknightsConfig.initialize()
-        ArknightsGameData.initialize()
-
-        event_bus.publish('gameDataInitialized')
+    event_bus.publish('gameDataFetched')
 
 
 def exec_before_init(coro):
@@ -92,18 +90,28 @@ def exec_before_init(coro):
 
 
 async def load_plugins():
-    count = 0
+    plugins: List[PluginInstance] = []
+
     for root, dirs, files in os.walk('plugins'):
         for file in files:
             if file.endswith('.zip'):
-                log.info(f'installing plugin {file}')
                 try:
-                    res = bot.install_plugin(os.path.join(root, file), extract_plugin=True)
+                    res = bot.load_plugin(os.path.join(root, file), extract_plugin=True)
                     if res:
-                        count += 1
+                        plugins.append(res)
+                        log.info(f'plugin loaded: {file}')
                 except Exception as e:
-                    log.error(e, 'plugin install error:')
+                    log.error(e, f'plugin load error({file}):')
         break
+
+    count = 0
+    for item in sorted(plugins, key=lambda n: n.priority, reverse=True):
+        try:
+            res = bot.install_plugin(item)
+            if res:
+                count += 1
+        except Exception as e:
+            log.error(e, f'plugin install error({item.plugin_id}):')
 
     # 然后对所有插件执行懒加载（如果有的话）
     for plugin_id, item in bot.plugins.items():
@@ -111,7 +119,7 @@ async def load_plugins():
             item.load()
 
     if count:
-        log.info(f'successfully loaded {count} plugin(s).')
+        log.info(f'successfully installed {count} plugin(s).')
 
 
 async def send_to_console_channel(chain: Chain):
