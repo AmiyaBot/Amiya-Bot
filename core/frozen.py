@@ -1,5 +1,6 @@
 import srsly
 import dhash
+import requests_html
 
 from . import server
 from jieba import posseg
