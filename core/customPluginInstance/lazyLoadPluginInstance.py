@@ -8,14 +8,16 @@ class LazyLoadPluginInstance(PluginInstance):
                  plugin_id: str,
                  plugin_type: str = None,
                  description: str = None,
-                 document: str = None):
+                 document: str = None,
+                 priority: int = 1):
         super().__init__(
             name,
             version,
             plugin_id,
             plugin_type,
             description,
-            document
+            document,
+            priority
         )
 
     def load(self): ...
