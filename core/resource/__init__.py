@@ -7,7 +7,6 @@ class Remote:
     console: str
     penguin: str
     gamedata: str
-    resource: str
 
 
 class Bucket:

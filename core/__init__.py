@@ -134,16 +134,6 @@ async def heartbeat():
         await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}', ignore_error=True)
 
 
-class SourceServer(ChainBuilder):
-    @staticmethod
-    async def image_getter_hook(image):
-        if type(image) is bytes:
-            res = await http_requests.post_upload(f'{remote_config.remote.resource}/upload', image)
-            if res:
-                return f'{remote_config.remote.resource}/images?path=' + res.strip('"')
-        return image
-
-
 @bot.message_created
 async def _(data: Message, _):
     if not data.is_admin:
@@ -165,9 +155,6 @@ async def _(data: Message, factory_name: str, _):
 @bot.on_exception()
 async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, Event]):
     chain = Chain()
-
-    if type(instance) is TencentBotInstance:
-        chain.builder = SourceServer()
 
     info = [
         'Adapter: ' + str(instance),
