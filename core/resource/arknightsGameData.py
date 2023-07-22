@@ -87,6 +87,7 @@ class Operator:
         self.classes_sub = ''
         self.classes_code = ''
 
+        self.sex = ''
         self.race = ''
         self.drawer = ''
         self.team_id = ''
