@@ -9,12 +9,21 @@ bot = AmiyaBot(appid='test', token='', adapter=test_instance('127.0.0.1', 32001)
 bot.combine_factory(main_bot)
 
 if __name__ == '__main__':
-    from pluginsDev.src.arknights.arknightsGameData import bot as plugin
+    # 导入比较核心的插件
+    from pluginsDev.src.arknights.arknightsGameData import bot as resource
+    from pluginsDev.src.replace import bot as replace
+
+    # 导入测试的插件
+    from pluginsDev.src.game.wordle2 import bot as plugin
 
 
     async def install_plugin():
-        # todo 此处可以导入插件
+        # 安装插件
+        bot.install_plugin(resource)
+        bot.install_plugin(replace)
         bot.install_plugin(plugin)
+
+        # 也可以通过文件安装
         # bot.install_plugin('plugins/amiyabot-arknights-gamedata-1.0.zip', extract_plugin=True)
 
 
