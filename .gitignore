@@ -11,6 +11,8 @@
 
 .DS_Store
 
+main*.py
+
 *.pyc
 *.spec
 *.zip
