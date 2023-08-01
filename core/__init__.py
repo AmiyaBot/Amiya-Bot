@@ -50,6 +50,16 @@ app.add_static_folder('/plugins', 'plugins')
 message_record = []
 
 
+class SourceServer(ChainBuilder):
+    @staticmethod
+    async def image_getter_hook(image):
+        if type(image) is bytes:
+            res = await http_requests.post_upload(f'{remote_config.remote.resource}/upload', image)
+            if res:
+                return remote_config.remote.resource + '/' + res.strip('"')
+        return image
+
+
 def set_prefix():
     bot.set_prefix_keywords([*prefix_conf.prefix_keywords])
 
@@ -125,23 +135,19 @@ async def load_plugins():
 async def send_to_console_channel(chain: Chain):
     main_bot: List[BotAccounts] = BotAccounts.select().where(BotAccounts.is_main == 1)
     for item in main_bot:
-        if item.console_channel and bot[item.appid]:
-            await bot[item.appid].send_message(chain, channel_id=item.console_channel)
+        instance = bot[item.appid]
+
+        if item.console_channel and instance:
+            if type(instance.instance) is TencentBotInstance:
+                if not instance.private:
+                    chain.builder = SourceServer()
+
+            await instance.send_message(chain, channel_id=item.console_channel)
 
 
 async def heartbeat():
     for item in bot:
         await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}', ignore_error=True)
-
-
-class SourceServer(ChainBuilder):
-    @staticmethod
-    async def image_getter_hook(image):
-        if type(image) is bytes:
-            res = await http_requests.post_upload(f'{remote_config.remote.resource}/upload', image)
-            if res:
-                return f'{remote_config.remote.resource}/images?path=' + res.strip('"')
-        return image
 
 
 @bot.message_created
@@ -164,11 +170,6 @@ async def _(data: Message, factory_name: str, _):
 
 @bot.on_exception()
 async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, Event]):
-    chain = Chain()
-
-    if type(instance) is TencentBotInstance:
-        chain.builder = SourceServer()
-
     info = [
         'Adapter: ' + str(instance),
         'Bot: ' + str(instance.appid),
@@ -177,7 +178,7 @@ async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, E
         '\n' + data.text
     ]
 
-    content = chain.text('\n'.join(info)).text_image(traceback.format_exc())
+    content = Chain().text('\n'.join(info)).text_image(traceback.format_exc())
 
     await send_to_console_channel(content)
 

@@ -1,29 +1,25 @@
-name: Windows binary package
+name: Publish packages
 
 on:
     push:
         branches: [ V6-master ]
         paths: [ '.github/publish.txt' ]
 
+    workflow_dispatch:
+        types:
+            - { }
+
 jobs:
-    publish-package:
+    publish-windows-package:
         runs-on: windows-latest
         steps:
-            -   uses: actions/checkout@v2
+            -   uses: actions/checkout@v3
 
             -   name: Set up Python 3.8.10 amd64
                 uses: actions/setup-python@v4
                 with:
                     python-version: 3.8.10
                     architecture: x64
-
-            -   name: Get branch name
-                id: branch-name
-                uses: tj-actions/branch-names@v5.1
-
-            -   name: Branch name
-                run: |
-                    echo "Running on branch: ${{ steps.branch-name.outputs.current_branch }}"
 
             -   name: Install dependencies
                 run: |
@@ -40,4 +36,32 @@ jobs:
                     SECRETKEY: ${{ secrets.SECRETKEY }}
                 run: |
                     venv\Scripts\Activate.ps1
-                    venv\Scripts\python run_build.py --type package --branch ${{ steps.branch-name.outputs.current_branch }} --upload
+                    venv\Scripts\python run_build.py --type package --platform windows --upload
+
+    publish-linux-package:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+
+            -   name: Set up Python 3.8.10
+                uses: actions/virtualenv@v2
+                with:
+                    python-version: 3.8
+                id: virtualenv
+
+            -   name: Activate Virtualenv
+                run: source ${virtualenv}/bin/activate
+
+            -   name: Install dependencies
+                run: |
+                    ${virtualenv}/bin/python -m pip install --upgrade pip wheel setuptools
+                    ${virtualenv}/bin/python -m pip install -r requirements.txt
+                    ${virtualenv}/bin/python -m pip install cos-python-sdk-v5
+                    ${virtualenv}/bin/python -m pip install pyinstaller
+
+            -   name: Build and publish package
+                env:
+                    SECRETID: ${{ secrets.SECRETID }}
+                    SECRETKEY: ${{ secrets.SECRETKEY }}
+                run: |
+                    ${virtualenv}/bin/python run_build.py --type package --platform linux --upload
