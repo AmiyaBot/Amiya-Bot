@@ -61,16 +61,15 @@ data_files = [
 ]
 
 
-def build(version, folder, branch, force, upload=False):
+def build(version: str, folder: str, platform: str, force: bool = False, upload: bool = False):
     dist = f'{folder}/dist'
     local = os.path.abspath('/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.')
 
     try:
-        cos_url = f'https://cos.amiyabot.com/package/release/latest-{branch}.txt'
-        latest = str(
-            request.urlopen(cos_url).read(),
-            encoding='utf-8').strip('\r\n')
-    except Exception:
+        cos_url = f'https://cos.amiyabot.com/package/release/latest-{platform}.txt'
+        latest = str(request.urlopen(cos_url).read(), encoding='utf-8').strip('\r\n')
+    except Exception as e:
+        print(repr(e))
         latest = ''
 
     if not version:
@@ -81,9 +80,7 @@ def build(version, folder, branch, force, upload=False):
         print('not new release.')
         return None
 
-    setup_name = f'AmiyaBot-{version}'
-    if branch:
-        setup_name += '-' + branch.split('-')[-1]
+    setup_name = f'AmiyaBot-{version}-{platform}'
 
     if os.path.exists(dist):
         shutil.rmtree(dist)
@@ -120,12 +117,16 @@ def build(version, folder, branch, force, upload=False):
     if len(disc) > 1:
         cmd.append(disc[0] + ':')
 
+    playwright_install = 'playwright install chromium'
+    if platform == 'linux':
+        playwright_install = 'playwright install --with-deps chromium'
+
     cmd += [
         f'pyi-makespec -F -n {setup_name} -i {local}/amiya.ico'
         f' --version-file=version.txt {local}/amiya.py' +
         ''.join([' --add-data=%s;%s' % df for df in data_files]),
         f'set PLAYWRIGHT_BROWSERS_PATH=0',
-        f'{os.path.abspath(scripts)}\\playwright install chromium',
+        f'{os.path.abspath(scripts)}\\{playwright_install}',
         f'{os.path.abspath(scripts)}\\pyinstaller {setup_name}.spec'
     ]
 
@@ -153,10 +154,10 @@ def build(version, folder, branch, force, upload=False):
     os.remove(f'{folder}/version.txt')
 
     if upload:
-        upload_pack('.github/publish.txt', branch, path, pack_name)
+        upload_pack('.github/publish.txt', platform, path, pack_name)
 
 
-def upload_pack(ver_file, branch, package_file, package_name):
+def upload_pack(ver_file, platform, package_file, package_name):
     from .uploadFile import COSUploader
 
     secret_id = os.environ.get('SECRETID')
@@ -165,4 +166,4 @@ def upload_pack(ver_file, branch, package_file, package_name):
     cos = COSUploader(secret_id, secret_key)
 
     cos.upload_file(package_file, f'package/release/{package_name}')
-    cos.upload_file(ver_file, f'package/release/latest-{branch}.txt')
+    cos.upload_file(ver_file, f'package/release/latest-{platform}.txt')
