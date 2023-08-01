@@ -41,25 +41,25 @@ jobs:
         steps:
             -   uses: actions/checkout@v3
 
-            -   name: Set up Python 3.8.10
-                uses: actions/virtualenv@v2
+            -   name: Set up Python 3.8.10 amd64
+                uses: actions/setup-python@v4
                 with:
-                    python-version: 3.8
-                id: virtualenv
-
-            -   name: Activate Virtualenv
-                run: source ${virtualenv}/bin/activate
+                    python-version: 3.8.10
+                    architecture: x64
 
             -   name: Install dependencies
                 run: |
-                    ${virtualenv}/bin/python -m pip install --upgrade pip wheel setuptools
-                    ${virtualenv}/bin/python -m pip install -r requirements.txt
-                    ${virtualenv}/bin/python -m pip install cos-python-sdk-v5
-                    ${virtualenv}/bin/python -m pip install pyinstaller
+                    python -m pip install --upgrade pip
+                    python -m venv venv
+                    venv/bin/python -m pip install --upgrade pip wheel setuptools
+                    venv/bin/python -m pip install -r requirements.txt
+                    venv/bin/python -m pip install cos-python-sdk-v5
+                    venv/bin/python -m pip install pyinstaller
 
             -   name: Build and publish package
                 env:
                     SECRETID: ${{ secrets.SECRETID }}
                     SECRETKEY: ${{ secrets.SECRETKEY }}
                 run: |
-                    ${virtualenv}/bin/python run_build.py --type package --platform linux --upload
+                    source venv/bin/activate
+                    venv/bin/python run_build.py --type package --platform linux --upload
