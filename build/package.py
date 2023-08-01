@@ -18,12 +18,6 @@ ZIP_FILE_LIST = [
     'phone_location.zip', 'xiehouyu.zip',
     'pornography.zip']
 
-venv = 'venv\\Lib\\site-packages'
-scripts = 'venv\\Scripts'
-if sys.platform == 'darwin':
-    venv = 'venv\\lib\\python3.8\\site-packages'
-    scripts = 'venv\\bin'
-
 version_file = '''# UTF-8
 VSVersionInfo(
     ffi=FixedFileInfo(
@@ -56,12 +50,22 @@ VSVersionInfo(
     ]
 )
 '''
+
+platform = sys.platform
+
+venv = 'venv/Lib/site-packages'
+scripts = 'venv/Scripts'
+
+if platform == 'linux':
+    venv = 'venv/lib/python3.8/site-packages'
+    scripts = 'venv/bin'
+
 data_files = [
     (os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), 'amiyabot/_assets'),
 ]
 
 
-def build(version: str, folder: str, platform: str, force: bool = False, upload: bool = False):
+def build(version: str, folder: str, force: bool = False, upload: bool = False):
     dist = f'{folder}/dist'
     local = os.path.abspath('/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.')
 

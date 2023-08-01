@@ -26,7 +26,6 @@ if __name__ == '__main__':
         build(
             argv('version'),
             argv('folder') or 'package',
-            argv('platform'),
             argv('force'),
             argv('upload')
         )
