@@ -5,6 +5,10 @@ on:
         branches: [ V6-master ]
         paths: [ '.github/publish.txt' ]
 
+    workflow_dispatch:
+        types:
+            - { }
+
 jobs:
     publish-windows-package:
         runs-on: windows-latest
