@@ -130,8 +130,8 @@ def build(version: str, folder: str, force: bool = False, upload: bool = False):
         f' --version-file=version.txt {local}/amiya.py' +
         ''.join([' --add-data=%s;%s' % df for df in data_files]),
         f'set PLAYWRIGHT_BROWSERS_PATH=0',
-        f'{os.path.abspath(scripts)}\\{playwright_install}',
-        f'{os.path.abspath(scripts)}\\pyinstaller {setup_name}.spec'
+        f'{os.path.abspath(scripts)}/{playwright_install}',
+        f'{os.path.abspath(scripts)}/pyinstaller {setup_name}.spec'
     ]
 
     for cm in cmd:
