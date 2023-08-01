@@ -6,8 +6,6 @@ on:
         paths: [ '.github/publish.txt' ]
 
     workflow_dispatch:
-        types:
-            - { }
 
 jobs:
     publish-windows-package:
