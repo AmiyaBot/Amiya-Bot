@@ -1,8 +1,6 @@
-import asyncio
-
 from amiyabot.log import UserLogger
 
-from amiya import load_resource
+from amiya import run_amiya
 from pluginsServer.src import server, api
 
 
@@ -21,7 +19,6 @@ class Mylogger:
 UserLogger.logger = Mylogger()
 
 if __name__ == '__main__':
-    load_resource(no_gamedata=True)
-    asyncio.run(
+    run_amiya(
         server.server.serve()
     )

@@ -29,7 +29,7 @@ class GitAutomation:
         bar = '=' * block + ' ' * (25 - block)
 
         print('\r', end='')
-        print(f'fetching [{bar}] {cur_count} / {max_count} ({curr}%) {message}', end='')
+        print(f'Fetching [{bar}] {cur_count} / {max_count} ({curr}%) {message}', end='')
 
         sys.stdout.flush()
 
@@ -37,7 +37,7 @@ class GitAutomation:
             print()
 
     def update(self, options: List[str] = None):
-        log.info(f'fetching repo to "{self.repo_dir}"...')
+        log.info(f'Pulling repo "{self.repo_url}" -> "{self.repo_dir}"...')
         if not os.path.exists(self.repo_dir):
             git.Repo.clone_from(self.repo_url,
                                 to_path=self.repo_dir,
