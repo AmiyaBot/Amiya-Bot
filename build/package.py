@@ -153,10 +153,6 @@ def build(version: str, force: bool = False, upload: bool = False):
     for line in build_process.stdout.readlines():
         print(line)
 
-    if not os.path.exists(f'{dist}/{setup_name}.exe'):
-        print(f'no built {dist}/{setup_name}.exe.')
-        return None
-
     pack_name = f'{setup_name}.zip'
     path = pathlib.Path(f'{folder}/{pack_name}')
 
