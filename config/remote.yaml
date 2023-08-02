@@ -2,13 +2,4 @@ remote:
     cos: https://cos.amiyabot.com
     wiki: https://static.prts.wiki
     console: http://106.52.139.57:8000
-    penguin: https://penguin-stats.io/PenguinStats/api/v2/result/matrix
-    gamedata: https://gitee.com/amiya-bot/arknights-resource.git
     resource: https://server.amiyabot.com:8000
-
-bucket:
-    enabled: false
-    region:
-    secret_id:
-    secret_key:
-    bucket_name:

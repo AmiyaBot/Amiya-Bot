@@ -204,7 +204,7 @@ def create_yaml(path: str, data: dict, overwrite: bool = False):
 
 def create_dir(path: str, is_file: bool = False):
     if is_file:
-        path = '/'.join(path.replace('\\', '/').split('/')[:-1])
+        path = os.path.dirname(path)
 
     if path and not os.path.exists(path):
         os.makedirs(path)

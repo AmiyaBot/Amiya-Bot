@@ -1,11 +1,9 @@
 import os
-import re
 import copy
 import time
 import jieba
 import datetime
 import traceback
-import configparser
 
 from typing import List, Union
 
@@ -20,12 +18,10 @@ from amiyabot import (
     ChainBuilder,
     log
 )
-from amiyabot import event_bus
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
 from amiyabot.builtin.lib.timedTask import tasks_control
-from amiyabot.util import extract_zip
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts, Admin
@@ -65,33 +61,6 @@ def set_prefix():
 
     for word in prefix_conf.jieba_del_words:
         jieba.del_word(word)
-
-
-def load_resource(no_gamedata: bool = False):
-    BotResource.download_bot_resource()
-
-    if not no_gamedata:
-        gamedata_path = 'resource/gamedata'
-
-        GitAutomation(gamedata_path, remote_config.remote.gamedata).update(['--depth 1'])
-
-        if os.path.exists(f'{gamedata_path}/.gitmodules'):
-            config = configparser.ConfigParser()
-            config.read(f'{gamedata_path}/.gitmodules', encoding='utf-8')
-
-            for submodule in config.values():
-                path = submodule.get('path')
-                url = submodule.get('url')
-                if path:
-                    folder = f'{gamedata_path}/{path}'
-                    GitAutomation(folder, url).update(['--depth 1'])
-                    for root, _, files in os.walk(folder):
-                        for file in files:
-                            r = re.search(r'splice_\d+\.zip', file)
-                            if r:
-                                extract_zip(os.path.join(root, file), folder + '/skin', overwrite=True)
-
-    event_bus.publish('gameDataFetched')
 
 
 def exec_before_init(coro):

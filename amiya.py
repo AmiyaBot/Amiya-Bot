@@ -3,26 +3,35 @@ import sys
 import asyncio
 import core.frozen
 
-from core import app, bot, init_task, load_resource, load_plugins
+from typing import Coroutine
+from core import app, bot, init_task, load_plugins, BotResource
 
-sys.path += [
-    os.path.dirname(sys.executable),
-    os.path.dirname('resource/env/python-dlls'),
-    os.path.dirname('resource/env/python-standard-lib.zip'),
-]
 
-if __name__ == '__main__':
+def run_amiya(*tasks: Coroutine):
     try:
-        load_resource()
+        BotResource.download_bot_resource()
+
+        sys.path += [
+            os.path.dirname(sys.executable),
+            os.path.dirname('resource/env/python-dlls'),
+            os.path.dirname('resource/env/python-standard-lib.zip'),
+        ]
+
         asyncio.run(
             asyncio.wait(
                 [
                     *init_task,
-                    bot.start(launch_browser=True),
-                    app.serve(),
-                    load_plugins()
+                    *tasks
                 ]
             )
         )
     except KeyboardInterrupt:
         pass
+
+
+if __name__ == '__main__':
+    run_amiya(
+        bot.start(launch_browser=True),
+        app.serve(),
+        load_plugins()
+    )
