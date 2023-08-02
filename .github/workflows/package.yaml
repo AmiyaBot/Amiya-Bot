@@ -37,7 +37,7 @@ jobs:
                     venv\Scripts\python run_build.py --type package --upload
 
     publish-linux-package:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-20.04
         steps:
             -   uses: actions/checkout@v3
 
