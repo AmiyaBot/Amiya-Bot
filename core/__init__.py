@@ -47,8 +47,8 @@ message_record = []
 
 
 class SourceServer(ChainBuilder):
-    @staticmethod
-    async def image_getter_hook(image):
+    @classmethod
+    async def get_image(cls, image):
         if type(image) is bytes:
             res = await http_requests.post_upload(f'{remote_config.remote.resource}/upload', image)
             if res:
