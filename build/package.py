@@ -94,8 +94,10 @@ def build(version: str, force: bool = False, upload: bool = False):
     os.makedirs(dist)
     os.makedirs(jieba_copy)
 
-    shutil.copy(f'{venv}/jieba/dict.txt', f'{folder}/jieba/dict.txt')
+    shutil.copy(f'{venv}/jieba/dict.txt', f'{jieba_copy}/dict.txt')
     shutil.copytree('config', f'{dist}/config', dirs_exist_ok=True)
+    shutil.copytree(os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), f'{dist}/_assets',
+                    dirs_exist_ok=True)
 
     for item in ZIP_FILE_LIST:
         if not os.path.exists(f'{dist}/dictionary'):
@@ -120,24 +122,22 @@ def build(version: str, force: bool = False, upload: bool = False):
         cmd.append(disc[0] + ':')
 
     data_files = [
-        (os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), 'amiyabot/_assets'),
         (os.path.abspath(jieba_copy).replace(' ', '\\ '), 'jieba')
     ]
     add_ico_cmd = f' -i {local}/amiya.ico'
     add_version_cmd = f' --version-file=version.txt'
     add_datas_cmd = ''.join([' --add-data=%s;%s' % df for df in data_files])
-    playwright_install = 'playwright install chromium'
+    playwright_install = f'set PLAYWRIGHT_BROWSERS_PATH=0 && {os.path.abspath(scripts)}/playwright install chromium'
 
     if platform == 'linux':
         add_ico_cmd = ''
         add_version_cmd = ''
         add_datas_cmd = ''.join([' --add-data=%s:%s' % df for df in data_files])
-        playwright_install = 'playwright install --with-deps chromium'
+        playwright_install = f'PLAYWRIGHT_BROWSERS_PATH=0 {os.path.abspath(scripts)}/playwright install chromium'
 
     cmd += [
         f'pyi-makespec -F -n {setup_name}{add_ico_cmd}{add_version_cmd} {local}/amiya.py {add_datas_cmd}',
-        f'set PLAYWRIGHT_BROWSERS_PATH=0',
-        f'{os.path.abspath(scripts)}/{playwright_install}',
+        f'{playwright_install}',
         f'{os.path.abspath(scripts)}/pyinstaller {setup_name}.spec'
     ]
 
