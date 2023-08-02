@@ -119,24 +119,20 @@ def build(version: str, force: bool = False, upload: bool = False):
     if len(disc) > 1:
         cmd.append(disc[0] + ':')
 
-    add_ico_cmd = f' -i {local}/amiya.ico'
-    add_version_cmd = f' --version-file=version.txt'
-    playwright_install = 'playwright install chromium'
     data_files = [
         (os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), 'amiyabot/_assets'),
         (os.path.abspath(jieba_copy).replace(' ', '\\ '), 'jieba')
     ]
+    add_ico_cmd = f' -i {local}/amiya.ico'
+    add_version_cmd = f' --version-file=version.txt'
     add_datas_cmd = ''.join([' --add-data=%s;%s' % df for df in data_files])
+    playwright_install = 'playwright install chromium'
 
     if platform == 'linux':
         add_ico_cmd = ''
         add_version_cmd = ''
-        playwright_install = 'playwright install --with-deps chromium'
-        data_files = [
-            ('../' + os.path.relpath(f'{venv}/amiyabot/_assets'), 'amiyabot/_assets'),
-            ('../' + os.path.relpath(jieba_copy), 'jieba')
-        ]
         add_datas_cmd = ''.join([' --add-data=%s:%s' % df for df in data_files])
+        playwright_install = 'playwright install --with-deps chromium'
 
     cmd += [
         f'pyi-makespec -F -n {setup_name}{add_ico_cmd}{add_version_cmd} {local}/amiya.py {add_datas_cmd}',
