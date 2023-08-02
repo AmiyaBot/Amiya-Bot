@@ -60,13 +60,12 @@ if platform == 'linux':
     venv = 'venv/lib/python3.8/site-packages'
     scripts = 'venv/bin'
 
-data_files = [
-    (os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), 'amiyabot/_assets'),
-]
+folder = 'package'
 
 
-def build(version: str, folder: str, force: bool = False, upload: bool = False):
+def build(version: str, force: bool = False, upload: bool = False):
     dist = f'{folder}/dist'
+    jieba_copy = f'{folder}/jieba'
     local = os.path.abspath('/'.join(sys.argv[0].replace('\\', '/').split('/')[:-1]) or '.')
 
     try:
@@ -89,12 +88,11 @@ def build(version: str, folder: str, force: bool = False, upload: bool = False):
     if os.path.exists(dist):
         shutil.rmtree(dist)
 
-    os.makedirs(dist)
-    os.makedirs(f'{folder}/jieba')
+    if os.path.exists(jieba_copy):
+        shutil.rmtree(jieba_copy)
 
-    data_files.append(
-        (os.path.abspath(f'{folder}/jieba').replace(' ', '\\ '), 'jieba')
-    )
+    os.makedirs(dist)
+    os.makedirs(jieba_copy)
 
     shutil.copy(f'{venv}/jieba/dict.txt', f'{folder}/jieba/dict.txt')
     shutil.copytree('config', f'{dist}/config', dirs_exist_ok=True)
@@ -121,14 +119,27 @@ def build(version: str, folder: str, force: bool = False, upload: bool = False):
     if len(disc) > 1:
         cmd.append(disc[0] + ':')
 
+    add_ico_cmd = f' -i {local}/amiya.ico'
+    add_version_cmd = f' --version-file=version.txt'
     playwright_install = 'playwright install chromium'
+    data_files = [
+        (os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), 'amiyabot/_assets'),
+        (os.path.abspath(jieba_copy).replace(' ', '\\ '), 'jieba')
+    ]
+    add_datas_cmd = ''.join([' --add-data=%s;%s' % df for df in data_files])
+
     if platform == 'linux':
+        add_ico_cmd = ''
+        add_version_cmd = ''
         playwright_install = 'playwright install --with-deps chromium'
+        data_files = [
+            ('../' + os.path.relpath(f'{venv}/amiyabot/_assets'), 'amiyabot/_assets'),
+            ('../' + os.path.relpath(jieba_copy), 'jieba')
+        ]
+        add_datas_cmd = ''.join([' --add-data=%s:%s' % df for df in data_files])
 
     cmd += [
-        f'pyi-makespec -F -n {setup_name} -i {local}/amiya.ico'
-        f' --version-file=version.txt {local}/amiya.py' +
-        ''.join([' --add-data=%s;%s' % df for df in data_files]),
+        f'pyi-makespec -F -n {setup_name}{add_ico_cmd}{add_version_cmd} {local}/amiya.py {add_datas_cmd}',
         f'set PLAYWRIGHT_BROWSERS_PATH=0',
         f'{os.path.abspath(scripts)}/{playwright_install}',
         f'{os.path.abspath(scripts)}/pyinstaller {setup_name}.spec'
@@ -137,7 +148,7 @@ def build(version: str, folder: str, force: bool = False, upload: bool = False):
     for cm in cmd:
         print('execute:', cm)
 
-    build_process = subprocess.Popen('&'.join(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    build_process = subprocess.Popen('&&'.join(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     for line in build_process.stdout.readlines():
         print(line)
@@ -158,10 +169,10 @@ def build(version: str, folder: str, force: bool = False, upload: bool = False):
     os.remove(f'{folder}/version.txt')
 
     if upload:
-        upload_pack('.github/publish.txt', platform, path, pack_name)
+        upload_pack('.github/publish.txt', path, pack_name)
 
 
-def upload_pack(ver_file, platform, package_file, package_name):
+def upload_pack(ver_file, package_file, package_name):
     from .uploadFile import COSUploader
 
     secret_id = os.environ.get('SECRETID')
