@@ -123,15 +123,3 @@ class OperatorBox(UserBaseModel):
     user_id: str = CharField()
     operator: str = TextField(default='')
 
-
-@table
-class Intellect(UserBaseModel):
-    user_id: str = CharField(primary_key=True)
-    belong_id: str = CharField(null=True)
-    cur_num: int = IntegerField()
-    full_num: int = IntegerField()
-    full_time: int = IntegerField()
-    message_type: str = CharField()
-    group_id: str = CharField()
-    in_time: int = IntegerField()
-    status: int = IntegerField()
