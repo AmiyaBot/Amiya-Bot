@@ -24,7 +24,7 @@ from amiyabot.network.httpRequests import http_requests
 from amiyabot.builtin.lib.timedTask import tasks_control
 
 from core.database.messages import MessageRecord
-from core.database.bot import BotAccounts, Admin
+from core.database.bot import BotAccounts
 from core.resource import remote_config
 from core.resource.botResource import BotResource
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
@@ -119,12 +119,6 @@ async def heartbeat():
         await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}', ignore_error=True)
 
 
-@bot.message_created
-async def _(data: Message, _):
-    if not data.is_admin:
-        data.is_admin = bool(Admin.get_or_none(account=data.user_id))
-
-
 @bot.message_before_handle
 async def _(data: Message, factory_name: str, _):
     message_record.append({
@@ -144,7 +138,7 @@ async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, E
         'Bot: ' + str(instance.appid),
         'Channel: ' + str(data.channel_id),
         'User: ' + str(data.user_id),
-        '\n' + data.text
+        '\n' + (data.text if isinstance(data, Message) else data.event_name)
     ]
 
     content = Chain().text('\n'.join(info)).text_image(traceback.format_exc())

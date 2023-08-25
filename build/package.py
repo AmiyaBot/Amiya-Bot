@@ -127,17 +127,17 @@ def build(version: str, force: bool = False, upload: bool = False):
     add_ico_cmd = f' -i {local}/amiya.ico'
     add_version_cmd = f' --version-file=version.txt'
     add_datas_cmd = ''.join([' --add-data=%s;%s' % df for df in data_files])
-    playwright_install = f'set PLAYWRIGHT_BROWSERS_PATH=0 && {os.path.abspath(scripts)}/playwright install chromium'
+    playwright_install = ['set PLAYWRIGHT_BROWSERS_PATH=0', f'{os.path.abspath(scripts)}/playwright install chromium']
 
     if platform == 'linux':
         add_ico_cmd = ''
         add_version_cmd = ''
         add_datas_cmd = ''.join([' --add-data=%s:%s' % df for df in data_files])
-        playwright_install = f'PLAYWRIGHT_BROWSERS_PATH=0 {os.path.abspath(scripts)}/playwright install chromium'
+        playwright_install = [f'PLAYWRIGHT_BROWSERS_PATH=0 {os.path.abspath(scripts)}/playwright install chromium']
 
     cmd += [
         f'pyi-makespec -F -n {setup_name}{add_ico_cmd}{add_version_cmd} {local}/amiya.py {add_datas_cmd}',
-        f'{playwright_install}',
+        *playwright_install,
         f'{os.path.abspath(scripts)}/pyinstaller {setup_name}.spec'
     ]
 
