@@ -21,7 +21,6 @@ from amiyabot import (
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
-from amiyabot.builtin.lib.timedTask import tasks_control
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
@@ -146,20 +145,20 @@ async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, E
     await send_to_console_channel(content)
 
 
-@tasks_control.timed_task(each=60)
-async def _():
-    await heartbeat()
-
-
-@tasks_control.timed_task(each=60)
-async def _():
+@bot.timed_task(each=60)
+async def _(_):
     global message_record
     MessageRecord.batch_insert(copy.deepcopy(message_record))
     message_record = []
 
 
-@tasks_control.timed_task(each=3600)
-async def _():
+@bot.timed_task(each=60, run_when_added=True)
+async def _(_):
+    await heartbeat()
+
+
+@bot.timed_task(each=3600, run_when_added=True)
+async def _(_):
     timestamp = int(
         time.mktime(
             time.strptime(
@@ -171,8 +170,12 @@ async def _():
     MessageRecord.delete().where(MessageRecord.create_time < timestamp).execute()
 
 
+async def run_main_timed_tasks():
+    bot.run_timed_tasks()
+
+
 init_task = [
     heartbeat(),
-    tasks_control.run_tasks()
+    run_main_timed_tasks()
 ]
 set_prefix()
