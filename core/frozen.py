@@ -1,6 +1,5 @@
 import os
 import sys
-import cv2
 import srsly
 import dhash
 import requests_html
