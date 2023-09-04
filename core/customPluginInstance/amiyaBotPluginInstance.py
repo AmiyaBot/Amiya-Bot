@@ -462,8 +462,17 @@ def merge_extra_items(source: dict, base: dict) -> dict:
     :param base:
     :return:
     """
-    diff_dict = {key: copy.deepcopy(value) for key, value in base.items() if key not in source}
+    diff_dict = {}
+    for key, value in base.items():
+        if key not in source:
+            diff_dict[key] = copy.deepcopy(value)
+            continue
+
+        if isinstance(value, dict):
+            merge_extra_items(source[key], value)
+
     source.update(diff_dict)
+
     return source
 
 
