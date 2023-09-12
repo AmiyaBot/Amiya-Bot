@@ -5,12 +5,11 @@ import jsonschema
 
 from peewee import *
 from typing import Optional, Union, List
+from amiyabot import PluginInstance
 from core.database.plugin import PluginConfiguration, PluginConfigurationAudit
 from core.util import read_yaml
 from datetime import datetime, timedelta
 from core import log
-
-from .lazyLoadPluginInstance import LazyLoadPluginInstance
 
 JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict]]
@@ -18,7 +17,7 @@ CONFIG_TYPE = Optional[Union[str, dict]]
 global_config_channel_key = ''
 
 
-class AmiyaBotPluginInstance(LazyLoadPluginInstance):
+class AmiyaBotPluginInstance(PluginInstance):
     def __init__(
         self,
         name: str,
@@ -233,6 +232,9 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
             'global_config_default': json.dumps(self.__global_config_default),
             'global_config_schema': json.dumps(self.__global_config_schema),
         }
+
+    def load(self):
+        ...
 
     @staticmethod
     def __parse_to_json(value: CONFIG_TYPE) -> CONFIG_TYPE:

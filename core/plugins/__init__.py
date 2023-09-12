@@ -2,7 +2,7 @@ import os
 
 from typing import List, Union
 from amiyabot import MultipleAccounts, PluginInstance, log
-from .customPluginInstance import AmiyaBotPluginInstance, LazyLoadPluginInstance
+from .customPluginInstance import AmiyaBotPluginInstance
 
 
 async def load_plugins(bot: MultipleAccounts):
@@ -31,7 +31,7 @@ async def load_plugins(bot: MultipleAccounts):
 
     # 然后对所有插件执行懒加载（如果有的话）
     for plugin_id, item in bot.plugins.items():
-        if isinstance(item, LazyLoadPluginInstance):
+        if isinstance(item, AmiyaBotPluginInstance):
             item.load()
 
     if count:
