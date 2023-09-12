@@ -30,18 +30,15 @@ class Dashboard:
         now = time.localtime(time.time())
         hour = now.tm_hour
 
-        data: List[MessageRecord] = MessageRecord.select().where(MessageRecord.app_id == appid,
-                                                                 MessageRecord.create_time >= last_time)
+        data: List[MessageRecord] = MessageRecord.select().where(
+            MessageRecord.app_id == appid, MessageRecord.create_time >= last_time
+        )
         res = {}
 
         for i in range(24):
             if hour == 0:
                 hour = 24
-            res[f'{hour}:00'] = {
-                'call': 0,
-                'user': [],
-                'channel': []
-            }
+            res[f'{hour}:00'] = {'call': 0, 'user': [], 'channel': []}
             hour -= 1
 
         for item in data:

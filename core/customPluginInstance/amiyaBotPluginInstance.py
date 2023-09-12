@@ -55,7 +55,10 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         )
 
         if self.__global_config_default is not None:
-            global_conf = next((config for config in configs if config.channel_id == global_config_channel_key), None)
+            global_conf = next(
+                (config for config in configs if config.channel_id == global_config_channel_key),
+                None,
+            )
             if global_conf is None:
                 # 如果是插件初次安装初次加载，那么立刻应用global_default
                 self.__set_global_config(self.__global_config_default)
@@ -121,7 +124,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
 
         max_audit_time_subquery = (
             PluginConfigurationAudit.select(
-                PluginConfigurationAudit.channel_id, fn.MAX(PluginConfigurationAudit.id).alias('max_id')
+                PluginConfigurationAudit.channel_id,
+                fn.MAX(PluginConfigurationAudit.id).alias('max_id'),
             )
             .where(
                 (PluginConfigurationAudit.plugin_id == self.plugin_id)
@@ -154,7 +158,12 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         )
 
         result = [
-            {'id': row.id, 'channel_id': row.channel_id, 'audit_time': row.audit_time, 'audit_reason': row.audit_reason}
+            {
+                'id': row.id,
+                'channel_id': row.channel_id,
+                'audit_time': row.audit_time,
+                'audit_reason': row.audit_reason,
+            }
             for row in query
         ]
 
@@ -170,7 +179,11 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     # 全局配置
                     cfg = self.__get_global_config()
                     if cfg is not None:
-                        remove_uncommon_elements(cfg, self.__global_config_default, self.__global_config_schema)
+                        remove_uncommon_elements(
+                            cfg,
+                            self.__global_config_default,
+                            self.__global_config_schema,
+                        )
                         self.__set_global_config(cfg)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -183,7 +196,11 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     log.info(f'频道{channel_id}配置的配置项需要检查并剔除老旧配置项。')
                     cfg = self.__get_channel_config(channel_id)
                     if cfg is not None:
-                        remove_uncommon_elements(cfg, self.__channel_config_default, self.__channel_config_schema)
+                        remove_uncommon_elements(
+                            cfg,
+                            self.__channel_config_default,
+                            self.__channel_config_schema,
+                        )
                         self.__set_channel_config(channel_id, cfg)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,

@@ -19,11 +19,12 @@ class GitAutomation:
         self.branch = branch
 
     @staticmethod
-    def progress(op_code: int,
-                 cur_count: Union[str, float],
-                 max_count: Union[str, float, None] = None,
-                 message: str = ''):
-
+    def progress(
+        op_code: int,
+        cur_count: Union[str, float],
+        max_count: Union[str, float, None] = None,
+        message: str = '',
+    ):
         curr = int(cur_count / max_count * 100)
         block = int(curr / 4)
         bar = '=' * block + ' ' * (25 - block)
@@ -39,10 +40,12 @@ class GitAutomation:
     def update(self, options: List[str] = None):
         log.info(f'Pulling repo "{self.repo_url}" -> "{self.repo_dir}"...')
         if not os.path.exists(self.repo_dir):
-            git.Repo.clone_from(self.repo_url,
-                                to_path=self.repo_dir,
-                                progress=self.progress,
-                                multi_options=options or [])
+            git.Repo.clone_from(
+                self.repo_url,
+                to_path=self.repo_dir,
+                progress=self.progress,
+                multi_options=options or [],
+            )
         else:
             try:
                 repo = git.Repo(self.repo_dir)

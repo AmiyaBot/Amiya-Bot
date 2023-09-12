@@ -27,10 +27,7 @@ from amiyabot import PluginInstance
 
 jieba.setLogLevel(jieba.logging.INFO)
 
-yaml_cache = {
-    'attr': {},
-    'dict': {}
-}
+yaml_cache = {'attr': {}, 'dict': {}}
 executor = ThreadPoolExecutor(min(32, (os.cpu_count() or 1) + 4))
 
 
@@ -49,9 +46,7 @@ class TimeRecorder:
     def calc_time_total(seconds):
         timedelta = datetime.timedelta(seconds=seconds)
         day = timedelta.days
-        hour, mint, sec = tuple([
-            int(n) for n in str(timedelta).split(',')[-1].split(':')
-        ])
+        hour, mint, sec = tuple([int(n) for n in str(timedelta).split(',')[-1].split(':')])
         total = ''
         if day:
             total += '%d天' % day
@@ -149,18 +144,14 @@ def check_sentence_by_re(sentence: str, words: list, names: list):
 def find_similar_list(text: str, text_list: list):
     result = {}
     for item in text_list:
-        rate = float(
-            difflib.SequenceMatcher(None, text, item).quick_ratio() * len([n for n in text if n in set(item)])
-        )
+        rate = float(difflib.SequenceMatcher(None, text, item).quick_ratio() * len([n for n in text if n in set(item)]))
         if rate > 0:
             if rate not in result:
                 result[rate] = []
             result[rate].append(item)
 
     if result:
-        return result[
-            sorted(result.keys())[-1]
-        ]
+        return result[sorted(result.keys())[-1]]
     return []
 
 
@@ -189,7 +180,7 @@ def read_yaml(path: str, _dict: bool = False, _refresh=True):
 def create_yaml(path: str, data: dict, overwrite: bool = False):
     SafeDumper.add_representer(
         type(None),
-        lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:null', '')
+        lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:null', ''),
     )
     create_dir(path, is_file=True)
 
@@ -226,14 +217,12 @@ def combine_dict(origin: dict, default: dict):
 
 
 def cut_by_jieba(text):
-    return jieba.lcut(
-        text.lower().replace(' ', '')
-    )
+    return jieba.lcut(text.lower().replace(' ', ''))
 
 
 def cut_code(code, length):
     code_list = re.findall('.{' + str(length) + '}', code)
-    code_list.append(code[(len(code_list) * length):])
+    code_list.append(code[(len(code_list) * length) :])
     res_list = []
     for n in code_list:
         if n != '':
@@ -313,7 +302,7 @@ def extract_time(text: str, to_time_point: bool = True):
                     'day': 86400,
                     'hour': 3600,
                     'minute': 60,
-                    'second': 1
+                    'second': 1,
                 }
                 time_result = 0
                 for k, v in time_length.items():
@@ -348,7 +337,7 @@ def chinese_to_digits(text: str):
         '百': 100,
         '千': 1000,
         '万': 10000,
-        '亿': 100000000
+        '亿': 100000000,
     }
     start_symbol = ['一', '二', '两', '三', '四', '五', '六', '七', '八', '九', '十']
     more_symbol = list(character_relation.keys())
@@ -419,9 +408,7 @@ def number_with_sign(number: int):
 
 def create_test_data(data, path):
     with open(path, mode='w+', encoding='utf-8') as file:
-        file.write(
-            'const testData = ' + json.dumps(data, ensure_ascii=False)
-        )
+        file.write('const testData = ' + json.dumps(data, ensure_ascii=False))
 
 
 def support_gbk(zip_file: zipfile.ZipFile):

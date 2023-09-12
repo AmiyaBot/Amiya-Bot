@@ -49,16 +49,20 @@ class BotAccounts(BotBaseModel):
             conf = {
                 'appid': item.appid,
                 'token': item.token,
-                'private': bool(item.private)
+                'private': bool(item.private),
             }
             if item.adapter == 'mirai_api_http':
-                conf['adapter'] = mirai_api_http(host=item.mah_host,
-                                                 ws_port=item.mah_ws_port,
-                                                 http_port=item.mah_http_port)
+                conf['adapter'] = mirai_api_http(
+                    host=item.mah_host,
+                    ws_port=item.mah_ws_port,
+                    http_port=item.mah_http_port,
+                )
             if item.adapter == 'cq_http':
-                conf['adapter'] = cq_http(host=item.cq_host,
-                                          ws_port=item.cq_ws_port,
-                                          http_port=item.cq_http_port)
+                conf['adapter'] = cq_http(
+                    host=item.cq_host,
+                    ws_port=item.cq_ws_port,
+                    http_port=item.cq_http_port,
+                )
             if item.adapter == 'kook':
                 conf['adapter'] = KOOKBotInstance
 

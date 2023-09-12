@@ -16,7 +16,7 @@ from amiyabot import (
     Equal,
     Chain,
     ChainBuilder,
-    log
+    log,
 )
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
@@ -115,19 +115,24 @@ async def send_to_console_channel(chain: Chain):
 
 async def heartbeat():
     for item in bot:
-        await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}', ignore_error=True)
+        await http_requests.get(
+            f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}',
+            ignore_error=True,
+        )
 
 
 @bot.message_before_handle
 async def _(data: Message, factory_name: str, _):
-    message_record.append({
-        'app_id': data.instance.appid,
-        'user_id': data.user_id,
-        'channel_id': data.channel_id,
-        'msg_type': data.message_type or 'channel',
-        'classify': 'call',
-        'create_time': int(time.time())
-    })
+    message_record.append(
+        {
+            'app_id': data.instance.appid,
+            'user_id': data.user_id,
+            'channel_id': data.channel_id,
+            'msg_type': data.message_type or 'channel',
+            'classify': 'call',
+            'create_time': int(time.time()),
+        }
+    )
 
 
 @bot.on_exception()
@@ -137,7 +142,7 @@ async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, E
         'Bot: ' + str(instance.appid),
         'Channel: ' + str(data.channel_id),
         'User: ' + str(data.user_id),
-        '\n' + (data.text if isinstance(data, Message) else data.event_name)
+        '\n' + (data.text if isinstance(data, Message) else data.event_name),
     ]
 
     content = Chain().text('\n'.join(info)).text_image(traceback.format_exc())
@@ -163,7 +168,7 @@ async def _(_):
         time.mktime(
             time.strptime(
                 (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y%m%d'),
-                '%Y%m%d'
+                '%Y%m%d',
             )
         )
     )
@@ -174,8 +179,5 @@ async def run_main_timed_tasks():
     bot.run_timed_tasks()
 
 
-init_task = [
-    heartbeat(),
-    run_main_timed_tasks()
-]
+init_task = [heartbeat(), run_main_timed_tasks()]
 set_prefix()

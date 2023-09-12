@@ -24,18 +24,14 @@ class Gacha:
 
         if data.search:
             select = select.where(
-                Pool.pool_name.contains(data.search) |
-                Pool.pickup_6.contains(data.search) |
-                Pool.pickup_5.contains(data.search) |
-                Pool.pickup_4.contains(data.search) |
-                Pool.pickup_s.contains(data.search)
+                Pool.pool_name.contains(data.search)
+                | Pool.pickup_6.contains(data.search)
+                | Pool.pickup_5.contains(data.search)
+                | Pool.pickup_4.contains(data.search)
+                | Pool.pickup_s.contains(data.search)
             )
 
-        return app.response(
-            select_for_paginate(select,
-                                page=data.currentPage,
-                                page_size=data.pageSize)
-        )
+        return app.response(select_for_paginate(select, page=data.currentPage, page_size=data.pageSize))
 
     @app.route()
     async def add_pool(self, data: PoolModel):
@@ -78,6 +74,6 @@ class Gacha:
     async def get_gacha_pool(self):
         data = {
             'Pool': query_to_list(Pool.select()),
-            'OperatorConfig': query_to_list(OperatorConfig.select())
+            'OperatorConfig': query_to_list(OperatorConfig.select()),
         }
         return app.response(data=data)

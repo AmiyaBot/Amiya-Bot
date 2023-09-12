@@ -59,17 +59,19 @@ class Plugin:
                 item_path = item.path[-1]
                 logo = '/' + os.path.relpath(os.path.join(item_path, 'logo.png')).replace('\\', '/')
 
-            res.append({
-                'name': item.name,
-                'version': item.version,
-                'plugin_id': item.plugin_id,
-                'plugin_type': item.plugin_type,
-                'description': item.description,
-                'document': check_file_content(item.document),
-                'instruction': check_file_content(item.instruction) if hasattr(item, 'instruction') else '',
-                'logo': logo,
-                'allow_config': isinstance(item, AmiyaBotPluginInstance)
-            })
+            res.append(
+                {
+                    'name': item.name,
+                    'version': item.version,
+                    'plugin_id': item.plugin_id,
+                    'plugin_type': item.plugin_type,
+                    'description': item.description,
+                    'document': check_file_content(item.document),
+                    'instruction': check_file_content(item.instruction) if hasattr(item, 'instruction') else '',
+                    'logo': logo,
+                    'allow_config': isinstance(item, AmiyaBotPluginInstance),
+                }
+            )
 
         return app.response(res)
 
@@ -80,9 +82,7 @@ class Plugin:
             return app.response(code=500, message='未安装该插件')
 
         if isinstance(plugin, AmiyaBotPluginInstance):
-            return app.response(
-                plugin.get_config_defaults()
-            )
+            return app.response(plugin.get_config_defaults())
 
         return app.response()
 
@@ -96,10 +96,7 @@ class Plugin:
             PluginConfiguration.plugin_id == plugin.plugin_id
         )
 
-        config_dict = {
-            item.channel_id: item.json_config
-            for item in configs
-        }
+        config_dict = {item.channel_id: item.json_config for item in configs}
 
         return app.response(config_dict)
 
@@ -107,7 +104,7 @@ class Plugin:
     async def del_plugin_config(self, data: DelConfigModel):
         PluginConfiguration.delete().where(
             PluginConfiguration.plugin_id == data.plugin_id,
-            PluginConfiguration.channel_id == data.channel_id
+            PluginConfiguration.channel_id == data.channel_id,
         ).execute()
 
         return app.response()
@@ -119,15 +116,16 @@ class Plugin:
             return app.response(code=500, message='未安装该插件')
 
         config: PluginConfiguration = PluginConfiguration.get_or_none(
-            plugin_id=plugin.plugin_id,
-            channel_id=data.channel_id
+            plugin_id=plugin.plugin_id, channel_id=data.channel_id
         )
 
         if not config:
-            PluginConfiguration.create(plugin_id=plugin.plugin_id,
-                                       channel_id=data.channel_id,
-                                       json_config=data.config_json,
-                                       version=plugin.version)
+            PluginConfiguration.create(
+                plugin_id=plugin.plugin_id,
+                channel_id=data.channel_id,
+                json_config=data.config_json,
+                version=plugin.version,
+            )
         else:
             config.version = plugin.version
             config.json_config = data.config_json

@@ -133,7 +133,9 @@ class Operator:
         raise NotImplementedError
 
     @abstractmethod
-    def skills(self) -> Tuple[LIST_STR_DICT, List[str], LIST_STR_DICT, Dict[str, LIST_STR_DICT]]:
+    def skills(
+        self,
+    ) -> Tuple[LIST_STR_DICT, List[str], LIST_STR_DICT, Dict[str, LIST_STR_DICT]]:
         raise NotImplementedError
 
     @abstractmethod
