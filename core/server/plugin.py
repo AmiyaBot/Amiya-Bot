@@ -6,7 +6,7 @@ from typing import List
 from amiyabot.network.download import download_async
 from core import app, bot
 from core.util import check_file_content
-from core.customPluginInstance.amiyaBotPluginInstance import AmiyaBotPluginInstance
+from core.plugins.customPluginInstance.amiyaBotPluginInstance import AmiyaBotPluginInstance
 from core.database.plugin import PluginConfiguration
 
 from .__model__ import BaseModel
