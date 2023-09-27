@@ -18,6 +18,10 @@ class Admin(BotBaseModel):
     account: Union[CharField, str] = CharField(unique=True)
     remark: Union[CharField, str] = CharField(null=True)
 
+    @classmethod
+    def is_super_admin(cls, user_id: str):
+        return bool(cls.get_or_none(account=user_id))
+
 
 @table
 class BotAccounts(BotBaseModel):
@@ -108,15 +112,6 @@ class Pool(BotBaseModel):
     pickup_4: Union[CharField, str] = CharField(null=True, default='')
     pickup_s: Union[CharField, str] = CharField(null=True, default='')
     limit_pool: int = IntegerField()
-
-
-@table
-class PoolSpOperator(BotBaseModel):
-    pool_id: Union[ForeignKeyField, int] = ForeignKeyField(Pool, db_column='pool_id', on_delete='CASCADE')
-    operator_name: str = CharField()
-    rarity: int = IntegerField()
-    classes: str = CharField()
-    image: str = CharField()
 
 
 @table
