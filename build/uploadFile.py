@@ -6,18 +6,16 @@ from qcloud_cos import CosConfig, CosS3Client, CosClientError, CosServiceError
 
 
 class COSUploader:
-    def __init__(self,
-                 secret_id: str,
-                 secret_key: str,
-                 region: str = 'ap-guangzhou',
-                 bucket: str = None,
-                 logger_level: int = logging.DEBUG):
+    def __init__(
+        self,
+        secret_id: str,
+        secret_key: str,
+        region: str = 'ap-guangzhou',
+        bucket: str = None,
+        logger_level: int = logging.DEBUG,
+    ):
         logging.basicConfig(level=logger_level, stream=sys.stdout)
-        config = CosConfig(
-            Region=region,
-            SecretId=secret_id,
-            SecretKey=secret_key
-        )
+        config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key)
 
         self.client = CosS3Client(config)
         self.bucket = bucket or self.get_bucket_by_index(0)

@@ -23,11 +23,7 @@ if __name__ == '__main__':
     if build_type == 'package':
         from build.package import build
 
-        build(
-            argv('version'),
-            argv('force'),
-            argv('upload')
-        )
+        build(argv('version'), argv('force'), argv('upload'))
     elif build_type == 'plugins':
         from pluginsDev.buildPlugins import build
 

@@ -9,14 +9,21 @@ import subprocess
 from urllib import request
 
 ZIP_FILE_LIST = [
-    'china_location.zip', 'chinese_char_dictionary.zip',
-    'chinese_idiom.zip', 'chinese_word_dictionary.zip',
+    'china_location.zip',
+    'chinese_char_dictionary.zip',
+    'chinese_idiom.zip',
+    'chinese_word_dictionary.zip',
     'idf.zip',
-    'pinyin_phrase.zip', 'sentiment_words.zip',
-    'char_distribution.zip', 'word_distribution.zip',
-    'word_topic_weight.zip', 'topic_word_weight.zip',
-    'phone_location.zip', 'xiehouyu.zip',
-    'pornography.zip']
+    'pinyin_phrase.zip',
+    'sentiment_words.zip',
+    'char_distribution.zip',
+    'word_distribution.zip',
+    'word_topic_weight.zip',
+    'topic_word_weight.zip',
+    'phone_location.zip',
+    'xiehouyu.zip',
+    'pornography.zip',
+]
 
 version_file = '''# UTF-8
 VSVersionInfo(
@@ -96,8 +103,9 @@ def build(version: str, force: bool = False, upload: bool = False):
 
     shutil.copy(f'{venv}/jieba/dict.txt', f'{jieba_copy}/dict.txt')
     shutil.copytree('config', f'{dist}/config', dirs_exist_ok=True)
-    shutil.copytree(os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), f'{dist}/_assets',
-                    dirs_exist_ok=True)
+    shutil.copytree(
+        os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), f'{dist}/_assets', dirs_exist_ok=True
+    )
 
     for item in ZIP_FILE_LIST:
         if not os.path.exists(f'{dist}/dictionary'):
@@ -107,23 +115,16 @@ def build(version: str, force: bool = False, upload: bool = False):
 
     with open(f'{folder}/version.txt', mode='w+', encoding='utf-8') as vf:
         vf.write(
-            version_file.format(
-                file_ver=', '.join(re.findall(r'v(\d+).(\d+).(\d+)', version)[0]),
-                file_version=version
-            )
+            version_file.format(file_ver=', '.join(re.findall(r'v(\d+).(\d+).(\d+)', version)[0]), file_version=version)
         )
 
-    cmd = [
-        f'cd {folder}'
-    ]
+    cmd = [f'cd {folder}']
 
     disc = folder.split(':')
     if len(disc) > 1:
         cmd.append(disc[0] + ':')
 
-    data_files = [
-        (os.path.abspath(jieba_copy).replace(' ', '\\ '), 'jieba')
-    ]
+    data_files = [(os.path.abspath(jieba_copy).replace(' ', '\\ '), 'jieba')]
     add_ico_cmd = f' -i {local}/amiya.ico'
     add_version_cmd = f' --version-file=version.txt'
     add_datas_cmd = ''.join([' --add-data=%s;%s' % df for df in data_files])
@@ -138,7 +139,7 @@ def build(version: str, force: bool = False, upload: bool = False):
     cmd += [
         f'pyi-makespec -F -n {setup_name}{add_ico_cmd}{add_version_cmd} {local}/amiya.py {add_datas_cmd}',
         *playwright_install,
-        f'{os.path.abspath(scripts)}/pyinstaller {setup_name}.spec'
+        f'{os.path.abspath(scripts)}/pyinstaller {setup_name}.spec',
     ]
 
     for cm in cmd:
