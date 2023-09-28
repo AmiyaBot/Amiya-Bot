@@ -23,13 +23,13 @@ from amiyabot.network.httpRequests import http_requests
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
-from core.resource import remote_config
+from core.config import remote_config
 from core.resource.botResource import BotResource
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.lib.gitAutomation import GitAutomation
 from core.util import read_yaml, create_dir
 
-from core.plugins.customPluginInstance import AmiyaBotPluginInstance, LazyLoadPluginInstance
+from core.plugins.customPluginInstance import Requirement, AmiyaBotPluginInstance, LazyLoadPluginInstance
 
 create_dir('plugins')
 

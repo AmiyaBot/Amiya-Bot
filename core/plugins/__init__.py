@@ -1,27 +1,30 @@
 import os
 
-from typing import List, Union
+from typing import Dict, Union, Optional
 from amiyabot import MultipleAccounts, PluginInstance, log
 from .customPluginInstance import AmiyaBotPluginInstance
 
 
-async def load_plugins(bot: MultipleAccounts):
-    plugins: List[Union[PluginInstance, AmiyaBotPluginInstance]] = []
+PLUGINS_MAP = Dict[str, Union[PluginInstance, AmiyaBotPluginInstance]]
+
+
+async def load_local_plugins(bot: MultipleAccounts):
+    plugins: PLUGINS_MAP = {}
 
     for root, dirs, files in os.walk('plugins'):
         for file in files:
             if file.endswith('.zip'):
-                try:
-                    res = bot.load_plugin(os.path.join(root, file), extract_plugin=True)
-                    if res:
-                        plugins.append(res)
-                        log.info(f'plugin loaded: {file}')
-                except Exception as e:
-                    log.error(e, f'plugin load error({file}):')
+                plugins.update(await load_plugin(bot, os.path.join(root, file)))
         break
 
+    log.info(f'loaded {len(plugins.keys())} plugin(s).')
+
+    await install_plugins(bot, plugins)
+
+
+async def install_plugins(bot: MultipleAccounts, plugins: PLUGINS_MAP):
     count = 0
-    for item in sorted(plugins, key=lambda n: n.priority, reverse=True):
+    for item in sorted(plugins.values(), key=lambda n: n.priority, reverse=True):
         try:
             res = bot.install_plugin(item)
             if res:
@@ -35,4 +38,18 @@ async def load_plugins(bot: MultipleAccounts):
             item.load()
 
     if count:
-        log.info(f'successfully installed {count} plugin(s).')
+        log.info(f'installed {count} plugin(s).')
+
+
+async def load_plugin(bot: MultipleAccounts, file: str, res_list: Optional[PLUGINS_MAP] = None):
+    if res_list is None:
+        res_list = {}
+
+    try:
+        res = bot.load_plugin(file, extract_plugin=True)
+        if res:
+            res_list[res.plugin_id] = res
+    except Exception as e:
+        log.error(e, f'plugin load error({os.path.basename(file)}):')
+
+    return res_list

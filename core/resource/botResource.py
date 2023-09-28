@@ -2,7 +2,7 @@ import os
 import zipfile
 
 from amiyabot.network.download import download_sync
-from core.resource import remote_config
+from core.config import remote_config
 from core.util import create_dir, support_gbk
 from core import log
 

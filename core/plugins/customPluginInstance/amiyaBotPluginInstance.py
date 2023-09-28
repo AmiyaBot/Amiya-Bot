@@ -7,9 +7,11 @@ from peewee import *
 from typing import Optional, Union, List
 from amiyabot import PluginInstance
 from core.database.plugin import PluginConfiguration, PluginConfigurationAudit
-from core.util import read_yaml
+from core.util import read_yaml, merge_dict
 from datetime import datetime, timedelta
 from core import log
+
+from .requirement import Requirement
 
 JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict]]
@@ -28,6 +30,7 @@ class AmiyaBotPluginInstance(PluginInstance):
         document: str = None,
         priority: int = 1,
         instruction: str = None,
+        requirements: Optional[List[Requirement]] = None,
         channel_config_default: CONFIG_TYPE = None,
         channel_config_schema: CONFIG_TYPE = None,
         global_config_default: CONFIG_TYPE = None,
@@ -37,6 +40,8 @@ class AmiyaBotPluginInstance(PluginInstance):
         super().__init__(name, version, plugin_id, plugin_type, description, document, priority)
 
         self.instruction = instruction
+        self.requirements = requirements
+
         self.__channel_config_default = self.__parse_to_json(channel_config_default)
         self.__channel_config_schema = self.__parse_to_json(channel_config_schema)
         self.__global_config_default = self.__parse_to_json(global_config_default)
@@ -74,7 +79,7 @@ class AmiyaBotPluginInstance(PluginInstance):
                     # 比对版本
                     if compare_version_numbers(global_conf.version, self.version) < 0:
                         # 数据库的版本老，执行逐项更新
-                        merge_extra_items(global_conf_json, self.__global_config_default)
+                        merge_dict(global_conf_json, self.__global_config_default)
                         self.__set_global_config(global_conf_json)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -95,7 +100,7 @@ class AmiyaBotPluginInstance(PluginInstance):
                     # 比对版本
                     if compare_version_numbers(channel_conf.version, self.version) < 0:
                         # 数据库的版本老，执行逐项更新
-                        merge_extra_items(channel_conf_json, self.__channel_config_default)
+                        merge_dict(channel_conf_json, self.__channel_config_default)
                         self.__set_channel_config(channel_conf.channel_id, channel_conf_json)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -109,15 +114,15 @@ class AmiyaBotPluginInstance(PluginInstance):
                     log.error(f'数据库中插件{self.name}({self.plugin_id})的频道配置损坏，已重置为默认值。')
                     self.__set_channel_config(channel_conf.channel_id, self.__channel_config_default)
 
-        # 接下来，针对Audit执行检查
-        try:
+        # 接下来，针对 Audit 执行检查
+        with log.sync_catch():
             self.deprecated_config_delete()
-        except Exception as e:
-            log.error(e, f"Error")
 
-    # 如果距离插件更新已经过去天，移除既不存在于default，也不存在于Schema的配置项。
-    # 然后写入Audit信息。
     def deprecated_config_delete(self):
+        """
+        如果距离插件更新已经过去 n 天，移除既不存在于 default，也不存在于 Schema 的配置项。
+        然后写入 Audit 信息。
+        """
         if self.__deprecated_config_delete_days is None or self.__deprecated_config_delete_days < 0:
             return
 
@@ -472,27 +477,6 @@ def compare_version_numbers(version1: str, version2: str) -> int:
             return -1  # version1 小于 version2
 
     return 0  # version1 等于 version2
-
-
-def merge_extra_items(source: dict, base: dict) -> dict:
-    """
-    将 base 中，source 没有的元素，copy 进 source。
-    :param source:
-    :param base:
-    :return:
-    """
-    diff_dict = {}
-    for key, value in base.items():
-        if key not in source:
-            diff_dict[key] = copy.deepcopy(value)
-            continue
-
-        if isinstance(value, dict):
-            merge_extra_items(source[key], value)
-
-    source.update(diff_dict)
-
-    return source
 
 
 def remove_uncommon_elements(source: dict, base: dict, schema: dict) -> None:
