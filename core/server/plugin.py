@@ -6,7 +6,7 @@ from typing import List
 from amiyabot.network.download import download_async
 from core import app, bot
 from core.util import check_file_content
-from core.plugins.customPluginInstance.amiyaBotPluginInstance import AmiyaBotPluginInstance
+from core.plugins import AmiyaBotPluginInstance, PluginsLoader
 from core.database.plugin import PluginConfiguration
 
 from .__model__ import BaseModel
@@ -45,6 +45,16 @@ class UninstallModel(BaseModel):
 class ReloadModel(BaseModel):
     plugin_id: str
     force: bool = False
+
+
+async def use_loader(plugin: str):
+    loader = PluginsLoader(bot)
+    load_res = await loader.load_plugin_file(plugin)
+    if load_res:
+        loader.plugins[load_res.plugin_id] = load_res
+        loader.plugins = await loader.check_requirements(loader.plugins)
+        return await loader.install_loaded_plugins()
+    return 0
 
 
 @app.controller
@@ -141,10 +151,10 @@ class Plugin:
             with open(plugin, mode='wb+') as src:
                 src.write(res)
 
-            if bot.install_plugin(plugin, extract_plugin=True):
+            if await use_loader(plugin):
                 return app.response(message='插件安装成功')
-            else:
-                return app.response(code=500, message='插件安装失败')
+
+            return app.response(code=500, message='插件安装失败')
 
         return app.response(code=500, message='插件下载失败，请检查网络连接。')
 
@@ -160,7 +170,7 @@ class Plugin:
             old_plugin_path = copy.deepcopy(bot.plugins[data.plugin_id].path)
             bot.uninstall_plugin(data.plugin_id)
 
-            if bot.install_plugin(plugin, extract_plugin=True):
+            if await use_loader(plugin):
                 # 删除旧插件
                 for item in old_plugin_path:
                     if os.path.isdir(item):
@@ -168,11 +178,11 @@ class Plugin:
                     else:
                         os.remove(item)
                 return app.response(message='插件更新成功')
-            else:
-                # 恢复旧插件
-                os.remove(plugin)
-                bot.install_plugin(old_plugin_path[0], extract_plugin=True)
-                return app.response(code=500, message='插件更新失败')
+
+            # 恢复旧插件
+            os.remove(plugin)
+            bot.install_plugin(old_plugin_path[0], extract_plugin=True)
+            return app.response(code=500, message='插件更新失败')
 
         return app.response(code=500, message='插件下载失败，请检查网络连接。')
 

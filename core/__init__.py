@@ -4,19 +4,9 @@ import jieba
 import datetime
 import traceback
 
-from typing import List, Union, Coroutine, Callable
+from typing import List, Coroutine, Callable
 
-from amiyabot import (
-    MultipleAccounts,
-    PluginInstance,
-    HttpServer,
-    Message,
-    Event,
-    Equal,
-    Chain,
-    ChainBuilder,
-    log,
-)
+from amiyabot import *
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests

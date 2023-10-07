@@ -33,7 +33,7 @@ class PluginsLoader:
 
         log.info(f'loaded {len(self.plugins.keys())} plugin(s).')
 
-        await self.install_loaded_plugins()
+        return await self.install_loaded_plugins()
 
     async def load_plugin_file(self, file: str) -> PLUGIN:
         async with log.catch(f'plugin load error({os.path.basename(file)}):'):
@@ -58,6 +58,8 @@ class PluginsLoader:
 
         if count:
             log.info(f'installed {count} plugin(s).')
+
+        return count
 
     async def check_requirements(self, plugins: PLUGINS_MAP, exists_plugins: Optional[PLUGINS_MAP] = None):
         final_res: PLUGINS_MAP = {}
@@ -100,7 +102,7 @@ class PluginsLoader:
 
         return final_res
 
-    async def find_plugin_from_remote(self, req: Requirement) -> PLUGINS_MAP:
+    async def find_plugin_from_remote(self, req: Requirement):
         req_plugins: PLUGINS_MAP = {}
 
         async def download_and_load(url):
