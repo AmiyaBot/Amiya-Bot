@@ -6,3 +6,4 @@ from dataclasses import dataclass
 class Requirement:
     plugin_id: str
     version: Optional[str] = None
+    official: bool = False
