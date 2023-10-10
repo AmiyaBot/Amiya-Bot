@@ -4,7 +4,7 @@ import copy
 import jsonschema
 
 from peewee import *
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Callable
 from amiyabot import PluginInstance
 from core.database.plugin import PluginConfiguration, PluginConfigurationAudit
 from core.util import read_yaml, merge_dict
@@ -15,6 +15,7 @@ from .requirement import Requirement
 
 JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict]]
+DYNAMIC_CONFIG_TYPE = Optional[Union[str, dict, Callable[[], Union[dict, list]]]]
 
 global_config_channel_key = ''
 
@@ -43,9 +44,15 @@ class AmiyaBotPluginInstance(PluginInstance):
         self.requirements = requirements
 
         self.__channel_config_default = self.__parse_to_json(channel_config_default)
-        self.__channel_config_schema = self.__parse_to_json(channel_config_schema)
         self.__global_config_default = self.__parse_to_json(global_config_default)
-        self.__global_config_schema = self.__parse_to_json(global_config_schema)
+
+        self.__channel_config_schema = channel_config_schema
+        self.__global_config_schema = global_config_schema
+
+        # 原地获取一次,目的是校验
+        _ = self.__get_dynamic_channel_config_schema()
+        _ = self.__get_dynamic_global_config_schema()
+
         self.__deprecated_config_delete_days = deprecated_config_delete_days
 
         self.validate_schema()
@@ -183,11 +190,7 @@ class AmiyaBotPluginInstance(PluginInstance):
                     # 全局配置
                     cfg = self.__get_global_config()
                     if cfg is not None:
-                        remove_uncommon_elements(
-                            cfg,
-                            self.__global_config_default,
-                            self.__global_config_schema,
-                        )
+                        remove_uncommon_elements(cfg, self.__global_config_default, self.__get_dynamic_global_config_schema())
                         self.__set_global_config(cfg)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -200,11 +203,7 @@ class AmiyaBotPluginInstance(PluginInstance):
                     log.info(f'频道{channel_id}配置的配置项需要检查并剔除老旧配置项。')
                     cfg = self.__get_channel_config(channel_id)
                     if cfg is not None:
-                        remove_uncommon_elements(
-                            cfg,
-                            self.__channel_config_default,
-                            self.__channel_config_schema,
-                        )
+                        remove_uncommon_elements(cfg, self.__channel_config_default, self.__get_dynamic_channel_config_schema())
                         self.__set_channel_config(channel_id, cfg)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -216,8 +215,8 @@ class AmiyaBotPluginInstance(PluginInstance):
 
     def validate_schema(self):
         for default, schema in (
-            (self.__channel_config_default, self.__channel_config_schema),
-            (self.__global_config_default, self.__global_config_schema),
+            (self.__channel_config_default, self.__get_dynamic_channel_config_schema()),
+            (self.__global_config_default, self.__get_dynamic_global_config_schema()),
         ):
             # 提供 Template 则立即执行校验
             if schema is not None:
@@ -230,19 +229,28 @@ class AmiyaBotPluginInstance(PluginInstance):
                 except jsonschema.ValidationError as e:
                     raise ValueError('Your json default does not fit your schema.') from e
 
+    def __get_dynamic_channel_config_schema(self):
+        return self.__parse_to_json(self.__channel_config_schema)
+
+    def __get_dynamic_global_config_schema(self):
+        return self.__parse_to_json(self.__global_config_schema) 
+
     def get_config_defaults(self):
         return {
             'channel_config_default': json.dumps(self.__channel_config_default),
-            'channel_config_schema': json.dumps(self.__channel_config_schema),
+            'channel_config_schema': json.dumps(self.__get_dynamic_channel_config_schema()),
             'global_config_default': json.dumps(self.__global_config_default),
-            'global_config_schema': json.dumps(self.__global_config_schema),
+            'global_config_schema': json.dumps(self.__get_dynamic_global_config_schema()),
         }
 
     def load(self):
         ...
 
     @staticmethod
-    def __parse_to_json(value: CONFIG_TYPE) -> CONFIG_TYPE:
+    def __parse_to_json(value: DYNAMIC_CONFIG_TYPE) -> CONFIG_TYPE:
+        if callable(value):
+            value = value()
+            
         if not value:
             return None
 
