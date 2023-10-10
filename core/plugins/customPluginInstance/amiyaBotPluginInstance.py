@@ -33,9 +33,9 @@ class AmiyaBotPluginInstance(PluginInstance):
         instruction: str = None,
         requirements: Optional[List[Requirement]] = None,
         channel_config_default: CONFIG_TYPE = None,
-        channel_config_schema: CONFIG_TYPE = None,
+        channel_config_schema: DYNAMIC_CONFIG_TYPE = None,
         global_config_default: CONFIG_TYPE = None,
-        global_config_schema: CONFIG_TYPE = None,
+        global_config_schema: DYNAMIC_CONFIG_TYPE = None,
         deprecated_config_delete_days: int = 7,
     ):
         super().__init__(name, version, plugin_id, plugin_type, description, document, priority)
