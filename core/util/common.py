@@ -273,6 +273,9 @@ def merge_dict(target: dict, source: dict):
             diff_dict[key] = copy.deepcopy(value)
             continue
 
+        if not isinstance(value, type(target[key])):
+            target[key] = value
+
         if isinstance(value, dict):
             merge_dict(target[key], value)
 
