@@ -4,6 +4,9 @@ from core import app, bot
 from core.database.bot import BotAccounts, query_to_list
 from amiyabot.adapters.mirai import mirai_api_http
 from amiyabot.adapters.cqhttp import cq_http
+from amiyabot.adapters.onebot11 import onebot11
+from amiyabot.adapters.onebot12 import onebot12
+from amiyabot.adapters.comwechat import com_wechat
 from amiyabot.network.httpServer import BaseModel
 from amiyabot import AmiyaBot, KOOKBotInstance
 
@@ -20,12 +23,9 @@ class BotAccountModel(BotAppId):
     is_start: int = 1
     adapter: str = 'tencent'
     console_channel: Optional[str] = None
-    mah_host: Optional[str] = None
-    mah_ws_port: Optional[int] = None
-    mah_http_port: Optional[int] = None
-    cq_host: Optional[str] = None
-    cq_ws_port: Optional[int] = None
-    cq_http_port: Optional[int] = None
+    host: Optional[str] = None
+    ws_port: Optional[int] = None
+    http_port: Optional[int] = None
 
     start: int = 0
 
@@ -84,15 +84,26 @@ class Bot:
         if data.appid in bot:
             return app.response(code=500, message='Bot 已存在')
 
-        conf = {'appid': data.appid, 'token': data.token, 'private': bool(data.private)}
-        if data.adapter == 'mirai_api_http':
-            conf['adapter'] = mirai_api_http(
-                host=data.mah_host,
-                ws_port=data.mah_ws_port,
-                http_port=data.mah_http_port,
+        net_adapters = {
+            'mirai_api_http': mirai_api_http,
+            'cq_http': cq_http,
+            'onebot11': onebot11,
+            'onebot12': onebot12,
+            'com_wechat': com_wechat,
+        }
+        conf = {
+            'appid': data.appid,
+            'token': data.token,
+            'private': bool(data.private),
+        }
+
+        if data.adapter in net_adapters:
+            conf['adapter'] = net_adapters[data.adapter](
+                host=data.host,
+                ws_port=data.ws_port,
+                http_port=data.http_port,
             )
-        if data.adapter == 'cq_http':
-            conf['adapter'] = cq_http(host=data.cq_host, ws_port=data.cq_ws_port, http_port=data.cq_http_port)
+
         if data.adapter == 'kook':
             conf['adapter'] = KOOKBotInstance
 
