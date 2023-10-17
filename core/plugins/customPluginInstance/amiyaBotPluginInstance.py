@@ -4,21 +4,23 @@ import copy
 import jsonschema
 
 from peewee import *
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Callable
+from amiyabot import PluginInstance
 from core.database.plugin import PluginConfiguration, PluginConfigurationAudit
-from core.util import read_yaml
+from core.util import read_yaml, merge_dict
 from datetime import datetime, timedelta
 from core import log
 
-from .lazyLoadPluginInstance import LazyLoadPluginInstance
+from .requirement import Requirement
 
 JSON_VALUE_TYPE = Optional[Union[bool, str, int, float, dict, list]]
 CONFIG_TYPE = Optional[Union[str, dict]]
+DYNAMIC_CONFIG_TYPE = Optional[Union[str, dict, Callable[[], Union[dict, list]]]]
 
 global_config_channel_key = ''
 
 
-class AmiyaBotPluginInstance(LazyLoadPluginInstance):
+class AmiyaBotPluginInstance(PluginInstance):
     def __init__(
         self,
         name: str,
@@ -29,19 +31,28 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         document: str = None,
         priority: int = 1,
         instruction: str = None,
+        requirements: Optional[List[Requirement]] = None,
         channel_config_default: CONFIG_TYPE = None,
-        channel_config_schema: CONFIG_TYPE = None,
+        channel_config_schema: DYNAMIC_CONFIG_TYPE = None,
         global_config_default: CONFIG_TYPE = None,
-        global_config_schema: CONFIG_TYPE = None,
+        global_config_schema: DYNAMIC_CONFIG_TYPE = None,
         deprecated_config_delete_days: int = 7,
     ):
         super().__init__(name, version, plugin_id, plugin_type, description, document, priority)
 
         self.instruction = instruction
+        self.requirements = requirements
+
         self.__channel_config_default = self.__parse_to_json(channel_config_default)
-        self.__channel_config_schema = self.__parse_to_json(channel_config_schema)
         self.__global_config_default = self.__parse_to_json(global_config_default)
-        self.__global_config_schema = self.__parse_to_json(global_config_schema)
+
+        self.__channel_config_schema = channel_config_schema
+        self.__global_config_schema = global_config_schema
+
+        # 原地获取一次,目的是校验
+        _ = self.__get_dynamic_channel_config_schema()
+        _ = self.__get_dynamic_global_config_schema()
+
         self.__deprecated_config_delete_days = deprecated_config_delete_days
 
         self.validate_schema()
@@ -55,7 +66,10 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         )
 
         if self.__global_config_default is not None:
-            global_conf = next((config for config in configs if config.channel_id == global_config_channel_key), None)
+            global_conf = next(
+                (config for config in configs if config.channel_id == global_config_channel_key),
+                None,
+            )
             if global_conf is None:
                 # 如果是插件初次安装初次加载，那么立刻应用global_default
                 self.__set_global_config(self.__global_config_default)
@@ -72,7 +86,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     # 比对版本
                     if compare_version_numbers(global_conf.version, self.version) < 0:
                         # 数据库的版本老，执行逐项更新
-                        merge_extra_items(global_conf_json, self.__global_config_default)
+                        merge_dict(global_conf_json, self.__global_config_default)
                         self.__set_global_config(global_conf_json)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -93,7 +107,7 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     # 比对版本
                     if compare_version_numbers(channel_conf.version, self.version) < 0:
                         # 数据库的版本老，执行逐项更新
-                        merge_extra_items(channel_conf_json, self.__channel_config_default)
+                        merge_dict(channel_conf_json, self.__channel_config_default)
                         self.__set_channel_config(channel_conf.channel_id, channel_conf_json)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -107,21 +121,22 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     log.error(f'数据库中插件{self.name}({self.plugin_id})的频道配置损坏，已重置为默认值。')
                     self.__set_channel_config(channel_conf.channel_id, self.__channel_config_default)
 
-        # 接下来，针对Audit执行检查
-        try:
+        # 接下来，针对 Audit 执行检查
+        with log.sync_catch():
             self.deprecated_config_delete()
-        except Exception as e:
-            log.error(e, f"Error")
 
-    # 如果距离插件更新已经过去天，移除既不存在于default，也不存在于Schema的配置项。
-    # 然后写入Audit信息。
     def deprecated_config_delete(self):
+        """
+        如果距离插件更新已经过去 n 天，移除既不存在于 default，也不存在于 Schema 的配置项。
+        然后写入 Audit 信息。
+        """
         if self.__deprecated_config_delete_days is None or self.__deprecated_config_delete_days < 0:
             return
 
         max_audit_time_subquery = (
             PluginConfigurationAudit.select(
-                PluginConfigurationAudit.channel_id, fn.MAX(PluginConfigurationAudit.id).alias('max_id')
+                PluginConfigurationAudit.channel_id,
+                fn.MAX(PluginConfigurationAudit.id).alias('max_id'),
             )
             .where(
                 (PluginConfigurationAudit.plugin_id == self.plugin_id)
@@ -154,7 +169,12 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
         )
 
         result = [
-            {'id': row.id, 'channel_id': row.channel_id, 'audit_time': row.audit_time, 'audit_reason': row.audit_reason}
+            {
+                'id': row.id,
+                'channel_id': row.channel_id,
+                'audit_time': row.audit_time,
+                'audit_reason': row.audit_reason,
+            }
             for row in query
         ]
 
@@ -170,7 +190,9 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     # 全局配置
                     cfg = self.__get_global_config()
                     if cfg is not None:
-                        remove_uncommon_elements(cfg, self.__global_config_default, self.__global_config_schema)
+                        remove_uncommon_elements(
+                            cfg, self.__global_config_default, self.__get_dynamic_global_config_schema()
+                        )
                         self.__set_global_config(cfg)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -183,7 +205,9 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                     log.info(f'频道{channel_id}配置的配置项需要检查并剔除老旧配置项。')
                     cfg = self.__get_channel_config(channel_id)
                     if cfg is not None:
-                        remove_uncommon_elements(cfg, self.__channel_config_default, self.__channel_config_schema)
+                        remove_uncommon_elements(
+                            cfg, self.__channel_config_default, self.__get_dynamic_channel_config_schema()
+                        )
                         self.__set_channel_config(channel_id, cfg)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -195,8 +219,8 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
 
     def validate_schema(self):
         for default, schema in (
-            (self.__channel_config_default, self.__channel_config_schema),
-            (self.__global_config_default, self.__global_config_schema),
+            (self.__channel_config_default, self.__get_dynamic_channel_config_schema()),
+            (self.__global_config_default, self.__get_dynamic_global_config_schema()),
         ):
             # 提供 Template 则立即执行校验
             if schema is not None:
@@ -209,16 +233,28 @@ class AmiyaBotPluginInstance(LazyLoadPluginInstance):
                 except jsonschema.ValidationError as e:
                     raise ValueError('Your json default does not fit your schema.') from e
 
+    def __get_dynamic_channel_config_schema(self):
+        return self.__parse_to_json(self.__channel_config_schema)
+
+    def __get_dynamic_global_config_schema(self):
+        return self.__parse_to_json(self.__global_config_schema)
+
     def get_config_defaults(self):
         return {
             'channel_config_default': json.dumps(self.__channel_config_default),
-            'channel_config_schema': json.dumps(self.__channel_config_schema),
+            'channel_config_schema': json.dumps(self.__get_dynamic_channel_config_schema()),
             'global_config_default': json.dumps(self.__global_config_default),
-            'global_config_schema': json.dumps(self.__global_config_schema),
+            'global_config_schema': json.dumps(self.__get_dynamic_global_config_schema()),
         }
 
+    def load(self):
+        ...
+
     @staticmethod
-    def __parse_to_json(value: CONFIG_TYPE) -> CONFIG_TYPE:
+    def __parse_to_json(value: DYNAMIC_CONFIG_TYPE) -> CONFIG_TYPE:
+        if callable(value):
+            value = value()
+
         if not value:
             return None
 
@@ -453,27 +489,6 @@ def compare_version_numbers(version1: str, version2: str) -> int:
             return -1  # version1 小于 version2
 
     return 0  # version1 等于 version2
-
-
-def merge_extra_items(source: dict, base: dict) -> dict:
-    """
-    将 base 中，source 没有的元素，copy 进 source。
-    :param source:
-    :param base:
-    :return:
-    """
-    diff_dict = {}
-    for key, value in base.items():
-        if key not in source:
-            diff_dict[key] = copy.deepcopy(value)
-            continue
-
-        if isinstance(value, dict):
-            merge_extra_items(source[key], value)
-
-    source.update(diff_dict)
-
-    return source
 
 
 def remove_uncommon_elements(source: dict, base: dict, schema: dict) -> None:

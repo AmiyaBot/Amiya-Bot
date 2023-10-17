@@ -30,9 +30,7 @@ class BotAccountModel(BotAppId):
     start: int = 0
 
     def get_data(self):
-        data = {
-            **self.dict()
-        }
+        data = {**self.dict()}
         del data['id']
         del data['start']
 
@@ -86,19 +84,15 @@ class Bot:
         if data.appid in bot:
             return app.response(code=500, message='Bot 已存在')
 
-        conf = {
-            'appid': data.appid,
-            'token': data.token,
-            'private': bool(data.private)
-        }
+        conf = {'appid': data.appid, 'token': data.token, 'private': bool(data.private)}
         if data.adapter == 'mirai_api_http':
-            conf['adapter'] = mirai_api_http(host=data.mah_host,
-                                             ws_port=data.mah_ws_port,
-                                             http_port=data.mah_http_port)
+            conf['adapter'] = mirai_api_http(
+                host=data.mah_host,
+                ws_port=data.mah_ws_port,
+                http_port=data.mah_http_port,
+            )
         if data.adapter == 'cq_http':
-            conf['adapter'] = cq_http(host=data.cq_host,
-                                      ws_port=data.cq_ws_port,
-                                      http_port=data.cq_http_port)
+            conf['adapter'] = cq_http(host=data.cq_host, ws_port=data.cq_ws_port, http_port=data.cq_http_port)
         if data.adapter == 'kook':
             conf['adapter'] = KOOKBotInstance
 

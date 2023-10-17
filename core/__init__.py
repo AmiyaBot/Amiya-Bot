@@ -1,36 +1,25 @@
-import os
 import copy
 import time
 import jieba
 import datetime
 import traceback
 
-from typing import List, Union
+from typing import List, Coroutine, Callable
 
-from amiyabot import (
-    MultipleAccounts,
-    PluginInstance,
-    HttpServer,
-    Message,
-    Event,
-    Equal,
-    Chain,
-    ChainBuilder,
-    log
-)
+from amiyabot import *
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
-from core.resource import remote_config
+from core.config import remote_config
 from core.resource.botResource import BotResource
 from core.resource.arknightsGameData import ArknightsGameData, ArknightsConfig
 from core.lib.gitAutomation import GitAutomation
 from core.util import read_yaml, create_dir
 
-from core.customPluginInstance import AmiyaBotPluginInstance, LazyLoadPluginInstance
+from core.plugins.customPluginInstance import Requirement, AmiyaBotPluginInstance, LazyLoadPluginInstance
 
 create_dir('plugins')
 
@@ -62,42 +51,9 @@ def set_prefix():
         jieba.del_word(word)
 
 
-def exec_before_init(coro):
+def exec_before_init(coro: Callable[[], Coroutine]):
     init_task.append(coro())
     return coro
-
-
-async def load_plugins():
-    plugins: List[PluginInstance] = []
-
-    for root, dirs, files in os.walk('plugins'):
-        for file in files:
-            if file.endswith('.zip'):
-                try:
-                    res = bot.load_plugin(os.path.join(root, file), extract_plugin=True)
-                    if res:
-                        plugins.append(res)
-                        log.info(f'plugin loaded: {file}')
-                except Exception as e:
-                    log.error(e, f'plugin load error({file}):')
-        break
-
-    count = 0
-    for item in sorted(plugins, key=lambda n: n.priority, reverse=True):
-        try:
-            res = bot.install_plugin(item)
-            if res:
-                count += 1
-        except Exception as e:
-            log.error(e, f'plugin install error({item.plugin_id}):')
-
-    # 然后对所有插件执行懒加载（如果有的话）
-    for plugin_id, item in bot.plugins.items():
-        if isinstance(item, LazyLoadPluginInstance):
-            item.load()
-
-    if count:
-        log.info(f'successfully installed {count} plugin(s).')
 
 
 async def send_to_console_channel(chain: Chain):
@@ -115,19 +71,28 @@ async def send_to_console_channel(chain: Chain):
 
 async def heartbeat():
     for item in bot:
-        await http_requests.get(f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}', ignore_error=True)
+        await http_requests.get(
+            f'https://server.amiyabot.com:8020/heartbeat?appid={item.appid}',
+            ignore_error=True,
+        )
+
+
+async def run_main_timed_tasks():
+    bot.run_timed_tasks()
 
 
 @bot.message_before_handle
 async def _(data: Message, factory_name: str, _):
-    message_record.append({
-        'app_id': data.instance.appid,
-        'user_id': data.user_id,
-        'channel_id': data.channel_id,
-        'msg_type': data.message_type or 'channel',
-        'classify': 'call',
-        'create_time': int(time.time())
-    })
+    message_record.append(
+        {
+            'app_id': data.instance.appid,
+            'user_id': data.user_id,
+            'channel_id': data.channel_id,
+            'msg_type': data.message_type or 'channel',
+            'classify': 'call',
+            'create_time': int(time.time()),
+        }
+    )
 
 
 @bot.on_exception()
@@ -137,7 +102,7 @@ async def _(err: Exception, instance: BotAdapterProtocol, data: Union[Message, E
         'Bot: ' + str(instance.appid),
         'Channel: ' + str(data.channel_id),
         'User: ' + str(data.user_id),
-        '\n' + (data.text if isinstance(data, Message) else data.event_name)
+        '\n' + (data.text if isinstance(data, Message) else data.event_name),
     ]
 
     content = Chain().text('\n'.join(info)).text_image(traceback.format_exc())
@@ -163,19 +128,12 @@ async def _(_):
         time.mktime(
             time.strptime(
                 (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y%m%d'),
-                '%Y%m%d'
+                '%Y%m%d',
             )
         )
     )
     MessageRecord.delete().where(MessageRecord.create_time < timestamp).execute()
 
 
-async def run_main_timed_tasks():
-    bot.run_timed_tasks()
-
-
-init_task = [
-    heartbeat(),
-    run_main_timed_tasks()
-]
+init_task = [heartbeat(), run_main_timed_tasks()]
 set_prefix()
