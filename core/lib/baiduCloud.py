@@ -29,9 +29,7 @@ class BaiduCloud:
             return False
 
         async with log.catch():
-            options = {
-                'scene': 'talk'
-            }
+            options = {'scene': 'talk'}
             result = await run_in_thread_pool(self.__nlp.emotion, text, options)
             if 'error_code' in result:
                 return False
@@ -45,9 +43,7 @@ class BaiduCloud:
             return False
 
         async with log.catch():
-            options = {
-                'detect_direction': 'true'
-            }
+            options = {'detect_direction': 'true'}
             result = await run_in_thread_pool(self.__ocr.webImageUrl, url, options)
             return result
 
@@ -59,13 +55,11 @@ class BaiduCloud:
             return False
 
         async with log.catch():
-            options = {
-                'detect_direction': 'true'
-            }
+            options = {'detect_direction': 'true'}
             result = await run_in_thread_pool(
                 self.__ocr.basicGeneralUrl if type(image) is str else self.__ocr.basicGeneral,
                 image,
-                options
+                options,
             )
             return result
 
@@ -79,9 +73,7 @@ class BaiduCloud:
         async with log.catch():
             stream = await download_async(image) if type(image) is str else image
             if stream:
-                options = {
-                    'detect_direction': 'true'
-                }
+                options = {'detect_direction': 'true'}
                 result = await run_in_thread_pool(self.__ocr.basicAccurate, stream, options)
                 return result
 

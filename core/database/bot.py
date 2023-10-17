@@ -2,6 +2,9 @@ from amiyabot import AmiyaBot, KOOKBotInstance
 from amiyabot.database import *
 from amiyabot.adapters.mirai import mirai_api_http
 from amiyabot.adapters.cqhttp import cq_http
+from amiyabot.adapters.onebot11 import onebot11
+from amiyabot.adapters.onebot12 import onebot12
+from amiyabot.adapters.comwechat import com_wechat
 from core.database import config, is_mysql
 from typing import Union
 
@@ -18,6 +21,10 @@ class Admin(BotBaseModel):
     account: Union[CharField, str] = CharField(unique=True)
     remark: Union[CharField, str] = CharField(null=True)
 
+    @classmethod
+    def is_super_admin(cls, user_id: str):
+        return bool(cls.get_or_none(account=user_id))
+
 
 @table
 class BotAccounts(BotBaseModel):
@@ -29,18 +36,22 @@ class BotAccounts(BotBaseModel):
     console_channel: str = CharField(null=True)
     adapter: str = CharField(default='tencent')
 
-    mah_host: str = CharField(null=True)
-    mah_ws_port: int = IntegerField(null=True)
-    mah_http_port: int = IntegerField(null=True)
-
-    cq_host: str = CharField(null=True)
-    cq_ws_port: int = IntegerField(null=True)
-    cq_http_port: int = IntegerField(null=True)
+    host: str = CharField(null=True)
+    ws_port: int = IntegerField(null=True)
+    http_port: int = IntegerField(null=True)
 
     @classmethod
     def get_all_account(cls):
         select: List[cls] = cls.select()
         account = []
+
+        net_adapters = {
+            'mirai_api_http': mirai_api_http,
+            'cq_http': cq_http,
+            'onebot11': onebot11,
+            'onebot12': onebot12,
+            'com_wechat': com_wechat,
+        }
 
         for item in select:
             if not item.is_start:
@@ -49,16 +60,16 @@ class BotAccounts(BotBaseModel):
             conf = {
                 'appid': item.appid,
                 'token': item.token,
-                'private': bool(item.private)
+                'private': bool(item.private),
             }
-            if item.adapter == 'mirai_api_http':
-                conf['adapter'] = mirai_api_http(host=item.mah_host,
-                                                 ws_port=item.mah_ws_port,
-                                                 http_port=item.mah_http_port)
-            if item.adapter == 'cq_http':
-                conf['adapter'] = cq_http(host=item.cq_host,
-                                          ws_port=item.cq_ws_port,
-                                          http_port=item.cq_http_port)
+
+            if item.adapter in net_adapters:
+                conf['adapter'] = net_adapters[item.adapter](
+                    host=item.host,
+                    ws_port=item.ws_port,
+                    http_port=item.http_port,
+                )
+
             if item.adapter == 'kook':
                 conf['adapter'] = KOOKBotInstance
 
@@ -104,15 +115,6 @@ class Pool(BotBaseModel):
     pickup_4: Union[CharField, str] = CharField(null=True, default='')
     pickup_s: Union[CharField, str] = CharField(null=True, default='')
     limit_pool: int = IntegerField()
-
-
-@table
-class PoolSpOperator(BotBaseModel):
-    pool_id: Union[ForeignKeyField, int] = ForeignKeyField(Pool, db_column='pool_id', on_delete='CASCADE')
-    operator_name: str = CharField()
-    rarity: int = IntegerField()
-    classes: str = CharField()
-    image: str = CharField()
 
 
 @table

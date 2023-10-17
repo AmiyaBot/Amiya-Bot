@@ -14,7 +14,6 @@ if __name__ == '__main__':
     # 导入测试的插件
     from pluginsDev.src.arknights.operatorArchives import bot as plugin
 
-
     async def install_plugin():
         # 安装插件
         bot.install_plugin(resource)
@@ -24,8 +23,4 @@ if __name__ == '__main__':
         # 也可以通过文件安装
         # bot.install_plugin('plugins/amiyabot-arknights-gamedata-1.0.zip', extract_plugin=True)
 
-
-    run_amiya(
-        bot.start(launch_browser=True),
-        install_plugin()
-    )
+    run_amiya(bot.start(launch_browser=True), install_plugin())

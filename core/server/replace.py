@@ -28,16 +28,9 @@ class Replace:
         select = TextReplace.select().order_by(TextReplace.id.desc())
 
         if data.search:
-            select = select.where(
-                TextReplace.origin.contains(data.search) |
-                TextReplace.replace.contains(data.search)
-            )
+            select = select.where(TextReplace.origin.contains(data.search) | TextReplace.replace.contains(data.search))
 
-        return app.response(
-            select_for_paginate(select,
-                                page=data.currentPage,
-                                page_size=data.pageSize)
-        )
+        return app.response(select_for_paginate(select, page=data.currentPage, page_size=data.pageSize))
 
     @app.route()
     async def add_replace(self, data: ReplaceModel):
@@ -51,7 +44,7 @@ class Replace:
             replace=data.replace,
             in_time=int(time.time()),
             is_global=1,
-            is_active=1
+            is_active=1,
         )
 
         return app.response(message='添加成功')
@@ -70,19 +63,14 @@ class Replace:
 
     @app.route(method='get')
     async def get_replace_setting(self):
-        return app.response(
-            query_to_list(TextReplaceSetting.select())
-        )
+        return app.response(query_to_list(TextReplaceSetting.select()))
 
     @app.route()
     async def add_replace_setting(self, data: ReplaceSettingModel):
         if TextReplaceSetting.get_or_none(text=data.text):
             return app.response(code=500, message='标签已存在')
 
-        TextReplaceSetting.create(
-            text=data.text,
-            status=data.status
-        )
+        TextReplaceSetting.create(text=data.text, status=data.status)
 
         return app.response(message='添加成功')
 

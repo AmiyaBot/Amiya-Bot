@@ -69,9 +69,7 @@ class UserInfo(UserBaseModel):
         if len(user_meta_json) > 1024 * 1024:
             return None
 
-        UserInfo.update(
-            meta_json=user_meta_json
-        ).where(UserInfo.user_id == user.user_id).execute()
+        UserInfo.update(meta_json=user_meta_json).where(UserInfo.user_id == user.user_id).execute()
 
     @classmethod
     def get_user(cls, user_id):
@@ -89,7 +87,7 @@ class UserInfo(UserBaseModel):
             'user': user,
             'user_info': user_info,
             'user_gacha_info': user_gacha_info,
-            'operator_box': operator_box
+            'operator_box': operator_box,
         }
 
     @classmethod
@@ -105,7 +103,7 @@ class UserInfo(UserBaseModel):
 
         update = {
             'jade_point': UserInfo.jade_point + point,
-            'jade_point_max': UserInfo.jade_point_max + point
+            'jade_point_max': UserInfo.jade_point_max + point,
         }
         cls.update(**update).where(UserInfo.user_id == user_id).execute()
 
@@ -122,4 +120,3 @@ class UserGachaInfo(UserBaseModel):
 class OperatorBox(UserBaseModel):
     user_id: str = CharField()
     operator: str = TextField(default='')
-

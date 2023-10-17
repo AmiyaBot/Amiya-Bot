@@ -4,7 +4,8 @@ import asyncio
 import core.frozen
 
 from typing import Coroutine
-from core import app, bot, init_task, load_plugins, BotResource
+from core.plugins import PluginsLoader
+from core import app, bot, init_task, BotResource
 
 
 def run_amiya(*tasks: Coroutine):
@@ -17,11 +18,12 @@ def run_amiya(*tasks: Coroutine):
             os.path.dirname('resource/env/python-standard-lib.zip'),
         ]
 
+        asyncio.run(loader.load_local_plugins())
         asyncio.run(
             asyncio.wait(
                 [
                     *init_task,
-                    *tasks
+                    *tasks,
                 ]
             )
         )
@@ -30,8 +32,5 @@ def run_amiya(*tasks: Coroutine):
 
 
 if __name__ == '__main__':
-    run_amiya(
-        bot.start(launch_browser=True),
-        app.serve(),
-        load_plugins()
-    )
+    loader = PluginsLoader(bot)
+    run_amiya(bot.start(launch_browser=True), app.serve())

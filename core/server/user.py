@@ -16,21 +16,20 @@ class UserModel(BaseModel):
 class User:
     @app.route()
     async def get_user(self, data: QueryData):
-        select = UserTable.select(UserTable, UserInfo, UserGachaInfo) \
-            .join(UserInfo, 'left join', on=(UserInfo.user_id == UserTable.user_id)) \
-            .join(UserGachaInfo, 'left join', on=(UserGachaInfo.user_id == UserTable.user_id))
+        select = (
+            UserTable.select(UserTable, UserInfo, UserGachaInfo)
+            .join(UserInfo, 'left join', on=(UserInfo.user_id == UserTable.user_id))
+            .join(
+                UserGachaInfo,
+                'left join',
+                on=(UserGachaInfo.user_id == UserTable.user_id),
+            )
+        )
 
         if data.search:
-            select = select.where(
-                UserTable.user_id.contains(data.search) |
-                UserTable.nickname.contains(data.search)
-            )
+            select = select.where(UserTable.user_id.contains(data.search) | UserTable.nickname.contains(data.search))
 
-        return app.response(
-            select_for_paginate(select,
-                                page=data.currentPage,
-                                page_size=data.pageSize)
-        )
+        return app.response(select_for_paginate(select, page=data.currentPage, page_size=data.pageSize))
 
     @app.route()
     async def edit_user(self, data: UserModel):

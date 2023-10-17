@@ -30,15 +30,10 @@ class Admin:
 
         if data.search:
             select = select.where(
-                AdminAccount.account.contains(data.search) |
-                AdminAccount.remark.contains(data.search)
+                AdminAccount.account.contains(data.search) | AdminAccount.remark.contains(data.search)
             )
 
-        return app.response(
-            select_for_paginate(select,
-                                page=data.currentPage,
-                                page_size=data.pageSize)
-        )
+        return app.response(select_for_paginate(select, page=data.currentPage, page_size=data.pageSize))
 
     @app.route()
     async def add_admin(self, data: AdminModel):
