@@ -25,4 +25,5 @@ def run_amiya(*tasks: Coroutine):
 
 if __name__ == '__main__':
     loader = PluginsLoader(bot)
-    run_amiya(bot.start(launch_browser=True), app.serve(), loader.load_local_plugins())
+    asyncio.run(loader.load_local_plugins())
+    run_amiya(bot.start(launch_browser=True), app.serve())
