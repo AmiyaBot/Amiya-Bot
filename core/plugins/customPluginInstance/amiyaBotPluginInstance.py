@@ -190,7 +190,9 @@ class AmiyaBotPluginInstance(PluginInstance):
                     # 全局配置
                     cfg = self.__get_global_config()
                     if cfg is not None:
-                        remove_uncommon_elements(cfg, self.__global_config_default, self.__get_dynamic_global_config_schema())
+                        remove_uncommon_elements(
+                            cfg, self.__global_config_default, self.__get_dynamic_global_config_schema()
+                        )
                         self.__set_global_config(cfg)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -203,7 +205,9 @@ class AmiyaBotPluginInstance(PluginInstance):
                     log.info(f'频道{channel_id}配置的配置项需要检查并剔除老旧配置项。')
                     cfg = self.__get_channel_config(channel_id)
                     if cfg is not None:
-                        remove_uncommon_elements(cfg, self.__channel_config_default, self.__get_dynamic_channel_config_schema())
+                        remove_uncommon_elements(
+                            cfg, self.__channel_config_default, self.__get_dynamic_channel_config_schema()
+                        )
                         self.__set_channel_config(channel_id, cfg)
                         PluginConfigurationAudit.create(
                             plugin_id=self.plugin_id,
@@ -233,7 +237,7 @@ class AmiyaBotPluginInstance(PluginInstance):
         return self.__parse_to_json(self.__channel_config_schema)
 
     def __get_dynamic_global_config_schema(self):
-        return self.__parse_to_json(self.__global_config_schema) 
+        return self.__parse_to_json(self.__global_config_schema)
 
     def get_config_defaults(self):
         return {
@@ -250,7 +254,7 @@ class AmiyaBotPluginInstance(PluginInstance):
     def __parse_to_json(value: DYNAMIC_CONFIG_TYPE) -> CONFIG_TYPE:
         if callable(value):
             value = value()
-            
+
         if not value:
             return None
 

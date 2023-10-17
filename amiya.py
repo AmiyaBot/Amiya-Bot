@@ -18,12 +18,19 @@ def run_amiya(*tasks: Coroutine):
             os.path.dirname('resource/env/python-standard-lib.zip'),
         ]
 
-        asyncio.run(asyncio.wait([*init_task, *tasks]))
+        asyncio.run(loader.load_local_plugins())
+        asyncio.run(
+            asyncio.wait(
+                [
+                    *init_task,
+                    *tasks,
+                ]
+            )
+        )
     except KeyboardInterrupt:
         pass
 
 
 if __name__ == '__main__':
     loader = PluginsLoader(bot)
-    asyncio.run(loader.load_local_plugins())
     run_amiya(bot.start(launch_browser=True), app.serve())
