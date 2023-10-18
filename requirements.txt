@@ -10,7 +10,7 @@ jionlp~=1.4.19
 jsonschema~=4.17.3
 opencv-python~=4.7.0.72
 peewee~=3.14.10
-pillow~=10.0.1
+pillow==9.5.0
 pypinyin~=0.46.0
 pyyaml~=6.0
 requests-html

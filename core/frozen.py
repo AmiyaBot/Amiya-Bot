@@ -4,6 +4,8 @@ import srsly
 import dhash
 import requests_html
 
+import core.customPluginInstance
+
 from . import server
 from jieba import posseg
 from core.lib import baiduCloud
