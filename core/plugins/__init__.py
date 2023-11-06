@@ -44,6 +44,9 @@ class PluginsLoader:
     async def install_loaded_plugins(self):
         count = 0
         for item in sorted(self.plugins.values(), key=lambda n: n.priority, reverse=True):
+            if item.plugin_id in self.bot.plugins:
+                continue
+
             try:
                 res = self.bot.install_plugin(item)
                 if res:
@@ -72,8 +75,10 @@ class PluginsLoader:
                     if req.plugin_id == item.plugin_id:
                         continue
 
+                    exists = {**self.bot.plugins, **(exists_plugins or plugins), **final_res}
+
                     # 本地已存在此依赖插件
-                    if req.plugin_id in {**(exists_plugins or plugins), **final_res}:
+                    if req.plugin_id in exists:
                         # 本地的依赖版本不匹配，则不安装此插件
                         if req.version and req.version != plugins[req.plugin_id].version:
                             allow_install = False
