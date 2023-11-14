@@ -2,9 +2,10 @@ from amiyabot import AmiyaBot, KOOKBotInstance
 from amiyabot.database import *
 from amiyabot.adapters.mirai import mirai_api_http
 from amiyabot.adapters.cqhttp import cq_http
-from amiyabot.adapters.onebot11 import onebot11
-from amiyabot.adapters.onebot12 import onebot12
+from amiyabot.adapters.onebot.v11 import onebot11
+from amiyabot.adapters.onebot.v12 import onebot12
 from amiyabot.adapters.comwechat import com_wechat
+from amiyabot.adapters.test import test_instance
 from core.database import config, is_mysql
 from typing import Union
 
@@ -69,6 +70,9 @@ class BotAccounts(BotBaseModel):
                     ws_port=item.ws_port,
                     http_port=item.http_port,
                 )
+
+            if item.adapter == 'websocket':
+                conf['adapter'] = test_instance(item.host, item.ws_port)
 
             if item.adapter == 'kook':
                 conf['adapter'] = KOOKBotInstance
