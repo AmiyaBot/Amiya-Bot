@@ -8,7 +8,6 @@ from typing import List, Coroutine, Callable
 
 from amiyabot import *
 from amiyabot.adapters import BotAdapterProtocol
-from amiyabot.adapters.tencent import TencentBotInstance
 from amiyabot.network.httpRequests import http_requests
 
 from core.database.messages import MessageRecord
@@ -62,7 +61,7 @@ async def send_to_console_channel(chain: Chain):
         instance = bot[item.appid]
 
         if item.console_channel and instance:
-            if type(instance.instance) is TencentBotInstance:
+            if isinstance(instance.instance, QQGuildBotInstance):
                 if not instance.private:
                     chain.builder = SourceServer()
 
