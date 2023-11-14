@@ -4,9 +4,10 @@ from core import app, bot
 from core.database.bot import BotAccounts, query_to_list
 from amiyabot.adapters.mirai import mirai_api_http
 from amiyabot.adapters.cqhttp import cq_http
-from amiyabot.adapters.onebot11 import onebot11
-from amiyabot.adapters.onebot12 import onebot12
+from amiyabot.adapters.onebot.v11 import onebot11
+from amiyabot.adapters.onebot.v12 import onebot12
 from amiyabot.adapters.comwechat import com_wechat
+from amiyabot.adapters.test import test_instance
 from amiyabot.network.httpServer import BaseModel
 from amiyabot import AmiyaBot, KOOKBotInstance
 
@@ -63,6 +64,10 @@ class Bot:
         if BotAccounts.get_or_none(appid=data.appid):
             return app.response(code=500, message='AppId 已存在')
 
+        if data.adapter == 'websocket':
+            if BotAccounts.get_or_none(adapter='websocket', ws_port=data.ws_port):
+                return app.response(code=500, message='websocket 适配器的 ws 端口不能重复')
+
         BotAccounts.create(**data.get_data())
 
         if data.start:
@@ -72,6 +77,13 @@ class Bot:
 
     @app.route()
     async def edit_bot(self, data: BotAccountModel):
+        if BotAccounts.get_or_none(appid=data.appid):
+            return app.response(code=500, message='AppId 已存在')
+
+        if data.adapter == 'websocket':
+            if BotAccounts.get_or_none(adapter='websocket', ws_port=data.ws_port):
+                return app.response(code=500, message='websocket 适配器的 ws 端口不能重复')
+
         BotAccounts.update(**data.get_data()).where(BotAccounts.id == data.id).execute()
 
         if data.start:
@@ -103,6 +115,9 @@ class Bot:
                 ws_port=data.ws_port,
                 http_port=data.http_port,
             )
+
+        if data.adapter == 'websocket':
+            conf['adapter'] = test_instance(data.host, data.ws_port)
 
         if data.adapter == 'kook':
             conf['adapter'] = KOOKBotInstance
