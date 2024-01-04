@@ -2,14 +2,8 @@ from typing import Optional
 
 from core import app, bot
 from core.database.bot import BotAccounts, query_to_list
-from amiyabot.adapters.mirai import mirai_api_http
-from amiyabot.adapters.cqhttp import cq_http
-from amiyabot.adapters.onebot.v11 import onebot11
-from amiyabot.adapters.onebot.v12 import onebot12
-from amiyabot.adapters.comwechat import com_wechat
-from amiyabot.adapters.test import test_instance
 from amiyabot.network.httpServer import BaseModel
-from amiyabot import AmiyaBot, KOOKBotInstance
+from amiyabot import AmiyaBot
 
 
 class BotAppId(BaseModel):
@@ -24,9 +18,11 @@ class BotAccountModel(BotAppId):
     is_start: int = 1
     adapter: str = 'tencent'
     console_channel: Optional[str] = None
+
     host: Optional[str] = None
     ws_port: Optional[int] = None
     http_port: Optional[int] = None
+    client_secret: Optional[str] = None
 
     start: int = 0
 
@@ -96,32 +92,7 @@ class Bot:
         if data.appid in bot:
             return app.response(code=500, message='Bot 已存在')
 
-        net_adapters = {
-            'mirai_api_http': mirai_api_http,
-            'cq_http': cq_http,
-            'onebot11': onebot11,
-            'onebot12': onebot12,
-            'com_wechat': com_wechat,
-        }
-        conf = {
-            'appid': data.appid,
-            'token': data.token,
-            'private': bool(data.private),
-        }
-
-        if data.adapter in net_adapters:
-            conf['adapter'] = net_adapters[data.adapter](
-                host=data.host,
-                ws_port=data.ws_port,
-                http_port=data.http_port,
-            )
-
-        if data.adapter == 'websocket':
-            conf['adapter'] = test_instance(data.host, data.ws_port)
-
-        if data.adapter == 'kook':
-            conf['adapter'] = KOOKBotInstance
-
+        conf = BotAccounts.build_conf(data)
         bot.append(AmiyaBot(**conf), launch_browser=True)
 
         return app.response(message=f'正在启动 AppId {data.appid}')
