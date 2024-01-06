@@ -16,7 +16,7 @@ class BotAccountModel(BotAppId):
     private: int = 0
     is_main: int = 0
     is_start: int = 1
-    adapter: str = 'tencent'
+    adapter: str = 'qq_guild'
     console_channel: Optional[str] = None
 
     host: Optional[str] = None
@@ -73,7 +73,8 @@ class Bot:
 
     @app.route()
     async def edit_bot(self, data: BotAccountModel):
-        if BotAccounts.get_or_none(appid=data.appid):
+        exists = BotAccounts.get_or_none(appid=data.appid)
+        if exists and exists.id != data.id:
             return app.response(code=500, message='AppId 已存在')
 
         if data.adapter == 'websocket':
