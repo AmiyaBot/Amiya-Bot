@@ -1,6 +1,7 @@
 from amiyabot import AmiyaBot, KOOKBotInstance
 from amiyabot.database import *
 from core.database import config, is_mysql
+from core.cosChainBuilder import COSQQGroupChainBuilder
 from typing import Union
 
 from amiyabot.adapters.tencent.qqGroup import qq_group, QQGroupChainBuilderOptions
@@ -84,10 +85,12 @@ class BotAccounts(BotBaseModel):
         if item.adapter == 'qq_group':
             conf['adapter'] = qq_group(
                 item.client_secret,
-                default_chain_builder_options=QQGroupChainBuilderOptions(
-                    item.host or '0.0.0.0',
-                    item.http_port or 8086,
-                    './resource/group_temp',
+                default_chain_builder=COSQQGroupChainBuilder(
+                    QQGroupChainBuilderOptions(
+                        item.host or '0.0.0.0',
+                        item.http_port or 8086,
+                        './resource/group_temp',
+                    )
                 ),
             )
 
