@@ -2,27 +2,30 @@ import os
 import logging
 import asyncio
 
-from typing import Union
+from typing import Union, Optional
 from amiyabot.adapters.tencent.qqGroup import QQGroupChainBuilder, QQGroupChainBuilderOptions
 from build.uploadFile import COSUploader
-from core.util import read_yaml, run_in_thread_pool
+from core.util import run_in_thread_pool
+from core.config import cos_config
 
 
 class COSQQGroupChainBuilder(QQGroupChainBuilder):
     def __init__(self, options: QQGroupChainBuilderOptions):
         super().__init__(options)
 
-        self.config = read_yaml('config/cos.yaml')
-        self.cos = COSUploader(
-            self.config.secret_id,
-            self.config.secret_key,
-            logger_level=logging.NOTSET,
-        )
+        self.cos: Optional[COSUploader] = None
         self.cos_caches = {}
+
+        if cos_config.secret_id and cos_config.secret_key:
+            self.cos = COSUploader(
+                cos_config.secret_id,
+                cos_config.secret_key,
+                logger_level=logging.NOTSET,
+            )
 
     @property
     def domain(self):
-        return self.config.domain + self.config.folder
+        return cos_config.domain + cos_config.folder
 
     def start(self):
         ...
@@ -30,7 +33,7 @@ class COSQQGroupChainBuilder(QQGroupChainBuilder):
     def temp_filename(self, suffix: str):
         path, url = super().temp_filename(suffix)
 
-        self.cos_caches[url] = f'{self.config.folder}/{os.path.basename(path)}'
+        self.cos_caches[url] = f'{cos_config.folder}/{os.path.basename(path)}'
 
         return path, url
 

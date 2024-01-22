@@ -1,5 +1,6 @@
 from amiyabot import AmiyaBot, KOOKBotInstance
 from amiyabot.database import *
+from core.config import cos_config
 from core.database import config, is_mysql
 from core.cosChainBuilder import COSQQGroupChainBuilder
 from typing import Union
@@ -83,16 +84,21 @@ class BotAccounts(BotBaseModel):
             )
 
         if item.adapter == 'qq_group':
-            conf['adapter'] = qq_group(
-                item.client_secret,
-                default_chain_builder=COSQQGroupChainBuilder(
-                    QQGroupChainBuilderOptions(
-                        item.host or '0.0.0.0',
-                        item.http_port or 8086,
-                        './resource/group_temp',
-                    )
-                ),
+            opt = QQGroupChainBuilderOptions(
+                item.host or '0.0.0.0',
+                item.http_port or 8086,
+                './resource/group_temp',
             )
+            if cos_config.activate:
+                conf['adapter'] = qq_group(
+                    item.client_secret,
+                    default_chain_builder=COSQQGroupChainBuilder(opt),
+                )
+            else:
+                conf['adapter'] = qq_group(
+                    item.client_secret,
+                    default_chain_builder_options=opt,
+                )
 
         if item.adapter == 'websocket':
             conf['adapter'] = test_instance(item.host, item.ws_port)
