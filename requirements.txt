@@ -1,4 +1,4 @@
-amiyabot==1.8.8
+amiyabot==1.9.0
 attrdict~=2.0.1
 baidu-aip
 dhash~=1.3
