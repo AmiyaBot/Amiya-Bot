@@ -51,6 +51,9 @@ class COSQQGroupChainBuilder(QQGroupChainBuilder):
             del self.cos_caches[url]
 
     async def get_image(self, image: Union[str, bytes]) -> Union[str, bytes]:
+        if isinstance(image, str) and image.startswith('http'):
+            return image
+
         url = await super().get_image(image)
 
         self.cos.upload_file(
@@ -61,6 +64,9 @@ class COSQQGroupChainBuilder(QQGroupChainBuilder):
         return url
 
     async def get_voice(self, voice_file: str) -> str:
+        if voice_file.startswith('http'):
+            return voice_file
+
         url = await super().get_voice(voice_file)
 
         self.cos.upload_file(
@@ -71,6 +77,9 @@ class COSQQGroupChainBuilder(QQGroupChainBuilder):
         return url
 
     async def get_video(self, video_file: str) -> str:
+        if video_file.startswith('http'):
+            return video_file
+
         url = await super().get_video(video_file)
 
         self.cos.upload_file(
