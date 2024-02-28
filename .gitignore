@@ -11,6 +11,7 @@
 
 .DS_Store
 
+config/cos.yaml
 config/remote.yaml
 main*.py
 

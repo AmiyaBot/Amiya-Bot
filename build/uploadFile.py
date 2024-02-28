@@ -14,7 +14,8 @@ class COSUploader:
         bucket: str = None,
         logger_level: int = logging.DEBUG,
     ):
-        logging.basicConfig(level=logger_level, stream=sys.stdout)
+        if logger_level:
+            logging.basicConfig(level=logger_level, stream=sys.stdout)
         config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key)
 
         self.client = CosS3Client(config)
@@ -43,7 +44,13 @@ class COSUploader:
         for file in files:
             delete_list.append({'Key': file})
 
-        self.client.delete_objects(Bucket=self.bucket, Delete={'Object': delete_list})
+        return self.client.delete_objects(
+            Bucket=self.bucket,
+            Delete={
+                'Quiet': 'true',
+                'Object': delete_list,
+            },
+        )
 
     def delete_folder(self, folders: Union[list, str], max_keys: int = 100):
         if type(folders) is not list:

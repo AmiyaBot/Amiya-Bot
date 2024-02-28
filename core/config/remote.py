@@ -1,7 +1,5 @@
-import os
-
-from dataclasses import dataclass, asdict, field
-from core.util import read_yaml, create_yaml, merge_dict
+from dataclasses import dataclass, field
+from core.util import init_config_file
 
 
 @dataclass
@@ -18,12 +16,7 @@ class RemoteConfig:
 
 
 def init(file: str) -> RemoteConfig:
-    config = {}
-    if os.path.exists(file):
-        config = read_yaml(file, _dict=True)
-
-    create_yaml(file, merge_dict(config, asdict(RemoteConfig())), True)
-    return read_yaml(file)
+    return init_config_file(file, RemoteConfig)
 
 
 remote_config = init('config/remote.yaml')

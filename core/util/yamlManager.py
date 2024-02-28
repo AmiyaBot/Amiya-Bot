@@ -3,8 +3,9 @@ import yaml
 
 from yaml import SafeDumper
 from attrdict import AttrDict
+from dataclasses import asdict
 
-from .common import create_dir
+from .common import create_dir, merge_dict
 
 
 class YamlManager:
@@ -41,3 +42,12 @@ class YamlManager:
             yaml.safe_dump(data, file, indent=4, default_flow_style=False, allow_unicode=True)
 
         return True
+
+
+def init_config_file(file: str, build_cls):
+    config = {}
+    if os.path.exists(file):
+        config = YamlManager.read_yaml(file, _dict=True)
+
+    YamlManager.create_yaml(file, merge_dict(config, asdict(build_cls())), True)
+    return YamlManager.read_yaml(file)
