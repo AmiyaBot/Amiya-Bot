@@ -126,7 +126,7 @@ async def _(_):
     timestamp = int(
         time.mktime(
             time.strptime(
-                (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y%m%d'),
+                (datetime.datetime.now() + datetime.timedelta(days=-90)).strftime('%Y%m%d'),
                 '%Y%m%d',
             )
         )
