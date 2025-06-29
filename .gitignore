@@ -1,9 +1,10 @@
 /.idea/
+/.vscode/
 /__pycache__/
 /package/
 /venv/
 /dist/
-/log/
+/logs/
 /plugins/
 /database/
 /resource/
@@ -14,9 +15,12 @@
 config/cos.yaml
 config/remote.yaml
 config/penetration.yaml
+config/database.yaml
+config/prefix.yaml
+config/server.yaml
 main*.py
-start.zsh
 
+*.zsh
 *.pyc
 *.spec
 *.zip
