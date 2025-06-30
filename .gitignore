@@ -15,9 +15,6 @@
 config/cos.yaml
 config/remote.yaml
 config/penetration.yaml
-config/database.yaml
-config/prefix.yaml
-config/server.yaml
 main*.py
 
 *.zsh
