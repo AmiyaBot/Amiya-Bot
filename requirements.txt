@@ -1,4 +1,4 @@
-amiyabot==3.0.0
+amiyabot==0.1.0
 jionlp~=1.5.23
 pypinyin~=0.54.0
 attridict~=0.0.9
