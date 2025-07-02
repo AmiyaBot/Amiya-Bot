@@ -27,7 +27,8 @@ Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
 - Amiya-Bot 是在 [《明日方舟》](https://ak.hypergryph.com/) 爱好者群体中诞生的以便捷娱乐功能为主的聊天机器人，一切行为的目的旨在交流学习
 - 本项目拒绝加入与金钱相关的功能，并在遵守法律法规且符合社会主义核心价值观的前提下使用
 - 项目组不鼓励，不支持利用本项目进行任何形式的盈利
-- 本项目 logo 并非使用 GPL 3.0 协议授权，画师保留所有权利。不得以 GPL 3.0 协议已授权为由在未经授权的情况下使用本项目 logo,不得在未经授权的情况下将本项目 logo
+- 本项目 logo 并非使用 GPL 3.0 协议授权，画师保留所有权利。不得以 GPL 3.0 协议已授权为由在未经授权的情况下使用本项目
+  logo,不得在未经授权的情况下将本项目 logo
   用于任何商业用途，不得在未经授权的情况下使用本项目仓库名称及 logo 进行任何形式的宣传
 - 用户的个人行为与本项目无关，用户因侵权、违反该声明内容或其他在法律及道德上不被支持的行为所带来的一切后果等与本项目无关
 
@@ -35,7 +36,8 @@ Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
 
 AmiyaBot 自 2019 年立项以来已发布 5 个主版本号更新，这是第 6 个版本，也是最新的生产版本。
 
-欢迎您使用 Amiya-Bot 来部署自己的 Amiya/开发自己的 Bot，但在这之前，如果您是老用户，应了解我们在 V6 版本做出的重要改动，以便继续使用。若你是新用户，可跳过本节。
+欢迎您使用 Amiya-Bot 来部署自己的 Amiya/开发自己的 Bot，但在这之前，如果您是老用户，应了解我们在 V6
+版本做出的重要改动，以便继续使用。若你是新用户，可跳过本节。
 
 以下是改动简述：
 
@@ -66,12 +68,6 @@ AmiyaBot 自 2019 年立项以来已发布 5 个主版本号更新，这是第 6
 - 如果想为 AmiyaBot-demo 开发插件，请点击 [此处](https://www.amiyabot.com/develop/plugin/) 跳转至插件开发文档。
 - 如果想使用 AmiyaBot 框架进行开发，请点击 [此处](https://www.amiyabot.com/develop/basic/) 跳转至开发文档。
 
-## 鸣谢
-
-- 数据及语音资源
-    - [Arknights-Bot-Resource](https://github.com/yuanyan3060/Arknights-Bot-Resource)
-    - [PRTS](http://prts.wiki/)
-
 ## 贡献
 
 - 如果你想为 Amiya 开发更多功能，可查阅 [插件开发文档](https://www.amiyabot.com/develop/plugin/)
@@ -87,3 +83,21 @@ AmiyaBot 自 2019 年立项以来已发布 5 个主版本号更新，这是第 6
 - 文档官网：[Amiya-Bot-docs](https://github.com/AmiyaBot/Amiya-Bot-docs)
 - 插件仓库：[Amiya-Bot-plugins](https://github.com/AmiyaBot/Amiya-Bot-plugins)
 - 管理后台：[Amiya-Bot-console2](https://github.com/AmiyaBot/Amiya-Bot-console2)
+
+## 鸣谢
+
+感谢以下项目提供的数据及语音资源：
+
+- [Arknights-Bot-Resource](https://github.com/yuanyan3060/Arknights-Bot-Resource)
+- [PRTS](http://prts.wiki/)
+
+**本项目的CDN加速和安全保护由腾讯EdgeOne赞助。**<br>
+**CDN acceleration and security protection for this project are sponsored by Tencent EdgeOne.**
+
+[Best Asian CDN, Edge, and Secure Solutions - Tencent EdgeOne](https://edgeone.ai/?from=github)
+
+<div style="background: #fff; padding: 8px 10px 0 10px">
+    <a href="https://edgeone.ai/?from=github">
+        <img alt="EdgeOne" src="https://edgeone.ai/media/34fe3a45-492d-4ea4-ae5d-ea1087ca7b4b.png">
+    </a>
+</div>
