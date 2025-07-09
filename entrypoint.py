@@ -28,7 +28,7 @@ def set_database():
     if 'MYSQL_HOST' in os.environ and os.environ['MYSQL_HOST']:
         config['config']['host'] = os.environ['MYSQL_HOST']
     if 'MYSQL_PORT' in os.environ and os.environ['MYSQL_PORT']:
-        config['config']['port'] = os.environ['MYSQL_PORT']
+        config['config']['port'] = int(os.environ['MYSQL_PORT'])
     if 'MYSQL_USER' in os.environ and os.environ['MYSQL_USER']:
         config['config']['user'] = os.environ['MYSQL_USER']
     if 'MYSQL_PASSWORD' in os.environ and os.environ['MYSQL_PASSWORD']:
