@@ -14,7 +14,7 @@ Project Logo Painted by [kerryst](http://space.bilibili.com/8368479/)
 <div>
     <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
     <img alt="version" src="https://img.shields.io/badge/version-6.0-orange">
-    <img alt="Python" src="https://img.shields.io/badge/Python-3.8-%233776AB?logo=python&logoColor=white"><br>
+    <img alt="Python" src="https://img.shields.io/badge/Python-3.10+-%233776AB?logo=python&logoColor=white"><br>
     <img alt="platform" src="https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20ubuntu-blueviolet">
     <img alt="commit" src="https://img.shields.io/github/commit-activity/m/AmiyaBot/Amiya-Bot?color=%23ff69b4">
     <img alt="size" src="https://img.shields.io/github/repo-size/AmiyaBot/Amiya-Bot?color=%23ffeb3b">
