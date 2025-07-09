@@ -70,10 +70,10 @@ class Gacha:
             return app.response(message=f'同步成功')
         return app.response(code=500, message=f'同步失败')
 
-    @app.route('/pool/getPool', method='get', allow_unauthorized=True)
+    @app.route('/pool/getPool', method='get')
     async def get_gacha_pool(self):
         data = {
             'Pool': query_to_list(Pool.select()),
             'OperatorConfig': query_to_list(OperatorConfig.select()),
         }
-        return app.response(data=data)
+        return app.response(data)

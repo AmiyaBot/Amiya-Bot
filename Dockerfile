@@ -1,5 +1,4 @@
-# 使用python3.9作为基础镜像
-FROM mcr.microsoft.com/playwright/python:v1.31.1
+FROM mcr.microsoft.com/playwright/python:v1.53.0-noble
 
 # 设置数据卷
 VOLUME [ "/amiyabot" ]

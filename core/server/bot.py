@@ -2,9 +2,8 @@ from typing import Optional
 
 from core import app, bot
 from core.database.bot import BotAccounts, query_to_list
-from amiyabot.network.httpServer import BaseModel
 from amiyabot import AmiyaBot
-
+from pydantic import BaseModel
 
 class BotAppId(BaseModel):
     appid: str
@@ -57,7 +56,7 @@ class Bot:
                 if bot[item['appid']].instance.alive:
                     item['alive'] = 1
 
-        return app.response(data=res)
+        return app.response(res)
 
     @app.route()
     async def add_bot(self, data: BotAccountModel):

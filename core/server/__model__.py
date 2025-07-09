@@ -1,5 +1,5 @@
 from typing import Optional
-from amiyabot.network.httpServer import BaseModel
+from pydantic import BaseModel
 
 
 class QueryData(BaseModel):

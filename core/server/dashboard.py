@@ -18,11 +18,11 @@ def get_last_time(hour: int = 24):
 class Dashboard:
     @app.route(method='get')
     async def get_log(self, lines: int = 200):
-        return app.response(data=read_tail('log/running.log', lines=lines))
+        return app.response(read_tail('logs/running.log', lines=lines))
 
     @app.route(method='get')
     async def get_functions_used(self):
-        return app.response(data=query_to_list(FunctionUsed.select()))
+        return app.response(query_to_list(FunctionUsed.select()))
 
     @app.route(method='get')
     async def get_message_record(self, appid: str):
