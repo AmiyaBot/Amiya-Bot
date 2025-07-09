@@ -9,6 +9,8 @@ from typing import List, Coroutine, Callable
 from amiyabot import *
 from amiyabot.adapters import BotAdapterProtocol
 from amiyabot.network.httpRequests import http_requests
+from amiyahttp import HttpServer, ServerConfig
+from amiyahttp.auth.authKey import AuthKey
 
 from core.database.messages import MessageRecord
 from core.database.bot import BotAccounts
@@ -24,8 +26,16 @@ create_dir('plugins')
 
 serve_conf = read_yaml('config/server.yaml')
 prefix_conf = read_yaml('config/prefix.yaml')
-
-app = HttpServer(serve_conf.host, serve_conf.port, auth_key=serve_conf.authKey)
+app_conf = ServerConfig()
+app_conf.api_prefix = ''
+app = HttpServer(serve_conf.host, serve_conf.port, app_conf)
+allow_path = [
+    '/replace/getGlobalReplace',
+    '/pool/getPool',
+    '/plugins'
+]
+auth = AuthKey(serve_conf.authKey, 'authKey', allow_path)
+app.use_plugin(auth)
 bot = MultipleAccounts(*BotAccounts.get_all_account())
 
 app.add_static_folder('/plugins', 'plugins')
@@ -43,6 +53,10 @@ def set_prefix():
 def exec_before_init(coro: Callable[[], Coroutine]):
     init_task.append(coro())
     return coro
+
+def add_allow_path(path: str):
+    global auth
+    auth.add_allow_path(path)
 
 
 async def send_to_console_channel(chain: Chain):

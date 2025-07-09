@@ -1,8 +1,8 @@
 import os
 import yaml
+import attridict
 
 from yaml import SafeDumper
-from attrdict import AttrDict
 from dataclasses import asdict
 
 from .common import create_dir, merge_dict
@@ -21,7 +21,7 @@ class YamlManager:
         with open(path, mode='r', encoding='utf-8') as f:
             content = yaml.safe_load(f)
             if not _dict:
-                content = AttrDict(content)
+                content = attridict(content)
 
             cls.yaml_cache[t][path] = content
 
