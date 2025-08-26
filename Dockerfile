@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright/python:v1.51.0
+FROM mcr.microsoft.com/playwright/python:v1.50.0
 
 # 设置数据卷
 VOLUME [ "/amiyabot" ]
