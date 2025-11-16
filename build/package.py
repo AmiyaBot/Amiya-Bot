@@ -64,8 +64,23 @@ venv = 'venv/Lib/site-packages'
 scripts = 'venv/Scripts'
 
 if platform == 'linux':
-    venv = 'venv/lib/python3.13/site-packages'
+    # 动态检测Python版本
+    for py_version in ['python3.13', 'python3.12', 'python3.11', 'python3.10']:
+        if os.path.exists(f'venv/lib/{py_version}/site-packages'):
+            venv = f'venv/lib/{py_version}/site-packages'
+            break
+    else:
+        venv = 'venv/lib/python3.13/site-packages'  # 默认值
     scripts = 'venv/bin'
+elif platform == 'win32':
+    # Windows下也检查多种可能的结构
+    if not os.path.exists('venv/Lib/site-packages'):
+        # 检查是否有版本特定的目录
+        for py_version in ['python3.13', 'python3.12', 'python3.11', 'python3.10']:
+            version_path = f'venv/Lib/{py_version}/site-packages'
+            if os.path.exists(version_path):
+                venv = version_path
+                break
 
 folder = 'package'
 
@@ -101,7 +116,26 @@ def build(version: str, force: bool = False, upload: bool = False):
     os.makedirs(dist)
     os.makedirs(jieba_copy)
 
-    shutil.copy(f'{venv}/jieba/dict.txt', f'{jieba_copy}/dict.txt')
+    # 查找jieba的安装位置
+    jieba_dict_path = None
+    if os.path.exists(f'{venv}/jieba/dict.txt'):
+        jieba_dict_path = f'{venv}/jieba/dict.txt'
+    else:
+        # 使用pip来查找jieba的位置
+        import subprocess
+        try:
+            python_executable = f'{scripts}/python' if platform == 'linux' else f'{scripts}\\python.exe'
+            result = subprocess.run([python_executable, '-c',
+                                   'import jieba, os; print(os.path.join(os.path.dirname(jieba.__file__), "dict.txt"))'],
+                                  capture_output=True, text=True, check=True)
+            jieba_dict_path = result.stdout.strip()
+        except:
+            pass
+
+    if not jieba_dict_path or not os.path.exists(jieba_dict_path):
+        raise FileNotFoundError(f'Cannot find jieba dict.txt file in {venv}')
+
+    shutil.copy(jieba_dict_path, f'{jieba_copy}/dict.txt')
     shutil.copytree('config', f'{dist}/config', dirs_exist_ok=True)
     shutil.copytree(
         os.path.abspath(f'{venv}/amiyabot/_assets').replace(' ', '\\ '), f'{dist}/_assets', dirs_exist_ok=True
@@ -156,8 +190,8 @@ def build(version: str, force: bool = False, upload: bool = False):
     path = pathlib.Path(f'{folder}/{pack_name}')
 
     with zipfile.ZipFile(path, 'w') as pack:
-        for root, dirs, files in os.walk(dist):
-            for index, filename in enumerate(files):
+        for root, _, files in os.walk(dist):
+            for filename in files:
                 target = os.path.join(root, filename)
                 pack.write(target, target.replace(dist + '\\', ''))
 
