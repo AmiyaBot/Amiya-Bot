@@ -64,7 +64,7 @@ venv = 'venv/Lib/site-packages'
 scripts = 'venv/Scripts'
 
 if platform == 'linux':
-    venv = 'venv/lib/python3.8/site-packages'
+    venv = 'venv/lib/python3.13/site-packages'
     scripts = 'venv/bin'
 
 folder = 'package'
@@ -136,8 +136,10 @@ def build(version: str, force: bool = False, upload: bool = False):
         add_datas_cmd = ''.join([' --add-data=%s:%s' % df for df in data_files])
         playwright_install = [f'PLAYWRIGHT_BROWSERS_PATH=0 {os.path.abspath(scripts)}/playwright install chromium']
 
+    add_hidden_imports_cmd = ' --hidden-import=amiyabot.util --hidden-import=amiyautils'
+
     cmd += [
-        f'pyi-makespec -F -n {setup_name}{add_ico_cmd}{add_version_cmd} {local}/amiya.py {add_datas_cmd}',
+        f'pyi-makespec -F -n {setup_name}{add_ico_cmd}{add_version_cmd} {local}/amiya.py {add_datas_cmd}{add_hidden_imports_cmd}',
         *playwright_install,
         f'{os.path.abspath(scripts)}/pyinstaller {setup_name}.spec',
     ]

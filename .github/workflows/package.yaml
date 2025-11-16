@@ -11,12 +11,12 @@ jobs:
     publish-windows-package:
         runs-on: windows-latest
         steps:
-            -   uses: actions/checkout@v3
+            -   uses: actions/checkout@v5
 
             -   name: Set up Python 3.10 amd64
-                uses: actions/setup-python@v4
+                uses: actions/setup-python@v6
                 with:
-                    python-version: '3.10'
+                    python-version: '3.13'
                     architecture: x64
 
             -   name: Install dependencies
@@ -34,6 +34,40 @@ jobs:
                 run: |
                     venv\Scripts\Activate.ps1
                     venv\Scripts\python run_build.py --type package --upload
+
+    publish-linux-packages:
+        runs-on: ubuntu-latest
+        container: ubuntu:22.04
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+
+            -   name: Install system dependencies (Debian/Ubuntu)
+                run: |
+                    apt-get update
+                    apt-get install -y python3 python3-pip python3-venv build-essential wget curl unzip
+
+            -   name: Set up Python 3.13
+                run: |
+                    python3 --version
+                    python3 -m pip install --upgrade pip
+
+            -   name: Create virtual environment and install dependencies
+                run: |
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip wheel setuptools
+                    pip install -r requirements.txt
+                    pip install pyinstaller
+
+            -   name: Build and publish Linux package
+                env:
+                    SECRETID: ${{ secrets.SECRETID }}
+                    SECRETKEY: ${{ secrets.SECRETKEY }}
+                    PLATFORM: linux-x64
+                run: |
+                    . venv/bin/activate
+                    python run_build.py --type package --upload --platform linux-x64
 
     publish-docker:
         runs-on: ubuntu-latest
