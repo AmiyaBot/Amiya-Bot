@@ -13,7 +13,7 @@ jobs:
         steps:
             -   uses: actions/checkout@v5
 
-            -   name: Set up Python 3.10 amd64
+            -   name: Set up Python 3.13 amd64
                 uses: actions/setup-python@v6
                 with:
                     python-version: '3.13'
@@ -45,16 +45,16 @@ jobs:
             -   name: Install system dependencies (Debian/Ubuntu)
                 run: |
                     apt-get update
-                    apt-get install -y python3 python3-pip python3-venv build-essential wget curl unzip
+                    apt-get install -y build-essential wget curl unzip
 
             -   name: Set up Python 3.13
-                run: |
-                    python3 --version
-                    python3 -m pip install --upgrade pip
+                uses: actions/setup-python@v6
+                with:
+                    python-version: '3.13'
 
             -   name: Create virtual environment and install dependencies
                 run: |
-                    python3 -m venv venv
+                    python -m venv venv
                     . venv/bin/activate
                     pip install --upgrade pip wheel setuptools
                     pip install -r requirements.txt
@@ -67,7 +67,7 @@ jobs:
                     PLATFORM: linux-x64
                 run: |
                     . venv/bin/activate
-                    python run_build.py --type package --upload --platform linux-x64
+                    python run_build.py --type package --upload
 
     publish-docker:
         runs-on: ubuntu-latest
