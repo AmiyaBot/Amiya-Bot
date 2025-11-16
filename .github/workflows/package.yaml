@@ -35,9 +35,9 @@ jobs:
                     venv\Scripts\Activate.ps1
                     venv\Scripts\python run_build.py --type package --upload
 
-    publish-linux-packages:
+    publish-linux-package:
         runs-on: ubuntu-latest
-        container: ubuntu:22.04
+        container: ubuntu:24.04
         steps:
             -   name: Checkout
                 uses: actions/checkout@v5
