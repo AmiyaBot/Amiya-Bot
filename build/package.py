@@ -118,18 +118,46 @@ def build(version: str, force: bool = False, upload: bool = False):
 
     # 查找jieba的安装位置
     jieba_dict_path = None
+
+    # 方法1: 检查标准路径
     if os.path.exists(f'{venv}/jieba/dict.txt'):
         jieba_dict_path = f'{venv}/jieba/dict.txt'
-    else:
-        # 使用pip来查找jieba的位置
+
+    # 方法2: 使用Python运行时查找
+    if not jieba_dict_path:
         try:
             python_executable = f'{scripts}/python' if platform == 'linux' else f'{scripts}\\python.exe'
-            result = subprocess.run([python_executable, '-c',
-                                   'import jieba, os; print(os.path.join(os.path.dirname(jieba.__file__), "dict.txt"))'],
-                                  capture_output=True, text=True, check=True)
+            result = subprocess.run([python_executable, '-c', '''
+import jieba
+import os
+print(os.path.join(os.path.dirname(jieba.__file__), "dict.txt"))
+'''], capture_output=True, text=True, check=True)
             jieba_dict_path = result.stdout.strip()
         except:
             pass
+
+    # 方法3: 直接搜索site-packages目录
+    if not jieba_dict_path:
+        for root, dirs, files in os.walk(venv):
+            if 'jieba' in dirs and 'dict.txt' in files:
+                jieba_path = os.path.join(root, 'jieba')
+                if os.path.exists(os.path.join(jieba_path, 'dict.txt')):
+                    jieba_dict_path = os.path.join(jieba_path, 'dict.txt')
+                    break
+
+    # 方法4: 打印调试信息
+    if not jieba_dict_path:
+        print(f"Debug: venv path = {venv}")
+        print(f"Debug: venv exists = {os.path.exists(venv)}")
+        if os.path.exists(venv):
+            print(f"Debug: Contents of {venv}:")
+            for item in os.listdir(venv):
+                print(f"  {item}")
+                if item == 'jieba' and os.path.isdir(os.path.join(venv, item)):
+                    jieba_dir = os.path.join(venv, item)
+                    print(f"    Contents of jieba dir:")
+                    for jieba_item in os.listdir(jieba_dir):
+                        print(f"      {jieba_item}")
 
     if not jieba_dict_path or not os.path.exists(jieba_dict_path):
         raise FileNotFoundError(f'Cannot find jieba dict.txt file in {venv}')
