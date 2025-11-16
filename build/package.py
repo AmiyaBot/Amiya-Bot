@@ -65,18 +65,18 @@ scripts = 'venv/Scripts'
 
 if platform == 'linux':
     # 动态检测Python版本
-    for py_version in ['python3.13', 'python3.12', 'python3.11', 'python3.10']:
+    for py_version in ['python3.12', 'python3.13', 'python3.11', 'python3.10']:
         if os.path.exists(f'venv/lib/{py_version}/site-packages'):
             venv = f'venv/lib/{py_version}/site-packages'
             break
     else:
-        venv = 'venv/lib/python3.13/site-packages'  # 默认值
+        venv = 'venv/lib/python3.12/site-packages'  # 默认值
     scripts = 'venv/bin'
 elif platform == 'win32':
     # Windows下也检查多种可能的结构
     if not os.path.exists('venv/Lib/site-packages'):
         # 检查是否有版本特定的目录
-        for py_version in ['python3.13', 'python3.12', 'python3.11', 'python3.10']:
+        for py_version in ['python3.12', 'python3.13', 'python3.11', 'python3.10']:
             version_path = f'venv/Lib/{py_version}/site-packages'
             if os.path.exists(version_path):
                 venv = version_path
