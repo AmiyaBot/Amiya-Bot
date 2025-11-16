@@ -122,7 +122,6 @@ def build(version: str, force: bool = False, upload: bool = False):
         jieba_dict_path = f'{venv}/jieba/dict.txt'
     else:
         # 使用pip来查找jieba的位置
-        import subprocess
         try:
             python_executable = f'{scripts}/python' if platform == 'linux' else f'{scripts}\\python.exe'
             result = subprocess.run([python_executable, '-c',
