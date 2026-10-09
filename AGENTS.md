@@ -146,7 +146,7 @@ git clone --depth 1 gitee.com/amiya-bot/amiya-bot-assets.git
 
 ### 必须遵守
 
-- **不要修改子模块内容**：`pluginsDev/`、`pluginsServer/` 是 git submodule，改动会污染主仓库的指针。
+- **子模块可以改，但要单独提交**：`pluginsDev/`、`pluginsServer/` 是 git submodule，属于可正常修改的协作单元。改动流程见 [§8](#8-子模块)。关键约束：**主仓库只记录指针**，不要指望在主仓库的 diff 里看到子模块的文件改动——必须先进入子模块提交/推送，再回主仓库 `git add <submodule>` 更新指针。
 - **不要删除 `core/frozen.py` 中的 import**：PyInstaller 靠静态分析收集依赖，这些 import 是让动态导入的模块被打包进去的锚点。
 - **插件配置新增字段时不要只改 `channel_config_default`**：不同时提供 global 配置会直接 `ValueError` 启动失败。
 
@@ -159,7 +159,7 @@ git clone --depth 1 gitee.com/amiya-bot/amiya-bot-assets.git
 5. **可选依赖缺失只降级不报错**：`httpx`、`openai`、`paddleocr`、`websockets` 等不在 `requirements.txt` 中，缺失时插件仅记录日志。功能无响应时先查 [logs/running.log](logs/running.log)。
 6. **`level` 数值小的处理器优先匹配**。`arknights/calculator` 使用 `level=99`（最低）与 `level=3`。
 7. **插件目录与包同名会干扰 import**：`pluginsDev/src` 下有多处 `src/__init__.py`，`buildPlugins.py` 使用 `temp_sys_path` 动态导入。遇到 import 异常先怀疑 `sys.path` 污染。
-8. **`plugins/plugins.json` 中的版本号比源码旧**（talking 1.7 vs 1.8、gamedata 4.1 vs 4.2、operator 6.2 vs 6.3）。以 `pluginsDev/src` 源码为准。
+8. **`plugins/plugins.json` 中的版本号比源码旧**（talking 1.7 vs 1.8、gamedata 4.1 vs 4.3、operator 6.2 vs 6.4）。以 `pluginsDev/src` 源码为准。
 
 ### 已知代码缺陷
 
@@ -201,6 +201,28 @@ git submodule status                      # 查看指针
 
 - `pluginsDev` —— 插件源码，使用 `python run_build.py --type plugins` 打包（产出 `{plugin_id}-{version}.zip` 与 `plugins.json`）。
 - `pluginsServer` —— 插件商店后端，**私有仓库**，其实现与文档不在本公开仓库中；启动入口为 `python run_plugin_server.py`。
+
+### 修改子模块的正确流程
+
+子模块**可以正常修改**，但它是一个独立的仓库：提交发生在子模块内，主仓库只记录「指针」（该子模块当前指向的 commit）。因此：
+
+```bash
+cd pluginsDev
+git checkout master            # 子模块默认处于 detached HEAD，直接提交会丢指针
+# …编辑源码…
+git add -A && git commit -m "fix: …" && git push
+
+cd ..
+git add pluginsDev             # 主仓库此处只记录新的 commit 指针
+git commit -m "chore: bump pluginsDev"
+```
+
+要点：
+
+- `git submodule status` 输出中行首的 `+` 表示子模块 HEAD 与主仓库记录的指针**不一致**（说明子模块有未同步的提交）。
+- **detached HEAD 是 submodule 的默认状态**，不是异常；直接在此状态下提交，commit 会因没有分支引用而容易丢失，务必先 `git checkout master`（`pluginsServer` 同理）。
+- 子模块的改动**不会**出现在主仓库的 `git diff` 里——主仓库看到的只是指针变化。排查「改了却看不到」时先确认这一点。
+- 子模块内容独立于主仓库，因此子模块内的提交可以单独推送、单独审阅。
 
 插件下载协议：客户端请求 `GET {plugin}/getPluginRelease?plugin_id=X` 获取 zip 文件名，再从 `{cos}/plugins/custom/{plugin_id}/{file}` 下载。
 

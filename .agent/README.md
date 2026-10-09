@@ -136,5 +136,5 @@ python run_test.py                # 本地调试（测试适配器，无需真�
 - **`bot` 在 import 时构建**（`core/__init__.py:39`），任何 `import core` 都会读取 `database/amiya_bot.db`。
 - **`config/remote.yaml` 中的值会被远端接口覆盖**（`core/config/remote.py`），修改它不一定生效。
 - **游戏数据依赖 `resource/gamedata/version.txt`**，该文件缺失时所有 arknights 插件功能不可用。
-- **不要修改子模块内容**：`pluginsDev/`、`pluginsServer/` 是 git submodule。
+- **子模块可以改，但要单独提交**：`pluginsDev/`、`pluginsServer/` 是 git submodule。在子模块内提交/推送后，回主仓库 `git add <submodule>` 更新指针；主仓库的 diff 只显示指针，不显示子模块内的文件改动。
 - **不要删除 `core/frozen.py` 中的 import**：PyInstaller 靠静态分析收集依赖，这些 import 是让动态导入的模块被打包进去的锚点。

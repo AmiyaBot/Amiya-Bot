@@ -27,4 +27,9 @@ if __name__ == '__main__':
     elif build_type == 'plugins':
         from pluginsDev.buildPlugins import build
 
-        build(argv('folder') or 'plugins', argv('upload'))
+        build(
+            argv('folder') or 'plugins',
+            argv('upload'),
+            argv('secretid'),
+            argv('secretkey'),
+        )
