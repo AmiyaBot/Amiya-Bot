@@ -23,13 +23,29 @@ Amiya-Bot：基于 [AmiyaBot](https://www.amiyabot.com/) 框架的《明日方�
 
 ## 2. 快速上手
 
-```bash
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+**本机开发环境**：依赖已装在 conda 环境 `Amiya-Bot` 中，**不要**再建 venv。所有 Python 命令前先激活：
 
+```bash
+conda activate Amiya-Bot       # 环境位于 ~/miniconda3/envs/Amiya-Bot
 python amiya.py                # 主入口
 python run_test.py             # 本地调试（测试适配器，无需真实 QQ 账号）
 python run_plugin_server.py    # 插件商店后端（一般不需要）
+```
+
+未激活该环境时，直接用系统 Python 运行会因缺少 `amiyabot` 抛 `ModuleNotFoundError`。新终端 / 新 shell 中每个命令都要确认已 `conda activate Amiya-Bot`（例如 `python -c "import sys; print(sys.prefix)"` 应输出 `.../envs/Amiya-Bot`）。
+
+conda 默认不在 `PATH` 中时，先加载：
+
+```bash
+source ~/miniconda3/etc/profile.d/conda.sh && conda activate Amiya-Bot   # 非交互式 shell
+```
+
+从零搭建环境（其他机器或环境损坏时）：
+
+```bash
+conda create -n Amiya-Bot python=3.10 -y
+conda activate Amiya-Bot
+pip install -r requirements.txt
 ```
 
 `amiyabot` 是本项目的运行前提，未安装时启动会抛 `ModuleNotFoundError`。
