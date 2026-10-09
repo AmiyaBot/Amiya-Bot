@@ -8,7 +8,7 @@ Amiya-Bot 项目说明。详细文档按主题分目录存放在 [.agent/](.agen
 
 Amiya-Bot：基于 [AmiyaBot](https://www.amiyabot.com/) 框架的《明日方舟》QQ 聊天机器人。
 
-**理解本仓库的关键**：从 V6 起，机器人框架**不在本仓库内**。框架是独立 PyPI 包 `amiyabot`（[requirements.txt](requirements.txt) 锁定 `2.0.9`）。本仓库 = **宿主程序 + 插件**：
+**理解本仓库的关键**：从 V6 起，机器人框架**不在本仓库内**。框架是独立 PyPI 包 `amiyabot`（[requirements.txt](requirements.txt) 锁定 `2.1.1`，并显式钉 `amiyautils~=0.0.5`）。本仓库 = **宿主程序 + 插件**：
 
 - **宿主**（`core/`、`build/`、根目录脚本）：配置、数据库、控制台 HTTP API、插件加载器、资源下载、打包部署。
 - **插件**（`pluginsDev/` 子模块）：19 个插件，实现全部用户可见功能，以 `.zip` 发布。

@@ -38,7 +38,37 @@
 | `verify` | `Verify` | 自定义检查的结果 |
 | `time` | `int` | 消息时间 |
 
-> ⚠️ **重要变动**：从 `1.9.8` 起，若配置了前缀触发词，消息文本系列字段**不再包含**前缀，前缀被移动到 `text_prefix`。本仓库锁定 `2.0.9`，该行为已生效。
+> ⚠️ **重要变动**：从 `1.9.8` 起，若配置了前缀触发词，消息文本系列字段**不再包含**前缀，前缀被移动到 `text_prefix`。本仓库锁定 `2.1.1`，该行为已生效。
+
+### 2.1 升到 `2.1.1` 引入的两处行为变动
+
+**`is_at` 在 QQ 群下不再是恒 `True`**（`adapters/tencent/qqGroup/package.py`）：
+
+| 事件 | `is_at` |
+| --- | --- |
+| `GROUP_AT_MESSAGE_CREATE` | `True` |
+| `GROUP_MESSAGE_CREATE`（全量模式） | `False` |
+| `C2C_MESSAGE_CREATE`（单聊） | `False` |
+
+2.0.9 及以前，群聊路径**一律**把 `is_at` 置为 `True`。
+
+本仓库影响可控：`config/prefix.yaml` 已配置前缀触发词，`factory/implemented.py` 的 `verify()` 在**前缀命中**时同样放行，与 `is_at=True` 殊途同归。但任何**依赖旧「群消息必 `is_at=True`」**的逻辑需重新核对——`pluginsDev/src/user/mainBot.py:135` 的 `(data.text_prefix or data.is_at)`、`pluginsDev/src/user/main.py:252` 的 `data.is_at or ...` 均在升级后需人工回归。
+
+**`avatar` 改为惰性求值**（`builtin/message/structure.py:79-86`）：
+
+```python
+@property
+def avatar(self):
+    if not self.user_avatar and self.user_avatar_getter:
+        self.user_avatar = EventLoop.run(self.user_avatar_getter)
+    return self.user_avatar
+```
+
+onebot v11/v12 不再在 package 阶段 `await` 头像，而是存 `user_avatar_getter`，首次**读** `data.avatar` 时才求值。
+
+> ✅ **在 async 处理器内读取是安全的**：`nest_asyncio` 由 `amiyautils 0.0.5` 的 `asyncioTools.py:8` 执行 `nest_asyncio.apply()`，使 `EventLoop.run` 在已运行的事件循环上可用。已在真实 2.1.1 上验证：`pluginsDev/src/user/mainBot.py:121` 的 `if data.avatar:` 正常返回 URL。
+>
+> ⚠️ 该安全性**依赖 `amiyautils >= 0.0.5`**（0.0.4 连 `EventLoop` 都不存在）。详见 [01-安装与导出.md](01-安装与导出.md) §1.3。
 
 ---
 
