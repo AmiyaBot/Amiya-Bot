@@ -32,4 +32,6 @@ if __name__ == '__main__':
             argv('upload'),
             argv('secretid'),
             argv('secretkey'),
+            argv('bucket'),
+            argv('region'),
         )

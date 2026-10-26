@@ -127,11 +127,20 @@ def build(version: str, force: bool = False, upload: bool = False):
     if not jieba_dict_path:
         try:
             python_executable = f'{scripts}/python' if platform == 'linux' else f'{scripts}\\python.exe'
-            result = subprocess.run([python_executable, '-c', '''
+            result = subprocess.run(
+                [
+                    python_executable,
+                    '-c',
+                    '''
 import jieba
 import os
 print(os.path.join(os.path.dirname(jieba.__file__), "dict.txt"))
-'''], capture_output=True, text=True, check=True)
+''',
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
             jieba_dict_path = result.stdout.strip()
         except:
             pass
@@ -229,12 +238,12 @@ print(os.path.join(os.path.dirname(jieba.__file__), "dict.txt"))
 
 
 def upload_pack(ver_file, package_file, package_name):
-    from .uploadFile import COSUploader
+    from .uploadFile import COSUploader, official_bucket
 
     secret_id = os.environ.get('SECRETID')
     secret_key = os.environ.get('SECRETKEY')
 
-    cos = COSUploader(secret_id, secret_key)
+    cos = COSUploader(secret_id, secret_key, bucket=official_bucket)
 
     cos.upload_file(package_file, f'package/release/{package_name}')
     cos.upload_file(ver_file, f'package/release/latest-{platform}.txt')
