@@ -11,7 +11,7 @@ Amiya-Bot：基于 [AmiyaBot](https://www.amiyabot.com/) 框架的《明日方�
 **理解本仓库的关键**：从 V6 起，机器人框架**不在本仓库内**。框架是独立 PyPI 包 `amiyabot`（[requirements.txt](requirements.txt) 锁定 `2.1.1`，并显式钉 `amiyautils~=0.0.5`）。本仓库 = **宿主程序 + 插件**：
 
 - **宿主**（`core/`、`build/`、根目录脚本）：配置、数据库、控制台 HTTP API、插件加载器、资源下载、打包部署。
-- **插件**（`pluginsDev/` 子模块）：19 个插件，实现全部用户可见功能，以 `.zip` 发布。
+- **插件**（`pluginsDev/` 子模块）：20 个插件，实现全部用户可见功能，以 `.zip` 发布。
 
 | 项 | 值 |
 | --- | --- |
@@ -76,10 +76,10 @@ core/
   cosChainBuilder.py     QQ 群消息图片走 COS 图床
   frozen.py              PyInstaller 冻结模式路径修正 + 确保依赖模块被打包（勿删 import）
 
-pluginsDev/src/          ★ 19 个插件（子模块）
+pluginsDev/src/          ★ 20 个插件（子模块）
   arknights/             9 个：gamedata / operatorArchives / enemy / material / stage
                               recruit / gacha / calculator / intellect
-  admin func replace talking user weibo skland ai/blm game/guess game/wordle2
+  admin func replace talking user weibo skland ai/blm ai/chat game/guess game/wordle2
                          每个插件目录内：
                            DEVELOP.md   开发文档（实现、指令、依赖、数据表）
                            README.md    用户指引（运行时由 document= 加载并展示）
@@ -173,7 +173,7 @@ git clone --depth 1 gitee.com/amiya-bot/amiya-bot-assets.git
 3. **修改 `core/config/*.py` 的 dataclass 会改写用户已有 yaml**：`init_config_file` 会 `asdict` 后覆写文件。
 4. **`resource/gamedata/version.txt` 缺失时所有 arknights 插件功能不可用**，表现为查不到任何数据。
 5. **可选依赖缺失只降级不报错**：`httpx`、`openai`、`paddleocr`、`websockets` 等不在 `requirements.txt` 中，缺失时插件仅记录日志。功能无响应时先查 [logs/running.log](logs/running.log)。
-6. **`level` 数值小的处理器优先匹配**。`arknights/calculator` 使用 `level=99`（最低）与 `level=3`。
+6. **`level` 数值越大越优先**（分发器按 weight 降序取第一个，未指定时 weight=1）。`arknights/calculator` 用 `level=99` 压过泛匹配的 `level=3`；`ai/chat` 的兜底校验返回负权重（默认 -1），实现「其他插件优先、AI 兜底」。
 7. **插件目录与包同名会干扰 import**：`pluginsDev/src` 下有多处 `src/__init__.py`，`buildPlugins.py` 使用 `temp_sys_path` 动态导入。遇到 import 异常先怀疑 `sys.path` 污染。
 8. **`plugins/plugins.json` 中的版本号比源码旧**（talking 1.7 vs 1.8、gamedata 4.1 vs 4.3、operator 6.2 vs 6.4）。以 `pluginsDev/src` 源码为准。
 
@@ -183,7 +183,6 @@ git clone --depth 1 gitee.com/amiya-bot/amiya-bot-assets.git
 
 | 位置 | 问题 |
 | --- | --- |
-| `build/uploadFile.py:36` | `except CosClientError or CosServiceError` 中 `or` 是布尔运算，`CosServiceError` 永不被捕获；重试 10 次后静默返回 `None`，COS 上传失败无任何提示 |
 | `entrypoint.sh:17` | 判断所依赖的 `first_run` 文件在全仓库中没有任何地方创建，导致每次启动都会重跑 `entrypoint.py` 并覆盖配置 |
 | `core/server/gacha.py:47-49` | 传入新卡池名时 `Pool.get_or_none` 返回 `None`，随后访问 `pool.id` 抛 `AttributeError`（缺少 `pool and` 判断） |
 | `core/server/replace.py:54` | `update_replace` 将 `is_global` / `is_active` 写成 `NULL`，导致记录从免鉴权端点消失 |
