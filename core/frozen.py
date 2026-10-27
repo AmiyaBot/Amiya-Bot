@@ -22,4 +22,3 @@ if hasattr(sys, 'frozen'):
 
     FontStyle.file = os.path.join(DIR_PATH, '_assets/font/HarmonyOS_Sans_SC.ttf')
     ChainConfig.md_template = os.path.join(DIR_PATH, '_assets/markdown/template.html')
-    ChainConfig.md_template_dark = os.path.join(DIR_PATH, '_assets/markdown/template-dark.html')
