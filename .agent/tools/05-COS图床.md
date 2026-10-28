@@ -61,6 +61,8 @@ async def get_image(self, image: Union[str, bytes]) -> Union[str, bytes]:
 `get_voice`（`:66-77`）与 `get_video`（`:79-90`）是同一写法的复制，分别调 `super().get_voice` / `super().get_video`，
 短路判断均为 `startswith('http')`。
 
+> 2.1.5 的 `insert_media(url, file_type=1, download=None)`（`PayloadBuilder` 的方法，**本类无法覆写**）在上传完成后统一调 `builder.remove_file(url)`：本地图会连带删除 COS 对象，插件直接给的公网 URL 只是空操作。新增的 `download_media`（框架侧下载）对本类无意义——本地图早已换成 COS 公网地址。
+
 ---
 
 ## 3. `cos_caches` 的映射与删除时机
